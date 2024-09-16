@@ -15956,14 +15956,14 @@ void Unit::setDeathState(DeathState s)
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE); // clear skinnable for creature and player (at battleground)
 }
 
-bool Unit::CanHaveThreatList() const
+bool Unit::CanHaveThreatList(bool skipAliveCheck) const
 {
     // only creatures can have threat list
     if (!IsCreature())
         return false;
 
     // only alive units can have threat list
-    if (!isAlive() || isDying())
+    if (!skipAliveCheck && !isAlive())
         return false;
 
     // totems can not have threat list
@@ -15998,7 +15998,7 @@ void Unit::AddThreat(Unit* victim, float fThreat, SpellSchoolMask schoolMask, Sp
 
 void Unit::DeleteThreatList()
 {
-    if (CanHaveThreatList() && !m_ThreatManager.isThreatListEmpty())
+    if (CanHaveThreatList(true) && !m_ThreatManager.isThreatListEmpty())
         SendThreatClear();
     m_ThreatManager.clearReferences();
 }
