@@ -435,8 +435,3 @@ uint32 RealmList::JoinRealm(uint32 realmAddress, uint32 /*build*/, boost::asio::
 
     return ERROR_UTIL_SERVER_UNKNOWN_REALM;
 }
-
-boost::asio::ip::address RealmList::GetAddressForClient(uint32 RealmID)
-{
-    return _realmIPs[RealmID];
-}

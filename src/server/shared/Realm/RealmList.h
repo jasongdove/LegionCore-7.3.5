@@ -98,7 +98,6 @@ public:
     void WriteSubRegions(bgs::protocol::game_utilities::v1::GetAllValuesForAttributeResponse* response) const;
     std::vector<uint8> GetRealmEntryJSON(Battlenet::RealmHandle const& id, uint32 build) const;
     std::vector<uint8> GetRealmList(uint32 build, std::string const& subRegion, uint8 Battlegroup) const;
-    boost::asio::ip::address GetAddressForClient(uint32 RealmID);
     uint32 JoinRealm(uint32 realmAddress, uint32 build, boost::asio::ip::address const& clientAddress, std::array<uint8, 32> const& clientSecret, LocaleConstant locale, std::string const& os, std::string accountName, bgs::protocol::game_utilities::v1::ClientResponse* response) const;
 
 private:

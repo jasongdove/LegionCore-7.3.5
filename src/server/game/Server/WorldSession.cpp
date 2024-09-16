@@ -816,7 +816,7 @@ void WorldSession::SendConnectToInstance(WorldPackets::Auth::ConnectToSerial ser
 {
     TC_LOG_INFO(LOG_FILTER_OPCODES, "WorldSession::SendConnectToInstance");
 
-    auto instanceAddress = sRealmList->GetAddressForClient(_realmID);
+    auto instanceAddress = realm.GetAddressForClient(boost::asio::ip::address::from_string(GetRemoteAddress()));
 
     _instanceConnectKey.Fields.AccountId = GetAccountId();
     _instanceConnectKey.Fields.ConnectionType = CONNECTION_TYPE_INSTANCE;
