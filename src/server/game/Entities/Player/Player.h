@@ -1710,6 +1710,9 @@ class Player : public Unit, public GridObject<Player>
         bool AutoStoreLoot(uint32 loot_id, LootStore const& store, bool broadcast = true, uint32 itemContext = 0) { return AutoStoreLoot(NULL_BAG, NULL_SLOT, loot_id, store, broadcast, itemContext); }
         void StoreLootItem(uint8 lootSlot, Loot* loot);
 
+        // Sort Bags
+        void ApplyOnBagsItems(std::function<bool(Player*, Item*, uint8 /*bag*/, uint8 /*slot*/)>&& function);
+
         void AddTrackingQuestIfNeeded(ObjectGuid sourceGuid);
 
         void DepositItemToReagentBank();
