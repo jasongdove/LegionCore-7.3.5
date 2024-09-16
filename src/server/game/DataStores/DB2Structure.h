@@ -24,6 +24,11 @@
 
 class Player;
 
+enum PrestigeLevelInfoFlags : uint8
+{
+    PRESTIGE_FLAG_DISABLED  = 0x01                      // Prestige levels with this flag won't be included to calculate max prestigelevel.
+};
+
 #define MAX_HOLIDAY_DURATIONS 10
 #define MAX_HOLIDAY_DATES 16
 #define MAX_HOLIDAY_FLAGS 10
@@ -4722,6 +4727,8 @@ struct PrestigeLevelInfoEntry
     int32       BadgeTextureFileDataID;
     uint8       PrestigeLevel;
     uint8       Flags;
+
+    bool IsDisabled() const { return (Flags & PRESTIGE_FLAG_DISABLED) != 0; }
 };
 
 // FileOptions: Index, None

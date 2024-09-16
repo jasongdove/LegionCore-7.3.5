@@ -96,6 +96,7 @@
 #include "QuestData.h"
 #include "QuestDef.h"
 #include "QuestPackets.h"
+#include "RestMgr.h"
 #include "ScenarioMgr.h"
 #include "ScenePackets.h"
 #include "ScriptsData.h"
@@ -297,16 +298,6 @@ m_achievementMgr(sf::safe_ptr<AchievementMgr<Player>>(this))
     m_lastpetnumber = 0;
     m_LastPetEntry = 0;
 
-    ////////////////////Rest System/////////////////////
-    time_inn_enter=0;
-    inn_pos_mapid=0;
-    inn_pos_x=0;
-    inn_pos_y=0;
-    inn_pos_z=0;
-    m_rest_bonus=0;
-    rest_type=REST_TYPE_NO;
-    ////////////////////Rest System/////////////////////
-
     //kill honor sistem
     m_flushKills = false;
     m_saveKills = false;
@@ -419,6 +410,9 @@ m_achievementMgr(sf::safe_ptr<AchievementMgr<Player>>(this))
     m_watching_movie = false;
 
     _advancedCombatLoggingEnabled = false;
+
+    _restMgr = Trinity::make_unique<RestMgr>(this);
+
     m_QuestStatusVector = new std::vector<QuestStatusData*>;
     m_QuestStatusVector->assign(sQuestDataStore->GetMaxQuestID(), NULL); // Add to player size at ~250kb
 
@@ -1582,18 +1576,7 @@ void Player::Update(uint32 p_time)
     }
 
     if (HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING))
-    {
-        if (roll_chance_i(3) && GetTimeInnEnter() > 0)      // freeze update
-        {
-            auto time_inn = time(nullptr) - GetTimeInnEnter();
-            if (time_inn >= 10)                             // freeze update
-            {
-                float bubble = 0.125f*sWorld->getRate(RATE_REST_INGAME);
-                SetRestBonus(GetRestBonus() + time_inn * ((float)GetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP) / 72000)*bubble);
-                UpdateInnerTime(time(nullptr));
-            }
-        }
-    }
+        _restMgr->Update(now);
 
     if (m_weaponChangeTimer > 0)
     {
@@ -1610,6 +1593,14 @@ void Player::Update(uint32 p_time)
     {
         if (p_time >= m_zoneUpdateTimer)
         {
+            // On zone update tick check if we are still in an inn if we are supposed to be in one
+            if (_restMgr->HasRestFlag(REST_FLAG_IN_TAVERN))
+            {
+                AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(_restMgr->GetInnTriggerID());
+                if (!atEntry || !IsInAreaTriggerRadius(atEntry))
+                    _restMgr->RemoveRestFlag(REST_FLAG_IN_TAVERN);
+            }
+
             m_zoneUpdateAllow = false;
 
             uint32 newzone, newarea;
@@ -2004,15 +1995,6 @@ void Player::setDeathState(DeathState s)
         ResummonPetTemporaryUnSummonedIfAny();
         ClearDynamicValue(PLAYER_DYNAMIC_FIELD_SELF_RES_SPELLS);
     }
-}
-
-void Player::InnEnter(time_t time, uint32 mapid, float x, float y, float z)
-{
-    inn_pos_mapid = mapid;
-    inn_pos_x = x;
-    inn_pos_y = y;
-    inn_pos_z = z;
-    time_inn_enter = time;
 }
 
 bool Player::ToggleAFK()
@@ -3780,7 +3762,7 @@ void Player::GiveXP(uint32 xp, Unit* victim, float groupRate /*= 1.0f*/)
     if (recruitAFriend)
         bonusXP = uint32(recruitAFriend * xp); // xp + bonusXP must add up to 3 * xp for RaF; calculation for quests done client-side
     else
-        bonusXP = victim ? GetXPRestBonus(xp) : 0; // XP resting bonus
+        bonusXP = victim ? _restMgr->GetRestBonusFor(REST_TYPE_XP, xp) : 0; // XP resting bonus
 
     SendLogXPGain(xp, victim, bonusXP, recruitAFriend, groupRate);
 
@@ -9211,6 +9193,8 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
         honor_f *= sWorld->getRate(RATE_HONOR);
         if (groupsize > 1)
             honor_f /= groupsize;
+
+        honor_f += _restMgr->GetRestBonusFor(REST_TYPE_HONOR, honor_f);
     }
     else
         honor_f *= sWorld->getRate(RATE_HONOR_QB);
@@ -9269,6 +9253,11 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
     }
 
     return true;
+}
+
+bool Player::IsMaxPrestige() const
+{
+    return GetPrestigeLevel() == sDB2Manager.GetMaxPrestige();
 }
 
 void Player::_LoadCurrency(PreparedQueryResult result)
@@ -10141,17 +10130,11 @@ void Player::UpdateArea(uint32 newArea)
         CombatStopWithPets();
     }
 
-    if (area && (area->Flags[0] & ((GetTeam() == ALLIANCE) ? AREA_FLAG_REST_ZONE_ALLIANCE : AREA_FLAG_REST_ZONE_HORDE)))
-    {
-        SetFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING);
-        SetRestType(REST_TYPE_IN_FACTION_AREA);
-        InnEnter(time(0), GetMapId(), 0, 0, 0);
-    }
-    else if (HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING) && GetRestType() == REST_TYPE_IN_FACTION_AREA)
-    {
-        RemoveFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING);
-        SetRestType(REST_TYPE_NO);
-    }
+    uint32 const areaRestFlag = (GetTeam() == ALLIANCE) ? AREA_FLAG_REST_ZONE_ALLIANCE : AREA_FLAG_REST_ZONE_HORDE;
+    if (area && area->Flags[0] & areaRestFlag)
+        _restMgr->SetRestFlag(REST_FLAG_IN_FACTION_AREA);
+    else
+        _restMgr->RemoveRestFlag(REST_FLAG_IN_FACTION_AREA);
 
     AddDelayedEvent(100, [this]() -> void
     {
@@ -10268,33 +10251,11 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
     if (zone->Flags[0] & AREA_FLAG_CAPITAL)                     // Is in a capital city
     {
         if (!pvpInfo.inHostileArea || zone->IsSanctuary())
-        {
-            SetFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING);
-            SetRestType(REST_TYPE_IN_CITY);
-            InnEnter(time(0), GetMapId(), 0, 0, 0);
-        }
+            _restMgr->SetRestFlag(REST_FLAG_IN_CITY);
         pvpInfo.inNoPvPArea = true;
     }
     else
-    {
-        if (HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING))
-        {
-            if (GetRestType() == REST_TYPE_IN_TAVERN)        // Still inside a tavern or has recently left
-            {
-                // Remove rest state if we have recently left a tavern.
-                if (GetMapId() != GetInnPosMapId() || GetExactDist(GetInnPosX(), GetInnPosY(), GetInnPosZ()) > 1.0f)
-                {
-                    RemoveFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING);
-                    SetRestType(REST_TYPE_NO);
-                }
-            }
-            else if (GetRestType() != REST_TYPE_IN_FACTION_AREA)
-            {
-                RemoveFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING);
-                SetRestType(REST_TYPE_NO);
-            }
-        }
-    }
+        _restMgr->RemoveRestFlag(REST_FLAG_IN_CITY);
 
     UpdatePvPState();
 
@@ -12349,19 +12310,6 @@ void Player::SendInitWorldStates(uint32 zoneid, uint32 areaid)
             }
         }
     }
-}
-
-uint32 Player::GetXPRestBonus(uint32 xp)
-{
-    uint32 rested_bonus = (uint32)GetRestBonus();           // xp for each rested bonus
-
-    if (rested_bonus > xp)                                   // max rested_bonus == xp or (r+x) = 200% xp
-        rested_bonus = xp;
-
-    SetRestBonus(GetRestBonus() - rested_bonus);
-
-    TC_LOG_DEBUG(LOG_FILTER_PLAYER, "Player gain %u xp (+ %u Rested Bonus). Rested points=%f", xp+rested_bonus, rested_bonus, GetRestBonus());
-    return rested_bonus;
 }
 
 void Player::SetBindPoint(ObjectGuid guid)
@@ -22172,17 +22120,7 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
     InitRunes();
 
     // rest bonus can only be calculated after InitStatsForLevel()
-    m_rest_bonus = fields[f_rest_bonus].GetFloat();
-
-    if (time_diff > 0)
-    {
-        auto bubble0 = 0.031f; //speed collect rest bonus in offline, in logout, far from tavern, city (section/in hour)
-        auto bubble1 = 0.125f; //speed collect rest bonus in offline, in logout, in tavern, city (section/in hour)
-        float bubble = fields[f_is_logout_resting].GetUInt8() > 0 ? bubble1 * sWorld->getRate(RATE_REST_OFFLINE_IN_TAVERN_OR_CITY) : bubble0 * sWorld->getRate(RATE_REST_OFFLINE_IN_WILDERNESS);
-        SetRestBonus(GetRestBonus() + time_diff * ((float)GetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP) / 72000)*bubble);
-    }
-    else
-        SetRestBonus(1.0f);
+    _restMgr->LoadRestBonus(REST_TYPE_XP, PlayerRestState(fields[f_is_logout_resting].GetUInt8()), fields[f_rest_bonus].GetFloat());
 
     SetPrimarySpecialization(fields[f_specialization].GetUInt32());
     SetLootSpecID(fields[f_lootspecialization].GetUInt32());
@@ -22504,6 +22442,20 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
                     SetSkill(skill_id);
             }    
         }
+    }
+
+    //_restMgr->LoadRestBonus(REST_TYPE_HONOR, PlayerRestState(fields[f_honor_rest_state].GetUInt8()), fields[f_honor_rest_bonus].GetFloat());
+    if (time_diff > 0)
+    {
+        //speed collect rest bonus in offline, in logout, far from tavern, city (section/in hour)
+        float bubble0 = 0.031f;
+        //speed collect rest bonus in offline, in logout, in tavern, city (section/in hour)
+        float bubble1 = 0.125f;
+        float bubble = fields[f_is_logout_resting].GetUInt8() > 0
+            ? bubble1 * sWorld->getRate(RATE_REST_OFFLINE_IN_TAVERN_OR_CITY)
+            : bubble0 * sWorld->getRate(RATE_REST_OFFLINE_IN_WILDERNESS);
+
+        _restMgr->AddRestBonus(REST_TYPE_XP, time_diff * _restMgr->CalcExtraPerSec(REST_TYPE_XP, bubble));
     }
 
     return true;
@@ -24775,8 +24727,8 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt8(index++, m_cinematic);
         stmt->setUInt32(index++, m_Played_time[PLAYED_TIME_TOTAL]);
         stmt->setUInt32(index++, m_Played_time[PLAYED_TIME_LEVEL]);
-        stmt->setFloat(index++, finiteAlways(m_rest_bonus));
-        stmt->setUInt32(index++, uint32(time(NULL)));
+        stmt->setFloat(index++, finiteAlways(_restMgr->GetRestBonus(REST_TYPE_XP)));
+        stmt->setUInt32(index++, uint32(time(nullptr)));
         stmt->setUInt8(index++,  (HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING) ? 1 : 0));
         stmt->setUInt16(index++, (uint16)m_ExtraFlags);
         stmt->setUInt16(index++, (uint16)m_atLoginFlags);
@@ -24907,8 +24859,8 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt8(index++, m_cinematic);
         stmt->setUInt32(index++, m_Played_time[PLAYED_TIME_TOTAL]);
         stmt->setUInt32(index++, m_Played_time[PLAYED_TIME_LEVEL]);
-        stmt->setFloat(index++, finiteAlways(m_rest_bonus));
-        stmt->setUInt32(index++, uint32(time(NULL)));
+        stmt->setFloat(index++, finiteAlways(_restMgr->GetRestBonus(REST_TYPE_XP)));
+        stmt->setUInt32(index++, uint32(time(nullptr)));
         stmt->setUInt8(index++,  (HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING) ? 1 : 0));
 
         stmt->setUInt16(index++, (uint16)m_ExtraFlags);
@@ -27329,35 +27281,6 @@ void Player::RemovePetitionsAndSigns(ObjectGuid guid)
     trans->Append(stmt);
 
     CharacterDatabase.CommitTransaction(trans);
-}
-
-void Player::SetRestBonus(float rest_bonus_new)
-{
-    // Prevent resting on max level
-    if (getLevel() >= sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
-        rest_bonus_new = 0;
-
-    if (rest_bonus_new < 0)
-        rest_bonus_new = 0;
-
-    float rest_bonus_max = (float)GetUInt32Value(PLAYER_FIELD_NEXT_LEVEL_XP)*1.5f/2;
-
-    if (rest_bonus_new > rest_bonus_max)
-        m_rest_bonus = rest_bonus_max;
-    else
-        m_rest_bonus = rest_bonus_new;
-
-    // update data for client
-    if (GetSession()->IsARecruiter() || (GetSession()->GetRecruiterId() != 0))
-        SetUInt32Value(PLAYER_FIELD_REST_INFO + REST_STATE_XP, REST_STATE_RAF_LINKED);
-    else if (m_rest_bonus <= 1)
-        SetUInt32Value(PLAYER_FIELD_REST_INFO + REST_STATE_XP, REST_STATE_NOT_RAF_LINKED);  // Set Reststate = Normal
-    else// if (m_rest_bonus > 10)
-        SetUInt32Value(PLAYER_FIELD_REST_INFO + REST_STATE_XP, REST_STATE_RESTED);          // Set Reststate = Rested
-
-    SetUInt32Value(PLAYER_FIELD_REST_INFO + REST_RESTED_XP, uint32(m_rest_bonus));
-    //SetUInt32Value(PLAYER_FIELD_REST_INFO + REST_STATE_HONOR, 0);
-    //SetUInt32Value(PLAYER_FIELD_REST_INFO + REST_RESTED_HONOR, 0);
 }
 
 bool Player::ActivateTaxiPathTo(std::vector<uint32> const& nodes, Creature* npc /*= NULL*/, uint32 spellid /*= 0*/, uint32 preferredMountDisplay /*= 0*/)

@@ -3081,6 +3081,16 @@ ResponseCodes DB2Manager::ValidateName(std::wstring const& name, LocaleConstant 
     return CHAR_NAME_SUCCESS;
 }
 
+uint8 DB2Manager::GetMaxPrestige() const
+{
+    uint8 max = 0;
+    for (PrestigeLevelInfoEntry const* prestigeLevelInfo : sPrestigeLevelInfoStore)
+        if (!prestigeLevelInfo->IsDisabled())
+            max = std::max(prestigeLevelInfo->PrestigeLevel, max);
+
+    return max;
+}
+
 uint32 DB2Manager::GetQuestUniqueBitFlag(uint32 questID)
 {
     if (QuestV2Entry const* v2 = sQuestV2Store.LookupEntry(questID))

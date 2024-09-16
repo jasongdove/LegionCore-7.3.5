@@ -63,6 +63,7 @@ class Pet;
 class PhaseMgr;
 class PlayerMenu;
 class PlayerSocial;
+class RestMgr;
 class SpellCastTargets;
 class BattlePet;
 class TradeData;
@@ -546,14 +547,6 @@ enum MirrorTimerType : int32
     FIRE_TIMER              = 2, // feign death
 
     MAX_TIMERS
-};
-
-enum PlayerRestInfoOffsets
-{
-    REST_STATE_XP       = 0,
-    REST_RESTED_XP      = 1,
-    REST_STATE_HONOR    = 2,
-    REST_RESTED_HONOR   = 3,
 };
 
 #define PLAYER_CUSTOM_DISPLAY_SIZE 3
@@ -1086,13 +1079,6 @@ enum ReferAFriendError
     ERR_REFER_A_FRIEND_NO_XREALM                     = 0x0E,
 };
 
-enum PlayerRestState
-{
-    REST_STATE_RESTED                                = 0x01,
-    REST_STATE_NOT_RAF_LINKED                        = 0x02,
-    REST_STATE_RAF_LINKED                            = 0x06
-};
-
 enum PlayerCommandStates
 {
     CHEAT_NONE          = 0x00,
@@ -1454,6 +1440,7 @@ class Player : public Unit, public GridObject<Player>
 {
     friend class WorldSession;
     friend class BattlePayMgr;
+    friend class RestMgr;
     friend void Item::AddToUpdateQueueOf(Player* player);
     friend void Item::RemoveFromUpdateQueueOf(Player* player);
     public:
@@ -1601,21 +1588,6 @@ class Player : public Unit, public GridObject<Player>
         float m_killPoints;
 
         void setDeathState(DeathState s) override;
-
-        void InnEnter(time_t time, uint32 mapid, float x, float y, float z);
-        float GetRestBonus() const { return m_rest_bonus; }
-        void SetRestBonus(float rest_bonus_new);
-
-        RestType GetRestType() const { return rest_type; }
-        void SetRestType(RestType n_r_type) { rest_type = n_r_type; }
-
-        uint32 GetInnPosMapId() const { return inn_pos_mapid; }
-        float GetInnPosX() const { return inn_pos_x; }
-        float GetInnPosY() const { return inn_pos_y; }
-        float GetInnPosZ() const { return inn_pos_z; }
-
-        time_t GetTimeInnEnter() const { return time_inn_enter; }
-        void UpdateInnerTime (time_t time) { time_inn_enter = time; }
 
         Pet* GetPet() const;
         Pet* SummonPet(uint32 entry, float x, float y, float z, float ang, PetType petType, uint32 despwtime, uint32 spellId = 0);
@@ -2813,15 +2785,6 @@ class Player : public Unit, public GridObject<Player>
         bool IsOutdoorPvPActive();
 
         /*********************************************************/
-        /***                    REST SYSTEM                    ***/
-        /*********************************************************/
-
-        bool isRested() const { return GetRestTime() >= 10*IN_MILLISECONDS; }
-        uint32 GetXPRestBonus(uint32 xp);
-        uint32 GetRestTime() const { return m_restTime;}
-        void SetRestTime(uint32 v) { m_restTime = v;}
-
-        /*********************************************************/
         /***              ENVIROMENTAL SYSTEM                  ***/
         /*********************************************************/
 
@@ -3269,6 +3232,8 @@ class Player : public Unit, public GridObject<Player>
 
         void CreateDefaultPet();
 
+        RestMgr& GetRestMgr() const { return *_restMgr; }
+
     protected:
         // Gamemaster whisper whitelist
         GuidList WhisperList;
@@ -3529,16 +3494,6 @@ class Player : public Unit, public GridObject<Player>
         bool m_canTitanGrip;
         uint8 m_swingErrorMsg;
 
-        ////////////////////Rest System/////////////////////
-        time_t time_inn_enter;
-        uint32 inn_pos_mapid;
-        float  inn_pos_x;
-        float  inn_pos_y;
-        float  inn_pos_z;
-        float m_rest_bonus;
-        RestType rest_type;
-        ////////////////////Rest System/////////////////////
-
         ////////////////////Pet System/////////////////////
         void LoadPetSlot(std::string const &data);
         PlayerPetSlotList m_PetSlots;
@@ -3578,8 +3533,10 @@ class Player : public Unit, public GridObject<Player>
         uint32 GetTimeSyncClient() const;
 
         HonorInfo* GetHonorInfo() { return &m_honorInfo; }
-        uint32 GetPrestigeLevel() { return m_honorInfo.PrestigeLevel; }
-        uint32 GetHonorLevel() { return m_honorInfo.HonorLevel; }
+        uint32 GetPrestigeLevel() const { return m_honorInfo.PrestigeLevel; }
+        uint32 GetHonorLevel() const { return m_honorInfo.HonorLevel; }
+        bool IsMaxPrestige() const;
+        bool IsMaxHonorLevelAndPrestige() const { return IsMaxPrestige() && GetHonorLevel() == HonorInfo::MaxHonorLevel; }
         void OnEnterMap();
 
         ChallengeKeyInfo m_challengeKeyInfo;
@@ -3779,6 +3736,8 @@ class Player : public Unit, public GridObject<Player>
         std::unordered_map<uint8, uint8>  m_bgQueueRoles{};
         std::unordered_map<uint8, uint8>  m_bgQueueRolesTemp{};
         uint32  m_lastActiveLFGRole{};
+
+        std::unique_ptr<RestMgr> _restMgr;
 };
 
 void AddItemsSetItem(Player*player, Item* item);

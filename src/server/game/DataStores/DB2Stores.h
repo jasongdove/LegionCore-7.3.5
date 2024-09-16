@@ -463,6 +463,7 @@ public:
     SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, uint32 effect, uint8 difficulty);
     std::set<uint32> const* GetSpellCategory(uint32 category);
     std::vector<ItemSpecOverrideEntry const*> const* GetItemSpecOverrides(uint32 itemId) const;
+    uint8 GetMaxPrestige() const;
     static PVPDifficultyEntry const* GetBattlegroundBracketByLevel(uint32 mapID, uint32 level);
     static PVPDifficultyEntry const* GetBattlegroundBracketById(uint32 mapID, uint8 id);
     ChrSpecializationEntry const* GetChrSpecializationByIndex(uint8 classID, uint32 ID);

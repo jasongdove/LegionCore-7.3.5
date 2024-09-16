@@ -539,12 +539,10 @@ WorldSocket::ReadDataHandlerResult WorldSocket::ReadDataHandler()
 
 void WorldSocket::LogOpcodeText(OpcodeClient opcode, std::unique_lock<std::mutex> const& guard) const
 {
-    #ifdef WIN32
     if (!guard)
-        TC_LOG_INFO(LOG_FILTER_OPCODES, "C->S: %s %s conn %i", GetOpcodeNameForLogging(opcode).c_str(), GetRemoteIpAddress().to_string().c_str(), GetConnectionType());
+        TC_LOG_TRACE(LOG_FILTER_OPCODES, "C->S: %s %s conn %i", GetOpcodeNameForLogging(opcode).c_str(), GetRemoteIpAddress().to_string().c_str(), GetConnectionType());
     else
-        TC_LOG_INFO(LOG_FILTER_OPCODES, "C->S: %s %s conn %i", GetOpcodeNameForLogging(opcode).c_str(), (_worldSession ? _worldSession->GetPlayerName() : GetRemoteIpAddress().to_string()).c_str(), GetConnectionType());
-    #endif
+        TC_LOG_TRACE(LOG_FILTER_OPCODES, "C->S: %s %s conn %i", GetOpcodeNameForLogging(opcode).c_str(), (_worldSession ? _worldSession->GetPlayerName() : GetRemoteIpAddress().to_string()).c_str(), GetConnectionType());
 }
 
 void WorldSocket::SendPacket(WorldPacket const& packet)
@@ -559,10 +557,8 @@ void WorldSocket::SendPacket(WorldPacket const& packet)
 
     sPacketLog->LogPacket(packet, SERVER_TO_CLIENT, GetRemoteIpAddress(), GetRemotePort(), GetConnectionType());
 
-    #ifdef WIN32
     if (SMSG_ON_MONSTER_MOVE != static_cast<OpcodeServer>(packet.GetOpcode()))
-        TC_LOG_INFO(LOG_FILTER_OPCODES, "S->C: %s Size %u %s connection %i, connectionType %i", GetOpcodeNameForLogging(static_cast<OpcodeServer>(packet.GetOpcode())).c_str(), packetSize, GetRemoteIpAddress().to_string().c_str(), packet.GetConnection(), GetConnectionType());
-    #endif
+        TC_LOG_TRACE(LOG_FILTER_OPCODES, "S->C: %s Size %u %s connection %i, connectionType %i", GetOpcodeNameForLogging(static_cast<OpcodeServer>(packet.GetOpcode())).c_str(), packetSize, GetRemoteIpAddress().to_string().c_str(), packet.GetConnection(), GetConnectionType());
 
     _bufferQueueLock.lock();
     _bufferQueue.emplace(EncryptablePacket(packet, _authCrypt.IsInitialized()));

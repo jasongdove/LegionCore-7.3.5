@@ -29,6 +29,7 @@
 #include "OutdoorPvP.h"
 #include "PlayerDefines.h"
 #include "QuestData.h"
+#include "RestMgr.h"
 #include "ScriptMgr.h"
 #include "Warden.h"
 #include "ArtifactPackets.h"
@@ -244,9 +245,7 @@ void WorldSession::HandleAreaTrigger(WorldPackets::Misc::AreaTrigger& packet)
     if (sAreaTriggerDataStore->IsTavernAreaTrigger(packet.AreaTriggerID))
     {
         // set resting flag we are in the inn
-        player->SetFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING);
-        player->InnEnter(time(nullptr), atEntry->ContinentID, atEntry->Pos.X, atEntry->Pos.Y, atEntry->Pos.Z);
-        player->SetRestType(REST_TYPE_IN_TAVERN);
+        player->GetRestMgr().SetRestFlag(REST_FLAG_IN_TAVERN, atEntry->ID);
 
         if (sWorld->IsFFAPvPRealm())
         {
