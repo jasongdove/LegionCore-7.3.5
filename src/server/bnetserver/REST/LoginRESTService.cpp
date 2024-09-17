@@ -19,6 +19,7 @@
 #include "Configuration/Config.h"
 #include "DatabaseEnv.h"
 #include "JSON/ProtobufJSON.h"
+#include "IpNetwork.h"
 #include "Realm.h"
 #include "SessionManager.h"
 #include "SHA1.h"
@@ -75,11 +76,12 @@ bool LoginRESTService::Start(boost::asio::io_service& ioService)
     endPoint = resolver.resolve(localAddressQuery, ec);
     if (endPoint == end || ec)
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLENET, "REST Could not resolve LoginREST.ExternalAddress %s", configuredAddress.c_str());
+        TC_LOG_ERROR(LOG_FILTER_BATTLENET, "REST Could not resolve LoginREST.LocalAddress %s", configuredAddress.c_str());
         return false;
     }
 
     _localAddress = endPoint->endpoint();
+    _localNetmask = Trinity::Net::GetDefaultNetmaskV4(_localAddress.address().to_v4());
 
     // set up form inputs
     Battlenet::JSON::Login::FormInput* input;
@@ -123,7 +125,7 @@ boost::asio::ip::tcp::endpoint const& LoginRESTService::GetAddressForClient(boos
     else if (_localAddress.address().is_loopback())
         return _externalAddress;
 
-    if (boost::asio::ip::address_v4::netmask(_localAddress.address().to_v4()).to_ulong() & address.to_v4().to_ulong())
+    if (Trinity::Net::IsInNetwork(_localAddress.address().to_v4(), _localNetmask, address.to_v4()))
         return _localAddress;
 
     return _externalAddress;

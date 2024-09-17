@@ -106,6 +106,7 @@ private:
     int32 _waitTime;
     boost::asio::ip::tcp::endpoint _externalAddress;
     boost::asio::ip::tcp::endpoint _localAddress;
+    boost::asio::ip::address_v4 _localNetmask;
     std::mutex _loginTicketMutex;
     std::unordered_map<std::string, LoginTicket> _validLoginTickets;
     boost::asio::deadline_timer* _loginTicketCleanupTimer;
