@@ -48,10 +48,10 @@ namespace WorldPackets
         struct QuestGiverInfo
         {
             QuestGiverInfo() = default;
-            QuestGiverInfo(ObjectGuid const& guid, uint32 status) : Guid(guid), Status(status) { }
+            QuestGiverInfo(ObjectGuid const& guid, ::QuestGiverStatus status) : Guid(guid), Status(status) { }
 
             ObjectGuid Guid;
-            uint32 Status = DIALOG_STATUS_NONE;
+            ::QuestGiverStatus Status = QuestGiverStatus::None;
         };
 
         class QuestGiverStatus final : public ServerPacket

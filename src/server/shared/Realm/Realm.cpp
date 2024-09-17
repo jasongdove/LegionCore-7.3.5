@@ -16,6 +16,8 @@
  */
 
 #include "Realm.h"
+#include "IpAddress.h"
+#include "IpNetwork.h"
 #include "StringFormat.h"
 #include <boost/asio/ip/address.hpp>
 
@@ -38,10 +40,7 @@ boost::asio::ip::address Realm::GetAddressForClient(boost::asio::ip::address con
     }
     else
     {
-        if (!LocalAddress || !LocalSubnetMask)
-            return realmIp;
-
-        if (clientAddr.is_v4() && (clientAddr.to_v4().to_ulong() & LocalSubnetMask->to_v4().to_ulong()) == (LocalAddress->to_v4().to_ulong() & LocalSubnetMask->to_v4().to_ulong()))
+        if (clientAddr.is_v4() && Trinity::Net::IsInNetwork(LocalAddress->to_v4(), LocalSubnetMask->to_v4(), clientAddr.to_v4()))
             realmIp = *LocalAddress;
         else
             realmIp = *ExternalAddress;

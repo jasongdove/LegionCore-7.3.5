@@ -242,7 +242,7 @@ public:
     void SendGossipMenu(uint32 titleTextId, ObjectGuid objectGUID, uint32 friendshipFactionID = 0) const;
     void SendCloseGossip() const;
     void SendPointOfInterest(uint32 poiId) const;
-    void SendQuestGiverStatus(uint32 questStatus, ObjectGuid npcGUID) const;
+    void SendQuestGiverStatus(QuestGiverStatus questStatus, ObjectGuid npcGUID) const;
     void SendQuestGiverQuestList(uint32 BroadcastTextID, ObjectGuid npcGUID);
     void SendQuestQueryResponse(uint32 questId) const;
     void SendQuestGiverQuestDetails(Quest const* quest, ObjectGuid npcGUID, bool activateAccept, bool isArea = false) const;

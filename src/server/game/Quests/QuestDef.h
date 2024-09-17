@@ -22,6 +22,7 @@
 
 #include "SharedDefines.h"
 #include "DatabaseEnvFwd.h"
+#include "EnumFlag.h"
 
 class Player;
 class ObjectMgr;
@@ -35,6 +36,8 @@ namespace WorldPackets
 }
 
 #define MAX_QUEST_LOG_SIZE 25
+
+#define QUEST_ITEM_DROP_COUNT 4
 
 #define QUEST_REWARD_CHOICES_COUNT 6
 #define QUEST_ITEM_COUNT 4
@@ -200,22 +203,25 @@ enum QuestStatus
     MAX_QUEST_STATUS
 };
 
-enum __QuestGiverStatus
+enum class QuestGiverStatus : uint32
 {
-    DIALOG_STATUS_NONE                     = 0x000,
-    DIALOG_STATUS_UNK                      = 0x001,
-    DIALOG_STATUS_UNAVAILABLE              = 0x002,
-    DIALOG_STATUS_LOW_LEVEL_AVAILABLE      = 0x004,
-    DIALOG_STATUS_LOW_LEVEL_REWARD_REP     = 0x008,
-    DIALOG_STATUS_LOW_LEVEL_AVAILABLE_REP  = 0x010,
-    DIALOG_STATUS_INCOMPLETE               = 0x020,
-    DIALOG_STATUS_REWARD_REP               = 0x040,
-    DIALOG_STATUS_AVAILABLE_REP            = 0x080,
-    DIALOG_STATUS_AVAILABLE                = 0x100,
-    DIALOG_STATUS_REWARD2                  = 0x200, // no yellow dot on minimap
-    DIALOG_STATUS_REWARD                   = 0x400, // yellow dot on minimap
-    DIALOG_STATUS_IGNORED                  = 0x800, // ignore icon & minimap icon
+    None                         = 0x0000,
+    Future                       = 0x0002,
+    Trivial                      = 0x0004,
+    TrivialRepeatableTurnin      = 0x0008,
+    TrivialDailyQuest            = 0x0010,
+    Incomplete                   = 0x0020,
+    RepeatableTurnin             = 0x0040,
+    DailyQuest                   = 0x0080,
+    Quest                        = 0x0100,
+    RewardCompleteNoPOI          = 0x0200,
+    RewardCompletePOI            = 0x0400,
+    LegendaryQuest               = 0x0800,
+    LegendaryRewardCompleteNoPOI = 0x1000,
+    LegendaryRewardCompletePOI   = 0x2000
 };
+
+DEFINE_ENUM_FLAG(QuestGiverStatus);
 
 enum __QuestFlags
 {
@@ -399,6 +405,8 @@ class Quest
         bool HasFlag(uint32 flag) const { return (Flags & flag) != 0; }
         void SetFlag(uint32 flag) { Flags |= flag; }
 
+        bool HasFlagEx(QuestFlagsEx flag) const { return (FlagsEx & uint32(flag)) != 0; }
+
         bool HasSpecialFlag(uint32 flag) const { return (SpecialFlags & flag) != 0; }
         void SetSpecialFlag(uint32 flag) { SpecialFlags |= flag; }
 
@@ -426,8 +434,8 @@ class Quest
 
         void SetObjectiveBuggedState(uint32 objectiveId, bool working);
 
-        uint32 ItemDrop[QUEST_ITEM_COUNT] = { };
-        uint32 ItemDropQuantity[QUEST_ITEM_COUNT] = { };
+        uint32 ItemDrop[QUEST_ITEM_DROP_COUNT] = { };
+        uint32 ItemDropQuantity[QUEST_ITEM_DROP_COUNT] = { };
         uint32 RewardChoiceItemId[QUEST_REWARD_CHOICES_COUNT] = { };
         uint32 RewardChoiceItemCount[QUEST_REWARD_CHOICES_COUNT] = { };
         uint32 RewardChoiceItemDisplayId[QUEST_REWARD_CHOICES_COUNT] = { };

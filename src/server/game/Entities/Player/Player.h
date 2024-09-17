@@ -583,6 +583,15 @@ enum AtLoginFlags : uint16
 
 typedef std::vector<QuestStatusData*>* QuestStatusVector;
 typedef std::map<uint32, QuestStatusData> QuestStatusMap;
+
+struct QuestObjectiveStatusData
+{
+    QuestStatusMap::iterator QuestStatusItr;
+    QuestObjective const* Objective;
+};
+
+using QuestObjectiveStatusMap = std::unordered_multimap<std::pair<QuestObjectiveType, int32>, QuestObjectiveStatusData>;
+
 typedef std::set<uint32> RewardedQuestSet;
 
 enum QuestSaveType
@@ -1943,6 +1952,7 @@ class Player : public Unit, public GridObject<Player>
         void SetQuestStatus(uint32 quest_id, QuestStatus status);
         void RemoveActiveQuest(uint32 quest_id);
         void RemoveRewardedQuest(uint32 quest_id);
+        QuestGiverStatus GetQuestDialogStatus(Object* questGiver);
 
         void SetDailyQuestStatus(uint32 quest_id);
         void SetWeeklyQuestStatus(uint32 quest_id);
@@ -2002,6 +2012,7 @@ class Player : public Unit, public GridObject<Player>
         void SendPushToPartyResponse(Player* player, uint8 msg);
         void SendQuestUpdateAddCredit(Quest const* quest, ObjectGuid guid, QuestObjective const& obj, uint16 count);
         void SendQuestUpdateAddPlayer(Quest const* quest, uint16 old_count, uint16 add_count);
+        void SendQuestGiverStatusMultiple();
         std::tuple<uint32, uint32> GetWorldQuestBonusTreeMod(WorldQuest const* wq);
         bool WorldQuestCompleted(uint32 QuestID) const;
         void ResetWorldQuest(uint32 QuestID = 0);

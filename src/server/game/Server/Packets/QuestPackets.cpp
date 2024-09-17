@@ -25,7 +25,7 @@ void WorldPackets::Quest::QuestGiverStatusQuery::Read()
 WorldPacket const* WorldPackets::Quest::QuestGiverStatus::Write()
 {
     _worldPacket << QuestGiver.Guid;
-    _worldPacket << QuestGiver.Status;
+    _worldPacket << uint32(QuestGiver.Status);
 
     return &_worldPacket;
 }
@@ -36,7 +36,7 @@ WorldPacket const* WorldPackets::Quest::QuestGiverStatusMultiple::Write()
     for (QuestGiverInfo const& questGiver : QuestGiver)
     {
         _worldPacket << questGiver.Guid;
-        _worldPacket << questGiver.Status;
+        _worldPacket << uint32(questGiver.Status);
     }
 
     return &_worldPacket;

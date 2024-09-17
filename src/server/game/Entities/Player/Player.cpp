@@ -20127,7 +20127,7 @@ void Player::QuestObjectiveSatisfy(uint32 objectId, uint32 amount, QuestObjectiv
 
 void Player::SetQuestStatus(uint32 quest_id, QuestStatus status)
 {
-    if (sQuestDataStore->GetQuestTemplate(quest_id))
+    if (Quest const* quest = sQuestDataStore->GetQuestTemplate(quest_id))
     {
         QuestStatusData& q_status = (*m_QuestStatusVector)[quest_id] ? *(*m_QuestStatusVector)[quest_id] : m_QuestStatus[quest_id];
         q_status.Status = status;
@@ -21268,6 +21268,150 @@ void Player::SendQuestUpdateAddPlayer(Quest const* quest, uint16 old_count, uint
     credit.QuestID = quest->GetQuestId();
     credit.Count = old_count + add_count;
     SendDirectMessage(credit.Write());
+}
+
+void Player::SendQuestGiverStatusMultiple()
+{
+    WorldPackets::Quest::QuestGiverStatusMultiple response;
+
+    for (auto itr = m_clientGUIDs.begin(); itr != m_clientGUIDs.end(); ++itr)
+    {
+        if (itr->IsAnyTypeCreature())
+        {
+            // need also pet quests case support
+            Creature* questgiver = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, *itr);
+            if (!questgiver || questgiver->IsHostileTo(this))
+                continue;
+            if (!questgiver->HasFlag64(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
+                continue;
+
+            response.QuestGiver.emplace_back(questgiver->GetGUID(), GetQuestDialogStatus(questgiver));
+        }
+        else if (itr->IsGameObject())
+        {
+            GameObject* questgiver = GetMap()->GetGameObject(*itr);
+            if (!questgiver || questgiver->GetGoType() != GAMEOBJECT_TYPE_QUESTGIVER)
+                continue;
+
+            response.QuestGiver.emplace_back(questgiver->GetGUID(), GetQuestDialogStatus(questgiver));
+        }
+    }
+
+    GetSession()->SendPacket(response.Write());
+}
+
+QuestGiverStatus Player::GetQuestDialogStatus(Object* questgiver)
+{
+    QuestRelationBounds qr, qir;
+
+    switch (questgiver->GetTypeId())
+    {
+        case TYPEID_GAMEOBJECT:
+        {
+            if (Optional<QuestGiverStatus> questStatus = sScriptMgr->GetDialogStatus(this, questgiver->ToGameObject()))
+                return *questStatus;
+            qr = sQuestDataStore->GetGOQuestRelationBounds(questgiver->GetEntry());
+            qir = sQuestDataStore->GetGOQuestInvolvedRelationBounds(questgiver->GetEntry());
+            break;
+        }
+        case TYPEID_UNIT:
+        {
+            if (Optional<QuestGiverStatus> questStatus = sScriptMgr->GetDialogStatus(this, questgiver->ToCreature()))
+                return *questStatus;
+            qr = sQuestDataStore->GetCreatureQuestRelationBounds(questgiver->GetEntry());
+            qir = sQuestDataStore->GetCreatureQuestInvolvedRelationBounds(questgiver->GetEntry());
+            break;
+        }
+        default:
+            // it's impossible, but check
+            TC_LOG_ERROR(LOG_FILTER_PLAYER, "Player::GetQuestDialogStatus: Called with unexpected type (Entry: %u, Type: %u) by player '%s' (%s)",
+                questgiver->GetEntry(), questgiver->GetTypeId(), GetName(), GetGUID().ToString().c_str());
+            return QuestGiverStatus::None;
+    }
+
+    QuestGiverStatus result = QuestGiverStatus::None;
+
+    for (auto i = qir.first; i != qir.second; ++i)
+    {
+        uint32 questId = i->second;
+        Quest const* quest = sQuestDataStore->GetQuestTemplate(questId);
+        if (!quest)
+            continue;
+
+        ConditionList conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_SHOW_MARK, quest->GetQuestId());
+        if (!sConditionMgr->IsObjectMeetToConditions(this, conditions))
+            continue;
+
+        conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_ACCEPT, quest->GetQuestId());
+        if (!sConditionMgr->IsObjectMeetToConditions(this, conditions))
+            continue;
+
+        switch (GetQuestStatus(questId))
+        {
+            case QUEST_STATUS_COMPLETE:
+                if (quest->HasFlagEx(QUEST_FLAGS_EX_LEGENDARY_QUEST))
+                    result |= quest->HasFlag(QUEST_FLAGS_HIDE_REWARD_POI) ? QuestGiverStatus::LegendaryRewardCompleteNoPOI : QuestGiverStatus::LegendaryRewardCompletePOI;
+                else
+                    result |= quest->HasFlag(QUEST_FLAGS_HIDE_REWARD_POI) ? QuestGiverStatus::RewardCompleteNoPOI : QuestGiverStatus::RewardCompletePOI;
+                break;
+            case QUEST_STATUS_INCOMPLETE:
+                result |= QuestGiverStatus::Incomplete;
+                break;
+            default:
+                break;
+        }
+
+        if (quest->IsAutoComplete() && CanTakeQuest(quest, false) && quest->IsRepeatable() && !quest->IsDailyOrWeekly())
+        {
+            if (getLevel() <= (GetQuestLevel(quest) + sWorld->getIntConfig(CONFIG_QUEST_LOW_LEVEL_HIDE_DIFF)))
+                result |= QuestGiverStatus::RepeatableTurnin;
+            else
+                result |= QuestGiverStatus::TrivialRepeatableTurnin;
+        }
+    }
+
+    for (auto i = qr.first; i != qr.second; ++i)
+    {
+        uint32 questId = i->second;
+        Quest const* quest = sQuestDataStore->GetQuestTemplate(questId);
+        if (!quest)
+            continue;
+
+        ConditionList conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_SHOW_MARK, quest->GetQuestId());
+        if (!sConditionMgr->IsObjectMeetToConditions(this, conditions))
+            continue;
+
+        conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_ACCEPT, quest->GetQuestId());
+        if (!sConditionMgr->IsObjectMeetToConditions(this, conditions))
+            continue;
+
+        if (GetQuestStatus(questId) == QUEST_STATUS_NONE)
+        {
+            if (CanSeeStartQuest(quest))
+            {
+                if (SatisfyQuestLevel(quest, false))
+                {
+                    if (getLevel() <= (GetQuestLevel(quest) + sWorld->getIntConfig(CONFIG_QUEST_LOW_LEVEL_HIDE_DIFF)))
+                    {
+                        if (quest->HasFlagEx(QUEST_FLAGS_EX_LEGENDARY_QUEST))
+                            result |= QuestGiverStatus::LegendaryQuest;
+                        else if (quest->IsDaily())
+                            result |= QuestGiverStatus::DailyQuest;
+                        else
+                            result |= QuestGiverStatus::Quest;
+                    }
+                    else if (quest->IsDaily())
+                        result |= QuestGiverStatus::TrivialDailyQuest;
+                    else
+                        result |= QuestGiverStatus::Trivial;
+                }
+                else
+                    result |= QuestGiverStatus::Future;
+            }
+        }
+    }
+
+    return result;
 }
 
 /*********************************************************/
