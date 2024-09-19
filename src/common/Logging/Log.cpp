@@ -26,12 +26,13 @@
 #include "LogOperation.h"
 #include "Logger.h"
 #include "Duration.h"
+#include "Strand.h"
 
 #include <cstdarg>
 #include <sstream>
 #include "StringFormat.h"
 
-Log::Log() : _ioService(nullptr), _strand(nullptr)
+Log::Log() : _ioContext(nullptr), _strand(nullptr)
 {
     arenaLogFile2v2 = nullptr;
     arenaLogFile3v3 = nullptr;
@@ -46,7 +47,6 @@ Log::Log() : _ioService(nullptr), _strand(nullptr)
     SetRealmID(0);
     m_logsTimestamp = "_" + GetTimestampStr();
     loggerList.resize(LOG_FILTER_MAX);
-    LoadFromConfig();
     _checkLock = false;
 }
 
@@ -56,17 +56,21 @@ Log::~Log()
     Close();
 }
 
-Log* Log::instance(boost::asio::io_service* ioService)
+Log* Log::instance()
 {
     static Log instance;
+    return &instance;
+}
 
-    if (ioService != nullptr)
+void Log::Initialize(Trinity::Asio::IoContext* ioContext)
+{
+    if (ioContext)
     {
-        instance._ioService = ioService;
-        instance._strand = new boost::asio::strand(*ioService);
+        _ioContext = ioContext;
+        _strand = new Trinity::Asio::Strand(*ioContext);
     }
 
-    return &instance;
+    LoadFromConfig();
 }
 
 uint8 Log::NextAppenderId()
@@ -311,10 +315,10 @@ void Log::write(std::unique_ptr<LogMessage>&& msg)
     auto logger = GetLoggerByType(msg->type);
     msg->text.append("\n");
 
-    if (_ioService)
+    if (_ioContext)
     {
         auto logOperation = std::make_shared<LogOperation>(logger, std::move(msg));
-        _ioService->post(_strand->wrap([logOperation]() { logOperation->call(); }));
+        Trinity::Asio::post(*_ioContext, Trinity::Asio::bind_executor(*_strand, [logOperation]() { logOperation->call(); }));
     }
     else
         logger->write(msg.get());

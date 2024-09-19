@@ -21,6 +21,7 @@
 
 #include "Define.h"
 #include <vector>
+#include <string>
 
 class ConfigMgr
 {

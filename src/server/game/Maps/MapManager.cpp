@@ -34,7 +34,6 @@
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "ScenarioMgr.h"
-#include "ThreadPoolMgr.hpp"
 #include "World.h"
 #include "WorldPacket.h"
 

@@ -1,3 +1,5 @@
+include(CheckCXXSourceCompiles)
+
 # Set build-directive (used in core to tell which buildtype we used)
 target_compile_definitions(trinity-compile-option-interface
   INTERFACE
@@ -52,4 +54,14 @@ if (BUILD_SHARED_LIBS)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --no-undefined")
 
   message(STATUS "Clang: Disallow undefined symbols")
+endif()
+
+# speedup PCH builds by forcing template instantiations during PCH generation
+set(CMAKE_REQUIRED_FLAGS "-fpch-instantiate-templates")
+check_cxx_source_compiles("int main() { return 0; }" CLANG_HAS_PCH_INSTANTIATE_TEMPLATES)
+unset(CMAKE_REQUIRED_FLAGS)
+if(CLANG_HAS_PCH_INSTANTIATE_TEMPLATES)
+  target_compile_options(trinity-compile-option-interface
+          INTERFACE
+          -fpch-instantiate-templates)
 endif()

@@ -42,11 +42,6 @@ struct RealmBuildInfo
 
 namespace boost
 {
-    namespace asio
-    {
-        class io_service;
-    }
-
     namespace system
     {
         class error_code;

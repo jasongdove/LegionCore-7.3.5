@@ -37,7 +37,6 @@
 #include "ObjectDefines.h"
 #include "MapInstanced.h"
 #include "World.h"
-#include "ThreadPoolMgr.hpp"
 
 
 ObjectAccessor::ObjectAccessor()

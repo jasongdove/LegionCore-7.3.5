@@ -94,7 +94,6 @@
 #include "SmartAI.h"
 #include "SpellMgr.h"
 #include "TaxiPathGraph.h"
-#include "ThreadPoolMgr.hpp"
 #include "TicketMgr.h"
 #include "TransportMgr.h"
 #include "Util.h"
