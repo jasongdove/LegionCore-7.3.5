@@ -416,57 +416,24 @@ extern int main(int argc, char **argv)
 
 bool LoadRealmInfo()
 {
-    boost::asio::ip::tcp::resolver resolver(_ioService);
-    boost::asio::ip::tcp::resolver::iterator end;
-
-    QueryResult result = LoginDatabase.PQuery("SELECT id, name, address, localAddress, localSubnetMask, port, icon, flag, timezone, allowedSecurityLevel, population, gamebuild, Region, Battlegroup FROM realmlist WHERE id = %u", realm.Id.Realm);
-    if (!result)
-        return false;
-
-    Field* fields = result->Fetch();
-    realm.Name = fields[1].GetString();
-    boost::asio::ip::tcp::resolver::query externalAddressQuery(tcp::v4(), fields[2].GetString(), "", boost::asio::ip::resolver_query_base::all_matching);
-
-    boost::system::error_code ec;
-    boost::asio::ip::tcp::resolver::iterator endPoint = resolver.resolve(externalAddressQuery, ec);
-    if (endPoint == end || ec)
+    if (Realm const* realmListRealm = sRealmList->GetRealm(realm.Id))
     {
-        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Could not resolve address %s", fields[2].GetString().c_str());
-        return false;
+        realm.Id = realmListRealm->Id;
+        realm.Build = sConfigMgr->GetIntDefault("Game.Build.Version", 26972);
+        realm.ExternalAddress = std::make_unique<boost::asio::ip::address>(*realmListRealm->ExternalAddress);
+        realm.LocalAddress = std::make_unique<boost::asio::ip::address>(*realmListRealm->LocalAddress);
+        realm.LocalSubnetMask = std::make_unique<boost::asio::ip::address>(*realmListRealm->LocalSubnetMask);
+        realm.Port = realmListRealm->Port;
+        realm.Name = realmListRealm->Name;
+        realm.Type = realmListRealm->Type;
+        realm.Flags = realmListRealm->Flags;
+        realm.Timezone = realmListRealm->Timezone;
+        realm.AllowedSecurityLevel = realmListRealm->AllowedSecurityLevel;
+        realm.PopulationLevel = realmListRealm->PopulationLevel;
+        return true;
     }
 
-    realm.ExternalAddress = Trinity::make_unique<boost::asio::ip::address>((*endPoint).endpoint().address());
-
-    boost::asio::ip::tcp::resolver::query localAddressQuery(tcp::v4(), fields[3].GetString(), "", boost::asio::ip::resolver_query_base::all_matching);
-    endPoint = resolver.resolve(localAddressQuery, ec);
-    if (endPoint == end || ec)
-    {
-        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Could not resolve address %s", fields[3].GetString().c_str());
-        return false;
-    }
-
-    realm.LocalAddress = Trinity::make_unique<boost::asio::ip::address>((*endPoint).endpoint().address());
-
-    boost::asio::ip::tcp::resolver::query localSubmaskQuery(tcp::v4(), fields[4].GetString(), "", boost::asio::ip::resolver_query_base::all_matching);
-    endPoint = resolver.resolve(localSubmaskQuery, ec);
-    if (endPoint == end || ec)
-    {
-        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Could not resolve address %s", fields[4].GetString().c_str());
-        return false;
-    }
-
-    realm.LocalSubnetMask = Trinity::make_unique<boost::asio::ip::address>((*endPoint).endpoint().address());
-
-    realm.Port = fields[5].GetUInt16();
-    realm.Type = fields[6].GetUInt8();
-    realm.Flags = RealmFlags(fields[7].GetUInt8());
-    realm.Timezone = fields[8].GetUInt8();
-    realm.AllowedSecurityLevel = AccountTypes(fields[9].GetUInt8());
-    realm.PopulationLevel = fields[10].GetFloat();
-    realm.Id.Region = fields[12].GetUInt8();
-    realm.Id.Site = fields[13].GetUInt8();
-    realm.Build = sConfigMgr->GetIntDefault("Game.Build.Version", 26972);
-    return true;
+    return false;
 }
 
 void ShutdownThreadPool(std::vector<std::thread>& threadPool)

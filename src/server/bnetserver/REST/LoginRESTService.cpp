@@ -21,6 +21,7 @@
 #include "JSON/ProtobufJSON.h"
 #include "IpNetwork.h"
 #include "Realm.h"
+#include "Resolver.h"
 #include "SessionManager.h"
 #include "SHA1.h"
 #include "SHA256.h"
@@ -54,33 +55,27 @@ bool LoginRESTService::Start(boost::asio::io_service& ioService)
         _port = 8081;
     }
 
-    boost::system::error_code ec;
-    boost::asio::ip::tcp::resolver resolver(ioService);
-    boost::asio::ip::tcp::resolver::iterator end;
+    Trinity::Asio::Resolver resolver(ioService);
 
     std::string configuredAddress = sConfigMgr->GetStringDefault("LoginREST.ExternalAddress", "127.0.0.1");
-    boost::asio::ip::tcp::resolver::query externalAddressQuery(boost::asio::ip::tcp::v4(), configuredAddress, std::to_string(_port),
-        boost::asio::ip::resolver_query_base::all_matching);
-    boost::asio::ip::tcp::resolver::iterator endPoint = resolver.resolve(externalAddressQuery, ec);
-    if (endPoint == end || ec)
+    Optional<boost::asio::ip::tcp::endpoint> externalAddress = resolver.Resolve(boost::asio::ip::tcp::v4(), configuredAddress, std::to_string(_port));
+    if (!externalAddress)
     {
         TC_LOG_ERROR(LOG_FILTER_BATTLENET, "REST Could not resolve LoginREST.ExternalAddress %s", configuredAddress.c_str());
         return false;
     }
 
-    _externalAddress = endPoint->endpoint();
+    _externalAddress = *externalAddress;
 
     configuredAddress = sConfigMgr->GetStringDefault("LoginREST.LocalAddress", "127.0.0.1");
-    boost::asio::ip::tcp::resolver::query localAddressQuery(boost::asio::ip::tcp::v4(), configuredAddress, std::to_string(_port),
-        boost::asio::ip::resolver_query_base::all_matching);
-    endPoint = resolver.resolve(localAddressQuery, ec);
-    if (endPoint == end || ec)
+    Optional<boost::asio::ip::tcp::endpoint> localAddress = resolver.Resolve(boost::asio::ip::tcp::v4(), configuredAddress, std::to_string(_port));
+    if (!localAddress)
     {
         TC_LOG_ERROR(LOG_FILTER_BATTLENET, "REST Could not resolve LoginREST.LocalAddress %s", configuredAddress.c_str());
         return false;
     }
 
-    _localAddress = endPoint->endpoint();
+    _localAddress = *localAddress;
     _localNetmask = Trinity::Net::GetDefaultNetmaskV4(_localAddress.address().to_v4());
 
     // set up form inputs

@@ -29,8 +29,6 @@
 #include <zlib.h>
 #include <memory>
 
-#pragma pack(push, 1)
-
 void Battlenet::Session::AccountInfo::LoadResult(PreparedQueryResult result)
 {
     // SELECT a.id, a.username, a.locked, a.lock_country, a.last_ip, a.failed_logins, ab.unbandate > UNIX_TIMESTAMP(), ab.unbandate = ab.bandate, a.activate, a.access_ip, ab.unbandate, aa.gmlevel
