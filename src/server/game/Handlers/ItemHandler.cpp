@@ -1332,13 +1332,13 @@ namespace
 
 void WorldSession::HandleSortBags(WorldPackets::Item::SortBags& /*packet*/)
 {
-    _player->ApplyOnBagsItems([](Player* player, Item* item, uint8 /*bag*/, uint8 /*slot*/)
-    {
-        StoreItemInBags(player, item);
-        return true;
-    });
-
-    SortBags(_player, &Player::ApplyOnBagsItems);
+    // _player->ApplyOnBagsItems([](Player* player, Item* item, uint8 /*bag*/, uint8 /*slot*/)
+    // {
+    //     StoreItemInBags(player, item);
+    //     return true;
+    // });
+    //
+    // SortBags(_player, &Player::ApplyOnBagsItems);
     SendPacket(WorldPackets::Item::SortBagsResult().Write());
 }
 
