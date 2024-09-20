@@ -150,7 +150,7 @@ void WorldPackets::Mail::MailGetList::Read()
 
 WorldPacket const* WorldPackets::Mail::MailListResult::Write()
 {
-    _worldPacket << static_cast<int32>(Mails.size());
+    _worldPacket << static_cast<uint32>(Mails.size());
     _worldPacket << int32(TotalNumRecords);
 
     for (auto const& mail : Mails)
