@@ -70,7 +70,7 @@ private:
 class AuctionBotBuyer : public AuctionBotAgent
 {
 public:
-    AuctionBotBuyer();
+    AuctionBotBuyer(std::unordered_map<ObjectGuid::LowType, uint64> const& marketData);
     ~AuctionBotBuyer();
 
     bool Initialize() override;
@@ -82,6 +82,8 @@ public:
 private:
     uint32 _checkInterval;
     BuyerConfiguration _houseConfig[MAX_AUCTION_HOUSE_TYPE];
+
+    const std::unordered_map<ObjectGuid::LowType, uint64> _marketData;
 
     void LoadBuyerValues(BuyerConfiguration& config);
 

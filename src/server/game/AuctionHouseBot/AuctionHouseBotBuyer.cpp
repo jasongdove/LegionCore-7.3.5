@@ -22,7 +22,7 @@
 #include "Log.h"
 #include "Random.h"
 
-AuctionBotBuyer::AuctionBotBuyer() : _checkInterval(20 * MINUTE)
+AuctionBotBuyer::AuctionBotBuyer(std::unordered_map<ObjectGuid::LowType, uint64> const& marketData) : _checkInterval(20 * MINUTE), _marketData(marketData)
 {
     // Define faction for our main data class.
     for (int i = 0; i < MAX_AUCTION_HOUSE_TYPE; ++i)
@@ -165,6 +165,12 @@ bool AuctionBotBuyer::RollBuyChance(BuyerItemInfo const* ahInfo, Item const* ite
 
     float itemBuyPrice = float(auction->buyout / item->GetCount());
     float itemPrice = float(item->GetTemplate()->GetSellPrice() ? item->GetTemplate()->GetSellPrice() : GetVendorPrice(item->GetTemplate()->GetQuality()));
+
+    // prefer market data when available
+    auto marketData = _marketData.find(item->GetTemplate()->GetId());
+    if (marketData != _marketData.end())
+        itemPrice = marketData->second;
+
     // The AH cut needs to be added to the price, but we don't want a 100% chance to buy if the price is exactly AH default
     itemPrice *= 1.4f;
 
