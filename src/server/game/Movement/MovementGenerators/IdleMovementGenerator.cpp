@@ -51,18 +51,11 @@ void RotateMovementGenerator::Initialize(Unit& owner)
 bool RotateMovementGenerator::Update(Unit& owner, const uint32& diff)
 {
     float angle = owner.GetOrientation();
-    if (m_direction == ROTATE_DIRECTION_LEFT)
-    {
-        angle += (float)diff * static_cast<float>(M_PI * 2) / m_maxDuration;
-        while (angle >= static_cast<float>(M_PI * 2)) angle -= static_cast<float>(M_PI * 2);
-    }
-    else
-    {
-        angle -= (float)diff * static_cast<float>(M_PI * 2) / m_maxDuration;
-        while (angle < 0) angle += static_cast<float>(M_PI * 2);
-    }
+    angle += (float(diff) * static_cast<float>(M_PI * 2) / m_maxDuration) * (m_direction == ROTATE_DIRECTION_LEFT ? 1.0f : -1.0f);
+    angle = G3D::wrap(angle, 0.0f, float(G3D::twoPi()));
 
-    owner.SetFacingTo(angle);
+    owner.SetOrientation(angle);   // UpdateSplinePosition does not set orientation with UNIT_STATE_ROTATING
+    owner.SetFacingTo(angle);      // Send spline movement to clients
 
     if (m_duration > diff)
         m_duration -= diff;
@@ -93,7 +86,13 @@ void DistractMovementGenerator::Initialize(Unit& owner)
 void DistractMovementGenerator::Finalize(Unit& owner)
 {
     owner.ClearUnitState(UNIT_STATE_DISTRACTED);
-    owner.GetMotionMaster()->MoveTargetedHome();
+
+    // If this is a creature, then return orientation to original position (for idle movement creatures)
+    if (owner.GetTypeId() == TYPEID_UNIT && owner.ToCreature())
+    {
+        float angle = owner.ToCreature()->GetHomePosition().GetOrientation();
+        owner.SetFacingTo(angle);
+    }
 }
 
 bool DistractMovementGenerator::Update(Unit& /*owner*/, const uint32& time_diff)
@@ -109,13 +108,4 @@ void AssistanceDistractMovementGenerator::Finalize(Unit &unit)
 {
     unit.ClearUnitState(UNIT_STATE_DISTRACTED);
     unit.ToCreature()->SetReactState(REACT_AGGRESSIVE);
-    if (Unit* victim = unit.getVictim())
-    {
-        if (unit.isAlive())
-        {
-            unit.AttackStop();
-            if (((Creature*)&unit)->IsAIEnabled)
-                ((Creature*)&unit)->AI()->AttackStart(victim);
-        }
-    }
 }
