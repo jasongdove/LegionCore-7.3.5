@@ -89,7 +89,7 @@ public:
         uint32 miscValue1 = miscValueStr1 ? atoi(miscValueStr1) : 0;
         uint32 miscValue2 = miscValueStr2 ? atoi(miscValueStr2) : 0;
         uint32 miscValue3 = miscValueStr3 ? atoi(miscValueStr3) : 0;
-        TC_LOG_DEBUG(LOG_FILTER_ACHIEVEMENTSYS, "HandleAchievementCriteriaCommand criteriaType %i miscValue1 %i miscValue2 %i, miscValue3 %i", criteriaType, miscValue1, miscValue2, miscValue3);
+        TC_LOG_DEBUG("criteria.achievement", "HandleAchievementCriteriaCommand criteriaType %i miscValue1 %i miscValue2 %i, miscValue3 %i", criteriaType, miscValue1, miscValue2, miscValue3);
 
         if(Player* player = handler->GetSession()->GetPlayer())
         {
@@ -118,40 +118,40 @@ public:
 
         // if (AchievementEntry const* achievement = sAchievementStore.LookupEntry(achievementId))
         // {
-            // TC_LOG_DEBUG(LOG_FILTER_ACHIEVEMENTSYS, "AchievementInfo achievement %u", achievement->ID);
+            // TC_LOG_DEBUG("criteria.achievement", "AchievementInfo achievement %u", achievement->ID);
 
             // if(Player* player = handler->GetSession()->GetPlayer())
             // {
-                // TC_LOG_DEBUG(LOG_FILTER_ACHIEVEMENTSYS, "AchievementInfo player %u", achievement->ID);
+                // TC_LOG_DEBUG("criteria.achievement", "AchievementInfo player %u", achievement->ID);
                 // if(CriteriaProgressTree* treeProgress = player->GetAchievementMgr().GetCriteriaTreeProgressMap(achievement->CriteriaTree))
                 // {
-                    // TC_LOG_DEBUG(LOG_FILTER_ACHIEVEMENTSYS, "AchievementInfo criteriaTree %u, achievement %u ChildrenTree %u ChildrenCriteria %u", achievement->CriteriaTree, achievement->ID, treeProgress->ChildrenTree.size(), treeProgress->ChildrenCriteria.size());
+                    // TC_LOG_DEBUG("criteria.achievement", "AchievementInfo criteriaTree %u, achievement %u ChildrenTree %u ChildrenCriteria %u", achievement->CriteriaTree, achievement->ID, treeProgress->ChildrenTree.size(), treeProgress->ChildrenCriteria.size());
 
                     // for (std::vector<CriteriaProgressTree*>::iterator itr = treeProgress->ChildrenTree.begin(); itr != treeProgress->ChildrenTree.end(); ++itr)
-                        // TC_LOG_DEBUG(LOG_FILTER_ACHIEVEMENTSYS, "AchievementInfo ChildrenTree criteriaTree %u parent %u", (*itr)->criteriaTree->ID, (*itr)->criteriaTree->Parent);
+                        // TC_LOG_DEBUG("criteria.achievement", "AchievementInfo ChildrenTree criteriaTree %u parent %u", (*itr)->criteriaTree->ID, (*itr)->criteriaTree->Parent);
 
                     // for (std::vector<CriteriaTreeProgress const*>::const_iterator itr = treeProgress->ChildrenCriteria.begin(); itr != treeProgress->ChildrenCriteria.end(); ++itr)
                     // {
                         // CriteriaTreeProgress const* progress = *itr;
                         // if(!progress)
                         // {
-                            // TC_LOG_DEBUG(LOG_FILTER_ACHIEVEMENTSYS, "AchievementInfo ChildrenCriteria error progress achievement %u", achievement->ID);
+                            // TC_LOG_DEBUG("criteria.achievement", "AchievementInfo ChildrenCriteria error progress achievement %u", achievement->ID);
                             // continue;
                         // }
                         // CriteriaEntry const* criteria = progress->criteria;
                         // if(!criteria)
                         // {
-                            // TC_LOG_DEBUG(LOG_FILTER_ACHIEVEMENTSYS, "AchievementInfo ChildrenCriteria error criteria achievement %u criteriaTree %u parent %u", achievement->ID, progress->criteriaTree->ID, progress->parent->ID);
+                            // TC_LOG_DEBUG("criteria.achievement", "AchievementInfo ChildrenCriteria error criteria achievement %u criteriaTree %u parent %u", achievement->ID, progress->criteriaTree->ID, progress->parent->ID);
                             // continue;
                         // }
-                        // TC_LOG_DEBUG(LOG_FILTER_ACHIEVEMENTSYS, "AchievementInfo ChildrenCriteria criteria achievement %u criteriaTree %u parent %u criteria %u completed %i deactiveted %i",
+                        // TC_LOG_DEBUG("criteria.achievement", "AchievementInfo ChildrenCriteria criteria achievement %u criteriaTree %u parent %u criteria %u completed %i deactiveted %i",
                         // achievement->ID, progress->criteriaTree ? progress->criteriaTree->ID : 0, progress->parent ? progress->parent->ID : 0, criteria->ID, progress->completed, progress->deactiveted);
                     // }
                 // }
             // }
         // }
         // else
-            TC_LOG_DEBUG(LOG_FILTER_ACHIEVEMENTSYS, "AchievementInfo error achievement %u not found", achievementId);
+            TC_LOG_DEBUG("criteria.achievement", "AchievementInfo error achievement %u not found", achievementId);
 
         return true;
     }
@@ -164,7 +164,7 @@ public:
         char* achievtr = strtok((char*)args, " ");
 
         uint32 achievmentID = achievtr ? atoi(achievtr) : 0;
-        TC_LOG_DEBUG(LOG_FILTER_ACHIEVEMENTSYS, "HandleAchievementDeleteCommand achievmentID %i", achievmentID);
+        TC_LOG_DEBUG("criteria.achievement", "HandleAchievementDeleteCommand achievmentID %i", achievmentID);
         if (!achievmentID)
             return false;
 

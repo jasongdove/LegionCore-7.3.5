@@ -281,7 +281,7 @@ bool BattlegroundStrandOfTheAncients::ResetObjs()
         WorldSafeLocsEntry const* sg = sWorldSafeLocsStore.LookupEntry(BG_SA_GYEntries[i]);
         if (!sg)
         {
-            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "SOTA: Can't find GY entry %u", BG_SA_GYEntries[i]);
+            TC_LOG_ERROR("bg.battleground", "SOTA: Can't find GY entry %u", BG_SA_GYEntries[i]);
             return false;
         }
 
@@ -294,7 +294,7 @@ bool BattlegroundStrandOfTheAncients::ResetObjs()
         {
             GraveyardStatus[i] = MS::Battlegrounds::GetOtherTeamID(Attackers);
             if (!AddSpiritGuide(i + BG_SA_MAXNPC, sg->Loc, MS::Battlegrounds::GetOtherTeamID(Attackers)))
-                TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "SOTA: couldn't spawn GY: %u", i);
+                TC_LOG_ERROR("bg.battleground", "SOTA: couldn't spawn GY: %u", i);
         }
     }
 
@@ -872,7 +872,7 @@ void BattlegroundStrandOfTheAncients::CaptureGraveyard(BG_SA_Graveyards i, Playe
     WorldSafeLocsEntry const* sg = sWorldSafeLocsStore.LookupEntry(BG_SA_GYEntries[i]);
     if (!sg)
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundStrandOfTheAncients::CaptureGraveyard: non-existant GY entry: %u", BG_SA_GYEntries[i]);
+        TC_LOG_ERROR("bg.battleground", "BattlegroundStrandOfTheAncients::CaptureGraveyard: non-existant GY entry: %u", BG_SA_GYEntries[i]);
         return;
     }
 

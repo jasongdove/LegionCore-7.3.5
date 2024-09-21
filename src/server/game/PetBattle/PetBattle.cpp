@@ -440,7 +440,7 @@ PetBattleEvent& PetBattleEvent::UpdateMaxHealth(int8 targetPetID, int32 maxHealt
 
 PetBattleEvent& PetBattleEvent::UpdateState(int8 targetPetID, uint32 stateID, int32 value)
 {
-    // TC_LOG_DEBUG(LOG_FILTER_BATTLEPET, "PetBattleEvent::UpdateStat stateID %u value %u", stateID, value);
+    // TC_LOG_DEBUG("battlepet", "PetBattleEvent::UpdateStat stateID %u value %u", stateID, value);
 
     PetBattleEventUpdate update;
     update.UpdateType = PET_BATTLE_EFFECT_TARGET_EX_STATE;
@@ -1021,7 +1021,7 @@ void PetBattle::AddPet(uint32 teamID, std::shared_ptr<BattlePetInstance> pet)
 
 void PetBattle::Begin()
 {
-    // TC_LOG_DEBUG(LOG_FILTER_BATTLEPET, "PetBattle::Begin()");
+    // TC_LOG_DEBUG("battlepet", "PetBattle::Begin()");
 
     RoundStatus = PETBATTLE_ROUND_RUNNING;
     RoundResult = PETBATTLE_ROUND_RESULT_NORMAL;
@@ -1669,7 +1669,7 @@ bool PetBattle::AddAura(uint32 casterPetID, uint32 targetPetID, uint32 abilityID
 
 void PetBattle::SetPetState(uint32 sourcePetID, uint32 targetPetID, uint32 fromAbilityEffectID, uint32 state, int32 value, bool fromCapture, uint32 flags)
 {
-    // TC_LOG_DEBUG(LOG_FILTER_BATTLEPET, "PetBattleEvent::SetPetState state %u value %u States %u", state, value, Pets[targetPetID]->States[state]);
+    // TC_LOG_DEBUG("battlepet", "PetBattleEvent::SetPetState state %u value %u States %u", state, value, Pets[targetPetID]->States[state]);
 
     if (state >= NUM_BATTLEPET_STATES)
         return;
@@ -1701,7 +1701,7 @@ void PetBattle::Kill(int8 killer, int8 target, uint32 killerAbibilityEffectID, b
         if (aura->TargetPetID == target)
             aura->Expire(this);
 
-    // TC_LOG_DEBUG(LOG_FILTER_BATTLEPET, "PetBattle::Kill BATTLEPET_STATE_Special_ConsumedCorpse");
+    // TC_LOG_DEBUG("battlepet", "PetBattle::Kill BATTLEPET_STATE_Special_ConsumedCorpse");
 
     SetPetState(killer, target, killerAbibilityEffectID, BATTLEPET_STATE_Is_Dead, 1, fromCapture, flags);
 

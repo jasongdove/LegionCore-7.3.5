@@ -157,7 +157,7 @@ void TempSummon::Update(uint32 diff)
         }
         default:
             UnSummon();
-            TC_LOG_ERROR(LOG_FILTER_UNITS, "Temporary summoned creature (entry: %u) have unknown type %u of ", GetEntry(), m_type);
+            TC_LOG_ERROR("entities.unit", "Temporary summoned creature (entry: %u) have unknown type %u of ", GetEntry(), m_type);
             break;
     }
 
@@ -354,7 +354,7 @@ bool TempSummon::InitBaseStat(uint32 creatureId, bool& damageSet)
     CreatureBaseStats const* stats = sObjectMgr->GetCreatureBaseStats(GetEffectiveLevel(), cinfo->unit_class);
     Unit* owner = GetAnyOwner();
 
-    //TC_LOG_DEBUG(LOG_FILTER_PETS, "TempSummon::InitBaseStat owner %u creatureId %i", owner ? owner->GetGUID() : 0, creatureId);
+    //TC_LOG_DEBUG("misc", "TempSummon::InitBaseStat owner %u creatureId %i", owner ? owner->GetGUID() : 0, creatureId);
 
     PetStats const* pStats = sObjectMgr->GetPetStats(creatureId);
     if (pStats)                                      // exist in DB
@@ -506,7 +506,7 @@ void TempSummon::RemoveFromWorld()
     }
 
     //if (GetOwnerGUID())
-    //    TC_LOG_ERROR(LOG_FILTER_UNITS, "Unit %u has owner guid when removed from world", GetEntry());
+    //    TC_LOG_ERROR("entities.unit", "Unit %u has owner guid when removed from world", GetEntry());
 
     Creature::RemoveFromWorld();
 }

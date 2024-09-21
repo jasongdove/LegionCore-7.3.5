@@ -219,15 +219,15 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
             {
                 WorldPackets::Misc::AreaTriggerNoCorpse packet;
                 player->SendDirectMessage(packet.Write());
-                TC_LOG_DEBUG(LOG_FILTER_MAPS, "MAP: Player '%s' does not have a corpse in instance '%s' and cannot enter.", player->GetName(), entry->MapName->Str[sObjectMgr->GetDBCLocaleIndex()]);
+                TC_LOG_DEBUG("maps", "MAP: Player '%s' does not have a corpse in instance '%s' and cannot enter.", player->GetName(), entry->MapName->Str[sObjectMgr->GetDBCLocaleIndex()]);
                 return false;
             }
-            TC_LOG_DEBUG(LOG_FILTER_MAPS, "MAP: Player '%s' has corpse in instance '%s' and can enter.", player->GetName(), entry->MapName->Str[sObjectMgr->GetDBCLocaleIndex()]);
+            TC_LOG_DEBUG("maps", "MAP: Player '%s' has corpse in instance '%s' and can enter.", player->GetName(), entry->MapName->Str[sObjectMgr->GetDBCLocaleIndex()]);
             player->ResurrectPlayer(0.5f, false);
             player->SpawnCorpseBones();
         }
         else
-            TC_LOG_DEBUG(LOG_FILTER_MAPS, "Map::CanPlayerEnter - player '%s' is dead but does not have a corpse!", player->GetName());
+            TC_LOG_DEBUG("maps", "Map::CanPlayerEnter - player '%s' is dead but does not have a corpse!", player->GetName());
     }
     
     Group* group = player->GetGroup();
@@ -239,7 +239,7 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
             WorldPackets::Chat::ChatNotInParty packet;
             packet.SlashCmd = group ? 3 : 2; // req: 3 - raid, 2 - group
             player->SendDirectMessage(packet.Write());
-            TC_LOG_DEBUG(LOG_FILTER_MAPS, "MAP: Player '%s' must be in a raid group to enter instance '%s'", player->GetName(), entry->MapName->Str[sObjectMgr->GetDBCLocaleIndex()]);
+            TC_LOG_DEBUG("maps", "MAP: Player '%s' must be in a raid group to enter instance '%s'", player->GetName(), entry->MapName->Str[sObjectMgr->GetDBCLocaleIndex()]);
             return false;
         }
     }

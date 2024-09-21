@@ -56,7 +56,7 @@ void WorldSession::HandleSendMail(WorldPackets::Mail::SendMail& packet)
         return;
     }
 
-    TC_LOG_INFO(LOG_FILTER_NETWORKIO, "Player %u includes %u items, " UI64FMTD " copper and " UI64FMTD " COD copper with stationery = %u", player->GetGUIDLow(), packet.Info.Attachments.size(), packet.Info.SendMoney, packet.Info.Cod, packet.Info.StationeryID);
+    TC_LOG_INFO("network", "Player %u includes %u items, " UI64FMTD " copper and " UI64FMTD " COD copper with stationery = %u", player->GetGUIDLow(), packet.Info.Attachments.size(), packet.Info.SendMoney, packet.Info.Cod, packet.Info.StationeryID);
 
     if (!CanOpenMailBox(packet.Info.Mailbox))
         return;
@@ -111,13 +111,13 @@ void WorldSession::HandleSendMail(WorldPackets::Mail::SendMail& packet)
 
     if (receiverGuid.IsEmpty())
     {
-        TC_LOG_INFO(LOG_FILTER_NETWORKIO, "Player %u is sending mail to %s (GUID: not existed!) with subject %s and body %s includes %u items, " UI64FMTD " copper and " UI64FMTD " COD copper with stationery = %u",
+        TC_LOG_INFO("network", "Player %u is sending mail to %s (GUID: not existed!) with subject %s and body %s includes %u items, " UI64FMTD " copper and " UI64FMTD " COD copper with stationery = %u",
             player->GetGUIDLow(), packet.Info.Target.c_str(), packet.Info.Subject.c_str(), packet.Info.Body.c_str(), packet.Info.Attachments.size(), packet.Info.SendMoney, packet.Info.Cod, packet.Info.StationeryID);
         player->SendMailResult(0, MAIL_SEND, MAIL_ERR_RECIPIENT_NOT_FOUND);
         return;
     }
 
-    TC_LOG_INFO(LOG_FILTER_NETWORKIO, "Player %u is sending mail to %s (GUID: %u) with subject %s and body %s includes %u items, " UI64FMTD " copper and " UI64FMTD " COD copper with stationery = %u",
+    TC_LOG_INFO("network", "Player %u is sending mail to %s (GUID: %u) with subject %s and body %s includes %u items, " UI64FMTD " copper and " UI64FMTD " COD copper with stationery = %u",
         player->GetGUIDLow(), packet.Info.Target.c_str(), receiverGuid.GetGUIDLow(), packet.Info.Subject.c_str(), packet.Info.Body.c_str(), packet.Info.Attachments.size(), packet.Info.SendMoney, packet.Info.Cod, packet.Info.StationeryID);
 
     if (player->GetGUID() == receiverGuid)
@@ -302,7 +302,7 @@ void WorldSession::HandleSendMail(WorldPackets::Mail::SendMail& packet)
             sLog->outCommand(GetAccountId(), "GM %s (Account: %u) mail money: " UI64FMTD " to player: %s (Account: %u)", GetPlayerName().c_str(), GetAccountId(), packet.Info.SendMoney, packet.Info.Target.c_str(), rc_account);
 
         if (packet.Info.SendMoney >= sWorld->getIntConfig(CONFIG_LOG_GOLD_FROM))
-            TC_LOG_DEBUG(LOG_FILTER_GOLD, "SendMail Player %s GUID %u (Account: %u) mail money: " UI64FMTD " to player: %s GUID %u (Account: %u)", GetPlayerName().c_str(), _player->GetGUIDLow(), GetAccountId(), packet.Info.SendMoney, packet.Info.Target.c_str(), receiverGuid.GetGUIDLow(), rc_account);
+            TC_LOG_DEBUG("auctionHouse", "SendMail Player %s GUID %u (Account: %u) mail money: " UI64FMTD " to player: %s GUID %u (Account: %u)", GetPlayerName().c_str(), _player->GetGUIDLow(), GetAccountId(), packet.Info.SendMoney, packet.Info.Target.c_str(), receiverGuid.GetGUIDLow(), rc_account);
     }
 
     uint32 deliver_delay = needItemDelay ? sWorld->getIntConfig(CONFIG_MAIL_DELIVERY_DELAY) : 0;
@@ -485,9 +485,9 @@ void WorldSession::HandleMailTakeItem(WorldPackets::Mail::MailTakeItem& packet)
             if (m->COD >= sWorld->getIntConfig(CONFIG_LOG_GOLD_FROM))
             {
                 if (item)
-                    TC_LOG_DEBUG(LOG_FILTER_GOLD, "MailTakeItem: %s GUID %u (Account: %u) receive mail item: %s (Entry: %u Count: %u) and send COD money: " UI64FMTD " to player: %u (Account: %u)", GetPlayerName().c_str(), _player->GetGUIDLow(), GetAccountId(), item->GetTemplate()->GetName()->Str[_player->GetSession()->GetSessionDbLocaleIndex()], item->GetEntry(), item->GetCount(), m->COD, sender_guid.GetGUIDLow(), sender_accId);
+                    TC_LOG_DEBUG("auctionHouse", "MailTakeItem: %s GUID %u (Account: %u) receive mail item: %s (Entry: %u Count: %u) and send COD money: " UI64FMTD " to player: %u (Account: %u)", GetPlayerName().c_str(), _player->GetGUIDLow(), GetAccountId(), item->GetTemplate()->GetName()->Str[_player->GetSession()->GetSessionDbLocaleIndex()], item->GetEntry(), item->GetCount(), m->COD, sender_guid.GetGUIDLow(), sender_accId);
                 else
-                    TC_LOG_DEBUG(LOG_FILTER_GOLD, "MailTakeItem: %s GUID %u (Account: %u) receive send COD money: " UI64FMTD " to player: %u (Account: %u)", GetPlayerName().c_str(), _player->GetGUIDLow(), GetAccountId(), m->COD, sender_guid.GetGUIDLow(), sender_accId);
+                    TC_LOG_DEBUG("auctionHouse", "MailTakeItem: %s GUID %u (Account: %u) receive send COD money: " UI64FMTD " to player: %u (Account: %u)", GetPlayerName().c_str(), _player->GetGUIDLow(), GetAccountId(), m->COD, sender_guid.GetGUIDLow(), sender_accId);
             }
 
             if (receive || sender_accId)
@@ -626,7 +626,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPackets::Mail::MailCreateTextIt
     bodyItem->SetUInt32Value(ITEM_FIELD_CREATOR, m->sender);
     bodyItem->SetFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_READABLE);
 
-    TC_LOG_INFO(LOG_FILTER_NETWORKIO, "HandleMailCreateTextItem mailid=%u", packet.MailID);
+    TC_LOG_INFO("network", "HandleMailCreateTextItem mailid=%u", packet.MailID);
 
     ItemPosCountVec dest;
     uint8 msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, dest, bodyItem, false);

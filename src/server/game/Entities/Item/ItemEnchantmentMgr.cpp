@@ -83,32 +83,32 @@ void LoadRandomEnchantmentsTable()
                 case ItemRandomEnchantmentType::Property:
                     if (!sItemRandomPropertiesStore.LookupEntry(ench))
                     {
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "Property %u used in `item_enchantment_template` by entry %u doesn't have exist in ItemRandomProperties.db2", ench, entry);
+                        TC_LOG_ERROR("sql.sql", "Property %u used in `item_enchantment_template` by entry %u doesn't have exist in ItemRandomProperties.db2", ench, entry);
                         continue;
                     }
                     break;
                 case ItemRandomEnchantmentType::Suffix:
                     if (!sItemRandomSuffixStore.LookupEntry(ench))
                     {
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "Suffix %u used in `item_enchantment_template` by entry %u doesn't have exist in ItemRandomSuffix.db2", ench, entry);
+                        TC_LOG_ERROR("sql.sql", "Suffix %u used in `item_enchantment_template` by entry %u doesn't have exist in ItemRandomSuffix.db2", ench, entry);
                         continue;
                     }
                     break;
                 case ItemRandomEnchantmentType::BonusList:
                     if (!sDB2Manager.GetItemBonusList(ench))
                     {
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "Bonus list %u used in `item_enchantment_template` by entry %u doesn't have exist in ItemBonus.db2", ench, entry);
+                        TC_LOG_ERROR("sql.sql", "Bonus list %u used in `item_enchantment_template` by entry %u doesn't have exist in ItemBonus.db2", ench, entry);
                         continue;
                     }
                     break;
                 default:
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "Invalid random enchantment type specified in `item_enchantment_template` table for `entry` %u `ench` %u", entry, ench);
+                    TC_LOG_ERROR("sql.sql", "Invalid random enchantment type specified in `item_enchantment_template` table for `entry` %u `ench` %u", entry, ench);
                     break;
             }
 
             if (chance < 0.000001f || chance > 100.0f)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Random item enchantment for entry %u type %u ench %u has invalid chance %f", entry, uint32(type), ench, chance);
+                TC_LOG_ERROR("sql.sql", "Random item enchantment for entry %u type %u ench %u has invalid chance %f", entry, uint32(type), ench, chance);
                 continue;
             }
 
@@ -128,10 +128,10 @@ void LoadRandomEnchantmentsTable()
             ++count;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u Item Enchantment definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        TC_LOG_INFO("server.loading", ">> Loaded %u Item Enchantment definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     }
     else
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 Item Enchantment definitions. DB table `item_enchantment_template` is empty.");
+        TC_LOG_ERROR("server.loading", ">> Loaded 0 Item Enchantment definitions. DB table `item_enchantment_template` is empty.");
 
     //                                      0       1
     result = WorldDatabase.Query("SELECT BonusID, chance FROM item_enchantment_bonus");
@@ -148,7 +148,7 @@ void LoadRandomEnchantmentsTable()
 
             if (chance < 0.000001f || chance > 100.0f)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Random item enchantment for BonusID %u has invalid chance %f", BonusID, chance);
+                TC_LOG_ERROR("sql.sql", "Random item enchantment for BonusID %u has invalid chance %f", BonusID, chance);
                 continue;
             }
 
@@ -157,10 +157,10 @@ void LoadRandomEnchantmentsTable()
             ++count;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u Item Enchantment Bonus definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        TC_LOG_INFO("server.loading", ">> Loaded %u Item Enchantment Bonus definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     }
     else
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 Item Enchantment Bonus definitions. DB table `item_enchantment_bonus` is empty.");
+        TC_LOG_ERROR("server.loading", ">> Loaded 0 Item Enchantment Bonus definitions. DB table `item_enchantment_bonus` is empty.");
 }
 
 ItemRandomEnchantmentId GetItemEnchantMod(int32 entry, ItemRandomEnchantmentType type, uint32 ItemID, uint32 spec_id)
@@ -185,7 +185,7 @@ ItemRandomEnchantmentId GetItemEnchantMod(int32 entry, ItemRandomEnchantmentType
         auto tab = RandomItemEnch[type].find(entry);
         if (tab == RandomItemEnch[type].end())
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Item RandomProperty / RandomSuffix id #%u spec_id %u used in `item_template` but it does not have records in `item_enchantment_template` table.", entry, spec_id);
+            TC_LOG_ERROR("sql.sql", "Item RandomProperty / RandomSuffix id #%u spec_id %u used in `item_template` but it does not have records in `item_enchantment_template` table.", entry, spec_id);
             return{};
         }
         enchList = tab->second;

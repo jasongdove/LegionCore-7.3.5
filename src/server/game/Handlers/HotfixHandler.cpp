@@ -55,7 +55,7 @@ void WorldSession::HandleDBQueryBulk(WorldPackets::Hotfix::DBQueryBulk& packet)
     auto store = sDB2Manager.GetStorage(packet.TableHash);
     if (!store)
     {
-        TC_LOG_DEBUG(LOG_FILTER_GENERAL, "DBQueryBulk:: client requested unused db2 storage: %u; can by finded in DB2Hashes", packet.TableHash);
+        TC_LOG_DEBUG("misc", "DBQueryBulk:: client requested unused db2 storage: %u; can by finded in DB2Hashes", packet.TableHash);
         return;
     }
 

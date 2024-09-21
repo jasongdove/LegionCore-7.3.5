@@ -173,7 +173,7 @@ void WorldStateMgr::LoadTemplatesFromDBC()
         }
         else
         {
-            TC_LOG_INFO(LOG_FILTER_GENERAL, "WorldStateMgr::LoadTemplatesFromDBC unhandled template %u!", stateId);
+            TC_LOG_INFO("misc", "WorldStateMgr::LoadTemplatesFromDBC unhandled template %u!", stateId);
             continue;
         }
 
@@ -203,7 +203,7 @@ void WorldStateMgr::LoadTemplatesFromDBC()
 
         ++count;
     }
-    TC_LOG_INFO(LOG_FILTER_GENERAL, ">> Loaded static DBC templates for %u WorldStates", count);
+    TC_LOG_INFO("misc", ">> Loaded static DBC templates for %u WorldStates", count);
 }
 
 void WorldStateMgr::LoadTemplatesFromDB()
@@ -222,7 +222,7 @@ void WorldStateMgr::LoadTemplatesFromDB()
         AddTemplate(variableID, fields[1].GetUInt32(), fields[2].GetUInt32(), fields[3].GetUInt32(), fields[4].GetUInt32());
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_GENERAL, "%s >> Loaded %u templates", __FUNCTION__, _worldStateTemplates.size());
+    TC_LOG_INFO("misc", "%s >> Loaded %u templates", __FUNCTION__, _worldStateTemplates.size());
 }
 
 void WorldStateMgr::LoadTemplatesFromObjectTemplateDB()
@@ -300,7 +300,7 @@ void WorldStateMgr::LoadTemplatesFromObjectTemplateDB()
         while (result->NextRow());
     }
 
-    TC_LOG_INFO(LOG_FILTER_GENERAL, ">> Loaded static templates for %u GAMEOBJECT_TYPE_CAPTURE_POINT linked WorldStates", count);
+    TC_LOG_INFO("misc", ">> Loaded static templates for %u GAMEOBJECT_TYPE_CAPTURE_POINT linked WorldStates", count);
 }
 
 void WorldStateMgr::LoadFromDB()

@@ -239,7 +239,7 @@ public:
 
     static bool HandleReloadAllLootCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables...");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables...");
         LoadLootTables();
         handler->SendGlobalGMSysMessage("DB tables `*_loot_template` reloaded.");
         sConditionMgr->LoadConditions(true);
@@ -262,7 +262,7 @@ public:
         HandleReloadQuestPOICommand(handler, "a");
         HandleReloadQuestTemplateCommand(handler, "a");
 
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Quests Relations...");
+        TC_LOG_INFO("misc", "Re-Loading Quests Relations...");
         sQuestDataStore->LoadQuestRelations();
         handler->SendGlobalGMSysMessage("DB tables `*_questrelation` and `*_involvedrelation` reloaded.");
         return true;
@@ -277,7 +277,7 @@ public:
             return false;
         }
 
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Scripts...");
+        TC_LOG_INFO("misc", "Re-Loading Scripts...");
         HandleReloadGameObjectScriptsCommand(handler, "a");
         HandleReloadEventScriptsCommand(handler, "a");
         HandleReloadQuestEndScriptsCommand(handler, "a");
@@ -339,18 +339,16 @@ public:
 
     static bool HandleReloadConfigCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading config settings...");
-        sLog->_checkLock = true;
+        TC_LOG_INFO("misc", "Re-Loading config settings...");
         sWorld->LoadConfigSettings(true);
         sMapMgr->InitializeVisibilityDistanceInfo();
-        sLog->_checkLock = false;
         handler->SendGlobalGMSysMessage("World config settings reloaded.");
         return true;
     }
 
     static bool HandleReloadAccessRequirementCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Access Requirement definitions...");
+        TC_LOG_INFO("misc", "Re-Loading Access Requirement definitions...");
         sObjectMgr->LoadAccessRequirements();
         handler->SendGlobalGMSysMessage("DB table `access_requirement` reloaded.");
         return true;
@@ -358,7 +356,7 @@ public:
 
     static bool HandleReloadAchievementCriteriaDataCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Additional Achievement Criteria Data...");
+        TC_LOG_INFO("misc", "Re-Loading Additional Achievement Criteria Data...");
         sAchievementMgr->LoadAchievementCriteriaData();
         handler->SendGlobalGMSysMessage("DB table `achievement_criteria_data` reloaded.");
         return true;
@@ -366,7 +364,7 @@ public:
 
     static bool HandleReloadAchievementRewardCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Achievement Reward Data...");
+        TC_LOG_INFO("misc", "Re-Loading Achievement Reward Data...");
         sAchievementMgr->LoadRewards();
         handler->SendGlobalGMSysMessage("DB table `achievement_reward` reloaded.");
         return true;
@@ -374,7 +372,7 @@ public:
 
     static bool HandleReloadAreaTriggerTavernCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Tavern Area Triggers...");
+        TC_LOG_INFO("misc", "Re-Loading Tavern Area Triggers...");
         sAreaTriggerDataStore->LoadTavernAreaTriggers();
         handler->SendGlobalGMSysMessage("DB table `areatrigger_tavern` reloaded.");
         return true;
@@ -382,7 +380,7 @@ public:
 
     static bool HandleReloadAreaTriggerTeleportCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading AreaTrigger teleport definitions...");
+        TC_LOG_INFO("misc", "Re-Loading AreaTrigger teleport definitions...");
         sAreaTriggerDataStore->LoadAreaTriggerTeleports();
         handler->SendGlobalGMSysMessage("DB table `areatrigger_teleport` reloaded.");
         return true;
@@ -390,7 +388,7 @@ public:
 
     static bool HandleReloadAutobroadcastCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Autobroadcasts...");
+        TC_LOG_INFO("misc", "Re-Loading Autobroadcasts...");
         sWorld->LoadAutobroadcasts();
         handler->SendGlobalGMSysMessage("DB table `autobroadcast` reloaded.");
         return true;
@@ -398,7 +396,7 @@ public:
 
     static bool HandleReloadBattlepayCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Battlepay...");
+        TC_LOG_INFO("misc", "Re-Loading Battlepay...");
         sBattlePayDataStore->Initialize();
         handler->SendGlobalGMSysMessage("Battlepay DB tables reloaded.");
         return true;
@@ -413,7 +411,7 @@ public:
 
     static bool HandleReloadOnKillReputationCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading creature award reputation definitions...");
+        TC_LOG_INFO("misc", "Re-Loading creature award reputation definitions...");
         sObjectMgr->LoadReputationOnKill();
         handler->SendGlobalGMSysMessage("DB table `creature_onkill_reputation` reloaded.");
         return true;
@@ -447,7 +445,7 @@ public:
                 continue;
             }
 
-            TC_LOG_INFO(LOG_FILTER_GENERAL, "Reloading creature template entry %u", entry);
+            TC_LOG_INFO("misc", "Reloading creature template entry %u", entry);
 
             Field* fields = result->Fetch();
 
@@ -511,14 +509,14 @@ public:
 
     static bool HandleReloadCreatureTemplateOutfitsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Loading Creature Outfits... (`creature_template_outfits`)");
+        TC_LOG_INFO("misc", "Loading Creature Outfits... (`creature_template_outfits`)");
         sObjectMgr->LoadCreatureOutfits();
         handler->SendGlobalGMSysMessage("DB table `creature_template_outfits` reloaded.");
         return true;
     }
     static bool HandleReloadCreatureQuestRelationsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Loading Quests Relations... (`creature_queststarter`)");
+        TC_LOG_INFO("misc", "Loading Quests Relations... (`creature_queststarter`)");
         sQuestDataStore->LoadCreatureQuestRelations();
         handler->SendGlobalGMSysMessage("DB table `creature_queststarter` (creature quest givers) reloaded.");
         return true;
@@ -526,7 +524,7 @@ public:
 
     static bool HandleReloadLinkedRespawnCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Loading Linked Respawns... (`creature_linked_respawn`)");
+        TC_LOG_INFO("misc", "Loading Linked Respawns... (`creature_linked_respawn`)");
         sObjectMgr->LoadLinkedRespawn();
         handler->SendGlobalGMSysMessage("DB table `creature_linked_respawn` (creature linked respawns) reloaded.");
         return true;
@@ -534,7 +532,7 @@ public:
 
     static bool HandleReloadCreatureQuestInvRelationsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Loading Quests Relations... (`creature_questender`)");
+        TC_LOG_INFO("misc", "Loading Quests Relations... (`creature_questender`)");
         sQuestDataStore->LoadCreatureInvolvedRelations();
         handler->SendGlobalGMSysMessage("DB table `creature_questender` (creature quest takers) reloaded.");
         return true;
@@ -542,7 +540,7 @@ public:
 
     static bool HandleReloadGossipMenuCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading `gossip_menu` Table!");
+        TC_LOG_INFO("misc", "Re-Loading `gossip_menu` Table!");
         sGossipDataStore->LoadGossipMenu();
         handler->SendGlobalGMSysMessage("DB table `gossip_menu` reloaded.");
         sConditionMgr->LoadConditions(true);
@@ -551,7 +549,7 @@ public:
 
     static bool HandleReloadGossipMenuOptionCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading `gossip_menu_option` Table!");
+        TC_LOG_INFO("misc", "Re-Loading `gossip_menu_option` Table!");
         sGossipDataStore->LoadGossipMenuItems();
         handler->SendGlobalGMSysMessage("DB table `gossip_menu_option` reloaded.");
         sConditionMgr->LoadConditions(true);
@@ -560,7 +558,7 @@ public:
 
     static bool HandleReloadGuildRewardsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading `guild_rewards` Table!");
+        TC_LOG_INFO("misc", "Re-Loading `guild_rewards` Table!");
         sGuildMgr->LoadGuildRewards();
         handler->SendGlobalGMSysMessage("DB table `guild_rewards` reloaded.");
         return true;
@@ -568,7 +566,7 @@ public:
 
     static bool HandleReloadGOQuestRelationsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Loading Quests Relations... (`gameobject_queststarter`)");
+        TC_LOG_INFO("misc", "Loading Quests Relations... (`gameobject_queststarter`)");
         sQuestDataStore->LoadGameobjectQuestRelations();
         handler->SendGlobalGMSysMessage("DB table `gameobject_queststarter` (gameobject quest givers) reloaded.");
         return true;
@@ -576,7 +574,7 @@ public:
 
     static bool HandleReloadGOQuestInvRelationsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Loading Quests Relations... (`gameobject_questender`)");
+        TC_LOG_INFO("misc", "Loading Quests Relations... (`gameobject_questender`)");
         sQuestDataStore->LoadGameobjectInvolvedRelations();
         handler->SendGlobalGMSysMessage("DB table `gameobject_questender` (gameobject quest takers) reloaded.");
         return true;
@@ -584,7 +582,7 @@ public:
 
     static bool HandleReloadQuestAreaTriggersCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Quest Area Triggers...");
+        TC_LOG_INFO("misc", "Re-Loading Quest Area Triggers...");
         sAreaTriggerDataStore->LoadQuestAreaTriggers();
         handler->SendGlobalGMSysMessage("DB table `areatrigger_questender` (quest area triggers) reloaded.");
         return true;
@@ -592,12 +590,12 @@ public:
 
     static bool HandleReloadQuestTemplateCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Quest Templates...");
+        TC_LOG_INFO("misc", "Re-Loading Quest Templates...");
         sQuestDataStore->LoadQuests();
         handler->SendGlobalGMSysMessage("DB table `quest_template` (quest definitions) reloaded.");
 
         /// dependent also from `gameobject` but this table not reloaded anyway
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading GameObjects for quests...");
+        TC_LOG_INFO("misc", "Re-Loading GameObjects for quests...");
         sQuestDataStore->LoadGameObjectForQuests();
         handler->SendGlobalGMSysMessage("Data GameObjects for quests reloaded.");
         return true;
@@ -605,7 +603,7 @@ public:
 
     static bool HandleReloadLootTemplatesCreatureCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`creature_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`creature_loot_template`)");
         LoadLootTemplates_Creature();
         LootTemplates_Creature.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `creature_loot_template` reloaded.");
@@ -615,7 +613,7 @@ public:
 
     static bool HandleReloadLootTemplatesDisenchantCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`disenchant_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`disenchant_loot_template`)");
         LoadLootTemplates_Disenchant();
         LootTemplates_Disenchant.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `disenchant_loot_template` reloaded.");
@@ -625,7 +623,7 @@ public:
 
     static bool HandleReloadLootTemplatesFishingCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`fishing_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`fishing_loot_template`)");
         LoadLootTemplates_Fishing();
         LootTemplates_Fishing.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `fishing_loot_template` reloaded.");
@@ -635,7 +633,7 @@ public:
 
     static bool HandleReloadLootTemplatesGameobjectCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`gameobject_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`gameobject_loot_template`)");
         LoadLootTemplates_Gameobject();
         LootTemplates_Gameobject.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `gameobject_loot_template` reloaded.");
@@ -645,7 +643,7 @@ public:
 
     static bool HandleReloadLootTemplatesItemCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`item_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`item_loot_template`)");
         LoadLootTemplates_Item();
         LootTemplates_Item.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `item_loot_template` reloaded.");
@@ -655,7 +653,7 @@ public:
 
     static bool HandleReloadLootTemplatesMillingCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`milling_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`milling_loot_template`)");
         LoadLootTemplates_Milling();
         LootTemplates_Milling.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `milling_loot_template` reloaded.");
@@ -665,7 +663,7 @@ public:
 
     static bool HandleReloadLootTemplatesPickpocketingCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`pickpocketing_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`pickpocketing_loot_template`)");
         LoadLootTemplates_Pickpocketing();
         LootTemplates_Pickpocketing.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `pickpocketing_loot_template` reloaded.");
@@ -675,7 +673,7 @@ public:
 
     static bool HandleReloadLootTemplatesProspectingCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`prospecting_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`prospecting_loot_template`)");
         LoadLootTemplates_Prospecting();
         LootTemplates_Prospecting.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `prospecting_loot_template` reloaded.");
@@ -685,7 +683,7 @@ public:
 
     static bool HandleReloadLootTemplatesMailCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`mail_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`mail_loot_template`)");
         LoadLootTemplates_Mail();
         LootTemplates_Mail.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `mail_loot_template` reloaded.");
@@ -695,7 +693,7 @@ public:
 
     static bool HandleReloadLootTemplatesReferenceCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`reference_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`reference_loot_template`)");
         LoadLootTemplates_Reference();
         handler->SendGlobalGMSysMessage("DB table `reference_loot_template` reloaded.");
         sConditionMgr->LoadConditions(true);
@@ -704,7 +702,7 @@ public:
 
     static bool HandleReloadLootTemplatesSkinningCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`skinning_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`skinning_loot_template`)");
         LoadLootTemplates_Skinning();
         LootTemplates_Skinning.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `skinning_loot_template` reloaded.");
@@ -714,7 +712,7 @@ public:
 
     static bool HandleReloadLootTemplatesSpellCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`spell_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`spell_loot_template`)");
         LoadLootTemplates_Spell();
         LootTemplates_Spell.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `spell_loot_template` reloaded.");
@@ -724,7 +722,7 @@ public:
 
     static bool HandleReloadLootTemplatesWorldCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`world_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`world_loot_template`)");
         LoadLootTemplates_World();
         LootTemplates_World.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `world_loot_template` reloaded.");
@@ -734,7 +732,7 @@ public:
 
     static bool HandleReloadLootTemplatesZoneCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`zone_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`zone_loot_template`)");
         LoadLootTemplates_World();
         LootTemplates_Zone.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `zone_loot_template` reloaded.");
@@ -744,7 +742,7 @@ public:
 
     static bool HandleReloadLootTemplatesLuckCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Loot Tables... (`luck_loot_template`)");
+        TC_LOG_INFO("misc", "Re-Loading Loot Tables... (`luck_loot_template`)");
         LoadLootTemplates_World();
         LootTemplates_Luck.CheckLootRefs();
         handler->SendGlobalGMSysMessage("DB table `luck_loot_template` reloaded.");
@@ -754,7 +752,7 @@ public:
 
     static bool HandleReloadTrinityStringCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading trinity_string Table!");
+        TC_LOG_INFO("misc", "Re-Loading trinity_string Table!");
         sObjectMgr->LoadTrinityStrings();
         handler->SendGlobalGMSysMessage("DB table `trinity_string` reloaded.");
         return true;
@@ -770,7 +768,7 @@ public:
             return false;
         }
 
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading warden_overrides Table!");
+        TC_LOG_INFO("misc", "Re-Loading warden_overrides Table!");
         _wardenMgr->LoadWardenOverrides();
         handler->SendGlobalGMSysMessage("DB table `warden_overrides` reloaded.");
         return true;
@@ -778,7 +776,7 @@ public:
 
     static bool HandleReloadNpcTrainerCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading `npc_trainer` Table!");
+        TC_LOG_INFO("misc", "Re-Loading `npc_trainer` Table!");
         sObjectMgr->LoadTrainerSpell();
         handler->SendGlobalGMSysMessage("DB table `npc_trainer` reloaded.");
         return true;
@@ -786,7 +784,7 @@ public:
 
     static bool HandleReloadNpcVendorCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading `npc_vendor` Table!");
+        TC_LOG_INFO("misc", "Re-Loading `npc_vendor` Table!");
         sObjectMgr->LoadVendors();
         handler->SendGlobalGMSysMessage("DB table `npc_vendor` reloaded.");
         return true;
@@ -794,7 +792,7 @@ public:
 
     static bool HandleReloadPointsOfInterestCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading `points_of_interest` Table!");
+        TC_LOG_INFO("misc", "Re-Loading `points_of_interest` Table!");
         sQuestDataStore->LoadPointsOfInterest();
         handler->SendGlobalGMSysMessage("DB table `points_of_interest` reloaded.");
         return true;
@@ -802,7 +800,7 @@ public:
 
     static bool HandleReloadQuestPOICommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Quest POI ..." );
+        TC_LOG_INFO("misc", "Re-Loading Quest POI ..." );
         sQuestDataStore->LoadQuestPOI();
         handler->SendGlobalGMSysMessage("DB Table `quest_poi` and `quest_poi_points` reloaded.");
         return true;
@@ -810,7 +808,7 @@ public:
 
     static bool HandleReloadSpellClickSpellsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading `npc_spellclick_spells` Table!");
+        TC_LOG_INFO("misc", "Re-Loading `npc_spellclick_spells` Table!");
         sObjectMgr->LoadNPCSpellClickSpells();
         handler->SendGlobalGMSysMessage("DB table `npc_spellclick_spells` reloaded.");
         return true;
@@ -818,7 +816,7 @@ public:
 
     static bool HandleReloadReservedNameCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Loading ReservedNames... (`reserved_name`)");
+        TC_LOG_INFO("misc", "Loading ReservedNames... (`reserved_name`)");
         sCharacterDataStore->LoadReservedPlayersNames();
         handler->SendGlobalGMSysMessage("DB table `reserved_name` (player reserved names) reloaded.");
         return true;
@@ -826,7 +824,7 @@ public:
 
     static bool HandleReloadReputationRewardRateCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading `reputation_reward_rate` Table!" );
+        TC_LOG_INFO("misc", "Re-Loading `reputation_reward_rate` Table!" );
         sObjectMgr->LoadReputationRewardRate();
         handler->SendGlobalSysMessage("DB table `reputation_reward_rate` reloaded.");
         return true;
@@ -834,7 +832,7 @@ public:
 
     static bool HandleReloadReputationSpilloverTemplateCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading `reputation_spillover_template` Table!" );
+        TC_LOG_INFO("misc", "Re-Loading `reputation_spillover_template` Table!" );
         sObjectMgr->LoadReputationSpilloverTemplate();
         handler->SendGlobalSysMessage("DB table `reputation_spillover_template` reloaded.");
         return true;
@@ -842,7 +840,7 @@ public:
 
     static bool HandleReloadSkillDiscoveryTemplateCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Skill Discovery Table...");
+        TC_LOG_INFO("misc", "Re-Loading Skill Discovery Table...");
         LoadSkillDiscoveryTable();
         handler->SendGlobalGMSysMessage("DB table `skill_discovery_template` (recipes discovered at crafting) reloaded.");
         return true;
@@ -850,7 +848,7 @@ public:
 
     static bool HandleReloadSkillExtraItemTemplateCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Skill Extra Item Table...");
+        TC_LOG_INFO("misc", "Re-Loading Skill Extra Item Table...");
         LoadSkillExtraItemTable();
         handler->SendGlobalGMSysMessage("DB table `skill_extra_item_template` (extra item creation when crafting) reloaded.");
         return true;
@@ -858,7 +856,7 @@ public:
 
     static bool HandleReloadSkillFishingBaseLevelCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Skill Fishing base level requirements...");
+        TC_LOG_INFO("misc", "Re-Loading Skill Fishing base level requirements...");
         sObjectMgr->LoadFishingBaseSkillLevel();
         handler->SendGlobalGMSysMessage("DB table `skill_fishing_base_level` (fishing base level for zone/subzone) reloaded.");
         return true;
@@ -866,7 +864,7 @@ public:
 
     static bool HandleReloadSpellAreaCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading SpellArea Data...");
+        TC_LOG_INFO("misc", "Re-Loading SpellArea Data...");
         sSpellMgr->LoadSpellAreas();
         handler->SendGlobalGMSysMessage("DB table `spell_area` (spell dependences from area/quest/auras state) reloaded.");
         return true;
@@ -874,7 +872,7 @@ public:
 
     static bool HandleReloadSpellRequiredCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Spell Required Data... ");
+        TC_LOG_INFO("misc", "Re-Loading Spell Required Data... ");
         sSpellMgr->LoadSpellRequired();
         handler->SendGlobalGMSysMessage("DB table `spell_required` reloaded.");
         return true;
@@ -882,7 +880,7 @@ public:
 
     static bool HandleReloadSpellGroupsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Spell Groups...");
+        TC_LOG_INFO("misc", "Re-Loading Spell Groups...");
         sSpellMgr->LoadSpellGroups();
         handler->SendGlobalGMSysMessage("DB table `spell_group` (spell groups) reloaded.");
         return true;
@@ -890,7 +888,7 @@ public:
 
     static bool HandleReloadSpellLearnSpellCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Spell Learn Spells...");
+        TC_LOG_INFO("misc", "Re-Loading Spell Learn Spells...");
         sSpellMgr->LoadSpellLearnSpells();
         handler->SendGlobalGMSysMessage("DB table `spell_learn_spell` reloaded.");
         return true;
@@ -898,7 +896,7 @@ public:
 
     static bool HandleReloadSpellLinkedSpellCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Spell Linked Spells...");
+        TC_LOG_INFO("misc", "Re-Loading Spell Linked Spells...");
         sSpellMgr->LoadSpellLinked();
         sSpellMgr->LoadTalentSpellLinked();
         sSpellMgr->LoadSpellConcatenateAura();
@@ -908,7 +906,7 @@ public:
 
     static bool HandleReloadSpellProcEventCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Spell Proc Event conditions...");
+        TC_LOG_INFO("misc", "Re-Loading Spell Proc Event conditions...");
         sSpellMgr->LoadSpellProcEvents();
         sSpellMgr->LoadSpellPrcoCheck();
         sSpellMgr->LoadSpellTriggered();
@@ -920,7 +918,7 @@ public:
 
     static bool HandleReloadSpellProcsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Spell Proc conditions and data...");
+        TC_LOG_INFO("misc", "Re-Loading Spell Proc conditions and data...");
         sSpellMgr->LoadSpellProcs();
         handler->SendGlobalGMSysMessage("DB table `spell_proc` (spell proc conditions and data) reloaded.");
         return true;
@@ -928,7 +926,7 @@ public:
 
     static bool HandleReloadSpellBonusesCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Spell Bonus Data...");
+        TC_LOG_INFO("misc", "Re-Loading Spell Bonus Data...");
         sSpellMgr->LoadSpellBonusess();
         handler->SendGlobalGMSysMessage("DB table `spell_bonus_data` (spell damage/healing coefficients) reloaded.");
         return true;
@@ -936,7 +934,7 @@ public:
 
     static bool HandleReloadSpellTargetPositionCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Spell target coordinates...");
+        TC_LOG_INFO("misc", "Re-Loading Spell target coordinates...");
         sSpellMgr->LoadSpellTargetPositions();
         handler->SendGlobalGMSysMessage("DB table `spell_target_position` (destination coordinates for spell targets) reloaded.");
         return true;
@@ -944,7 +942,7 @@ public:
 
     static bool HandleReloadSpellThreatsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Aggro Spells Definitions...");
+        TC_LOG_INFO("misc", "Re-Loading Aggro Spells Definitions...");
         sSpellMgr->LoadSpellThreats();
         handler->SendGlobalGMSysMessage("DB table `spell_threat` (spell aggro definitions) reloaded.");
         return true;
@@ -952,7 +950,7 @@ public:
 
     static bool HandleReloadSpellGroupStackRulesCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Spell Group Stack Rules...");
+        TC_LOG_INFO("misc", "Re-Loading Spell Group Stack Rules...");
         sSpellMgr->LoadSpellGroupStackRules();
         handler->SendGlobalGMSysMessage("DB table `spell_group_stack_rules` (spell stacking definitions) reloaded.");
         return true;
@@ -960,7 +958,7 @@ public:
 
     static bool HandleReloadSpellPetAurasCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Spell pet auras...");
+        TC_LOG_INFO("misc", "Re-Loading Spell pet auras...");
         sSpellMgr->LoadSpellPetAuras();
         handler->SendGlobalGMSysMessage("DB table `spell_pet_auras` reloaded.");
         return true;
@@ -968,7 +966,7 @@ public:
 
     static bool HandleReloadPageTextsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Page Texts...");
+        TC_LOG_INFO("misc", "Re-Loading Page Texts...");
         sObjectMgr->LoadPageTexts();
         handler->SendGlobalGMSysMessage("DB table `page_texts` reloaded.");
         return true;
@@ -976,7 +974,7 @@ public:
 
     static bool HandleReloadItemEnchantementsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Item Random Enchantments Table...");
+        TC_LOG_INFO("misc", "Re-Loading Item Random Enchantments Table...");
         LoadRandomEnchantmentsTable();
         handler->SendGlobalGMSysMessage("DB table `item_enchantment_template` reloaded.");
         return true;
@@ -992,7 +990,7 @@ public:
         }
 
         if (*args != 'a')
-            TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Scripts from `gameobject_scripts`...");
+            TC_LOG_INFO("misc", "Re-Loading Scripts from `gameobject_scripts`...");
 
         sScriptDataStore->LoadGameObjectScripts();
 
@@ -1012,7 +1010,7 @@ public:
         }
 
         if (*args != 'a')
-            TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Scripts from `event_scripts`...");
+            TC_LOG_INFO("misc", "Re-Loading Scripts from `event_scripts`...");
 
         sScriptDataStore->LoadEventScripts();
 
@@ -1032,7 +1030,7 @@ public:
         }
 
         if (*args != 'a')
-            TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Scripts from `waypoint_scripts`...");
+            TC_LOG_INFO("misc", "Re-Loading Scripts from `waypoint_scripts`...");
 
         sScriptDataStore->LoadWaypointScripts();
 
@@ -1045,7 +1043,7 @@ public:
     static bool HandleReloadWpCommand(ChatHandler* handler, const char* args)
     {
         if (*args != 'a')
-            TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Waypoints data from 'waypoints_data'");
+            TC_LOG_INFO("misc", "Re-Loading Waypoints data from 'waypoints_data'");
 
         sWaypointMgr->Load();
 
@@ -1065,7 +1063,7 @@ public:
         }
 
         if (*args != 'a')
-            TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Scripts from `quest_end_scripts`...");
+            TC_LOG_INFO("misc", "Re-Loading Scripts from `quest_end_scripts`...");
 
         sScriptDataStore->LoadQuestEndScripts();
 
@@ -1085,7 +1083,7 @@ public:
         }
 
         if (*args != 'a')
-            TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Scripts from `quest_start_scripts`...");
+            TC_LOG_INFO("misc", "Re-Loading Scripts from `quest_start_scripts`...");
 
         sScriptDataStore->LoadQuestStartScripts();
 
@@ -1105,7 +1103,7 @@ public:
         }
 
         if (*args != 'a')
-            TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Scripts from `spell_scripts`...");
+            TC_LOG_INFO("misc", "Re-Loading Scripts from `spell_scripts`...");
 
         sScriptDataStore->LoadSpellScripts();
 
@@ -1117,7 +1115,7 @@ public:
 
     static bool HandleReloadDbScriptStringCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Script strings from `db_script_string`...");
+        TC_LOG_INFO("misc", "Re-Loading Script strings from `db_script_string`...");
         sScriptDataStore->LoadDbScriptStrings();
         handler->SendGlobalGMSysMessage("DB table `db_script_string` reloaded.");
         return true;
@@ -1125,7 +1123,7 @@ public:
 
     static bool HandleReloadGameGraveyardZoneCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Graveyard-zone links...");
+        TC_LOG_INFO("misc", "Re-Loading Graveyard-zone links...");
 
         sObjectMgr->LoadGraveyardZones();
 
@@ -1136,7 +1134,7 @@ public:
 
     static bool HandleReloadGameTeleCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Game Tele coordinates...");
+        TC_LOG_INFO("misc", "Re-Loading Game Tele coordinates...");
 
         sObjectMgr->LoadGameTele();
 
@@ -1147,9 +1145,9 @@ public:
 
     static bool HandleReloadDisablesCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading disables table...");
+        TC_LOG_INFO("misc", "Re-Loading disables table...");
         DisableMgr::LoadDisables();
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Checking quest disables...");
+        TC_LOG_INFO("misc", "Checking quest disables...");
         DisableMgr::CheckQuestDisables();
         handler->SendGlobalGMSysMessage("DB table `disables` reloaded.");
         return true;
@@ -1157,7 +1155,7 @@ public:
 
     static bool HandleReloadLocalesAchievementRewardCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Locales Achievement Reward Data...");
+        TC_LOG_INFO("misc", "Re-Loading Locales Achievement Reward Data...");
         sAchievementMgr->LoadRewardLocales();
         handler->SendGlobalGMSysMessage("DB table `locales_achievement_reward` reloaded.");
         return true;
@@ -1165,7 +1163,7 @@ public:
 
     static bool HandleReloadLfgRewardsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading lfg dungeon rewards...");
+        TC_LOG_INFO("misc", "Re-Loading lfg dungeon rewards...");
         sLFGMgr->LoadRewards();
         handler->SendGlobalGMSysMessage("DB table `lfg_dungeon_rewards` reloaded.");
         return true;
@@ -1173,7 +1171,7 @@ public:
 
     static bool HandleReloadLocalesCreatureCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Locales Creature ...");
+        TC_LOG_INFO("misc", "Re-Loading Locales Creature ...");
         sObjectMgr->LoadCreatureLocales();
         handler->SendGlobalGMSysMessage("DB table `locales_creature` reloaded.");
         return true;
@@ -1181,7 +1179,7 @@ public:
 
     static bool HandleReloadLocalesGameobjectCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Locales Gameobject ... ");
+        TC_LOG_INFO("misc", "Re-Loading Locales Gameobject ... ");
         sObjectMgr->LoadGameObjectLocales();
         handler->SendGlobalGMSysMessage("DB table `locales_gameobject` reloaded.");
         return true;
@@ -1189,7 +1187,7 @@ public:
 
     static bool HandleReloadLocalesGossipMenuOptionCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Locales Gossip Menu Option ... ");
+        TC_LOG_INFO("misc", "Re-Loading Locales Gossip Menu Option ... ");
         sGossipDataStore->LoadGossipMenuItemsLocales();
         handler->SendGlobalGMSysMessage("DB table `locales_gossip_menu_option` reloaded.");
         return true;
@@ -1197,7 +1195,7 @@ public:
 
     static bool HandleReloadLocalesPageTextCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Locales Page Text ... ");
+        TC_LOG_INFO("misc", "Re-Loading Locales Page Text ... ");
         sObjectMgr->LoadPageTextLocales();
         handler->SendGlobalGMSysMessage("DB table `locales_page_text` reloaded.");
         return true;
@@ -1205,7 +1203,7 @@ public:
 
     static bool HandleReloadLocalesPointsOfInterestCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Locales Points Of Interest ... ");
+        TC_LOG_INFO("misc", "Re-Loading Locales Points Of Interest ... ");
         sQuestDataStore->LoadPointOfInterestLocales();
         handler->SendGlobalGMSysMessage("DB table `locales_points_of_interest` reloaded.");
         return true;
@@ -1213,7 +1211,7 @@ public:
 
     static bool HandleReloadLocalesQuestCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Locales Quest ... ");
+        TC_LOG_INFO("misc", "Re-Loading Locales Quest ... ");
         sQuestDataStore->LoadQuestTemplateLocale();
         sQuestDataStore->LoadQuestObjectivesLocale();
         handler->SendGlobalGMSysMessage("DB table `locales_quest` reloaded.");
@@ -1222,7 +1220,7 @@ public:
 
     static bool HandleReloadMailLevelRewardCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Player level dependent mail rewards...");
+        TC_LOG_INFO("misc", "Re-Loading Player level dependent mail rewards...");
         sObjectMgr->LoadMailLevelRewards();
         handler->SendGlobalGMSysMessage("DB table `mail_level_reward` reloaded.");
         return true;
@@ -1231,7 +1229,7 @@ public:
     static bool HandleReloadAuctionsCommand(ChatHandler* handler, const char* /*args*/)
     {
         ///- Reload dynamic data tables from the database
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Auctions...");
+        TC_LOG_INFO("misc", "Re-Loading Auctions...");
         sAuctionMgr->LoadAuctionItems();
         sAuctionMgr->LoadAuctions();
         handler->SendGlobalGMSysMessage("Auctions reloaded.");
@@ -1240,7 +1238,7 @@ public:
 
     static bool HandleReloadConditions(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Conditions...");
+        TC_LOG_INFO("misc", "Re-Loading Conditions...");
         sConditionMgr->LoadConditions(true);
         handler->SendGlobalGMSysMessage("Conditions reloaded.");
         return true;
@@ -1248,7 +1246,7 @@ public:
 
     static bool HandleReloadCreatureText(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Creature Texts...");
+        TC_LOG_INFO("misc", "Re-Loading Creature Texts...");
         sCreatureTextMgr->LoadCreatureTexts();
         handler->SendGlobalGMSysMessage("Creature Texts reloaded.");
         return true;
@@ -1256,7 +1254,7 @@ public:
 
     static bool HandleReloadSmartScripts(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading Smart Scripts...");
+        TC_LOG_INFO("misc", "Re-Loading Smart Scripts...");
         sSmartScriptMgr->LoadSmartAIFromDB();
         handler->SendGlobalGMSysMessage("Smart Scripts reloaded.");
         return true;
@@ -1264,7 +1262,7 @@ public:
 
     static bool HandleReloadVehicleTemplateAccessoryCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Reloading vehicle_template_accessory table...");
+        TC_LOG_INFO("misc", "Reloading vehicle_template_accessory table...");
         sObjectMgr->LoadVehicleTemplateAccessories();
         handler->SendGlobalGMSysMessage("Vehicle template accessories reloaded.");
         return true;
@@ -1272,7 +1270,7 @@ public:
 
     static bool HandleReloadScriptWaypointCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Reloading script_waypoint table...");
+        TC_LOG_INFO("misc", "Reloading script_waypoint table...");
         sScriptSystemMgr->LoadScriptWaypoints();
         handler->SendGlobalGMSysMessage("script_waypoint table reloaded.");
         return true;
@@ -1280,7 +1278,7 @@ public:
 
     static bool HandleReloadPhaseDefinitionsCommand(ChatHandler* handler, const char* /*args*/)    
     {    
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Reloading phase_definitions table...");    
+        TC_LOG_INFO("misc", "Reloading phase_definitions table...");
         sObjectMgr->LoadPhaseDefinitions();    
         sWorld->UpdatePhaseDefinitions();    
         handler->SendGlobalGMSysMessage("Phase Definitions reloaded.");    
@@ -1289,7 +1287,7 @@ public:
 
     static bool HandleReloadCreatureArea(ChatHandler* handler, const char* args)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Updating Creature Area...");
+        TC_LOG_INFO("misc", "Updating Creature Area...");
 
         QueryResult result;
 
@@ -1302,7 +1300,7 @@ public:
 
         if (!result)
         {
-            TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Updated 0 creature area.");
+            TC_LOG_INFO("server.loading", "Updated 0 creature area.");
             return true;
         }
 
@@ -1335,7 +1333,7 @@ public:
 
     static bool HandleReloadLetterAnalogCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING,"Re-Loading Letter Analogs...");
+        TC_LOG_INFO("server.loading","Re-Loading Letter Analogs...");
         sWordFilterMgr->LoadLetterAnalogs();
         handler->SendGlobalGMSysMessage("DB table `letter_analog` reloaded.");
         return true;
@@ -1343,7 +1341,7 @@ public:
 
     static bool HandleReloadBadWordCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING,"Re-Loading Bad Words...");
+        TC_LOG_INFO("server.loading","Re-Loading Bad Words...");
         sWordFilterMgr->LoadBadWords();
         handler->SendGlobalGMSysMessage("DB table `bad_word` reloaded.");
         return true;
@@ -1351,7 +1349,7 @@ public:
     
     static bool HandleReloadBadSentencesCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING,"Re-Loading Bad Sentences...");
+        TC_LOG_INFO("server.loading","Re-Loading Bad Sentences...");
         sWordFilterMgr->LoadBadSentences();
         handler->SendGlobalGMSysMessage("DB table `bad_senteces` reloaded.");
         return true;
@@ -1394,7 +1392,7 @@ public:
 
     static bool HandleReloadNpcDonateVendorCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading `store_products` Table!");
+        TC_LOG_INFO("misc", "Re-Loading `store_products` Table!");
         sObjectMgr->LoadDonateVendors();
         handler->SendGlobalGMSysMessage("DB table `store_products` reloaded.");
         return true;
@@ -1402,7 +1400,7 @@ public:
     
     static bool HandleReloadDeathMatchProductsCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading `deathmatch_products` Table!");
+        TC_LOG_INFO("misc", "Re-Loading `deathmatch_products` Table!");
         sObjectMgr->LoadDeathMatchStore();
         handler->SendGlobalGMSysMessage("DB table `deathmatch_products` reloaded.");
         return true;
@@ -1410,7 +1408,7 @@ public:
 
     static bool HandleReloadScenarioDataCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading scenario_data...");
+        TC_LOG_INFO("misc", "Re-Loading scenario_data...");
         sObjectMgr->LoadScenarioData();
         handler->SendGlobalGMSysMessage("DB table `scenario_data`reloaded.");
         return true;
@@ -1418,7 +1416,7 @@ public:
 
     static bool HandleReloadPvpRewardCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading pvp_reward...");
+        TC_LOG_INFO("misc", "Re-Loading pvp_reward...");
         sBattlegroundMgr->LoadPvpRewards();
         handler->SendGlobalGMSysMessage("DB table `pvp_reward`reloaded.");
         return true;
@@ -1426,7 +1424,7 @@ public:
 
     static bool HandleReloadWorldQuestCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Re-Loading World Quest...");
+        TC_LOG_INFO("misc", "Re-Loading World Quest...");
         sQuestDataStore->LoadWorldQuestTemplates();
         handler->SendGlobalGMSysMessage("DB table `world_quest` reloaded.");
         return true;

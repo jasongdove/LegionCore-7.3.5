@@ -21,6 +21,8 @@
 #include "Common.h"
 #include "DBCEnums.h"
 #include "Util.h"
+#include <set>
+#include <map>
 
 class Player;
 

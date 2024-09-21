@@ -90,7 +90,7 @@ void BattlegroundTwinPeaks::PostUpdateImpl(uint32 diff)
                         if (GameObject* obj = GetBgMap()->GetGameObject(_droppedFlagGUID[team]))
                             obj->Delete();
                         else
-                            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundTwinPeaks: An error has occurred in PostUpdateImpl: Unknown dropped flag GUID: %u", _droppedFlagGUID[team].GetCounter());
+                            TC_LOG_ERROR("bg.battleground", "BattlegroundTwinPeaks: An error has occurred in PostUpdateImpl: Unknown dropped flag GUID: %u", _droppedFlagGUID[team].GetCounter());
 
                         _droppedFlagGUID[team].Clear();
 
@@ -223,7 +223,7 @@ bool BattlegroundTwinPeaks::SetupBattleground()
         || !AddObject(BG_TP_OBJECT_DOOR_H_3, BG_OBJECT_DOOR_H_3_TP_ENTRY, 1558.088f, 372.7654f, 1.723727f, 6.178466f, 0, 0, 0, 0, RESPAWN_IMMEDIATELY)
         )
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "BattegroundTP: Failed to spawn some objects. Battleground not created!");
+        TC_LOG_ERROR("misc", "BattegroundTP: Failed to spawn some objects. Battleground not created!");
         return false;
     }
 
@@ -235,13 +235,13 @@ bool BattlegroundTwinPeaks::SetupBattleground()
             uint8 team = i % 2; ///< If 0 team == TEAM_ALLIANCE else TEAM_HORDE
             if (!AddSpiritGuide(team == TEAM_ALLIANCE ? TP_SPIRIT_ALLIANCE : TP_SPIRIT_HORDE, grave->Loc, TeamId(team)))
             {
-                TC_LOG_ERROR(LOG_FILTER_GENERAL, "BatteGroundTP: Failed to spawn spirit guide id: %u. Battleground not created!", grave->ID);
+                TC_LOG_ERROR("misc", "BatteGroundTP: Failed to spawn spirit guide id: %u. Battleground not created!", grave->ID);
                 return false;
             }
         }
         else
         {
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "BatteGroundTP: Failed to load spirit guide. Battleground not created!");
+            TC_LOG_ERROR("misc", "BatteGroundTP: Failed to load spirit guide. Battleground not created!");
             return false;
         }
     }
@@ -623,7 +623,7 @@ void BattlegroundTwinPeaks::RemovePlayer(Player* player, ObjectGuid guid, uint32
                         pl->RemoveAurasDueToSpell(SPELL_BG_BRUTAL_ASSAULT);
                 }
                 else
-                    TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundTwinPeaks: An error has occurred in RemovePlayer: player with GUID: %u haven't been found. (_bothflagsKept is TRUE).", _flagKeepers[team].GetCounter());
+                    TC_LOG_ERROR("bg.battleground", "BattlegroundTwinPeaks: An error has occurred in RemovePlayer: player with GUID: %u haven't been found. (_bothflagsKept is TRUE).", _flagKeepers[team].GetCounter());
             }
 
             _bothFlagsKept = false;

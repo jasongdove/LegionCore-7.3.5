@@ -212,7 +212,7 @@ GroupQueueInfo* BattlegroundQueue::AddGroup(Player* leader, Group* grp, uint16 B
     if (ginfo->Team == HORDE)
         index++;
 
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "Adding Group to BattlegroundQueue bgTypeId : %u, bracketID : %u, bracket_type: %u, mmr: %i, index : %u", BgTypeId, bracketEntry->RangeIndex, bracket, ginfo->MatchmakerRating, index);
+    TC_LOG_DEBUG("bg.battleground", "Adding Group to BattlegroundQueue bgTypeId : %u, bracketID : %u, bracket_type: %u, mmr: %i, index : %u", BgTypeId, bracketEntry->RangeIndex, bracket, ginfo->MatchmakerRating, index);
 
     uint32 lastOnlineTime = time(nullptr);
 
@@ -337,7 +337,7 @@ void BattlegroundQueue::RemovePlayerQueue(ObjectGuid guid, bool decreaseInvitedC
     auto itr = _queuedPlayers.find(guid);
     if (itr == _queuedPlayers.end())
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundQueue: couldn't find player to remove GUID: %u", guid.GetCounter());
+        TC_LOG_ERROR("bg.battleground", "BattlegroundQueue: couldn't find player to remove GUID: %u", guid.GetCounter());
         return;
     }
 
@@ -364,7 +364,7 @@ void BattlegroundQueue::RemovePlayerQueue(ObjectGuid guid, bool decreaseInvitedC
 
     if (bracketID == -1)
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundQueue: ERROR Cannot find groupinfo for player GUID: %u", guid.GetCounter());
+        TC_LOG_ERROR("bg.battleground", "BattlegroundQueue: ERROR Cannot find groupinfo for player GUID: %u", guid.GetCounter());
         return;
     }
 
@@ -483,7 +483,7 @@ bool BattlegroundQueue::InviteGroupToBG(GroupQueueInfo* ginfo, Battleground* bg,
 
             uint32 queueSlot = player->GetBattlegroundQueueIndex(bgQueueTypeId);
 
-            TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "Battleground: invited player %s (%u) to BG instance %u queueindex %u bgtype %u, I can't help it if they don't press the enter battle button.", player->GetName(), player->GetGUID().GetCounter(), bg->GetInstanceID(), queueSlot, bg->GetTypeID());
+            TC_LOG_DEBUG("bg.battleground", "Battleground: invited player %s (%u) to BG instance %u queueindex %u bgtype %u, I can't help it if they don't press the enter battle button.", player->GetName(), player->GetGUID().GetCounter(), bg->GetInstanceID(), queueSlot, bg->GetTypeID());
 
             WorldPackets::Battleground::BattlefieldStatusNeedConfirmation battlefieldStatus;
             sBattlegroundMgr->BuildBattlegroundStatusNeedConfirmation(&battlefieldStatus, bg, player, queueSlot, player->GetBattlegroundQueueJoinTime(bgQueueTypeId), bg->IsArena() ? ARENA_INVITE_ACCEPT_WAIT_TIME : BG_INVITE_ACCEPT_WAIT_TIME, ginfo->JoinType, bracketID);
@@ -1087,7 +1087,7 @@ uint16 BattlegroundQueue::GenerateRandomMap(uint16 bgTypeId)
     BattlemasterListEntry const* bl = sBattlemasterListStore.LookupEntry(bgTypeId);
     if (!bl)
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundQueue:GenerateRandomMap - BattlemasterListEntry not found for %u", bgTypeId);
+        TC_LOG_ERROR("bg.battleground", "BattlegroundQueue:GenerateRandomMap - BattlemasterListEntry not found for %u", bgTypeId);
         return MS::Battlegrounds::BattlegroundTypeId::None;
     }
 
@@ -1206,14 +1206,14 @@ void BattlegroundQueue::BattlegroundQueueUpdate(uint32 /*diff*/, uint16 bgTypeId
     Battleground* bg_template = sBattlegroundMgr->GetBattlegroundTemplate(bgTypeId);
     if (!bg_template)
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "Battleground: Update: bg template not found for %u", bgTypeId);
+        TC_LOG_ERROR("bg.battleground", "Battleground: Update: bg template not found for %u", bgTypeId);
         return;
     }
 
     PVPDifficultyEntry const* bracketEntry = sDB2Manager.GetBattlegroundBracketById(bg_template->GetMapId(), bracketID);
     if (!bracketEntry)
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "Battleground: Update: bg bracket entry not found for map %u bracket id %u", bg_template->GetMapId(), bracketID);
+        TC_LOG_ERROR("bg.battleground", "Battleground: Update: bg bracket entry not found for map %u bracket id %u", bg_template->GetMapId(), bracketID);
         return;
     }
 
@@ -1237,7 +1237,7 @@ void BattlegroundQueue::BattlegroundQueueUpdate(uint32 /*diff*/, uint16 bgTypeId
             Battleground* bg = sBattlegroundMgr->CreateNewBattleground(bgTypeId, bracketEntry, 0, true, GenerateRandomMap(bgTypeId));
             if (!bg)
             {
-                TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundQueue::Update - Cannot create battleground: %u", bgTypeId);
+                TC_LOG_ERROR("bg.battleground", "BattlegroundQueue::Update - Cannot create battleground: %u", bgTypeId);
                 return;
             }
 
@@ -1252,11 +1252,11 @@ void BattlegroundQueue::BattlegroundQueueUpdate(uint32 /*diff*/, uint16 bgTypeId
     {
         if (CheckPremadeMatch(bracketID, MinPlayersPerTeam, MaxPlayersPerTeam))
         {
-            TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BattlegroundQueue::Update - create battleground: %u", bgTypeId);
+            TC_LOG_DEBUG("bg.battleground", "BattlegroundQueue::Update - create battleground: %u", bgTypeId);
             Battleground* bg = sBattlegroundMgr->CreateNewBattleground(bgTypeId, bracketEntry, 0, isRated, GenerateRandomMap(bgTypeId));
             if (!bg)
             {
-                TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundQueue::Update - Cannot create battleground: %u", bgTypeId);
+                TC_LOG_ERROR("bg.battleground", "BattlegroundQueue::Update - Cannot create battleground: %u", bgTypeId);
                 return;
             }
 
@@ -1281,7 +1281,7 @@ void BattlegroundQueue::BattlegroundQueueUpdate(uint32 /*diff*/, uint16 bgTypeId
             Battleground* bg = sBattlegroundMgr->CreateNewBattleground(bgTypeId, bracketEntry, joinType, false, GenerateRandomMap(bgTypeId));
             if (!bg)
             {
-                TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundQueue::Update - Cannot create battleground: %u", bgTypeId);
+                TC_LOG_ERROR("bg.battleground", "BattlegroundQueue::Update - Cannot create battleground: %u", bgTypeId);
                 return;
             }
 
@@ -1312,7 +1312,7 @@ void BattlegroundQueue::BattlegroundQueueUpdate(uint32 /*diff*/, uint16 bgTypeId
         Battleground* bg = sBattlegroundMgr->CreateNewBattleground(bgTypeId, bracketEntry, joinType, true, GenerateRandomMap(bgTypeId));
         if (!bg)
         {
-            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundQueue::Update couldn't create bg instance for rated arena or bg match!");
+            TC_LOG_ERROR("bg.battleground", "BattlegroundQueue::Update couldn't create bg instance for rated arena or bg match!");
             return;
         }
 
@@ -1338,7 +1338,7 @@ void BattlegroundQueue::BattlegroundQueueUpdate(uint32 /*diff*/, uint16 bgTypeId
         InviteGroupToBG(aTeam, bg, ALLIANCE);
         InviteGroupToBG(hTeam, bg, HORDE);
 
-        TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "Starting rated bg match!");
+        TC_LOG_DEBUG("bg.battleground", "Starting rated bg match!");
         bg->StartBattleground();
 
         if (bg->IsArena() && bg->GetJoinType() != MS::Battlegrounds::JoinType::Arena1v1)

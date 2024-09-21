@@ -56,10 +56,10 @@ AuraApplication::AuraApplication(Unit* target, Unit* caster, Aura* aura, uint32 
         _slot = slot;
         GetTarget()->SetVisibleAura(this);
         _needClientUpdate = true;
-        TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Aura: %u EffectMask: %d put to unit visible auras slot: %u", GetBase()->GetId(), effMask, slot);
+        TC_LOG_DEBUG("spells", "Aura: %u EffectMask: %d put to unit visible auras slot: %u", GetBase()->GetId(), effMask, slot);
     }
     else
-        TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Aura: %u EffectMask: %d could not find empty unit visible slot", GetBase()->GetId(), effMask);
+        TC_LOG_DEBUG("spells", "Aura: %u EffectMask: %d could not find empty unit visible slot", GetBase()->GetId(), effMask);
 
     _InitFlags(caster, effMask);
 }
@@ -130,7 +130,7 @@ void AuraApplication::_HandleEffect(uint8 effIndex, bool apply)
         return;
     ASSERT((1<<effIndex) & _effectsToApply);
     #ifdef WIN32
-    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraApplication::_HandleEffect: GetId %i, GetAuraType %u, apply: %u: amount: %i, m_send_baseAmount: %i, effIndex: %i GetDuration %i, guid %u GetStackAmount %u GetComboPoints %u GetCharges %u",
+    TC_LOG_DEBUG("spells", "AuraApplication::_HandleEffect: GetId %i, GetAuraType %u, apply: %u: amount: %i, m_send_baseAmount: %i, effIndex: %i GetDuration %i, guid %u GetStackAmount %u GetComboPoints %u GetCharges %u",
     GetBase()->GetId(), aurEff->GetAuraType(), apply, aurEff->GetAmount(), aurEff->GetBaseSendAmount(), effIndex, GetBase()->GetDuration(), GetBase()->GetOwner()->GetGUIDLow(), GetBase()->GetStackAmount(), GetBase()->GetComboPoints(), GetBase()->GetCharges());
     #endif
 
@@ -547,7 +547,7 @@ Aura* Aura::Create(SpellInfo const* spellproto, uint32 effMask, WorldObject* own
 //                 if ((*itr)->GetId() == spellproto->Id)
 //                 {
 //                     //test code
-//                     TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Aura* Aura::Create aura %u, GetCasterGUID %u", (*itr)->GetId(), caster->GetGUID());
+//                     TC_LOG_DEBUG("spells", "Aura* Aura::Create aura %u, GetCasterGUID %u", (*itr)->GetId(), caster->GetGUID());
 //                     Aura::ApplicationMap const& appMap = (*itr)->GetApplicationMap();
 //                     for (Aura::ApplicationMap::const_iterator app = appMap.begin(); app!= appMap.end();)
 //                     {
@@ -1134,7 +1134,7 @@ void Aura::UpdateTargetMap(Unit* caster, bool apply)
             if (!GetOwner()->IsSelfOrInSameMap(itr->first))
             {
                 //TODO: There is a crash caused by shadowfiend load addon
-                TC_LOG_FATAL(LOG_FILTER_SPELLS_AURAS, "Aura %u: Owner %s (map %u) is not in the same map as target %s (map %u).", GetSpellInfo()->Id,
+                TC_LOG_FATAL("spells", "Aura %u: Owner %s (map %u) is not in the same map as target %s (map %u).", GetSpellInfo()->Id,
                     GetOwner()->GetName(), GetOwner()->IsInWorld() ? GetOwner()->GetMap()->GetId() : uint32(-1),
                     itr->first->GetName(), itr->first->IsInWorld() ? itr->first->GetMap()->GetId() : uint32(-1));
                 // ASSERT(false); // Crash when load in world
@@ -1909,7 +1909,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
         }
     }
 
-    // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "HandleAuraSpecificMods GetId %u removeMode %u caster %u", GetId(), removeMode, bool(caster));
+    // TC_LOG_DEBUG("spells", "HandleAuraSpecificMods GetId %u removeMode %u caster %u", GetId(), removeMode, bool(caster));
 
     // handle spell_linked_spell table
     if (!onReapply)
@@ -2995,7 +2995,7 @@ void Aura::LoadScripts()
     sScriptMgr->CreateAuraScripts(m_spellInfo->Id, m_loadedScripts, this);
     for (auto& loadedScript : m_loadedScripts)
     {
-        TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Aura::LoadScripts: Script `%s` for aura `%u` is loaded now", loadedScript->_GetScriptName()->c_str(), m_spellInfo->Id);
+        TC_LOG_DEBUG("spells", "Aura::LoadScripts: Script `%s` for aura `%u` is loaded now", loadedScript->_GetScriptName()->c_str(), m_spellInfo->Id);
         loadedScript->Register();
     }
 }
@@ -3686,7 +3686,7 @@ void Aura::UpdateConcatenateAura(Unit* caster, float amount, int32 effIndex, int
                     if(effIndex != itr.effectSpell)
                         continue;
 
-                    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Aura::UpdateConcatenateAura CONCATENATE_ON_UPDATE_AMOUNT Id %i amount %i effIndex %i type %i option %i", GetId(), amount, effIndex, type, itr->option);
+                    //TC_LOG_DEBUG("spells", "Aura::UpdateConcatenateAura CONCATENATE_ON_UPDATE_AMOUNT Id %i amount %i effIndex %i type %i option %i", GetId(), amount, effIndex, type, itr->option);
 
                     Unit* _target = caster;
                     if (itr.target)
@@ -3708,7 +3708,7 @@ void Aura::UpdateConcatenateAura(Unit* caster, float amount, int32 effIndex, int
                     // if (itr->option & CONCATENATE_RECALCULATE_SPELL) // 0x004 when auraId is apply spellid is recalculate amount
                         // RecalculateAmountOfEffects(true);
 
-                    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Aura::UpdateConcatenateAura CONCATENATE_ON_UPDATE_AMOUNT end Id %i amount %i effIndex %i type %i option %i GetAmount %i", GetId(), amount, effIndex, type, itr->option, effectAura->GetAmount());
+                    //TC_LOG_DEBUG("spells", "Aura::UpdateConcatenateAura CONCATENATE_ON_UPDATE_AMOUNT end Id %i amount %i effIndex %i type %i option %i GetAmount %i", GetId(), amount, effIndex, type, itr->option, effectAura->GetAmount());
                 }
             }
             break;
@@ -3719,7 +3719,7 @@ void Aura::UpdateConcatenateAura(Unit* caster, float amount, int32 effIndex, int
             {
                 for (const auto& itr : *spellConcatenateAura)
                 {
-                    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Aura::UpdateConcatenateAura CONCATENATE_ON_APPLY_AURA start Id %i amount %i effIndex %i type %i option %i", GetId(), amount, effIndex, type, itr->option);
+                    //TC_LOG_DEBUG("spells", "Aura::UpdateConcatenateAura CONCATENATE_ON_APPLY_AURA start Id %i amount %i effIndex %i type %i option %i", GetId(), amount, effIndex, type, itr->option);
 
                     Unit* _caster = caster;
                     if (itr.caster)
@@ -3753,7 +3753,7 @@ void Aura::UpdateConcatenateAura(Unit* caster, float amount, int32 effIndex, int
                         }
                             // auraSpell->RecalculateAmountOfEffects(true);
 
-                    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Aura::UpdateConcatenateAura CONCATENATE_ON_APPLY_AURA end Id %i amount %i effIndex %i type %i option %i GetAmount %i", GetId(), amount, effIndex, type, itr->option, effectAura->GetAmount());
+                    //TC_LOG_DEBUG("spells", "Aura::UpdateConcatenateAura CONCATENATE_ON_APPLY_AURA end Id %i amount %i effIndex %i type %i option %i GetAmount %i", GetId(), amount, effIndex, type, itr->option, effectAura->GetAmount());
                 }
             }
             break;
@@ -3764,7 +3764,7 @@ void Aura::UpdateConcatenateAura(Unit* caster, float amount, int32 effIndex, int
             {
                 for (const auto& itr : *spellConcatenateAura)
                 {
-                    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Aura::UpdateConcatenateAura CONCATENATE_ON_REMOVE_AURA start Id %i amount %i effIndex %i type %i option %i", GetId(), amount, effIndex, type, itr->option);
+                    //TC_LOG_DEBUG("spells", "Aura::UpdateConcatenateAura CONCATENATE_ON_REMOVE_AURA start Id %i amount %i effIndex %i type %i option %i", GetId(), amount, effIndex, type, itr->option);
 
                     Unit* _target = caster;
                     if (itr.target)
@@ -3796,7 +3796,7 @@ void Aura::UpdateConcatenateAura(Unit* caster, float amount, int32 effIndex, int
                         }
                             // _aura->RecalculateAmountOfEffects(true);
 
-                    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Aura::UpdateConcatenateAura CONCATENATE_ON_REMOVE_AURA end Id %i amount %i effIndex %i type %i option %i GetAmount %i", GetId(), amount, effIndex, type, itr->option, effectAura->GetAmount());
+                    //TC_LOG_DEBUG("spells", "Aura::UpdateConcatenateAura CONCATENATE_ON_REMOVE_AURA end Id %i amount %i effIndex %i type %i option %i GetAmount %i", GetId(), amount, effIndex, type, itr->option, effectAura->GetAmount());
                 }
             }
             break;

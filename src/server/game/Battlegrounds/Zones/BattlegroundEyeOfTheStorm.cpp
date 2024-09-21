@@ -198,7 +198,7 @@ void BattlegroundEyeOfTheStorm::_CheckSomeoneJoinedPoint()
                 Player* player = ObjectAccessor::FindPlayer(_playersNearPoint[EY_POINTS_MAX][j]);
                 if (!player)
                 {
-                    TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundEyeOfTheStorm:_CheckSomeoneJoinedPoint: Player (GUID: %u) not found!", _playersNearPoint[EY_POINTS_MAX][j].GetCounter());
+                    TC_LOG_ERROR("bg.battleground", "BattlegroundEyeOfTheStorm:_CheckSomeoneJoinedPoint: Player (GUID: %u) not found!", _playersNearPoint[EY_POINTS_MAX][j].GetCounter());
                     ++j;
                     continue;
                 }
@@ -237,7 +237,7 @@ void BattlegroundEyeOfTheStorm::_CheckSomeoneLeftPoint()
                 Player* player = ObjectAccessor::FindPlayer(_playersNearPoint[i][j]);
                 if (!player)
                 {
-                    TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundEyeOfTheStorm:_CheckSomeoneLeftPoint Player (GUID: %u) not found!", _playersNearPoint[i][j].GetCounter());
+                    TC_LOG_ERROR("bg.battleground", "BattlegroundEyeOfTheStorm:_CheckSomeoneLeftPoint Player (GUID: %u) not found!", _playersNearPoint[i][j].GetCounter());
                     //move not existed player to "free space" - this will cause many error showing in log, but it is a very important bug
                     _playersNearPoint[EY_POINTS_MAX].push_back(_playersNearPoint[i][j]);
                     _playersNearPoint[i].erase(_playersNearPoint[i].begin() + j);
@@ -457,7 +457,7 @@ bool BattlegroundEyeOfTheStorm::SetupBattleground()
         || !AddObject(BG_EY_OBJECT_TOWER_CAP_MAGE_TOWER, BG_OBJECT_HU_TOWER_CAP_EY_ENTRY, 2282.121582f, 1760.006958f, 1189.707153f, 1.919862f, 0, 0, 0.819152f, 0.573576f, RESPAWN_ONE_DAY)
         )
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundEY: Failed to spawn some object Battleground not created!");
+        TC_LOG_ERROR("sql.sql", "BatteGroundEY: Failed to spawn some object Battleground not created!");
         return false;
     }
 
@@ -467,27 +467,27 @@ bool BattlegroundEyeOfTheStorm::SetupBattleground()
         AreaTriggerEntry const* at = sAreaTriggerStore.LookupEntry(_pointsTrigger[i]);
         if (!at)
         {
-            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundEyeOfTheStorm: Unknown trigger: %u", _pointsTrigger[i]);
+            TC_LOG_ERROR("bg.battleground", "BattlegroundEyeOfTheStorm: Unknown trigger: %u", _pointsTrigger[i]);
             continue;
         }
         if (!AddObject(BG_EY_OBJECT_SPEEDBUFF_FEL_REAVER + i * 3, Buff_Entries[0], at->Pos.X, at->Pos.Y, at->Pos.Z, 0.907571f, 0, 0, 0.438371f, 0.898794f, RESPAWN_ONE_DAY)
             || !AddObject(BG_EY_OBJECT_SPEEDBUFF_FEL_REAVER + i * 3 + 1, Buff_Entries[1], at->Pos.X, at->Pos.Y, at->Pos.Z, 0.907571f, 0, 0, 0.438371f, 0.898794f, RESPAWN_ONE_DAY)
             || !AddObject(BG_EY_OBJECT_SPEEDBUFF_FEL_REAVER + i * 3 + 2, Buff_Entries[2], at->Pos.X, at->Pos.Y, at->Pos.Z, 0.907571f, 0, 0, 0.438371f, 0.898794f, RESPAWN_ONE_DAY)
             )
-            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundEyeOfTheStorm: Cannot spawn buff");
+            TC_LOG_ERROR("bg.battleground", "BattlegroundEyeOfTheStorm: Cannot spawn buff");
     }
 
     WorldSafeLocsEntry const* sg = sWorldSafeLocsStore.LookupEntry(EY_GRAVEYARD_MAIN_ALLIANCE);
     if (!sg || !AddSpiritGuide(EY_SPIRIT_MAIN_ALLIANCE, sg->Loc, TEAM_ALLIANCE))
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundEY: Failed to spawn spirit guide! Battleground not created!");
+        TC_LOG_ERROR("sql.sql", "BatteGroundEY: Failed to spawn spirit guide! Battleground not created!");
         return false;
     }
 
     sg = sWorldSafeLocsStore.LookupEntry(EY_GRAVEYARD_MAIN_HORDE);
     if (!sg || !AddSpiritGuide(EY_SPIRIT_MAIN_HORDE, sg->Loc, TEAM_HORDE))
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundEY: Failed to spawn spirit guide! Battleground not created!");
+        TC_LOG_ERROR("sql.sql", "BatteGroundEY: Failed to spawn spirit guide! Battleground not created!");
         return false;
     }
 
@@ -732,7 +732,7 @@ void BattlegroundEyeOfTheStorm::EventTeamCapturedPoint(Player* Source, uint32 Po
 
     WorldSafeLocsEntry const* sg = sWorldSafeLocsStore.LookupEntry(m_CapturingPointTypes[Point].GraveYardId);
     if (!sg || !AddSpiritGuide(Point, sg->Loc, Source->GetBGTeamId()))
-        TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BatteGroundEY: Failed to spawn spirit guide! point: %u, team: %u, graveyard_id: %u", Point, Team, m_CapturingPointTypes[Point].GraveYardId);
+        TC_LOG_ERROR("bg.battleground", "BatteGroundEY: Failed to spawn spirit guide! point: %u, team: %u, graveyard_id: %u", Point, Team, m_CapturingPointTypes[Point].GraveYardId);
 
     //    SpawnBGCreature(Point, RESPAWN_IMMEDIATELY);
 
@@ -862,7 +862,7 @@ WorldSafeLocsEntry const* BattlegroundEyeOfTheStorm::GetClosestGraveYard(Player*
     WorldSafeLocsEntry const* nearestEntry = entry;
     if (!entry)
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundEyeOfTheStorm: Not found the main team graveyard. Graveyard system isn't working!");
+        TC_LOG_ERROR("bg.battleground", "BattlegroundEyeOfTheStorm: Not found the main team graveyard. Graveyard system isn't working!");
         return nullptr;
     }
 
@@ -879,7 +879,7 @@ WorldSafeLocsEntry const* BattlegroundEyeOfTheStorm::GetClosestGraveYard(Player*
         {
             entry = sWorldSafeLocsStore.LookupEntry(m_CapturingPointTypes[i].GraveYardId);
             if (!entry)
-                TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundEyeOfTheStorm: Not found graveyard: %u", m_CapturingPointTypes[i].GraveYardId);
+                TC_LOG_ERROR("bg.battleground", "BattlegroundEyeOfTheStorm: Not found graveyard: %u", m_CapturingPointTypes[i].GraveYardId);
             else
             {
                 distance = (entry->Loc.X - plr_x)*(entry->Loc.X - plr_x) + (entry->Loc.Y - plr_y)*(entry->Loc.Y - plr_y) + (entry->Loc.Z - plr_z)*(entry->Loc.Z - plr_z);

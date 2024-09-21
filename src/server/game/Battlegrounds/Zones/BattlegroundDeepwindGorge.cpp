@@ -343,28 +343,28 @@ bool BattlegroundDeepwindGorge::SetupBattleground()
     WorldSafeLocsEntry const* sg = sWorldSafeLocsStore.LookupEntry(BG_DG_LOC_SPIRIT_ALLIANCE_BOT);
     if (!sg || !AddSpiritGuide(BG_DG_SPIRIT_ALLIANCE_BOT, sg->Loc, TEAM_ALLIANCE))
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundDG: Failed to spawn Alliance spirit guide! Battleground not created!");
+        TC_LOG_ERROR("sql.sql", "BatteGroundDG: Failed to spawn Alliance spirit guide! Battleground not created!");
         return false;
     }
 
     sg = sWorldSafeLocsStore.LookupEntry(BG_DG_LOC_SPIRIT_HORDE_BOT);
     if (!sg || !AddSpiritGuide(BG_DG_SPIRIT_HORDE_BOT, sg->Loc, TEAM_HORDE))
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundDG: Failed to spawn Horde spirit guide! Battleground not created!");
+        TC_LOG_ERROR("sql.sql", "BatteGroundDG: Failed to spawn Horde spirit guide! Battleground not created!");
         return false;
     }
 
     sg = sWorldSafeLocsStore.LookupEntry(BG_DG_LOC_SPIRIT_ALLIANCE_TOP);
     if (!sg || !AddSpiritGuide(BG_DG_SPIRIT_ALLIANCE_TOP, sg->Loc, TEAM_ALLIANCE))
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundDG: Failed to spawn Alliance spirit guide! Battleground not created!");
+        TC_LOG_ERROR("sql.sql", "BatteGroundDG: Failed to spawn Alliance spirit guide! Battleground not created!");
         return false;
     }
 
     sg = sWorldSafeLocsStore.LookupEntry(BG_DG_LOC_SPIRIT_HORDE_TOP);
     if (!sg || !AddSpiritGuide(BG_DG_SPIRIT_HORDE_TOP, sg->Loc, TEAM_HORDE))
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundDG: Failed to spawn Horde spirit guide! Battleground not created!");
+        TC_LOG_ERROR("sql.sql", "BatteGroundDG: Failed to spawn Horde spirit guide! Battleground not created!");
         return false;
     }
 

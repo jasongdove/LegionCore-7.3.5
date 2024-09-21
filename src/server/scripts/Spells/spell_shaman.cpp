@@ -1061,20 +1061,20 @@ class spell_sha_sundering : public SpellScriptLoader
                     if (target->IsInBetweenShift(caster, &pos, 2.5f, 2.5f, 1.5f)) // Is right
                     {
                         target->GetFirstCollisionPosition(pos, 10.0f, angle + 1.5f);
-                        TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "spell_sha_sundering IsInBetweenShift 2.5f");
+                        TC_LOG_DEBUG("spells", "spell_sha_sundering IsInBetweenShift 2.5f");
                     }
                     else if (target->IsInBetweenShift(caster, &pos, 2.5f, -2.5f, -1.5f)) // Is left
                     {
                         target->GetFirstCollisionPosition(pos, 10.0f, angle - 1.5f);
-                        TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "spell_sha_sundering IsInBetweenShift -2.5f");
+                        TC_LOG_DEBUG("spells", "spell_sha_sundering IsInBetweenShift -2.5f");
                     }
                     else
                     {
                         target->GetFirstCollisionPosition(pos, 10.0f, angle);
-                        TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "spell_sha_sundering not IsInBetweenShift");
+                        TC_LOG_DEBUG("spells", "spell_sha_sundering not IsInBetweenShift");
                     }
 
-                    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "spell_sha_sundering x %f y %f z %f", pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
+                    TC_LOG_DEBUG("spells", "spell_sha_sundering x %f y %f z %f", pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
 
                     target->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), 197619, true);
                 }

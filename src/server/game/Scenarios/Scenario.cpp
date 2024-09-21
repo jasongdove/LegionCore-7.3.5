@@ -56,11 +56,11 @@ Scenario::Scenario(Map* map, lfg::LFGDungeonData const* _dungeonData, Player* pl
     if (!_scenarioEntry)
     {
         //ASSERT(_scenarioEntry);
-        // TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "Scenario::Scenario instanceId %u scenarioId %u dungeonData %u", instanceId, scenarioId, dungeonData->map);
+        // TC_LOG_DEBUG("challenge", "Scenario::Scenario instanceId %u scenarioId %u dungeonData %u", instanceId, scenarioId, dungeonData->map);
         return;
     }
 
-    // TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "Scenario::Scenario instanceId %u scenarioId %u dungeonData %u", instanceId, scenarioId, dungeonData->map);
+    // TC_LOG_DEBUG("challenge", "Scenario::Scenario instanceId %u scenarioId %u dungeonData %u", instanceId, scenarioId, dungeonData->map);
 
     ScenarioSteps const* _steps = sScenarioMgr->GetScenarioSteps(scenarioId);
     ASSERT(_steps);
@@ -102,11 +102,11 @@ Scenario::Scenario(Map* map, uint32 _scenarioId) : m_achievementMgr(this)
     if (!_scenarioEntry)
     {
         //ASSERT(_scenarioEntry);
-        // TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "Scenario::Scenario instanceId %u scenarioId %u dungeonData %u", instanceId, scenarioId, dungeonData->map);
+        // TC_LOG_DEBUG("challenge", "Scenario::Scenario instanceId %u scenarioId %u dungeonData %u", instanceId, scenarioId, dungeonData->map);
         return;
     }
 
-    // TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "Scenario::Scenario instanceId %u scenarioId %u dungeonData %u", instanceId, scenarioId, dungeonData->map);
+    // TC_LOG_DEBUG("challenge", "Scenario::Scenario instanceId %u scenarioId %u dungeonData %u", instanceId, scenarioId, dungeonData->map);
 
     ScenarioSteps const* _steps = sScenarioMgr->GetScenarioSteps(scenarioId);
     ASSERT(_steps);
@@ -140,7 +140,7 @@ void Scenario::Update(const uint32 t_diff)
 
 void Scenario::CreateChallenge(Player* player)
 {
-    // TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "CreateChallenge player %u map %u", bool(player), bool(GetMap()));
+    // TC_LOG_DEBUG("challenge", "CreateChallenge player %u map %u", bool(player), bool(GetMap()));
 
     Map* map = GetMap();
     if (!player || !map)
@@ -152,7 +152,7 @@ void Scenario::CreateChallenge(Player* player)
 
     _challenge = new Challenge(map, player, GetInstanceId(), this);
 
-    // TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "CreateChallenge _challenge %u _canRun %u", bool(_challenge), bool(_challenge->_canRun));
+    // TC_LOG_DEBUG("challenge", "CreateChallenge _challenge %u _canRun %u", bool(_challenge), bool(_challenge->_canRun));
 
     if (!_challenge || !_challenge->_canRun)
         return;
@@ -224,7 +224,7 @@ void Scenario::CreateChallenge(Player* player)
     steps = *_steps;
     if (steps.size() <= currentStep)
     {
-        // TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "CreateChallenge steps %u currentStep %u", steps.size(), currentStep);
+        // TC_LOG_DEBUG("challenge", "CreateChallenge steps %u currentStep %u", steps.size(), currentStep);
         return;
     }
 
@@ -237,7 +237,7 @@ void Scenario::CreateChallenge(Player* player)
 
     SetCurrentStep(0);
 
-    // TC_LOG_ERROR(LOG_FILTER_CHALLENGE, "%s %u, mapID: %u, scenarioID: %u", __FUNCTION__, __LINE__, map->GetId(), scenarioId);
+    // TC_LOG_ERROR("challenge", "%s %u, mapID: %u, scenarioID: %u", __FUNCTION__, __LINE__, map->GetId(), scenarioId);
 }
 
 uint32 Scenario::GetInstanceId() const
@@ -343,7 +343,7 @@ void Scenario::UpdateCurrentStep(bool loading)
         }
     }
 
-    // TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "UpdateCurrentStep currentStep %u oldStep %u loading %u steps %u", currentStep, oldStep, loading, steps.size());
+    // TC_LOG_DEBUG("challenge", "UpdateCurrentStep currentStep %u oldStep %u loading %u steps %u", currentStep, oldStep, loading, steps.size());
 
     if (currentStep != oldStep && !loading)
     {
@@ -381,7 +381,7 @@ void Scenario::UpdateCurrentStep(bool loading)
 
     SetStepState(steps[oldStep], SCENARIO_STEP_DONE);
     // i_updateLock.unlock();
-    //TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "UpdateCurrentStep currentStep %u oldStep %u loading %u", currentStep, oldStep, loading);
+    //TC_LOG_DEBUG("challenge", "UpdateCurrentStep currentStep %u oldStep %u loading %u", currentStep, oldStep, loading);
 }
 
 uint32 Scenario::GetScenarioCriteriaByStep(uint8 step)
@@ -398,7 +398,7 @@ uint32 Scenario::GetScenarioCriteriaByStep(uint8 step)
 
 void Scenario::Reward(bool bonus, uint32 rewardStep)
 {
-    // TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "Scenario::Reward bonus %u rewarded %u bonusRewarded %u rewardStep %u", bonus, rewarded, bonusRewarded, rewardStep);
+    // TC_LOG_DEBUG("challenge", "Scenario::Reward bonus %u rewarded %u bonusRewarded %u rewardStep %u", bonus, rewarded, bonusRewarded, rewardStep);
 
     if (bonus && bonusRewarded)
         return;
@@ -470,7 +470,7 @@ void Scenario::Reward(bool bonus, uint32 rewardStep)
     if (groupGuid.IsEmpty())
         return;
 
-    // TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "Reward Type %u", _scenarioEntry->Type);
+    // TC_LOG_DEBUG("challenge", "Reward Type %u", _scenarioEntry->Type);
 
     switch (_scenarioEntry->Type)
     {
@@ -610,7 +610,7 @@ void Scenario::SendFinishPacket(Player * player)
 
 void Scenario::SendCriteriaUpdate(CriteriaProgress const* progress, uint32 timeElapsed /* = 0*/)
 {
-    //TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "Scenario::SendCriteriaUpdate criteria %u Counter %u", progress->criteriaTree->criteria, progress->Counter);
+    //TC_LOG_DEBUG("challenge", "Scenario::SendCriteriaUpdate criteria %u Counter %u", progress->criteriaTree->criteria, progress->Counter);
 
     if (!progress || !progress->criteriaTree)
         return;

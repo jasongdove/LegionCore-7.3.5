@@ -448,7 +448,7 @@ bool JSON::Deserialize(std::string json, google::protobuf::Message* message)
     if (!deserializer.ReadMessage(std::forward<std::string>(json), message))
     {
         for (const auto & i : deserializer.GetErrors())
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "%s", i.c_str());
+            TC_LOG_ERROR("json", "%s", i.c_str());
         return false;
     }
 

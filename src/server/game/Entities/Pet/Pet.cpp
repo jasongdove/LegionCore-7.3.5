@@ -120,19 +120,19 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber)
     {
         if(owner->m_currentSummonedSlot < PET_SLOT_HUNTER_FIRST)
         {
-            TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet::LoadPetFromDB error m_currentSummonedSlot < 0");
+            TC_LOG_DEBUG("misc", "Pet::LoadPetFromDB error m_currentSummonedSlot < 0");
             m_loading = false;
             return false;
         }
         petnumber = owner->getPetIdBySlot(owner->m_currentSummonedSlot);
     }
 
-    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "LoadPetFromDB petentry %i, petnumber %i, ownerid %i slot %i m_currentPet %i", petentry, petnumber, ownerid, owner->m_currentSummonedSlot, owner->m_currentPetNumber);
+    TC_LOG_DEBUG("spells", "LoadPetFromDB petentry %i, petnumber %i, ownerid %i slot %i m_currentPet %i", petentry, petnumber, ownerid, owner->m_currentSummonedSlot, owner->m_currentPetNumber);
 
     PetInfoData* petInfo = owner->GetPetInfo(petentry, petnumber);
     if (!petInfo)
     {
-        TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet::LoadPetFromDB error result");
+        TC_LOG_DEBUG("misc", "Pet::LoadPetFromDB error result");
         m_loading = false;
         return false;
     }
@@ -141,7 +141,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber)
     petentry = petInfo->entry;
     if (!petentry)
     {
-        TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet::LoadPetFromDB error petentry");
+        TC_LOG_DEBUG("misc", "Pet::LoadPetFromDB error petentry");
         m_loading = false;
         return false;
     }
@@ -150,7 +150,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber)
     // But this option for check through Player::LoadPet
     if (!owner->CanSummonPet(petentry))
     {
-        TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet::LoadPetFromDB error CanSummonPet");
+        TC_LOG_DEBUG("misc", "Pet::LoadPetFromDB error CanSummonPet");
         m_loading = false;
         return false;
     }
@@ -164,7 +164,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber)
     if (is_temporary_summoned)
     {
         m_loading = false;
-        TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet::LoadPetFromDB error is_temporary_summoned %i", is_temporary_summoned);
+        TC_LOG_DEBUG("misc", "Pet::LoadPetFromDB error is_temporary_summoned %i", is_temporary_summoned);
         return false;
     }
 
@@ -182,7 +182,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber)
 
     if (owner->IsPetNeedBeTemporaryUnsummoned())
     {
-        TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet::LoadPetFromDB error IsPetNeedBeTemporaryUnsummoned");
+        TC_LOG_DEBUG("misc", "Pet::LoadPetFromDB error IsPetNeedBeTemporaryUnsummoned");
         owner->SetTemporaryUnsummonedPetNumber(petInfo->id);
         return false;
     }
@@ -191,7 +191,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber)
     ObjectGuid::LowType guid = sObjectMgr->GetGenerator<HighGuid::Pet>()->Generate();
     if (!Create(guid, map, owner->GetPhaseMask(), petentry, petInfo->id))
     {
-        TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet::LoadPetFromDB error Create");
+        TC_LOG_DEBUG("misc", "Pet::LoadPetFromDB error Create");
         return false;
     }
 
@@ -207,7 +207,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber)
 
     if (!IsPositionValid())
     {
-        TC_LOG_ERROR(LOG_FILTER_PETS, "Pet (guidlow %d, entry %d) not loaded. Suggested coordinates isn't valid (X: %f Y: %f)",
+        TC_LOG_ERROR("misc", "Pet (guidlow %d, entry %d) not loaded. Suggested coordinates isn't valid (X: %f Y: %f)",
             GetGUIDLow(), GetEntry(), GetPositionX(), GetPositionY());
         return false;
     }
@@ -260,7 +260,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber)
         }
         default:
             if (!IsPetGhoul())
-                TC_LOG_ERROR(LOG_FILTER_PETS, "Pet have incorrect type (%u) for pet loading.", getPetType());
+                TC_LOG_ERROR("misc", "Pet have incorrect type (%u) for pet loading.", getPetType());
             break;
     }
 
@@ -333,7 +333,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber)
     CleanupActionBar();                                     // remove unknown spells from action bar after load
     owner->PetSpellInitialize();
 
-    TC_LOG_DEBUG(LOG_FILTER_PETS, "New Pet has guid %u", GetGUIDLow());
+    TC_LOG_DEBUG("misc", "New Pet has guid %u", GetGUIDLow());
 
     SetGroupUpdateFlag(GROUP_UPDATE_PET_FULL);
 
@@ -372,7 +372,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry, uint32 petnumber)
 
 void Pet::SavePetToDB(bool isDelete)
 {
-    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Pet SavePetToDB");
+    //TC_LOG_DEBUG("spells", "Pet SavePetToDB");
     if (!GetEntry())
         return;
 
@@ -422,7 +422,7 @@ void Pet::SavePetToDB(bool isDelete)
     _SaveSpellCooldowns(trans);
     CharacterDatabase.CommitTransaction(trans);
 
-    // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "SavePetToDB petentry %i, petnumber %i, slotID %i ownerid %i GetNativeDisplayId %u", GetEntry(), m_charmInfo->GetPetNumber(), curentSlot, GetOwnerGUID().GetGUIDLow(), GetNativeDisplayId());
+    // TC_LOG_DEBUG("spells", "SavePetToDB petentry %i, petnumber %i, slotID %i ownerid %i GetNativeDisplayId %u", GetEntry(), m_charmInfo->GetPetNumber(), curentSlot, GetOwnerGUID().GetGUIDLow(), GetNativeDisplayId());
 
     // current/stable/not_in_slot
     if (!isDelete)
@@ -570,7 +570,7 @@ void Pet::Update(uint32 diff)
             {
                 if (petOwner->GetPetGUID() != GetGUID()) // Stampede
                 {
-                    TC_LOG_ERROR(LOG_FILTER_PETS, "Pet %u is not pet of owner %s, removed", GetEntry(), m_owner->GetName());
+                    TC_LOG_ERROR("misc", "Pet %u is not pet of owner %s, removed", GetEntry(), m_owner->GetName());
                     Remove();
                     m_isUpdate = false;
                     return;
@@ -752,7 +752,7 @@ bool Pet::CreateBaseAtCreature(Creature* creature)
 
     if (!IsPositionValid())
     {
-        TC_LOG_ERROR(LOG_FILTER_PETS, "Pet (guidlow %d, entry %d) not created base at creature. Suggested coordinates isn't valid (X: %f Y: %f)",
+        TC_LOG_ERROR("misc", "Pet (guidlow %d, entry %d) not created base at creature. Suggested coordinates isn't valid (X: %f Y: %f)",
             GetGUIDLow(), GetEntry(), GetPositionX(), GetPositionY());
         return false;
     }
@@ -760,7 +760,7 @@ bool Pet::CreateBaseAtCreature(Creature* creature)
     CreatureTemplate const* cinfo = GetCreatureTemplate();
     if (!cinfo)
     {
-        TC_LOG_ERROR(LOG_FILTER_PETS, "CreateBaseAtCreature() failed, creatureInfo is missing!");
+        TC_LOG_ERROR("misc", "CreateBaseAtCreature() failed, creatureInfo is missing!");
         return false;
     }
 
@@ -790,7 +790,7 @@ bool Pet::CreateBaseAtCreatureInfo(CreatureTemplate const* cinfo, Unit* owner)
 
 bool Pet::CreateBaseAtTamed(CreatureTemplate const* cinfo, Map* map, uint32 phaseMask)
 {
-    TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet::CreateBaseForTamed");
+    TC_LOG_DEBUG("misc", "Pet::CreateBaseForTamed");
     ObjectGuid::LowType guid = sObjectMgr->GetGenerator<HighGuid::Pet>()->Generate();
     uint32 pet_number = sObjectMgr->GeneratePetNumber();
     if (!Create(guid, map, phaseMask, cinfo->Entry, pet_number))
@@ -835,7 +835,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel, bool initSpells)
     else
         creature_ID = cinfo->Entry;
 
-    //TC_LOG_DEBUG(LOG_FILTER_PETS, "Guardian::InitStatsForLevel owner %u creature_ID %i petlevel %i", owner ? owner->GetGUID() : 0, creature_ID, petlevel);
+    //TC_LOG_DEBUG("misc", "Guardian::InitStatsForLevel owner %u creature_ID %i petlevel %i", owner ? owner->GetGUID() : 0, creature_ID, petlevel);
 
     SetMeleeDamageSchool(SpellSchools(cinfo->dmgschool));
 
@@ -1018,7 +1018,7 @@ void Pet::_LoadSpellCooldowns()
 
             if (!sSpellMgr->GetSpellInfo(spell_id))
             {
-                TC_LOG_ERROR(LOG_FILTER_PETS, "Pet %u have unknown spell %u in `pet_spell_cooldown`, skipping.", m_charmInfo->GetPetNumber(), spell_id);
+                TC_LOG_ERROR("misc", "Pet %u have unknown spell %u in `pet_spell_cooldown`, skipping.", m_charmInfo->GetPetNumber(), spell_id);
                 continue;
             }
 
@@ -1030,7 +1030,7 @@ void Pet::_LoadSpellCooldowns()
 
             _AddCreatureSpellCooldown(spell_id, db_time);
 
-            TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet (Number: %u) spell %u cooldown loaded (%u secs).", m_charmInfo->GetPetNumber(), spell_id, uint32(db_time-curTime));
+            TC_LOG_DEBUG("misc", "Pet (Number: %u) spell %u cooldown loaded (%u secs).", m_charmInfo->GetPetNumber(), spell_id, uint32(db_time-curTime));
         }
         while (result->NextRow());
 
@@ -1135,7 +1135,7 @@ void Pet::_SaveSpells(SQLTransaction& trans)
 
 void Pet::_LoadAuras(uint32 timediff)
 {
-    TC_LOG_DEBUG(LOG_FILTER_PETS, "Loading auras for pet %u", GetGUIDLow());
+    TC_LOG_DEBUG("misc", "Loading auras for pet %u", GetGUIDLow());
 
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PET_AURA);
     stmt->setUInt32(0, m_charmInfo->GetPetNumber());
@@ -1184,7 +1184,7 @@ void Pet::_LoadAuras(uint32 timediff)
             SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellid);
             if (!spellInfo)
             {
-                TC_LOG_ERROR(LOG_FILTER_PETS, "Unknown aura (spellid %u), ignore.", spellid);
+                TC_LOG_ERROR("misc", "Unknown aura (spellid %u), ignore.", spellid);
                 continue;
             }
 
@@ -1225,7 +1225,7 @@ void Pet::_LoadAuras(uint32 timediff)
                 }
                 aura->SetLoadedState(maxduration, remaintime, remaincharges, stackcount, recalculatemask, &damage[0]);
                 aura->ApplyForTargets();
-                TC_LOG_DEBUG(LOG_FILTER_PETS, "Added aura spellid %u, effectmask %u", spellInfo->Id, effmask);
+                TC_LOG_DEBUG("misc", "Added aura spellid %u, effectmask %u", spellInfo->Id, effmask);
             }
         }
         while (result->NextRow());
@@ -1299,7 +1299,7 @@ void Pet::_SaveAuras(SQLTransaction& trans)
 
 bool TempSummon::addSpell(uint32 spellId, ActiveStates active /*= ACT_DECIDE*/, PetSpellState state /*= PETSPELL_NEW*/, PetSpellType type /*= PETSPELL_NORMAL*/)
 {
-    //TC_LOG_ERROR(LOG_FILTER_PETS, "TempSummon::addSpell spellId %i Entry %i", spellId, GetEntry());
+    //TC_LOG_ERROR("misc", "TempSummon::addSpell spellId %i Entry %i", spellId, GetEntry());
 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
     if (!spellInfo)
@@ -1307,13 +1307,13 @@ bool TempSummon::addSpell(uint32 spellId, ActiveStates active /*= ACT_DECIDE*/, 
         // do pet spell book cleanup
         if (state == PETSPELL_UNCHANGED)                    // spell load case
         {
-            TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet::addSpell: Non-existed in SpellStore spell #%u request, deleting for all pets in `pet_spell`.", spellId);
+            TC_LOG_DEBUG("misc", "Pet::addSpell: Non-existed in SpellStore spell #%u request, deleting for all pets in `pet_spell`.", spellId);
             PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_INVALID_PET_SPELL);
             stmt->setUInt32(0, spellId);
             CharacterDatabase.Execute(stmt);
         }
         else
-            TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet::addSpell: Non-existed in SpellStore spell #%u request.", spellId);
+            TC_LOG_DEBUG("misc", "Pet::addSpell: Non-existed in SpellStore spell #%u request.", spellId);
 
         return false;
     }
@@ -1383,7 +1383,7 @@ bool TempSummon::addSpell(uint32 spellId, ActiveStates active /*= ACT_DECIDE*/, 
         if(GetCasterPet() && spellInfo->GetMaxRange(false) > GetAttackDist() && (spellInfo->AttributesCu[0] & SPELL_ATTR0_CU_DIRECT_DAMAGE) && !spellInfo->IsTargetingAreaCast())
             SetAttackDist(spellInfo->GetMaxRange(false));
 
-        //TC_LOG_DEBUG(LOG_FILTER_PETS, "TempSummon::addSpell guard GetMaxRange %f GetAttackDist %f GetCasterPet %i", spellInfo->GetMaxRange(false), GetAttackDist(), GetCasterPet());
+        //TC_LOG_DEBUG("misc", "TempSummon::addSpell guard GetMaxRange %f GetAttackDist %f GetCasterPet %i", spellInfo->GetMaxRange(false), GetAttackDist(), GetCasterPet());
 
         return false; //No info in spell for guard pet
     }
@@ -1394,7 +1394,7 @@ bool TempSummon::addSpell(uint32 spellId, ActiveStates active /*= ACT_DECIDE*/, 
     if(GetCasterPet() && spellInfo->GetMaxRange(false) > GetAttackDist() && spellInfo->IsAutocastable() && (spellInfo->AttributesCu[0] & SPELL_ATTR0_CU_DIRECT_DAMAGE) && !spellInfo->IsTargetingAreaCast())
         SetAttackDist(spellInfo->GetMaxRange(false));
 
-    //TC_LOG_DEBUG(LOG_FILTER_PETS, "TempSummon::addSpell pet GetMaxRange %f, active %i GetAttackDist %f GetCasterPet %i", spellInfo->GetMaxRange(false), newspell.active, GetAttackDist(), GetCasterPet());
+    //TC_LOG_DEBUG("misc", "TempSummon::addSpell pet GetMaxRange %f, active %i GetAttackDist %f GetCasterPet %i", spellInfo->GetMaxRange(false), newspell.active, GetAttackDist(), GetCasterPet());
 
     return true;
 }
@@ -1421,7 +1421,7 @@ void TempSummon::InitLevelupSpellsForLevel()
 {
     uint8 level = getLevel();
 
-    //TC_LOG_DEBUG(LOG_FILTER_PETS, "TempSummon::InitLevelupSpellsForLevel level %i", level);
+    //TC_LOG_DEBUG("misc", "TempSummon::InitLevelupSpellsForLevel level %i", level);
 
     if(m_charmInfo)
     {
@@ -1542,7 +1542,7 @@ void Pet::CleanupActionBar()
 
 void Pet::InitPetCreateSpells()
 {
-    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Pet InitPetCreateSpells");
+    //TC_LOG_DEBUG("spells", "Pet InitPetCreateSpells");
     m_charmInfo->InitPetActionBar();
     m_spells.clear();
 
@@ -1618,7 +1618,7 @@ void TempSummon::LearnPetPassives()
 
 void TempSummon::CastPetAuras(bool apply, uint32 spellId)
 {
-    // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Pet::CastPetAuras guid %u, apply %u, GetEntry() %u IsInWorld %u", GetGUIDLow(), apply, GetEntry(), IsInWorld());
+    // TC_LOG_DEBUG("spells", "Pet::CastPetAuras guid %u, apply %u, GetEntry() %u IsInWorld %u", GetGUIDLow(), apply, GetEntry(), IsInWorld());
 
     Unit* owner = GetAnyOwner();
     if (!owner || !owner->ToPlayer() || !owner->ToPlayer()->GetSession() || owner->ToPlayer()->GetSession()->PlayerLogout())
@@ -1686,7 +1686,7 @@ void TempSummon::CastPetAuras(bool apply, uint32 spellId)
             float bp1 = itr.bp1;
             float bp2 = itr.bp2;
 
-            // TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet::CastPetAuras PetAura bp0 %i, bp1 %i, bp2 %i, target %i spellId %i option %u", bp0, bp1, bp2, itr->target, itr->spellId, itr->option);
+            // TC_LOG_DEBUG("misc", "Pet::CastPetAuras PetAura bp0 %i, bp1 %i, bp2 %i, target %i spellId %i option %u", bp0, bp1, bp2, itr->target, itr->spellId, itr->option);
 
             if(itr.spellId > 0)
             {
@@ -1872,7 +1872,7 @@ void TempSummon::CastPetAuras(bool apply, uint32 spellId)
             Unit* _caster = this;
             Unit* _targetaura = this;
 
-            //TC_LOG_DEBUG(LOG_FILTER_PETS, "CastPetAuras spellId %i", itr->spellId);
+            //TC_LOG_DEBUG("misc", "CastPetAuras spellId %i", itr->spellId);
 
             if(itr.target == 1 || itr.target == 4) //get target owner
                 _target = owner;
@@ -1912,7 +1912,7 @@ void TempSummon::CastPetAuras(bool apply, uint32 spellId)
             float bp1 = itr.bp1;
             float bp2 = itr.bp2;
 
-            //TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet::CastPetAuras PetAura bp0 %i, bp1 %i, bp2 %i, target %i", bp0, bp1, bp2, itr->target);
+            //TC_LOG_DEBUG("misc", "Pet::CastPetAuras PetAura bp0 %i, bp1 %i, bp2 %i, target %i", bp0, bp1, bp2, itr->target);
 
             if(itr.spellId > 0)
             {
@@ -2136,7 +2136,7 @@ void Pet::CheckSpecialization()
             break;
     }
 
-    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Pet::CheckSpecialization newSpecId %i m_specialization %i overrideSpec %i", newSpecId, m_specialization, overrideSpec);
+    TC_LOG_DEBUG("spells", "Pet::CheckSpecialization newSpecId %i m_specialization %i overrideSpec %i", newSpecId, m_specialization, overrideSpec);
 
     if (newSpecId)
     {

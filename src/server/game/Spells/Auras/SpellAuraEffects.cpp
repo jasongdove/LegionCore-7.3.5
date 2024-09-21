@@ -1363,7 +1363,7 @@ float AuraEffect::CalculateAmount(Unit* caster)
             amount *= 2;
 
     #ifdef WIN32
-    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraApplication::CalculateAmount GetId %i GetAuraType %u amount %i effIndex %i m_amount_mod %f m_amount_add %i GetStackAmount %u", GetId(), GetAuraType(), amount, m_effIndex, m_amount_mod, m_amount_add, GetBase()->GetStackAmount());
+    TC_LOG_DEBUG("spells", "AuraApplication::CalculateAmount GetId %i GetAuraType %u amount %i effIndex %i m_amount_mod %f m_amount_add %i GetStackAmount %u", GetId(), GetAuraType(), amount, m_effIndex, m_amount_mod, m_amount_add, GetBase()->GetStackAmount());
     #endif
 
     m_calc_amount = amount;
@@ -1381,7 +1381,7 @@ void AuraEffect::CalculateFromDummyAmount(Unit* caster, Unit* target, float &amo
 
     for (const auto& itr : *spellAuraDummy)
     {
-        // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraEffect::CalculateFromDummyAmount start GetId %i, amount %i, mask %i type %u option %u caster %u GetCaster %u",
+        // TC_LOG_DEBUG("spells", "AuraEffect::CalculateFromDummyAmount start GetId %i, amount %i, mask %i type %u option %u caster %u GetCaster %u",
         // GetId(), amount, itr->effectmask, itr->type, itr->option, caster->GetGUIDLow(), GetCaster()->GetGUIDLow());
 
         if (itr.type != SPELL_DUMMY_DEFAULT)
@@ -1636,7 +1636,7 @@ void AuraEffect::CalculateFromDummyAmount(Unit* caster, Unit* target, float &amo
         if (check && itr.removeAura)
             _caster->RemoveAurasDueToSpell(itr.removeAura);
     }
-    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraEffect::CalculateFromDummyAmount end GetId %i, amount %i m_effIndex %u m_amount_mod %u", GetId(), amount, m_effIndex, m_amount_mod);
+    TC_LOG_DEBUG("spells", "AuraEffect::CalculateFromDummyAmount end GetId %i, amount %i m_effIndex %u m_amount_mod %u", GetId(), amount, m_effIndex, m_amount_mod);
 }
 
 void AuraEffect::CalculatePeriodic(Unit* caster, bool resetPeriodicTimer /*= true*/, bool load /*= false*/)
@@ -2835,7 +2835,7 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const* aurApp, uint8 mo
         case FORM_WISP_FORM:                                // 0x27
             break;
         default:
-            TC_LOG_ERROR(LOG_FILTER_SPELLS_AURAS, "Auras: Unknown Shapeshift Type: %u", GetMiscValue());
+            TC_LOG_ERROR("spells", "Auras: Unknown Shapeshift Type: %u", GetMiscValue());
     }
 
     modelid = target->GetModelForForm(form);
@@ -3195,7 +3195,7 @@ void AuraEffect::HandleAuraTransform(AuraApplication const* aurApp, uint8 mode, 
                 if (!ci)
                 {
                     target->SetDisplayId(16358);              // pig pink ^_^
-                    TC_LOG_ERROR(LOG_FILTER_SPELLS_AURAS, "Auras: unknown creature id = %d (only need its modelid) From Spell Aura Transform in Spell ID = %d", GetMiscValue(), GetId());
+                    TC_LOG_ERROR("spells", "Auras: unknown creature id = %d (only need its modelid) From Spell Aura Transform in Spell ID = %d", GetMiscValue(), GetId());
                 }
                 else
                 {
@@ -4899,7 +4899,7 @@ void AuraEffect::HandleAuraModStat(AuraApplication const* aurApp, uint8 mode, bo
 
     if (GetMiscValue() < -2 || GetMiscValue() > 4)
     {
-        TC_LOG_ERROR(LOG_FILTER_SPELLS_AURAS, "WARNING: Spell %u effect %u has an unsupported misc value (%i) for SPELL_AURA_MOD_STAT ", GetId(), GetEffIndex(), GetMiscValue());
+        TC_LOG_ERROR("spells", "WARNING: Spell %u effect %u has an unsupported misc value (%i) for SPELL_AURA_MOD_STAT ", GetId(), GetEffIndex(), GetMiscValue());
         return;
     }
 
@@ -4925,7 +4925,7 @@ void AuraEffect::HandleModPercentStat(AuraApplication const* aurApp, uint8 mode,
 
     if (GetMiscValue() < -1 || GetMiscValue() > 4)
     {
-        TC_LOG_ERROR(LOG_FILTER_SPELLS_AURAS, "WARNING: Misc Value for SPELL_AURA_MOD_PERCENT_STAT not valid");
+        TC_LOG_ERROR("spells", "WARNING: Misc Value for SPELL_AURA_MOD_PERCENT_STAT not valid");
         return;
     }
 
@@ -5079,7 +5079,7 @@ void AuraEffect::HandleModPowerRegenPCT(AuraApplication const* aurApp, uint8 mod
             break;
     }
 
-    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraEffect::HandleModPowerRegenPCT mode %i, apply %i, GetAmount %i", mode, apply, GetAmount());
+    TC_LOG_DEBUG("spells", "AuraEffect::HandleModPowerRegenPCT mode %i, apply %i, GetAmount %i", mode, apply, GetAmount());
 }
 
 void AuraEffect::HandleModManaRegen(AuraApplication const* aurApp, uint8 mode, bool /*apply*/) const
@@ -6747,7 +6747,7 @@ void AuraEffect::HandlePreventResurrection(AuraApplication const* aurApp, uint8 
 
 void AuraEffect::AuraSpellTrigger(Unit* target, Unit* caster, SpellEffIndex effIndex) const
 {
-    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraEffect::AuraSpellTrigger: Spell %u in Effect %d", GetId(), effIndex);
+    //TC_LOG_DEBUG("spells", "AuraEffect::AuraSpellTrigger: Spell %u in Effect %d", GetId(), effIndex);
 
     if (std::vector<AuraPeriodickTrigger> const* spellTrigger = sSpellMgr->GetSpellAuraTrigger(m_spellInfo->Id))
     {
@@ -6771,7 +6771,7 @@ void AuraEffect::AuraSpellTrigger(Unit* target, Unit* caster, SpellEffIndex effI
 
                 if(!triggerTarget)
                 {
-                    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraEffect::AuraSpellTrigger: not exist triggerTarget");
+                    //TC_LOG_DEBUG("spells", "AuraEffect::AuraSpellTrigger: not exist triggerTarget");
                     check = true;
                     continue;
                 }
@@ -6782,7 +6782,7 @@ void AuraEffect::AuraSpellTrigger(Unit* target, Unit* caster, SpellEffIndex effI
 
             if(!triggerCaster)
             {
-                //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraEffect::AuraSpellTrigger: not exist triggerCaster");
+                //TC_LOG_DEBUG("spells", "AuraEffect::AuraSpellTrigger: not exist triggerCaster");
                 check = true;
                 continue;
             }
@@ -7773,7 +7773,7 @@ void AuraEffect::HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster, 
     {
         Creature* c = target->ToCreature();
         if (!c || !caster || !sScriptMgr->OnDummyEffect(caster, GetId(), SpellEffIndex(GetEffIndex()), target->ToCreature()) || !c->AI()->sOnDummyEffect(caster, GetId(), SpellEffIndex(GetEffIndex())))
-            TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraEffect::HandlePeriodicTriggerSpellAuraTick: Spell %u has non-existent spell %u in EffectTriggered[%d] and is therefor not triggered.", GetId(), triggerSpellId, GetEffIndex());
+            TC_LOG_DEBUG("spells", "AuraEffect::HandlePeriodicTriggerSpellAuraTick: Spell %u has non-existent spell %u in EffectTriggered[%d] and is therefor not triggered.", GetId(), triggerSpellId, GetEffIndex());
     }
 }
 
@@ -7787,11 +7787,11 @@ void AuraEffect::HandlePeriodicTriggerSpellWithValueAuraTick(Unit* target, Unit*
             float basepoints0 = GetAmount();
             GetBase()->CallScriptEffectChangeTickDamageHandlers(const_cast<AuraEffect const*>(this), basepoints0, target);
             triggerCaster->CastCustomSpell(target, triggerSpellId, &basepoints0, nullptr, nullptr, true, nullptr, this);
-            TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraEffect::HandlePeriodicTriggerSpellWithValueAuraTick: Spell %u Trigger %u", GetId(), triggeredSpellInfo->Id);
+            TC_LOG_DEBUG("spells", "AuraEffect::HandlePeriodicTriggerSpellWithValueAuraTick: Spell %u Trigger %u", GetId(), triggeredSpellInfo->Id);
         }
     }
     else
-        TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS,"AuraEffect::HandlePeriodicTriggerSpellWithValueAuraTick: Spell %u has non-existent spell %u in EffectTriggered[%d] and is therefor not triggered.", GetId(), triggerSpellId, GetEffIndex());
+        TC_LOG_DEBUG("spells","AuraEffect::HandlePeriodicTriggerSpellWithValueAuraTick: Spell %u has non-existent spell %u in EffectTriggered[%d] and is therefor not triggered.", GetId(), triggerSpellId, GetEffIndex());
 }
 
 void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster, SpellEffIndex effIndex, bool lastTick) const
@@ -7979,7 +7979,7 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster, Spell
 
     damage = caster->InterceptionOfDamage(target, dmg, m_spellInfo->GetSchoolMask());
 
-    TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "PeriodicTick: Caster %u attacked %u dmg %u damage %i GetId %u absorb %u", GetCasterGUID().GetGUIDLow(), target->GetGUIDLow(), dmg, damage, GetId(), absorb);
+    TC_LOG_INFO("spells", "PeriodicTick: Caster %u attacked %u dmg %u damage %i GetId %u absorb %u", GetCasterGUID().GetGUIDLow(), target->GetGUIDLow(), dmg, damage, GetId(), absorb);
 
     caster->DealDamageMods(target, damage, &absorb, GetSpellInfo(), GetBase()->GetTriggeredCastFlags() & TRIGGERED_CASTED_BY_AREATRIGGER);
 
@@ -8088,7 +8088,7 @@ void AuraEffect::HandlePeriodicWeaponPercentDamageAurasTick(Unit* target, Unit* 
 
     damage = caster->InterceptionOfDamage(target, dmg, m_spellInfo->GetSchoolMask());
 
-    TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "PeriodicTick: Caster %u attacked %u damage %u GetId %u absorb %u", GetCasterGUID().GetGUIDLow(), target->GetGUIDLow(), damage, GetId(), absorb);
+    TC_LOG_INFO("spells", "PeriodicTick: Caster %u attacked %u damage %u GetId %u absorb %u", GetCasterGUID().GetGUIDLow(), target->GetGUIDLow(), damage, GetId(), absorb);
 
     caster->DealDamageMods(target, damage, &absorb, GetSpellInfo(), GetBase()->GetTriggeredCastFlags() & TRIGGERED_CASTED_BY_AREATRIGGER);
 
@@ -8184,8 +8184,8 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster, S
     damage = caster->InterceptionOfDamage(target, dmg, m_spellInfo->GetSchoolMask());
     caster->CalcAbsorbResist(target, GetSpellInfo()->GetSchoolMask(), DOT, damage, &absorb, &resist, m_spellInfo);
 
-    TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "PeriodicTick: %s health leech of %s for %u dmg inflicted by %u abs is %u",
-        GetCasterGUID().ToString(), target->GetGUID().ToString(), damage, GetId(), absorb);
+    TC_LOG_INFO("spells", "PeriodicTick: %s health leech of %s for %u dmg inflicted by %u abs is %u",
+        GetCasterGUID().ToString().c_str(), target->GetGUID().ToString().c_str(), damage, GetId(), absorb);
 
     uint32 tempDmg = damage;
     caster->DealDamageMods(target, tempDmg, &absorb, GetSpellInfo(), GetBase()->GetTriggeredCastFlags() & TRIGGERED_CASTED_BY_AREATRIGGER);
@@ -8244,7 +8244,7 @@ void AuraEffect::HandlePeriodicHealthFunnelAuraTick(Unit* target, Unit* caster, 
     GetBase()->CallScriptEffectChangeTickDamageHandlers(const_cast<AuraEffect const*>(this), damage, target);
 
     caster->ModifyHealth(-static_cast<int32>(damage), nullptr, GetId());
-    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "PeriodicTick: donator %u target %u damage %u.", caster->GetEntry(), target->GetEntry(), damage);
+    TC_LOG_DEBUG("spells", "PeriodicTick: donator %u target %u damage %u.", caster->GetEntry(), target->GetEntry(), damage);
 
     float gainMultiplier = GetSpellInfo()->GetEffect(GetEffIndex(), m_diffMode)->CalcValueMultiplier(caster);
 
@@ -8466,8 +8466,8 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster, SpellEf
     if (crit)
         damage = caster->SpellCriticalHealingBonus(m_spellInfo, damage);
 
-    TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "PeriodicTick: %s heal of %s for %u health inflicted by %u",
-        GetCasterGUID().ToString(), target->GetGUID().ToString(), damage, GetId());
+    TC_LOG_INFO("spells", "PeriodicTick: %s heal of %s for %u health inflicted by %u",
+        GetCasterGUID().ToString().c_str(), target->GetGUID().ToString().c_str(), damage, GetId());
 
     GetBase()->CallScriptEffectChangeTickDamageHandlers(const_cast<AuraEffect const*>(this), damage, target);
 
@@ -8542,8 +8542,8 @@ void AuraEffect::HandlePeriodicManaLeechAuraTick(Unit* target, Unit* caster, Spe
 
     GetBase()->CallScriptEffectChangeTickDamageHandlers(const_cast<AuraEffect const*>(this), drainAmount, target);
 
-    TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "PeriodicTick: %s power leech of %s for %u dmg inflicted by %u",
-        GetCasterGUID().ToString(), target->GetGUID().ToString(), drainAmount, GetId());
+    TC_LOG_INFO("spells", "PeriodicTick: %s power leech of %s for %u dmg inflicted by %u",
+        GetCasterGUID().ToString().c_str(), target->GetGUID().ToString().c_str(), drainAmount, GetId());
 
     int32 drainedAmount = -target->ModifyPower(powerType, -drainAmount, true);
 
@@ -8601,8 +8601,8 @@ void AuraEffect::HandleObsModPowerAuraTick(Unit* target, Unit* caster, SpellEffI
 
     GetBase()->CallScriptEffectChangeTickDamageHandlers(const_cast<AuraEffect const*>(this), amount, target);
     
-    TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "PeriodicTick: %s energize of %s for %u dmg inflicted by %u",
-        GetCasterGUID().ToString(), target->GetGUID().ToString(), amount, GetId());
+    TC_LOG_INFO("spells", "PeriodicTick: %s energize of %s for %u dmg inflicted by %u",
+        GetCasterGUID().ToString().c_str(), target->GetGUID().ToString().c_str(), amount, GetId());
 
     SpellPeriodicAuraLogInfo pInfo(this, amount, 0, 0, 0, 0.0f, false);
     target->SendPeriodicAuraLog(&pInfo);
@@ -8648,8 +8648,8 @@ void AuraEffect::HandlePeriodicEnergizeAuraTick(Unit* target, Unit* caster, Spel
     SpellPeriodicAuraLogInfo pInfo(this, amount, 0, 0, 0, 0.0f, false);
     target->SendPeriodicAuraLog(&pInfo);
 
-    TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "PeriodicTick: %s energize of %s for %u dmg inflicted by %u",
-        GetCasterGUID().ToString(), target->GetGUID().ToString(), amount, GetId());
+    TC_LOG_INFO("spells", "PeriodicTick: %s energize of %s for %u dmg inflicted by %u",
+        GetCasterGUID().ToString().c_str(), target->GetGUID().ToString().c_str(), amount, GetId());
 
     int32 gain = target->ModifyPower(powerType, amount, true);
 
@@ -8736,11 +8736,11 @@ void AuraEffect::HandleProcTriggerSpellAuraProc(AuraApplication* aurApp, ProcEve
     uint32 triggerSpellId = GetSpellInfo()->GetEffect(GetEffIndex(), m_diffMode)->TriggerSpell;
     if (SpellInfo const* triggeredSpellInfo = sSpellMgr->GetSpellInfo(triggerSpellId))
     {
-        TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraEffect::HandleProcTriggerSpellAuraProc: Triggering spell %u from aura %u proc", triggeredSpellInfo->Id, GetId());
+        TC_LOG_DEBUG("spells", "AuraEffect::HandleProcTriggerSpellAuraProc: Triggering spell %u from aura %u proc", triggeredSpellInfo->Id, GetId());
         triggerCaster->CastSpell(triggerTarget, triggeredSpellInfo, true, nullptr, this);
     }
     else
-        TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS,"AuraEffect::HandleProcTriggerSpellAuraProc: Could not trigger spell %u from aura %u proc, because the spell does not have an entry in Spell.dbc.", triggerSpellId, GetId());
+        TC_LOG_DEBUG("spells","AuraEffect::HandleProcTriggerSpellAuraProc: Could not trigger spell %u from aura %u proc, because the spell does not have an entry in Spell.dbc.", triggerSpellId, GetId());
 }
 
 void AuraEffect::HandleProcTriggerSpellWithValueAuraProc(AuraApplication* aurApp, ProcEventInfo& eventInfo, SpellEffIndex /*effIndex*/)
@@ -8752,11 +8752,11 @@ void AuraEffect::HandleProcTriggerSpellWithValueAuraProc(AuraApplication* aurApp
     if (SpellInfo const* triggeredSpellInfo = sSpellMgr->GetSpellInfo(triggerSpellId))
     {
         float basepoints0 = GetAmount();
-        TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraEffect::HandleProcTriggerSpellWithValueAuraProc: Triggering spell %u with value %d from aura %u proc", triggeredSpellInfo->Id, basepoints0, GetId());
+        TC_LOG_DEBUG("spells", "AuraEffect::HandleProcTriggerSpellWithValueAuraProc: Triggering spell %u with value %d from aura %u proc", triggeredSpellInfo->Id, basepoints0, GetId());
         triggerCaster->CastCustomSpell(triggerTarget, triggerSpellId, &basepoints0, nullptr, nullptr, true, nullptr, this);
     }
     else
-        TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS,"AuraEffect::HandleProcTriggerSpellWithValueAuraProc: Could not trigger spell %u from aura %u proc, because the spell does not have an entry in Spell.dbc.", triggerSpellId, GetId());
+        TC_LOG_DEBUG("spells","AuraEffect::HandleProcTriggerSpellWithValueAuraProc: Could not trigger spell %u from aura %u proc, because the spell does not have an entry in Spell.dbc.", triggerSpellId, GetId());
 }
 
 void AuraEffect::HandleProcTriggerDamageAuraProc(AuraApplication* aurApp, ProcEventInfo& eventInfo, SpellEffIndex effIndex)
@@ -8774,7 +8774,7 @@ void AuraEffect::HandleProcTriggerDamageAuraProc(AuraApplication* aurApp, ProcEv
     target->SendSpellNonMeleeDamageLog(&damageInfo);
     target->DealSpellDamage(&damageInfo, true);
 
-    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "AuraEffect::HandleProcTriggerDamageAuraProc: Triggering %u spell damage from aura %u proc", damage, GetId());
+    TC_LOG_DEBUG("spells", "AuraEffect::HandleProcTriggerDamageAuraProc: Triggering %u spell damage from aura %u proc", damage, GetId());
 }
 
 void AuraEffect::HandleAuraForceWeather(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -9636,7 +9636,7 @@ void AuraEffect::HandleAuraProcOnHpBelow(AuraApplication const* auraApp, uint8 m
 
     uint32 curHealth = target->GetHealth();
 
-    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "HandleAuraProcOnHpBelow GetId %u triggered_spell_id %u curCount %u curHealth %u", GetId(), triggered_spell_id, curCount, curHealth);
+    TC_LOG_DEBUG("spells", "HandleAuraProcOnHpBelow GetId %u triggered_spell_id %u curCount %u curHealth %u", GetId(), triggered_spell_id, curCount, curHealth);
 
     if(GetMiscValue() == 1) // Below
     {

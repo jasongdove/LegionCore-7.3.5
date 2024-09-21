@@ -42,7 +42,7 @@ void EventObjectDataStoreMgr::LoadEventObjectTemplates()
     QueryResult result = WorldDatabase.Query("SELECT entry, name, radius, SpellID, WorldSafeLocID, ScriptName, Flags FROM eventobject_template;");
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "EventObjectDataStoreMgr::LoadEventObjectTemplates() >> Loaded 0 eventobject. DB table `eventobject_template` is empty.");
+        TC_LOG_ERROR("server.loading", "EventObjectDataStoreMgr::LoadEventObjectTemplates() >> Loaded 0 eventobject. DB table `eventobject_template` is empty.");
         return;
     }
 
@@ -65,7 +65,7 @@ void EventObjectDataStoreMgr::LoadEventObjectTemplates()
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "EventObjectDataStoreMgr::LoadEventObjectTemplates() >> Loaded %u eventobject template in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "EventObjectDataStoreMgr::LoadEventObjectTemplates() >> Loaded %u eventobject template in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void EventObjectDataStoreMgr::LoadEventObjects()
@@ -78,7 +78,7 @@ void EventObjectDataStoreMgr::LoadEventObjects()
 
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "EventObjectDataStoreMgr::LoadEventObjects() >> Loaded 0 eventobject. DB table `eventobject` is empty.");
+        TC_LOG_ERROR("server.loading", "EventObjectDataStoreMgr::LoadEventObjects() >> Loaded 0 eventobject. DB table `eventobject` is empty.");
         return;
     }
 
@@ -140,7 +140,7 @@ void EventObjectDataStoreMgr::LoadEventObjects()
                     lastObject->second->spawnMask |= data.spawnMask;
                     WorldDatabase.PExecute("UPDATE eventobject SET phaseMask = %u, spawnMask = " UI64FMTD " WHERE guid = %u", lastObject->second->phaseMask, lastObject->second->spawnMask, lastObject->second->guid);
                     WorldDatabase.PExecute("DELETE FROM eventobject WHERE guid = %u", guid);
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadEventObjects >> Table `eventobject` have clone npc %u witch stay too close (dist: %f). original npc guid %u. npc with guid %u will be deleted.", entry, distsq1, lastObject->second->guid, guid);
+                    TC_LOG_ERROR("sql.sql", "LoadEventObjects >> Table `eventobject` have clone npc %u witch stay too close (dist: %f). original npc guid %u. npc with guid %u will be deleted.", entry, distsq1, lastObject->second->guid, guid);
                     continue;
                 }
             }
@@ -152,20 +152,20 @@ void EventObjectDataStoreMgr::LoadEventObjects()
 
         if (!sMapStore.LookupEntry(data.mapid))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadEventObjects >> Table `eventobject` have eventobject (GUID: " UI64FMTD ") that spawned at not existed map (Id: %u), skipped.", guid, data.mapid);
+            TC_LOG_ERROR("sql.sql", "LoadEventObjects >> Table `eventobject` have eventobject (GUID: " UI64FMTD ") that spawned at not existed map (Id: %u), skipped.", guid, data.mapid);
             continue;
         }
 
         if (data.spawnMask & ~spawnMasks[data.mapid])
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadEventObjects >> Table `eventobject` have eventobject (GUID: " UI64FMTD ") that have wrong spawn mask %u including not supported difficulty modes for map (Id: %u) spawnMasks[data.mapid]: %u.", guid, data.spawnMask, data.mapid, spawnMasks[data.mapid]);
+            TC_LOG_ERROR("sql.sql", "LoadEventObjects >> Table `eventobject` have eventobject (GUID: " UI64FMTD ") that have wrong spawn mask %u including not supported difficulty modes for map (Id: %u) spawnMasks[data.mapid]: %u.", guid, data.spawnMask, data.mapid, spawnMasks[data.mapid]);
             WorldDatabase.PExecute("UPDATE eventobject SET spawnMask = " UI64FMTD " WHERE guid = %u", spawnMasks[data.mapid], guid);
             data.spawnMask = spawnMasks[data.mapid];
         }
 
         if (data.phaseMask == 0)
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadEventObjects >> Table `eventobject` have eventobject (GUID: " UI64FMTD " Entry: %u) with `phaseMask`=0 (not visible for anyone), set to 1.", guid, data.id);
+            TC_LOG_ERROR("sql.sql", "LoadEventObjects >> Table `eventobject` have eventobject (GUID: " UI64FMTD " Entry: %u) with `phaseMask`=0 (not visible for anyone), set to 1.", guid, data.id);
             data.phaseMask = 1;
         }
 
@@ -188,7 +188,7 @@ void EventObjectDataStoreMgr::LoadEventObjects()
         ++count;
 
     } while (result->NextRow());
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "EventObjectDataStoreMgr::LoadEventObjects() >> Loaded %u eventobject in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "EventObjectDataStoreMgr::LoadEventObjects() >> Loaded %u eventobject in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 EventObjectTemplate const* EventObjectDataStoreMgr::GetEventObjectTemplate(uint32 entry)

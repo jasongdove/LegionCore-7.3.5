@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -16,52 +16,20 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef TRINITYCORE_COMMON_H
+#define TRINITYCORE_COMMON_H
 
 #include "Define.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <math.h>
-#include <errno.h>
-#include <signal.h>
-#include <assert.h>
-
-#if PLATFORM == TC_PLATFORM_WINDOWS
-#define STRCASECMP stricmp
-#else
-#define STRCASECMP strcasecmp
-#endif
-
-#include <set>
-#include <unordered_set>
-#include <list>
-#include <string>
-#include <map>
-#include <unordered_map>
-#include <queue>
-#include <sstream>
 #include <memory>
-#include <vector>
-#include <array>
+#include <string>
+#include <utility>
 
-#include <boost/optional.hpp>
-#include <boost/utility/in_place_factory.hpp>
-#include <boost/algorithm/clamp.hpp>
-#include "Debugging/Errors.h"
-
-#if PLATFORM == TC_PLATFORM_WINDOWS
-#  include <ws2tcpip.h>
-
-#  if defined(__INTEL_COMPILER)
+#if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
+#  if TRINITY_COMPILER == TRINITY_COMPILER_INTEL
 #    if !defined(BOOST_ASIO_HAS_MOVE)
 #      define BOOST_ASIO_HAS_MOVE
 #    endif // !defined(BOOST_ASIO_HAS_MOVE)
-#  endif // if defined(__INTEL_COMPILER)
-
+#  endif // if TRINITY_COMPILER == TRINITY_COMPILER_INTEL
 #else
 #  include <sys/types.h>
 #  include <sys/ioctl.h>
@@ -69,30 +37,22 @@
 #  include <netinet/in.h>
 #  include <unistd.h>
 #  include <netdb.h>
+#  include <cstdlib>
 #endif
 
-#if COMPILER == COMPILER_MICROSOFT
+#if TRINITY_COMPILER == TRINITY_COMPILER_MICROSOFT
 
-#include <float.h>
-
-#define I32FMT "%08I32X"
-#define I64FMT "%016I64X"
 #define snprintf _snprintf
 #define atoll _atoi64
 #define vsnprintf _vsnprintf
-#define finite(X) _finite(X)
 #define llabs _abs64
 
 #else
 
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
-#define I32FMT "%08X"
-#define I64FMT "%016llX"
 
 #endif
-
-inline float finiteAlways(float f) { return finite(f) ? f : 0.0f; }
 
 inline unsigned long atoul(char const* str) { return strtoul(str, nullptr, 10); }
 inline unsigned long long atoull(char const* str) { return strtoull(str, nullptr, 10); }
@@ -114,7 +74,7 @@ enum TimeConstants
     IN_MILLISECONDS = 1000
 };
 
-enum AccountTypes : uint8
+enum AccountTypes
 {
     SEC_PLAYER                = 0,
     SEC_MODERATOR             = 1,
@@ -126,7 +86,7 @@ enum AccountTypes : uint8
     SEC_CONSOLE               = 7                                  // must be always last in list, accounts must have less security level always also
 };
 
-enum LocaleConstant
+enum LocaleConstant : uint8
 {
     LOCALE_enUS = 0,
     LOCALE_koKR = 1,
@@ -144,20 +104,18 @@ enum LocaleConstant
     MAX_LOCALES
 };
 
-const uint8 TOTAL_LOCALES = 11;
-const LocaleConstant DEFAULT_LOCALE = LOCALE_enUS;
+const uint8 OLD_TOTAL_LOCALES = 9; /// @todo convert in simple system
+#define DEFAULT_LOCALE LOCALE_enUS
 
-const uint8 MAX_ACCOUNT_TUTORIAL_VALUES = 8;
+#define TOTAL_LOCALES 11
 
-extern char const* localeNames[MAX_LOCALES];
+TC_COMMON_API extern char const* localeNames[MAX_LOCALES];
 
-LocaleConstant GetLocaleByName(const std::string& name);
+TC_COMMON_API LocaleConstant GetLocaleByName(std::string const& name);
 
-typedef std::vector<std::string> StringVector;
-typedef std::set<std::string> StringSet;
-typedef std::unordered_set<std::string> StringUnorderedSet;
+#pragma pack(push, 1)
 
-struct LocalizedString
+struct TC_COMMON_API LocalizedString
 {
     char const* Str[MAX_LOCALES];
 
@@ -166,7 +124,9 @@ struct LocalizedString
     char const* Get(uint32 locale) const;
 };
 
-// we always use stdlibc++ std::max/std::min, undefine some not C++ standard defines (Win API and some other platforms)
+#pragma pack(pop)
+
+// we always use stdlib std::max/std::min, undefine some not C++ standard defines (Win API and some other platforms)
 #ifdef max
 #undef max
 #endif
@@ -176,7 +136,7 @@ struct LocalizedString
 #endif
 
 #ifndef M_PI
-#define M_PI            3.14159265358979323846f
+#define M_PI            3.14159265358979323846
 #endif
 
 #ifndef M_PI_F
@@ -187,47 +147,11 @@ struct LocalizedString
 #define M_RAD           57.295779513082320876846364344191f
 #endif
 
-static uint32 constexpr MAX_QUERY_LEN = 32 * 1024;
-
-//! Optional helper class to wrap optional values within.
-template <typename T>
-using Optional = boost::optional<T>;
+#define MAX_QUERY_LEN 32*1024
 
 namespace Trinity
 {
-    // using std::make_unique;
-    //! std::make_unique implementation (TODO: remove this once C++14 is supported)
-    // Overload for non-array types. Arguments are forwarded to T's constructor.
-
-    template <class T>
-    struct _Unique_if {
-      typedef std::unique_ptr<T> _Single_object;
-    };
-
-    template <class T>
-    struct _Unique_if<T[]> {
-      typedef std::unique_ptr<T[]> _Unknown_bound;
-    };
-
-    template <class T, size_t N>
-    struct _Unique_if<T[N]> {
-      typedef void _Known_bound;
-    };
-
-    template <class T, class... Args>
-    typename _Unique_if<T>::_Single_object make_unique(Args&&... args) {
-      return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-    }
-
-    template <class T>
-    typename _Unique_if<T>::_Unknown_bound make_unique(size_t n) {
-      typedef typename std::remove_extent<T>::type U;
-      return std::unique_ptr<T>(new U[n]());
-    }
-
-    template <class T, class... Args>
-    typename _Unique_if<T>::_Known_bound make_unique(Args&&...) = delete;
-
+    using std::make_unique;
 }
 
 #endif

@@ -46,7 +46,7 @@ void WordFilterMgr::LoadLetterAnalogs()
     QueryResult result = WorldDatabase.Query("SELECT letter, analogs FROM letter_analogs");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING,">> Loaded 0 letter analogs. DB table `letter_analogs` is empty!");
+        TC_LOG_INFO("server.loading",">> Loaded 0 letter analogs. DB table `letter_analogs` is empty!");
         return;
     }
 
@@ -64,7 +64,7 @@ void WordFilterMgr::LoadLetterAnalogs()
     }
     while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING,">> Loaded %u (%u) letter analogs in %u ms", count, m_letterAnalogs.size(), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading",">> Loaded %u (%u) letter analogs in %u ms", count, m_letterAnalogs.size(), GetMSTimeDiffToNow(oldMSTime));
 }
 
 
@@ -78,7 +78,7 @@ void WordFilterMgr::LoadBadWords()
     QueryResult result = WorldDatabase.Query("SELECT `bad_word`, `convert` FROM bad_word");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING,">> Loaded 0 bad words. DB table `bad_word` is empty!");
+        TC_LOG_INFO("server.loading",">> Loaded 0 bad words. DB table `bad_word` is empty!");
         return;
     }
 
@@ -101,7 +101,7 @@ void WordFilterMgr::LoadBadWords()
     result = WorldDatabase.Query("SELECT bad_word FROM bad_word_mail");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING,">> Loaded 0 bad words. DB table `bad_word_mail` is empty!");
+        TC_LOG_INFO("server.loading",">> Loaded 0 bad words. DB table `bad_word_mail` is empty!");
         return;
     }
 
@@ -116,7 +116,7 @@ void WordFilterMgr::LoadBadWords()
     }
     while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING,">> Loaded %u bad words in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading",">> Loaded %u bad words in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void WordFilterMgr::LoadBadSentences()
@@ -129,7 +129,7 @@ void WordFilterMgr::LoadBadSentences()
     QueryResult result = CharacterDatabase.Query("SELECT hash, sentence, id, penalty, sourceMask, output FROM bad_sentences order by id");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 bad sentences. DB table `bad_sentences` is empty!");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 bad sentences. DB table `bad_sentences` is empty!");
         return;
     }
 
@@ -174,7 +174,7 @@ void WordFilterMgr::LoadBadSentences()
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u bad sentences in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u bad sentences in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void WordFilterMgr::LoadComplaints()
@@ -186,7 +186,7 @@ void WordFilterMgr::LoadComplaints()
     QueryResult result = CharacterDatabase.Query("SELECT ID, ReportPlayer, SpammerGuid, MessageLog FROM report_complaints where JustBanned = 0 and (UNIX_TIMESTAMP() - (ReportTime-TimeSinceOffence)) <= 86400");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 report_complaints. DB table `report_complaints` is empty!");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 report_complaints. DB table `report_complaints` is empty!");
         return;
     }
 
@@ -201,7 +201,7 @@ void WordFilterMgr::LoadComplaints()
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u report_complaints in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u report_complaints in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 
@@ -218,7 +218,7 @@ std::string WordFilterMgr::FindBadWord(std::string const& text, bool mail)
     {
         if (_text.find(*it) != std::wstring::npos)
         {
-            // TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Compare text %s _text %s *it %s", text.c_str(), boost::locale::conv::utf_to_utf<char>(_text).c_str(), boost::locale::conv::utf_to_utf<char>(*it).c_str());
+            // TC_LOG_INFO("server.loading", "Compare text %s _text %s *it %s", text.c_str(), boost::locale::conv::utf_to_utf<char>(_text).c_str(), boost::locale::conv::utf_to_utf<char>(*it).c_str());
             return boost::locale::conv::utf_to_utf<char>(*it);
         }
     }
@@ -227,7 +227,7 @@ std::string WordFilterMgr::FindBadWord(std::string const& text, bool mail)
     {
         for (BadWordMapMail::const_iterator it = m_badWordsMail.begin(); it != m_badWordsMail.end(); ++it)
         {
-        //    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Compare %s and %s", boost::locale::conv::utf_to_utf<char>(*it).c_str(), boost::locale::conv::utf_to_utf<char>(_text).c_str());
+        //    TC_LOG_INFO("server.loading", "Compare %s and %s", boost::locale::conv::utf_to_utf<char>(*it).c_str(), boost::locale::conv::utf_to_utf<char>(_text).c_str());
             if (_text.find(*it) != std::wstring::npos)
                 return boost::locale::conv::utf_to_utf<char>(*it);
         }

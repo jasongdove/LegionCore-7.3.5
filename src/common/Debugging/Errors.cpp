@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -17,13 +17,22 @@
  */
 
 #include "Errors.h"
-#include "Util.h"
-#include "Duration.h"
 
 #include <cstdio>
 #include <cstdlib>
 #include <thread>
 #include <cstdarg>
+
+/**
+    @file Errors.cpp
+
+    @brief This file contains definitions of functions used for reporting critical application errors
+
+    It is very important that (std::)abort is NEVER called in place of *((volatile int*)NULL) = 0;
+    Calling abort() on Windows does not invoke unhandled exception filters - a mechanism used by WheatyExceptionReport
+    to log crashes. exit(1) calls here are for static analysis tools to indicate that calling functions defined in this file
+    terminates the application.
+ */
 
 namespace Trinity {
 
@@ -87,42 +96,11 @@ void Abort(char const* file, int line, char const* function)
     exit(1);
 }
 
-void AbortHandler(int signum)
+void AbortHandler(int /*sigval*/)
 {
-    if (m_worldCrashChecker) // Prevent double dump if crash already run
-    {
-        std::this_thread::sleep_for(Milliseconds(5000)); // Waiting when gdb is dump this thread
-        signal(signum, SIG_DFL);
-    }
-    else
-    {
-        m_worldCrashChecker = true;
-        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "AbortHandler m_worldCrashChecker %u", m_worldCrashChecker);
-
-        std::this_thread::sleep_for(Milliseconds(5000)); // Waiting for save and exit from work thread
-
-        signal(signum, SIG_DFL);
-        exit(1);
-    }
-}
-
-void DumpHandler(int signum)
-{
-    if (m_worldCrashChecker) // Prevent double dump if crash already run
-    {
-        std::this_thread::sleep_for(Milliseconds(5000)); // Waiting when gdb is dump this thread
-        signal(signum, SIG_DFL);
-    }
-    else
-    {
-        m_worldCrashChecker = true;
-        TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "DumpHandler m_worldCrashChecker %u", m_worldCrashChecker);
-
-        std::this_thread::sleep_for(Milliseconds(5000)); // Waiting for save and exit from work thread
-
-        signal(signum, SIG_DFL);
-        exit(3);
-    }
+    // nothing useful to log here, no way to pass args
+    *((volatile int*)NULL) = 0;
+    exit(1);
 }
 
 } // namespace Trinity

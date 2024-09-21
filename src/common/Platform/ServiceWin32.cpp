@@ -256,7 +256,7 @@ bool WinServiceRun()
 
     if (!StartServiceCtrlDispatcher(serviceTable))
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "StartService Failed. Error [%u]", ::GetLastError());
+        TC_LOG_ERROR("misc", "StartService Failed. Error [%u]", ::GetLastError());
         return false;
     }
     return true;

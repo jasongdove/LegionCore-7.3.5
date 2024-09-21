@@ -191,7 +191,7 @@ void Position::SimplePosXYRelocationByAngle(Position &pos, float dist, float ang
     if (!Trinity::IsValidMapCoord(pos.m_positionX, pos.m_positionY))
     {
         pos.Relocate(this);
-        TC_LOG_FATAL(LOG_FILTER_GENERAL, "Position::SimplePosXYRelocationByAngle invalid coordinates X: %f and Y: %f were passed!", pos.m_positionX, pos.m_positionY);
+        TC_LOG_FATAL("misc", "Position::SimplePosXYRelocationByAngle invalid coordinates X: %f and Y: %f were passed!", pos.m_positionX, pos.m_positionY);
         return;
     }
 

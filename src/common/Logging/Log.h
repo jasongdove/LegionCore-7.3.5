@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -16,26 +16,20 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LOG_H
-#define LOG_H
+#ifndef TRINITYCORE_LOG_H
+#define TRINITYCORE_LOG_H
 
 #include "Define.h"
-#include "LogCommon.h"
-#include "Appender.h"
-#include "Logger.h"
 #include "AsioHacksFwd.h"
-#include <boost/asio/io_service.hpp>
-#include <boost/asio/strand.hpp>
-#include <string>
-#include <unordered_map>
-#include <string>
-#include <stdarg.h>
-#include <safe_ptr.h>
+#include "LogCommon.h"
 #include "StringFormat.h"
-#include "Common.h"
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
-typedef std::unordered_map<uint8, Logger> LoggerMap;
-typedef std::vector<Logger*> LoggerList;
+class Appender;
+class Logger;
+struct LogMessage;
 
 namespace Trinity
 {
@@ -45,132 +39,163 @@ namespace Trinity
     }
 }
 
-class Log
+#define LOGGER_ROOT "root"
+
+typedef Appender*(*AppenderCreatorFn)(uint8 id, std::string const& name, LogLevel level, AppenderFlags flags, std::vector<char const*>&& extraArgs);
+
+template<class AppenderImpl>
+Appender* CreateAppender(uint8 id, std::string const& name, LogLevel level, AppenderFlags flags, std::vector<char const*>&& extraArgs)
 {
-private:
-    Log();
-    ~Log();
-    Log(Log const&) = delete;
-    Log(Log&&) = delete;
-    Log& operator=(Log const&) = delete;
-    Log& operator=(Log&&) = delete;
+    return new AppenderImpl(id, name, level, flags, std::forward<std::vector<char const*>>(extraArgs));
+}
 
-public:
-    static Log* instance();
+class TC_COMMON_API Log
+{
+    private:
+        Log();
+        ~Log();
+        Log(Log const&) = delete;
+        Log(Log&&) = delete;
+        Log& operator=(Log const&) = delete;
+        Log& operator=(Log&&) = delete;
 
-    void Initialize(Trinity::Asio::IoContext* ioContext);
-    void LoadFromConfig();
-    void Close();
-    bool ShouldLog(LogFilterType type, LogLevel level) const;
-    bool SetLogLevel(std::string const& name, char const* newLevelc, bool isLogger = true);
+    public:
+        static Log* instance();
 
-    void outMessage(LogFilterType filter, LogLevel level, std::string&& message)
-    {
-        std::unique_ptr<LogMessage> msg(new LogMessage(level, filter, std::move(message)));
-        write(std::move(msg));
-    }
+        void Initialize(Trinity::Asio::IoContext* ioContext);
+        void SetSynchronous();  // Not threadsafe - should only be called from main() after all threads are joined
+        void LoadFromConfig();
+        void Close();
+        bool ShouldLog(std::string const& type, LogLevel level) const;
+        bool SetLogLevel(std::string const& name, char const* level, bool isLogger = true);
 
-    template<typename Format, typename... Args>
-    void outMessage(LogFilterType filter, LogLevel level, Format&& fmt, Args&&... args)
-    {
-        outMessage(filter, level, Trinity::StringFormat(std::forward<Format>(fmt), std::forward<Args>(args)...));
-    }
+        template<typename Format, typename... Args>
+        inline void outMessage(std::string const& filter, LogLevel const level, Format&& fmt, Args&&... args)
+        {
+            outMessage(filter, level, Trinity::StringFormat(std::forward<Format>(fmt), std::forward<Args>(args)...));
+        }
 
-    void outArena(uint8 jointype, const char * str, ...); // ATTR_PRINTF(3, 4);
-    void OutPveEncounter(char const* str, ...);
-    void outSpamm(const char * str, ...)               ATTR_PRINTF(2, 3);
-    void outDiff(const char * str, ...)                ATTR_PRINTF(2, 3);
-    void outWarden(const char * str, ...)               ATTR_PRINTF(2, 3);
-    void outCommand(uint32 account, const char * str, ...) ATTR_PRINTF(3, 4);
-    void outCharDump(char const* str, uint32 accountId, uint64 guid, char const* name);
-    void outMapInfo(const char * str, ...)                ATTR_PRINTF(2, 3);
-    void outFreeze(const char * str, ...)                ATTR_PRINTF(2, 3);
-    void outAnticheat(const char * str, ...)                ATTR_PRINTF(2, 3);
-    void outArenaSeason(const char * str, ...)                ATTR_PRINTF(2, 3);
-    void outTryCatch(const char * str, ...)                ATTR_PRINTF(2, 3);
+        template<typename Format, typename... Args>
+        void outCommand(uint32 account, Format&& fmt, Args&&... args)
+        {
+            if (!ShouldLog("commands.gm", LOG_LEVEL_INFO))
+                return;
 
-    void EnableDBAppenders();
-    static std::string GetTimestampStr();
+            outCommand(Trinity::StringFormat(std::forward<Format>(fmt), std::forward<Args>(args)...), std::to_string(account));
+        }
 
-    void SetRealmID(uint32 id);
-    static void outTimestamp(FILE* file);
-    uint32 GetRealmID() const { return realm; }
+        void outCharDump(char const* str, uint32 account_id, uint64 guid, char const* name);
 
+        // TODO: do we need these
+        void outArena(uint8 jointype, const char * str, ...) {} // ATTR_PRINTF(3, 4);
+        void OutPveEncounter(char const* str, ...) {}
+        void outSpamm(const char * str, ...) {}              ATTR_PRINTF(2, 3);
+        void outDiff(const char * str, ...) {}               ATTR_PRINTF(2, 3);
+        void outWarden(const char * str, ...) {}              ATTR_PRINTF(2, 3);
+        void outCommand(uint32 account, const char * str, ...) {} ATTR_PRINTF(3, 4);
+        void outMapInfo(const char * str, ...) {}               ATTR_PRINTF(2, 3);
+        void outFreeze(const char * str, ...) {}               ATTR_PRINTF(2, 3);
+        void outAnticheat(const char * str, ...) {}               ATTR_PRINTF(2, 3);
+        void outArenaSeason(const char * str, ...) {}               ATTR_PRINTF(2, 3);
+        void outTryCatch(const char * str, ...) {}               ATTR_PRINTF(2, 3);
 
-    std::atomic<bool> _checkLock{};
+        void SetRealmId(uint32 id);
 
-private:
-    void vlog(LogFilterType f, LogLevel level, char const* str, va_list argptr);
-    void write(std::unique_ptr<LogMessage>&& msg);
+        template<class AppenderImpl>
+        void RegisterAppender()
+        {
+            using Index = typename AppenderImpl::TypeIndex;
+            RegisterAppender(Index::value, &CreateAppender<AppenderImpl>);
+        }
 
-    Logger* GetLoggerByType(LogFilterType filter);
-    Appender* GetAppenderByName(std::string const& name);
-    uint8 NextAppenderId();
-    void CreateAppenderFromConfig(const char* name);
-    void CreateLoggerFromConfig(const char* name);
-    void ReadAppendersFromConfig();
-    void ReadLoggersFromConfig();
+        std::string const& GetLogsDir() const { return m_logsDir; }
+        std::string const& GetLogsTimestamp() const { return m_logsTimestamp; }
 
-    std::unordered_map<uint8, std::unique_ptr<Appender>> appenders;
-    LoggerMap loggers;
-    LoggerList loggerList;
-    uint8 AppenderId{};
-    LogLevel lowestLogLevel = LOG_LEVEL_DISABLED;
-    FILE* openLogFile(char const* configFileName, char const* configTimeStampFlag, char const* mode);
-    FILE* arenaLogFile2v2;
-    FILE* arenaLogFile3v3;
-    FILE* spammLogFile;
-    FILE* diffLogFile;
-    FILE* wardenLogFile;
-    FILE* mapInfoFile;
-    FILE* _pveEncounterLogFile{};
-    FILE* freezeFile;
-    FILE* acLogFile;
-    FILE* arenaSeasonLogFile;
-    FILE* tryCatchLogFile;
+    private:
+        static std::string GetTimestampStr();
+        void write(std::unique_ptr<LogMessage>&& msg) const;
 
-    std::string m_logsDir;
-    std::string m_logsTimestamp;
+        Logger const* GetLoggerByType(std::string const& type) const;
+        Appender* GetAppenderByName(std::string const& name);
+        uint8 NextAppenderId();
+        void CreateAppenderFromConfig(std::string const& name);
+        void CreateLoggerFromConfig(std::string const& name);
+        void ReadAppendersFromConfig();
+        void ReadLoggersFromConfig();
+        void RegisterAppender(uint8 index, AppenderCreatorFn appenderCreateFn);
+        void outMessage(std::string const& filter, LogLevel const level, std::string&& message);
+        void outCommand(std::string&& message, std::string&& param1);
 
-    uint32 realm{};
-    Trinity::Asio::IoContext* _ioContext;
-    Trinity::Asio::Strand* _strand;
+        std::unordered_map<uint8, AppenderCreatorFn> appenderFactory;
+        std::unordered_map<uint8, std::unique_ptr<Appender>> appenders;
+        std::unordered_map<std::string, std::unique_ptr<Logger>> loggers;
+        uint8 AppenderId;
+        LogLevel lowestLogLevel;
+
+        std::string m_logsDir;
+        std::string m_logsTimestamp;
+
+        Trinity::Asio::IoContext* _ioContext;
+        Trinity::Asio::Strand* _strand;
 };
 
 #define sLog Log::instance()
 
-#define TC_LOG_MESSAGE_BODY(filterType__, level__, ...) \
-    if (sLog->ShouldLog(filterType__, level__)) \
-        sLog->outMessage(filterType__, level__, __VA_ARGS__);
+#define LOG_EXCEPTION_FREE(filterType__, level__, ...) \
+    { \
+        try \
+        { \
+            sLog->outMessage(filterType__, level__, __VA_ARGS__); \
+        } \
+        catch (std::exception& e) \
+        { \
+            sLog->outMessage("server", LOG_LEVEL_ERROR, "Wrong format occurred (%s) at %s:%u.", \
+                e.what(), __FILE__, __LINE__); \
+        } \
+    }
 
-#define TC_LOG_TRACE(filterType__, ...)                     \
-    do {                                                    \
-        TC_LOG_MESSAGE_BODY(filterType__, LOG_LEVEL_TRACE,  __VA_ARGS__) \
-    } while(0)
+#if TRINITY_PLATFORM != TRINITY_PLATFORM_WINDOWS
+void check_args(const char*, ...) ATTR_PRINTF(1, 2);
+void check_args(std::string const&, ...);
+
+// This will catch format errors on build time
+#define TC_LOG_MESSAGE_BODY(filterType__, level__, ...)                 \
+        do {                                                            \
+            if (sLog->ShouldLog(filterType__, level__))                 \
+            {                                                           \
+                if (false)                                              \
+                    check_args(__VA_ARGS__);                            \
+                                                                        \
+                LOG_EXCEPTION_FREE(filterType__, level__, __VA_ARGS__); \
+            }                                                           \
+        } while (0)
+#else
+#define TC_LOG_MESSAGE_BODY(filterType__, level__, ...)                 \
+        __pragma(warning(push))                                         \
+        __pragma(warning(disable:4127))                                 \
+        do {                                                            \
+            if (sLog->ShouldLog(filterType__, level__))                 \
+                LOG_EXCEPTION_FREE(filterType__, level__, __VA_ARGS__); \
+        } while (0)                                                     \
+        __pragma(warning(pop))
+#endif
+
+#define TC_LOG_TRACE(filterType__, ...) \
+    TC_LOG_MESSAGE_BODY(filterType__, LOG_LEVEL_TRACE, __VA_ARGS__)
 
 #define TC_LOG_DEBUG(filterType__, ...) \
-    do {                                                    \
-        TC_LOG_MESSAGE_BODY(filterType__, LOG_LEVEL_DEBUG,  __VA_ARGS__) \
-    } while(0)
+    TC_LOG_MESSAGE_BODY(filterType__, LOG_LEVEL_DEBUG, __VA_ARGS__)
 
 #define TC_LOG_INFO(filterType__, ...)  \
-    do {                                                    \
-        TC_LOG_MESSAGE_BODY(filterType__, LOG_LEVEL_INFO,  __VA_ARGS__) \
-    } while(0)
+    TC_LOG_MESSAGE_BODY(filterType__, LOG_LEVEL_INFO, __VA_ARGS__)
 
 #define TC_LOG_WARN(filterType__, ...)  \
-    do {                                                    \
-        TC_LOG_MESSAGE_BODY(filterType__, LOG_LEVEL_WARN,  __VA_ARGS__) \
-    } while(0)
+    TC_LOG_MESSAGE_BODY(filterType__, LOG_LEVEL_WARN, __VA_ARGS__)
 
 #define TC_LOG_ERROR(filterType__, ...) \
-    do {                                                    \
-        TC_LOG_MESSAGE_BODY(filterType__, LOG_LEVEL_ERROR,  __VA_ARGS__) \
-    } while(0)
+    TC_LOG_MESSAGE_BODY(filterType__, LOG_LEVEL_ERROR, __VA_ARGS__)
 
 #define TC_LOG_FATAL(filterType__, ...) \
-    do {                                                    \
-        TC_LOG_MESSAGE_BODY(filterType__, LOG_LEVEL_FATAL,  __VA_ARGS__) \
-    } while(0)
+    TC_LOG_MESSAGE_BODY(filterType__, LOG_LEVEL_FATAL, __VA_ARGS__)
 
 #endif

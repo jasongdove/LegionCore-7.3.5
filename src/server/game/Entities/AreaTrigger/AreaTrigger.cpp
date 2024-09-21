@@ -144,7 +144,7 @@ void AreaTrigger::AddToWorld()
 void AreaTrigger::RemoveFromWorld()
 {
 #ifdef WIN32
-    TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::RemoveFromWorld Entry: %u CustomEntry: %u", GetRealEntry(), GetCustomEntry());
+    TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::RemoveFromWorld Entry: %u CustomEntry: %u", GetRealEntry(), GetCustomEntry());
 #endif
 
     ///- Remove the AreaTrigger from the accessor and from all lists of objects in world
@@ -176,20 +176,20 @@ bool AreaTrigger::CreateAreaTrigger(ObjectGuid::LowType guidlow, uint32 triggerE
 
     // if (!info)
     // {
-        // TC_LOG_ERROR(LOG_FILTER_GENERAL, "AreaTrigger (entry %u) caster %s no spellInfo", triggerEntry, caster->ToString().c_str());
+        // TC_LOG_ERROR("misc", "AreaTrigger (entry %u) caster %s no spellInfo", triggerEntry, caster->ToString().c_str());
         // return false;
     // }
 
     // Caster not in world, might be spell triggered from aura removal
     if (caster && !caster->IsInWorld())
     {
-        // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::CreateAreaTrigger guid %u, GetEntry() %u IsInWorld %u", caster->GetGUIDLow(), caster->GetEntry(), caster->IsInWorld());
+        // TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::CreateAreaTrigger guid %u, GetEntry() %u IsInWorld %u", caster->GetGUIDLow(), caster->GetEntry(), caster->IsInWorld());
         return false;
     }
 
     // if (!caster->isAlive())
     // {
-        // TC_LOG_ERROR(LOG_FILTER_GENERAL, "AreaTrigger (spell %u) caster %s is dead ", info ? info->Id : 0, caster->ToString().c_str());
+        // TC_LOG_ERROR("misc", "AreaTrigger (spell %u) caster %s is dead ", info ? info->Id : 0, caster->ToString().c_str());
         // return false;
     // }
 
@@ -198,7 +198,7 @@ bool AreaTrigger::CreateAreaTrigger(ObjectGuid::LowType guidlow, uint32 triggerE
     SetOrientation(pos.GetOrientation());
     if (!IsPositionValid())
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "AreaTrigger (spell %u) not created. Invalid coordinates (X: %f Y: %f)", info ? info->Id : 0, GetPositionX(), GetPositionY());
+        TC_LOG_ERROR("misc", "AreaTrigger (spell %u) not created. Invalid coordinates (X: %f Y: %f)", info ? info->Id : 0, GetPositionX(), GetPositionY());
         return false;
     }
 
@@ -228,7 +228,7 @@ bool AreaTrigger::CreateAreaTrigger(ObjectGuid::LowType guidlow, uint32 triggerE
         return false;
 
 #ifdef WIN32
-    TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger (spell %u) coordinates (X: %f Y: %f) _actionInfo %u", info ? info->Id : 0, GetPositionX(), GetPositionY(), _actionInfo.size());
+    TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger (spell %u) coordinates (X: %f Y: %f) _actionInfo %u", info ? info->Id : 0, GetPositionX(), GetPositionY(), _actionInfo.size());
 #endif
 
     Object::_Create(ObjectGuid::Create<HighGuid::AreaTrigger>(GetMapId(), atInfo.customEntry, guidlow));
@@ -361,9 +361,9 @@ bool AreaTrigger::CreateAreaTrigger(ObjectGuid::LowType guidlow, uint32 triggerE
         return false;
 
 #ifdef WIN32
-    TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::Create AreaTrigger caster %s spellID %u spell rage %f dist %f dest - X:%f,Y:%f,Z:%f _nextMoveTime %i duration %i",
+    TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::Create AreaTrigger caster %s spellID %u spell rage %f dist %f dest - X:%f,Y:%f,Z:%f _nextMoveTime %i duration %i",
         caster ? caster->GetGUID().ToString().c_str() : ObjectGuid::Empty.ToString().c_str(), info ? info->Id : 0, _radius, GetSpellInfo() ? GetSpellInfo()->GetMaxRange() : 0.0f, _spline.VerticesPoints.empty() ? 0.0f : _spline.VerticesPoints[0].x, _spline.VerticesPoints.empty() ? 0.0f : _spline.VerticesPoints[0].y, _spline.VerticesPoints.empty() ? 0.0f : _spline.VerticesPoints[0].z, _nextMoveTime, duration);
-    TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::Create isMoving %i _range %f _spline.VerticesPoints %i moveType %i", isMoving(), _range, _spline.VerticesPoints.size(), atInfo.moveType);
+    TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::Create isMoving %i _range %f _spline.VerticesPoints %i moveType %i", isMoving(), _range, _spline.VerticesPoints.size(), atInfo.moveType);
 #endif
 
     if (atInfo.maxCount && info && caster)
@@ -382,7 +382,7 @@ bool AreaTrigger::CreateAreaTrigger(ObjectGuid::LowType guidlow, uint32 triggerE
     UpdateAffectedList(0, AT_ACTION_MOMENT_SPAWN);
 
 #ifdef WIN32
-    TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger end (spell %u) coordinates (X: %f Y: %f)", info ? info->Id : 0, GetPositionX(), GetPositionY());
+    TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger end (spell %u) coordinates (X: %f Y: %f)", info ? info->Id : 0, GetPositionX(), GetPositionY());
     DebugVisualizePolygon();
 #endif
 
@@ -530,7 +530,7 @@ void AreaTrigger::UpdateAffectedList(uint32 /*p_time*/, AreaTriggerActionMoment 
 
                 if (!CheckValidateTargets(unit, actionM))
                 {
-                    // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::UpdateAffectedList !CheckValidateTargets GetGUID %s", unit->GetGUID().ToString().c_str());
+                    // TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::UpdateAffectedList !CheckValidateTargets GetGUID %s", unit->GetGUID().ToString().c_str());
                     continue;
                 }
 
@@ -726,7 +726,7 @@ void AreaTrigger::AffectOwner(AreaTriggerActionMoment actionM)
 void AreaTrigger::ActionOnUpdate(uint32 /*p_time*/)
 {
 #ifdef WIN32
-    TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "ActionOnUpdate");
+    TC_LOG_DEBUG("entities.areatrigger", "ActionOnUpdate");
 #endif
 
     // Action for AOE spell with cast on dest
@@ -812,7 +812,7 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
         return;
 
 #ifdef WIN32
-    TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::DoAction caster %s unit %s type %u spellID %u, moment %u, targetFlags %u",
+    TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::DoAction caster %s unit %s type %u spellID %u, moment %u, targetFlags %u",
         caster->GetGUID().ToString().c_str(), unit->GetGUID().ToString().c_str(), action.action->actionType, action.action->spellId, action.action->moment, action.action->targetFlags);
 #endif
 
@@ -1276,7 +1276,7 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
     if (atInfo.hitType & (1 << action.action->actionType))
         _hitCount++;
 
-    // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::DoAction action _hitCount %i hitCount %i hitMaxCount %i hitType %i actionType %i Duration %u", _hitCount, action.hitCount, action.action->hitMaxCount, atInfo.hitType, action.action->actionType, GetDuration());
+    // TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::DoAction action _hitCount %i hitCount %i hitMaxCount %i hitType %i actionType %i Duration %u", _hitCount, action.hitCount, action.action->hitMaxCount, atInfo.hitType, action.action->actionType, GetDuration());
 
     if (action.charges > 0)
     {
@@ -1323,7 +1323,7 @@ void AreaTrigger::DoActionLeave(ActionInfo& action)
         return;
 
 #ifdef WIN32
-    TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::DoActionLeave caster %s type %u spellID %u, moment %u, targetFlags %u",
+    TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::DoActionLeave caster %s type %u spellID %u, moment %u, targetFlags %u",
         caster->GetGUID().ToString().c_str(), action.action->actionType, action.action->spellId, action.action->moment, action.action->targetFlags);
 #endif
 
@@ -1642,7 +1642,7 @@ void AreaTrigger::InitSplines()
         _CircleData->TimeToTarget = _spline.TimeToTarget;
 
     #ifdef WIN32
-        TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "InitSplines TimeToTarget %i _liveTime %u RePatchSpeed %f Speed %f movespline %s", _spline.TimeToTarget, _liveTime, atInfo.RePatchSpeed, atInfo.Speed, movespline->ToString().c_str());
+        TC_LOG_DEBUG("entities.areatrigger", "InitSplines TimeToTarget %i _liveTime %u RePatchSpeed %f Speed %f movespline %s", _spline.TimeToTarget, _liveTime, atInfo.RePatchSpeed, atInfo.Speed, movespline->ToString().c_str());
     #endif
 
     if (_reachedDestination)
@@ -1724,7 +1724,7 @@ void AreaTrigger::UpdateSplinePosition(uint32 diff)
     }
 
 #ifdef WIN32
-    TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::UpdateSplinePosition %f %f %f %i  _reachedDestination %u", GetPositionX(), GetPositionY(), GetPositionZ(), _movementTime, _reachedDestination);
+    TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::UpdateSplinePosition %f %f %f %i  _reachedDestination %u", GetPositionX(), GetPositionY(), GetPositionZ(), _movementTime, _reachedDestination);
     DebugVisualizePosition();
 #endif
 }
@@ -1734,7 +1734,7 @@ void AreaTrigger::UpdateRotation(uint32 diff)
     if (!isMoving() || !_spline.VerticesPoints.empty())
         return;
 
-    //TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::UpdateRotation _waitTime %i _movementTime %i _nextMoveTime %i diff %i o %f", _waitTime, _movementTime, _nextMoveTime, diff, GetOrientation());
+    //TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::UpdateRotation _waitTime %i _movementTime %i _nextMoveTime %i diff %i o %f", _waitTime, _movementTime, _nextMoveTime, diff, GetOrientation());
 
     if (_waitTime > 0)
     {
@@ -1830,7 +1830,7 @@ bool AreaTrigger::IsInPolygon(Unit* unit)
 
     int pred_q = q_patt[pred_pt.Pos.m_positionY < 0][pred_pt.Pos.m_positionX < 0];
 
-    // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::IsInPolygon x_source %f y_source %f angle %f dist %f x %f y %f pred_ptX %f pred_ptY %f pred_q %u GetGUID %s", x_source, y_source, angle, dist, x, y, pred_pt.x, pred_pt.y, pred_q, unit->GetGUID().ToString().c_str());
+    // TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::IsInPolygon x_source %f y_source %f angle %f dist %f x %f y %f pred_ptX %f pred_ptY %f pred_q %u GetGUID %s", x_source, y_source, angle, dist, x, y, pred_pt.x, pred_pt.y, pred_q, unit->GetGUID().ToString().c_str());
 
     int w = 0;
     int i = 0;
@@ -1899,7 +1899,7 @@ float AreaTrigger::CalculateRadiusPolygon()
     else
         ActivePointPolygon.resize(atInfo.Polygon.Vertices.size(), true);
 
-    // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::CalculateRadiusPolygon distance %f", distance);
+    // TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::CalculateRadiusPolygon distance %f", distance);
 
     return distance;
 }
@@ -2047,70 +2047,70 @@ bool AreaTrigger::CheckValidateTargets(Unit* unit, AreaTriggerActionMoment /*act
         if (action.action->targetFlags & AT_TARGET_FLAG_FRIENDLY)
             if (!caster || !caster->IsFriendlyTo(unit) || unit->isTotem())
             {
-                // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAG_FRIENDLY unit %s", unit->GetGUID().ToString().c_str());
+                // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAG_FRIENDLY unit %s", unit->GetGUID().ToString().c_str());
                 continue;
             }
 
         if (action.action->targetFlags & AT_TARGET_FLAG_HOSTILE)
             if (!caster || !caster->IsHostileTo(unit))
             {
-                // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAG_HOSTILE unit %s", unit->GetGUID().ToString().c_str());
+                // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAG_HOSTILE unit %s", unit->GetGUID().ToString().c_str());
                 continue;
             }
 
         if (action.action->targetFlags & AT_TARGET_FLAG_VALIDATTACK)
             if (!caster || !caster->IsValidAttackTarget(unit) || unit->isTotem())
             {
-                // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAG_VALIDATTACK unit %s", unit->GetGUID().ToString().c_str());
+                // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAG_VALIDATTACK unit %s", unit->GetGUID().ToString().c_str());
                 continue;
             }
 
         if (action.action->targetFlags & AT_TARGET_FLAG_OWNER)
             if (unit->GetGUID() != GetCasterGUID())
             {
-                // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAG_OWNER unit %s", unit->GetGUID().ToString().c_str());
+                // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAG_OWNER unit %s", unit->GetGUID().ToString().c_str());
                 continue;
             }
 
         if (action.action->targetFlags & AT_TARGET_FLAG_PLAYER)
             if (!unit->IsPlayer())
             {
-                // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAG_PLAYER unit %s", unit->GetGUID().ToString().c_str());
+                // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAG_PLAYER unit %s", unit->GetGUID().ToString().c_str());
                 continue;
             }
 
         if (action.action->targetFlags & AT_TARGET_FLAG_NOT_PET)
             if (unit->isPet())
             {
-                // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAG_NOT_PET unit %s", unit->GetGUID().ToString().c_str());
+                // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAG_NOT_PET unit %s", unit->GetGUID().ToString().c_str());
                 continue;
             }
 
         if (action.action->targetFlags & AT_TARGET_FLAG_NOT_FULL_HP)
             if (unit->IsFullHealth())
             {
-                // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAG_NOT_FULL_HP unit %s", unit->GetGUID().ToString().c_str());
+                // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAG_NOT_FULL_HP unit %s", unit->GetGUID().ToString().c_str());
                 continue;
             }
 
         if (action.action->targetFlags & AT_TARGET_FLAG_GROUP_OR_RAID)
             if (!unit->IsInRaidWith(caster))
             {
-                // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAG_GROUP_OR_RAID unit %s", unit->GetGUID().ToString().c_str());
+                // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAG_GROUP_OR_RAID unit %s", unit->GetGUID().ToString().c_str());
                 continue;
             }
 
         if (action.action->targetFlags & AT_TARGET_FLAG_NOT_AURA_TARGET)
             if (GetTargetGuid() && GetTargetGuid() == unit->GetGUID())
             {
-                // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAG_NOT_AURA_TARGET unit %s", unit->GetGUID().ToString().c_str());
+                // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAG_NOT_AURA_TARGET unit %s", unit->GetGUID().ToString().c_str());
                 continue;
             }
 
         if (action.action->targetFlags & AT_TARGET_FLAT_IN_FRONT)
             if (!HasInArc(static_cast<float>(M_PI), unit))
             {
-                // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAT_IN_FRONT unit %s", unit->GetGUID().ToString().c_str());
+                // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAT_IN_FRONT unit %s", unit->GetGUID().ToString().c_str());
                 continue;
             }
 
@@ -2118,21 +2118,21 @@ bool AreaTrigger::CheckValidateTargets(Unit* unit, AreaTriggerActionMoment /*act
             if (Unit* summoner = _caster->GetAnyOwner())
                 if (unit->GetGUID() != summoner->GetGUID())
                 {
-                    // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAG_TARGET_IS_SUMMONER unit %s", unit->GetGUID().ToString().c_str());
+                    // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAG_TARGET_IS_SUMMONER unit %s", unit->GetGUID().ToString().c_str());
                     continue;
                 }
 
         if (action.action->targetFlags & AT_TARGET_FLAG_NOT_OWNER)
             if (unit->GetGUID() == GetCasterGUID())
             {
-                // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAG_NOT_OWNER unit %s", unit->GetGUID().ToString().c_str());
+                // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAG_NOT_OWNER unit %s", unit->GetGUID().ToString().c_str());
                 continue;
             }
 
         if (action.action->targetFlags & AT_TARGET_FLAG_NPC_ENTRY)
             if (action.amount != unit->GetEntry() || unit->ToPlayer())
             {
-                // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets AT_TARGET_FLAG_NPC_ENTRY unit %s", unit->GetGUID().ToString().c_str());
+                // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets AT_TARGET_FLAG_NPC_ENTRY unit %s", unit->GetGUID().ToString().c_str());
                 continue;
             }
 
@@ -2144,25 +2144,25 @@ bool AreaTrigger::CheckValidateTargets(Unit* unit, AreaTriggerActionMoment /*act
             || action.action->hasAura2 > 0 && !unit->HasAura(action.action->hasAura2)
             || action.action->hasAura3 > 0 && !unit->HasAura(action.action->hasAura3))
         {
-            // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets aura > 0 unit %s", unit->GetGUID().ToString().c_str());
+            // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets aura > 0 unit %s", unit->GetGUID().ToString().c_str());
             continue;
         }
         if (action.action->hasAura < 0 && unit->HasAura(abs(action.action->hasAura))
             || action.action->hasAura2 < 0 && unit->HasAura(abs(action.action->hasAura2))
             || action.action->hasAura3 < 0 && unit->HasAura(abs(action.action->hasAura3)))
         {
-            // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets aura < 0 unit %s", unit->GetGUID().ToString().c_str());
+            // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets aura < 0 unit %s", unit->GetGUID().ToString().c_str());
             continue;
         }
 
         if (action.action->hasspell > 0 && !_caster->HasSpell(action.action->hasspell))
         {
-            // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets hasspell > 0 unit %s", unit->GetGUID().ToString().c_str());
+            // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets hasspell > 0 unit %s", unit->GetGUID().ToString().c_str());
             continue;
         }
         if (action.action->hasspell < 0 && _caster->HasSpell(abs(action.action->hasspell)))
         {
-            // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CheckValidateTargets hasspell < 0 unit %s", unit->GetGUID().ToString().c_str());
+            // TC_LOG_DEBUG("entities.areatrigger", "CheckValidateTargets hasspell < 0 unit %s", unit->GetGUID().ToString().c_str());
             continue;
         }
         
@@ -2186,7 +2186,7 @@ void AreaTrigger::GetCollisionPosition(Position &_dest, float dist, float angle)
     pos.Relocate(GetPositionX(), GetPositionY(), GetPositionZ() + 2.0f);
 
 #ifdef WIN32
-    TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "GetCollisionPosition coordinates (X: %f Y: %f) ", pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+    TC_LOG_DEBUG("entities.areatrigger", "GetCollisionPosition coordinates (X: %f Y: %f) ", pos.m_positionX, pos.m_positionY, pos.m_positionZ);
 #endif
 
     float destx = pos.m_positionX + dist * std::cos(angle);
@@ -2197,7 +2197,7 @@ void AreaTrigger::GetCollisionPosition(Position &_dest, float dist, float angle)
     if (!col)
     {
     #ifdef WIN32
-        TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "GetCollisionPosition coordinates !col  dest (X: %f Y: %f) ", destx, desty, destz);
+        TC_LOG_DEBUG("entities.areatrigger", "GetCollisionPosition coordinates !col  dest (X: %f Y: %f) ", destx, desty, destz);
     #endif
 
         dist += 200.0f;
@@ -2207,7 +2207,7 @@ void AreaTrigger::GetCollisionPosition(Position &_dest, float dist, float angle)
     }
 
 #ifdef WIN32
-    TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "GetCollisionPosition coordinates  dest (X: %f Y: %f) Z %f", destx, desty, destz, GetPositionZ());
+    TC_LOG_DEBUG("entities.areatrigger", "GetCollisionPosition coordinates  dest (X: %f Y: %f) Z %f", destx, desty, destz, GetPositionZ());
 #endif
 
     destx -= (CONTACT_DISTANCE + _radius) * std::cos(angle);
@@ -2666,7 +2666,7 @@ void AreaTrigger::CalculateSplinePosition(Position const& pos, Position const& p
                 m_moveAngleLos = _dest.GetAngle(&_destAngle) - static_cast<float>(M_PI / 2);
 
             #ifdef WIN32
-                TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AT_MOVE_TYPE_RE_PATH_LOS _timeToTarget %i _dest (%f %f %f) %f",
+                TC_LOG_DEBUG("entities.areatrigger", "AT_MOVE_TYPE_RE_PATH_LOS _timeToTarget %i _dest (%f %f %f) %f",
                     _spline.TimeToTarget, _dest.GetPositionX(), _dest.GetPositionY(), _dest.GetPositionZ(), m_moveAngleLos);
             #endif
             }
@@ -2777,7 +2777,7 @@ void AreaTrigger::ReCalculateSplinePosition(bool setReach /*= false*/)
             }
 
             #ifdef WIN32
-            TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::UpdateMovement AT_MOVE_TYPE_RE_PATH size %i _timeToTarget %i dist %f", _spline.VerticesPoints.size(), _spline.TimeToTarget, dist);
+            TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::UpdateMovement AT_MOVE_TYPE_RE_PATH size %i _timeToTarget %i dist %f", _spline.VerticesPoints.size(), _spline.TimeToTarget, dist);
                 DebugVisualizePosition();
             #endif
             break;
@@ -2804,7 +2804,7 @@ void AreaTrigger::ReCalculateSplinePosition(bool setReach /*= false*/)
             InitSplines();
 
             #ifdef WIN32
-            TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "AreaTrigger::UpdateMovement AT_MOVE_TYPE_RE_PATH_LOS size %i _timeToTarget %i _dest (%f %f %f) %f",
+            TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::UpdateMovement AT_MOVE_TYPE_RE_PATH_LOS size %i _timeToTarget %i _dest (%f %f %f) %f",
                 _spline.VerticesPoints.size(), _spline.TimeToTarget, _dest.GetPositionX(), _dest.GetPositionY(), _dest.GetPositionZH(), m_moveAngleLos);
                 DebugVisualizePosition();
             #endif
@@ -2856,7 +2856,7 @@ void AreaTrigger::CalculateCyclicPosition(Position const& pos, Position const& /
     float x = posX + radius * std::cos(startAngle);
     float y = posY + radius * std::sin(startAngle);
     _spline.VerticesPoints.emplace_back(x, y, 0.0f);
-    // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CalculateCyclicPosition first calcLenght %f startAngle %f x %f y %f lenght %f", calcLenght, startAngle, x, y, lenght);
+    // TC_LOG_DEBUG("entities.areatrigger", "CalculateCyclicPosition first calcLenght %f startAngle %f x %f y %f lenght %f", calcLenght, startAngle, x, y, lenght);
 
     while (lenght > calcLenght)
     {
@@ -2868,7 +2868,7 @@ void AreaTrigger::CalculateCyclicPosition(Position const& pos, Position const& /
             x = posX + radius * std::cos(calcAngle + startAngle);
             y = posY + radius * std::sin(calcAngle + startAngle);
             _spline.VerticesPoints.emplace_back(x, y, 0.0f);
-            // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CalculateCyclicPosition calcLenght %f calcAngle %f x %f y %f", calcLenght, calcAngle, x, y);
+            // TC_LOG_DEBUG("entities.areatrigger", "CalculateCyclicPosition calcLenght %f calcAngle %f x %f y %f", calcLenght, calcAngle, x, y);
         }
         else
         {
@@ -2879,7 +2879,7 @@ void AreaTrigger::CalculateCyclicPosition(Position const& pos, Position const& /
             x = posX + radius * std::cos(calcAngle + startAngle);
             y = posY + radius * std::sin(calcAngle + startAngle);
             _spline.VerticesPoints.emplace_back(x, y, 0.0f);
-            // TC_LOG_DEBUG(LOG_FILTER_AREATRIGGER, "CalculateCyclicPosition last calcLenght %f calcAngle %f x %f y %f lasPart %f", calcLenght, calcAngle, x, y, lasPart);
+            // TC_LOG_DEBUG("entities.areatrigger", "CalculateCyclicPosition last calcLenght %f calcAngle %f x %f y %f lasPart %f", calcLenght, calcAngle, x, y, lasPart);
         }
     }
 
@@ -2905,18 +2905,12 @@ void AreaTrigger::CalculateCyclicPosition(Position const& pos, Position const& /
 
 void AreaTrigger::DebugVisualizePosition()
 {
-    if (!sLog->ShouldLog(LOG_FILTER_AREATRIGGER, LOG_LEVEL_DEBUG))
-        return;
-
     if (Unit* caster = GetCaster())
         caster->SummonCreature(44548, *this, TEMPSUMMON_TIMED_DESPAWN, _spline.TimeToTarget);
 }
 
 void AreaTrigger::DebugVisualizePolygon()
 {
-    if (!sLog->ShouldLog(LOG_FILTER_AREATRIGGER, LOG_LEVEL_DEBUG))
-        return;
-
     if (atInfo.Polygon.Vertices.size() < 3)
         return;
 

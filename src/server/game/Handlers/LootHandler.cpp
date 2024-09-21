@@ -43,7 +43,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPackets::Loot::AutoStoreLo
             }
 
             loot = &go->loot;
-            //TC_LOG_DEBUG(LOG_FILTER_LOOT, "HandleAutostoreLootItemOpcode lguid %u, pguid %u lguid %u", lguid, player->personalLoot.GetGUID(), loot->GetGUID());
+            //TC_LOG_DEBUG("loot", "HandleAutostoreLootItemOpcode lguid %u, pguid %u lguid %u", lguid, player->personalLoot.GetGUID(), loot->GetGUID());
         }
         else if (lguid.IsItem())
         {
@@ -191,7 +191,7 @@ void WorldSession::DoLootRelease(ObjectGuid lguid)
     Loot* loot = nullptr;
     Loot* lootPesonal = nullptr;
 
-    TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "WORLD: DoLootRelease lguid %u", lguid.GetCounter());
+    TC_LOG_DEBUG("network", "WORLD: DoLootRelease lguid %u", lguid.GetCounter());
 
     player->SetLootGUID(ObjectGuid::Empty);
 
@@ -534,7 +534,7 @@ void WorldSession::HandleDoMasterLootRoll(WorldPackets::Loot::DoMasterLootRoll& 
     packet.LootListID -= 1; //restore slot index;
     if (packet.LootListID >= loot->items.size() + loot->quest_items.size())
     {
-        // TC_LOG_DEBUG(LOG_FILTER_LOOT, "MasterLootItem: Player %s might be using a hack! (slot %d, size %lu)", GetPlayer()->GetName(), packet.LootListID, (unsigned long)loot->items.size());
+        // TC_LOG_DEBUG("loot", "MasterLootItem: Player %s might be using a hack! (slot %d, size %lu)", GetPlayer()->GetName(), packet.LootListID, (unsigned long)loot->items.size());
         return;
     }
 
@@ -587,7 +587,7 @@ void WorldSession::HandleMasterLootItem(WorldPackets::Loot::MasterLootItem& pack
         uint8 _LootListID = lootData.LootListID - 1;    //restore slot index; WTF?
         if (_LootListID >= loot->items.size() + loot->quest_items.size())
         {
-            TC_LOG_DEBUG(LOG_FILTER_LOOT, "MasterLootItem: Player %s might be using a hack! (slot %d, size %lu)",
+            TC_LOG_DEBUG("loot", "MasterLootItem: Player %s might be using a hack! (slot %d, size %lu)",
                 GetPlayer()->GetName(), _LootListID, static_cast<uint32>(loot->items.size()));
             return;
         }
@@ -595,7 +595,7 @@ void WorldSession::HandleMasterLootItem(WorldPackets::Loot::MasterLootItem& pack
         LootItem& item = _LootListID >= static_cast<uint8>(loot->items.size()) ? loot->quest_items[_LootListID - static_cast<uint8>(loot->items.size())] : loot->items[_LootListID];
         if (item.currency)
         {
-            TC_LOG_DEBUG(LOG_FILTER_LOOT, "WorldSession::HandleMasterLootItem: player %s tried to give currency via master loot! Hack alert! Slot %u, currency id %u",
+            TC_LOG_DEBUG("loot", "WorldSession::HandleMasterLootItem: player %s tried to give currency via master loot! Hack alert! Slot %u, currency id %u",
                 GetPlayer()->GetName(), _LootListID, item.item.ItemID);
             return;
         }

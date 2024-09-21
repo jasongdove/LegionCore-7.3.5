@@ -109,7 +109,7 @@ void InstanceScript::HandleGameObject(ObjectGuid GUID, bool open, GameObject* go
     if (go)
         go->SetGoState(open ? GO_STATE_ACTIVE : GO_STATE_READY);
     else
-        TC_LOG_DEBUG(LOG_FILTER_TSCR, "InstanceScript: HandleGameObject failed");
+        TC_LOG_DEBUG("scripts", "InstanceScript: HandleGameObject failed");
 }
 
 GameObject* InstanceScript::GetGameObject(uint32 type)
@@ -143,7 +143,7 @@ void InstanceScript::LoadMinionData(const MinionData* data)
 
         ++data;
     }
-    TC_LOG_DEBUG(LOG_FILTER_TSCR, "InstanceScript::LoadMinionData: " UI64FMTD " minions loaded.", uint64(minions.size()));
+    TC_LOG_DEBUG("scripts", "InstanceScript::LoadMinionData: " UI64FMTD " minions loaded.", uint64(minions.size()));
 }
 
 void InstanceScript::LoadDoorData(const DoorData* data)
@@ -155,7 +155,7 @@ void InstanceScript::LoadDoorData(const DoorData* data)
 
         ++data;
     }
-    TC_LOG_DEBUG(LOG_FILTER_TSCR, "InstanceScript::LoadDoorData: " UI64FMTD " doors loaded.", uint64(doors.size()));
+    TC_LOG_DEBUG("scripts", "InstanceScript::LoadDoorData: " UI64FMTD " doors loaded.", uint64(doors.size()));
 }
 
 void InstanceScript::UpdateMinionState(Creature* minion, EncounterState state)
@@ -277,7 +277,7 @@ bool InstanceScript::SetBossState(uint32 id, EncounterState state)
         if (bossInfo->state == TO_BE_DECIDED) // loading
         {
             bossInfo->state = state;
-            //TC_LOG_ERROR(LOG_FILTER_GENERAL, "Inialize boss %u state as %u.", id, (uint32)state);
+            //TC_LOG_ERROR("misc", "Inialize boss %u state as %u.", id, (uint32)state);
             return false;
         }
         if (bossInfo->state == state)
@@ -392,7 +392,7 @@ void InstanceScript::DoUseDoorOrButton(ObjectGuid uiGuid, uint32 uiWithRestoreTi
                 go->ResetDoorOrButton();
         }
         else
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "SD2: Script call DoUseDoorOrButton, but gameobject entry %u is type %u.", go->GetEntry(), go->GetGoType());
+            TC_LOG_ERROR("misc", "SD2: Script call DoUseDoorOrButton, but gameobject entry %u is type %u.", go->GetEntry(), go->GetGoType());
     }
 }
 
@@ -630,7 +630,7 @@ bool InstanceScript::ServerAllowsTwoSideGroups()
 
 bool InstanceScript::CheckAchievementCriteriaMeet(uint32 criteria_id, Player const* /*source*/, Unit const* /*target*/ /*= nullptr*/, uint32 /*miscvalue1*/ /*= 0*/)
 {
-    TC_LOG_ERROR(LOG_FILTER_GENERAL, "Achievement system call InstanceScript::CheckAchievementCriteriaMeet but instance script for map %u not have implementation for achievement criteria %u", instance->GetId(), criteria_id);
+    TC_LOG_ERROR("misc", "Achievement system call InstanceScript::CheckAchievementCriteriaMeet but instance script for map %u not have implementation for achievement criteria %u", instance->GetId(), criteria_id);
     return false;
 }
 
@@ -833,7 +833,7 @@ void InstanceScript::UpdatePhasing()
 
 void InstanceScript::SetBossNumber(uint32 number)
 {
-    //TC_LOG_DEBUG(LOG_FILTER_TSCR, "InstanceScript::SetBossNumber number %u", number);
+    //TC_LOG_DEBUG("scripts", "InstanceScript::SetBossNumber number %u", number);
     if (bosses.size() < number)
         bosses.resize(number);
 }
@@ -1255,7 +1255,7 @@ void InstanceScript::OnGameObjectCreateForScript(GameObject* go)
     if (_challenge)
         _challenge->OnGameObjectCreateForScript(go);
 
-    // TC_LOG_DEBUG(LOG_FILTER_CHALLENGE, "OnGameObjectCreateForScript GetEntry %u GetGUID %s", go->GetEntry(), go->GetGUID().ToString().c_str());
+    // TC_LOG_DEBUG("challenge", "OnGameObjectCreateForScript GetEntry %u GetGUID %s", go->GetEntry(), go->GetGUID().ToString().c_str());
 
     if (sChallengeMgr->IsChest(go->GetEntry()))
         _challengeChest = go->GetGUID();

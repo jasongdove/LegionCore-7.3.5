@@ -93,7 +93,7 @@ namespace FactorySelector
         // select NullCreatureAI if not another cases
         ainame = aiFactory == nullptr ? "NullCreatureAI" : aiFactory->key();
 
-        TC_LOG_DEBUG(LOG_FILTER_TSCR, "Creature %u used AI is %s.", creature->GetGUIDLow(), ainame.c_str());
+        TC_LOG_DEBUG("scripts", "Creature %u used AI is %s.", creature->GetGUIDLow(), ainame.c_str());
         creature->SetNPCAIName(ainame);
         return aiFactory == nullptr ? new NullCreatureAI(creature) : aiFactory->Create(creature);
     }
@@ -107,9 +107,9 @@ namespace FactorySelector
         /* if (mv_factory == NULL)
         {
             int best_val = -1;
-            StringVector l;
+            std::vector<std::string> l;
             mv_registry.GetRegisteredItems(l);
-            for (StringVector::iterator iter = l.begin(); iter != l.end(); ++iter)
+            for (std::vector<std::string>::iterator iter = l.begin(); iter != l.end(); ++iter)
             {
             const MovementGeneratorCreator *factory = mv_registry.GetRegistryItem((*iter).c_str());
             const SelectableMovement *p = dynamic_cast<const SelectableMovement *>(factory);
@@ -134,7 +134,7 @@ namespace FactorySelector
         auto aiFactory = sGameObjectAIRegistry->GetRegistryItem(go->GetAIName());
         auto ainame = aiFactory == nullptr || go->GetScriptId() ? "NullGameObjectAI" : aiFactory->key();
 
-        TC_LOG_DEBUG(LOG_FILTER_TSCR, "GameObject %u used AI is %s.", go->GetGUIDLow(), ainame.c_str());
+        TC_LOG_DEBUG("scripts", "GameObject %u used AI is %s.", go->GetGUIDLow(), ainame.c_str());
 
         return aiFactory == nullptr ? new NullGameObjectAI(go) : aiFactory->Create(go);
     }

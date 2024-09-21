@@ -210,7 +210,7 @@ void MoveSpline::init_spline(const MoveSplineInitArgs& args)
     // TODO: what to do in such cases? problem is in input data (all points are at same coords)
     if (spline.length() < minimal_duration)
     {
-        TC_LOG_DEBUG(LOG_FILTER_GENERAL, "MoveSpline::init_spline: zero length spline, wrong input data?");
+        TC_LOG_DEBUG("misc", "MoveSpline::init_spline: zero length spline, wrong input data?");
         spline.set_length(spline.last(), spline.isCyclic() ? 1000 : 1);
     }
     point_Idx = spline.first();
@@ -306,7 +306,7 @@ bool MoveSplineInitArgs::Validate() const
 #define CHECK(exp) \
     if (!(exp))\
     {\
-        /* TC_LOG_DEBUG(LOG_FILTER_GENERAL, "MoveSplineInitArgs::Validate: expression '%s' failed", #exp); */\
+        /* TC_LOG_DEBUG("misc", "MoveSplineInitArgs::Validate: expression '%s' failed", #exp); */\
         return false;\
     }
 #define CHECK_V(exp) \

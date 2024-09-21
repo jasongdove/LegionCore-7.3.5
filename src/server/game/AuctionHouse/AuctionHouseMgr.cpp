@@ -84,10 +84,10 @@ uint32 AuctionHouseMgr::GetAuctionDeposit(AuctionHouseEntry const* entry, uint32
     uint32 timeHr = (((time / 60) / 60) / 12);
     auto deposit = uint32(((multiplier * MSV * count / 3) * timeHr * 3) * sWorld->getRate(RATE_AUCTION_DEPOSIT));
 
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "MSV:        %u", MSV);
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Items:      %u", count);
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Multiplier: %f", multiplier);
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Deposit:    %u", deposit);
+    TC_LOG_DEBUG("auctionHouse", "MSV:        %u", MSV);
+    TC_LOG_DEBUG("auctionHouse", "Items:      %u", count);
+    TC_LOG_DEBUG("auctionHouse", "Multiplier: %f", multiplier);
+    TC_LOG_DEBUG("auctionHouse", "Deposit:    %u", deposit);
 
     if (deposit < AH_MINIMUM_DEPOSIT)
         return AH_MINIMUM_DEPOSIT;
@@ -143,7 +143,7 @@ void AuctionHouseMgr::SendAuctionWonMail(AuctionEntry* auction, SQLTransaction& 
     if(auction->bid >= sWorld->getIntConfig(CONFIG_LOG_GOLD_FROM))
     {
         ObjectGuid ownerGuid = ObjectGuid::Create<HighGuid::Player>(auction->owner);
-        TC_LOG_DEBUG(LOG_FILTER_GOLD, "AuctionHouse: GUID %u won item in auction: %s (Entry: %u Count: %u) and pay money: " UI64FMTD ". Original ownerGuid %u",
+        TC_LOG_DEBUG("auctionHouse", "AuctionHouse: GUID %u won item in auction: %s (Entry: %u Count: %u) and pay money: " UI64FMTD ". Original ownerGuid %u",
             bidderGuid.GetGUIDLow(), pItem->GetTemplate()->GetName()->Str[bidder ? bidder->GetSession()->GetSessionDbLocaleIndex() : DEFAULT_LOCALE], pItem->GetEntry(), pItem->GetCount(), auction->bid, ownerGuid.GetGUIDLow());
     }
 
@@ -213,7 +213,7 @@ void AuctionHouseMgr::SendAuctionExpiredMail(AuctionEntry* auction, SQLTransacti
     Item* pItem = GetAItem(auction->itemGUIDLow);
     if (!pItem)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "SendAuctionExpiredMail %u has not a existing item : %u", auction->Id, auction->itemGUIDLow);
+        TC_LOG_ERROR("server.loading", "SendAuctionExpiredMail %u has not a existing item : %u", auction->Id, auction->itemGUIDLow);
         return;
     }
 
@@ -293,7 +293,7 @@ void AuctionHouseMgr::LoadAuctionItems()
 
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 auction items. DB table `auctionhouse` or `item_instance` is empty!");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 auction items. DB table `auctionhouse` or `item_instance` is empty!");
 
         return;
     }
@@ -310,14 +310,14 @@ void AuctionHouseMgr::LoadAuctionItems()
         ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemEntry);
         if (!proto)
         {
-            TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "AuctionHouseMgr::LoadAuctionItems: Unknown item (GUID: " UI64FMTD " id: #%u) in auction, skipped.", item_guid, itemEntry);
+            TC_LOG_ERROR("server.loading", "AuctionHouseMgr::LoadAuctionItems: Unknown item (GUID: " UI64FMTD " id: #%u) in auction, skipped.", item_guid, itemEntry);
             continue;
         }
 
         Item* item = NewItemOrBag(proto);
         if (!item->LoadFromDB(item_guid, ObjectGuid::Empty, fields, itemEntry))
         {
-            TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "AuctionHouseMgr::LoadAuctionItems: Error item load (GUID: " UI64FMTD " id: #%u) in auction, skipped.", item_guid, itemEntry);
+            TC_LOG_ERROR("server.loading", "AuctionHouseMgr::LoadAuctionItems: Error item load (GUID: " UI64FMTD " id: #%u) in auction, skipped.", item_guid, itemEntry);
             delete item;
             continue;
         }
@@ -327,7 +327,7 @@ void AuctionHouseMgr::LoadAuctionItems()
     }
     while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u auction items in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u auction items in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 
 }
 
@@ -340,7 +340,7 @@ void AuctionHouseMgr::LoadAuctions()
 
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 auctions. DB table `auctionhouse` is empty.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 auctions. DB table `auctionhouse` is empty.");
         return;
     }
 
@@ -365,7 +365,7 @@ void AuctionHouseMgr::LoadAuctions()
 
     CharacterDatabase.CommitTransaction(trans);
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u auctions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u auctions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 
 }
 
@@ -796,14 +796,14 @@ bool AuctionEntry::LoadFromDB(Field* fields)
 
     CreatureTemplate const* auctioneerInfo = sObjectMgr->GetCreatureTemplate(auctioneer);
     if (!auctioneerInfo)
-        TC_LOG_DEBUG(LOG_FILTER_SERVER_LOADING, "Auction %u has not a existing auctioneer Entry: %u", Id, auctioneer);
+        TC_LOG_DEBUG("server.loading", "Auction %u has not a existing auctioneer Entry: %u", Id, auctioneer);
     else
         factionTemplateId = auctioneerInfo->faction;
 
     auctionHouseEntry = AuctionHouseMgr::GetAuctionHouseEntry(factionTemplateId, &houseId);
     if (!auctionHouseEntry)
     {
-        TC_LOG_DEBUG(LOG_FILTER_SERVER_LOADING, "Auction %u has auctioneer Entry: %u with wrong faction %u", Id, auctioneer, factionTemplateId);
+        TC_LOG_DEBUG("server.loading", "Auction %u has auctioneer Entry: %u with wrong faction %u", Id, auctioneer, factionTemplateId);
         return false;
     }
 
@@ -811,7 +811,7 @@ bool AuctionEntry::LoadFromDB(Field* fields)
     // and itemEntry in fact (GetAItem will fail if problematic in result check in AuctionHouseMgr::LoadAuctionItems)
     if (!sAuctionMgr->GetAItem(itemGUIDLow))
     {
-        TC_LOG_DEBUG(LOG_FILTER_SERVER_LOADING, "Auction %u has not a existing item : %u", Id, itemGUIDLow);
+        TC_LOG_DEBUG("server.loading", "Auction %u has not a existing item : %u", Id, itemGUIDLow);
         return false;
     }
     return true;
@@ -842,7 +842,7 @@ bool AuctionEntry::LoadFromFieldList(Field* fields)
 
     CreatureTemplate const* auctioneerInfo = sObjectMgr->GetCreatureTemplate(auctioneer);
     if (!auctioneerInfo)
-        TC_LOG_DEBUG(LOG_FILTER_SERVER_LOADING, "AuctionEntry::LoadFromFieldList() - Auction %u has not a existing auctioneer Entry: %u", Id, auctioneer);
+        TC_LOG_DEBUG("server.loading", "AuctionEntry::LoadFromFieldList() - Auction %u has not a existing auctioneer Entry: %u", Id, auctioneer);
     else
         factionTemplateId = auctioneerInfo->faction;
 
@@ -850,7 +850,7 @@ bool AuctionEntry::LoadFromFieldList(Field* fields)
 
     if (!auctionHouseEntry)
     {
-		TC_LOG_DEBUG(LOG_FILTER_SERVER_LOADING, "AuctionEntry::LoadFromFieldList() - Auction %u has auctioneer Entry: %u with wrong faction %u", Id, auctioneer, factionTemplateId);
+		TC_LOG_DEBUG("server.loading", "AuctionEntry::LoadFromFieldList() - Auction %u has auctioneer Entry: %u with wrong faction %u", Id, auctioneer, factionTemplateId);
         return false;
     }
 

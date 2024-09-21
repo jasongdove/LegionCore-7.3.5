@@ -509,7 +509,7 @@ void Player::GenerateResearchSites()
 
     _archaeologyChanged = true;
 
-    TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "Player::GenerateResearchSites(): %u", _researchSites.size());
+    TC_LOG_INFO("spells", "Player::GenerateResearchSites(): %u", _researchSites.size());
 
     ShowResearchSites();
 }

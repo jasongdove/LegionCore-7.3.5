@@ -35,6 +35,7 @@
 #include "Threading/LockedQueue.h"
 #include <safe_ptr.h>
 #include <atomic>
+#include <queue>
 #include "Util.h"
 
 class Object;
@@ -740,7 +741,7 @@ class World
         /// Set a new Message of the Day
         void SetMotd(std::string motd);
         /// Get the current Message of the Day
-        StringVector const& GetMotd() const;
+        std::vector<std::string> const& GetMotd() const;
 
         /// Set the string for new characters (first login)
         void SetNewCharString(std::string const& str) { m_newCharString = str; }
@@ -979,7 +980,7 @@ class World
         AccountTypes m_allowedSecurityLevel;
         LocaleConstant m_defaultDbcLocale;                     // from config for one from loaded DBC locales
         bool m_allowMovement;
-        StringVector _motd;
+        std::vector<std::string> _motd;
         std::string m_dataPath;
 
         // for max speed access

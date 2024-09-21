@@ -22,7 +22,8 @@
 
 #include "Define.h"
 #include <set>
-;
+#include <mutex>
+
 namespace G3D
 {
     class Ray;

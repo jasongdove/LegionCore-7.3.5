@@ -3006,7 +3006,7 @@ google::protobuf::ServiceDescriptor const* PresenceService::descriptor() {
 }
 
 void PresenceService::Subscribe(::bgs::protocol::presence::v1::SubscribeRequest const* request, std::function<void(::bgs::protocol::NoData const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method PresenceService.Subscribe(bgs.protocol.presence.v1.SubscribeRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method PresenceService.Subscribe(bgs.protocol.presence.v1.SubscribeRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::NoData response;
@@ -3017,7 +3017,7 @@ void PresenceService::Subscribe(::bgs::protocol::presence::v1::SubscribeRequest 
 }
 
 void PresenceService::Unsubscribe(::bgs::protocol::presence::v1::UnsubscribeRequest const* request, std::function<void(::bgs::protocol::NoData const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method PresenceService.Unsubscribe(bgs.protocol.presence.v1.UnsubscribeRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method PresenceService.Unsubscribe(bgs.protocol.presence.v1.UnsubscribeRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::NoData response;
@@ -3028,7 +3028,7 @@ void PresenceService::Unsubscribe(::bgs::protocol::presence::v1::UnsubscribeRequ
 }
 
 void PresenceService::Update(::bgs::protocol::presence::v1::UpdateRequest const* request, std::function<void(::bgs::protocol::NoData const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method PresenceService.Update(bgs.protocol.presence.v1.UpdateRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method PresenceService.Update(bgs.protocol.presence.v1.UpdateRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::NoData response;
@@ -3039,7 +3039,7 @@ void PresenceService::Update(::bgs::protocol::presence::v1::UpdateRequest const*
 }
 
 void PresenceService::Query(::bgs::protocol::presence::v1::QueryRequest const* request, std::function<void(::bgs::protocol::presence::v1::QueryResponse const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method PresenceService.Query(bgs.protocol.presence.v1.QueryRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method PresenceService.Query(bgs.protocol.presence.v1.QueryRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::presence::v1::QueryResponse response;
@@ -3050,7 +3050,7 @@ void PresenceService::Query(::bgs::protocol::presence::v1::QueryRequest const* r
 }
 
 void PresenceService::Ownership(::bgs::protocol::presence::v1::OwnershipRequest const* request, std::function<void(::bgs::protocol::NoData const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method PresenceService.Ownership(bgs.protocol.presence.v1.OwnershipRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method PresenceService.Ownership(bgs.protocol.presence.v1.OwnershipRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::NoData response;
@@ -3061,7 +3061,7 @@ void PresenceService::Ownership(::bgs::protocol::presence::v1::OwnershipRequest 
 }
 
 void PresenceService::SubscribeNotification(::bgs::protocol::presence::v1::SubscribeNotificationRequest const* request, std::function<void(::bgs::protocol::NoData const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method PresenceService.SubscribeNotification(bgs.protocol.presence.v1.SubscribeNotificationRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method PresenceService.SubscribeNotification(bgs.protocol.presence.v1.SubscribeNotificationRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::NoData response;
@@ -3072,7 +3072,7 @@ void PresenceService::SubscribeNotification(::bgs::protocol::presence::v1::Subsc
 }
 
 void PresenceService::MigrateOlympusCustomMessage(::bgs::protocol::presence::v1::MigrateOlympusCustomMessageRequest const* request, std::function<void(::bgs::protocol::presence::v1::MigrateOlympusCustomMessageResponse const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method PresenceService.MigrateOlympusCustomMessage(bgs.protocol.presence.v1.MigrateOlympusCustomMessageRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method PresenceService.MigrateOlympusCustomMessage(bgs.protocol.presence.v1.MigrateOlympusCustomMessageRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::presence::v1::MigrateOlympusCustomMessageResponse response;
@@ -3087,14 +3087,14 @@ void PresenceService::CallServerMethod(uint32 token, uint32 methodId, MessageBuf
     case 1: {
       ::bgs::protocol::presence::v1::SubscribeRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for PresenceService.Subscribe server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for PresenceService.Subscribe server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 1, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::NoData response;
       uint32 status = HandleSubscribe(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method PresenceService.Subscribe(bgs.protocol.presence.v1.SubscribeRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method PresenceService.Subscribe(bgs.protocol.presence.v1.SubscribeRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 1, token, &response);
@@ -3105,14 +3105,14 @@ void PresenceService::CallServerMethod(uint32 token, uint32 methodId, MessageBuf
     case 2: {
       ::bgs::protocol::presence::v1::UnsubscribeRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for PresenceService.Unsubscribe server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for PresenceService.Unsubscribe server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 2, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::NoData response;
       uint32 status = HandleUnsubscribe(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method PresenceService.Unsubscribe(bgs.protocol.presence.v1.UnsubscribeRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method PresenceService.Unsubscribe(bgs.protocol.presence.v1.UnsubscribeRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 2, token, &response);
@@ -3123,14 +3123,14 @@ void PresenceService::CallServerMethod(uint32 token, uint32 methodId, MessageBuf
     case 3: {
       ::bgs::protocol::presence::v1::UpdateRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for PresenceService.Update server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for PresenceService.Update server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 3, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::NoData response;
       uint32 status = HandleUpdate(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method PresenceService.Update(bgs.protocol.presence.v1.UpdateRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method PresenceService.Update(bgs.protocol.presence.v1.UpdateRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 3, token, &response);
@@ -3141,14 +3141,14 @@ void PresenceService::CallServerMethod(uint32 token, uint32 methodId, MessageBuf
     case 4: {
       ::bgs::protocol::presence::v1::QueryRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for PresenceService.Query server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for PresenceService.Query server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 4, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::presence::v1::QueryResponse response;
       uint32 status = HandleQuery(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method PresenceService.Query(bgs.protocol.presence.v1.QueryRequest{ %s }) returned bgs.protocol.presence.v1.QueryResponse{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method PresenceService.Query(bgs.protocol.presence.v1.QueryRequest{ %s }) returned bgs.protocol.presence.v1.QueryResponse{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 4, token, &response);
@@ -3159,14 +3159,14 @@ void PresenceService::CallServerMethod(uint32 token, uint32 methodId, MessageBuf
     case 5: {
       ::bgs::protocol::presence::v1::OwnershipRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for PresenceService.Ownership server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for PresenceService.Ownership server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 5, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::NoData response;
       uint32 status = HandleOwnership(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method PresenceService.Ownership(bgs.protocol.presence.v1.OwnershipRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method PresenceService.Ownership(bgs.protocol.presence.v1.OwnershipRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 5, token, &response);
@@ -3177,14 +3177,14 @@ void PresenceService::CallServerMethod(uint32 token, uint32 methodId, MessageBuf
     case 7: {
       ::bgs::protocol::presence::v1::SubscribeNotificationRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for PresenceService.SubscribeNotification server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for PresenceService.SubscribeNotification server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 7, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::NoData response;
       uint32 status = HandleSubscribeNotification(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method PresenceService.SubscribeNotification(bgs.protocol.presence.v1.SubscribeNotificationRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method PresenceService.SubscribeNotification(bgs.protocol.presence.v1.SubscribeNotificationRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 7, token, &response);
@@ -3195,14 +3195,14 @@ void PresenceService::CallServerMethod(uint32 token, uint32 methodId, MessageBuf
     case 8: {
       ::bgs::protocol::presence::v1::MigrateOlympusCustomMessageRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for PresenceService.MigrateOlympusCustomMessage server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for PresenceService.MigrateOlympusCustomMessage server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 8, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::presence::v1::MigrateOlympusCustomMessageResponse response;
       uint32 status = HandleMigrateOlympusCustomMessage(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method PresenceService.MigrateOlympusCustomMessage(bgs.protocol.presence.v1.MigrateOlympusCustomMessageRequest{ %s }) returned bgs.protocol.presence.v1.MigrateOlympusCustomMessageResponse{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method PresenceService.MigrateOlympusCustomMessage(bgs.protocol.presence.v1.MigrateOlympusCustomMessageRequest{ %s }) returned bgs.protocol.presence.v1.MigrateOlympusCustomMessageResponse{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 8, token, &response);
@@ -3211,50 +3211,50 @@ void PresenceService::CallServerMethod(uint32 token, uint32 methodId, MessageBuf
       break;
     }
     default:
-      TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "Bad method id %u.", methodId);
+      TC_LOG_ERROR("service.protobuf", "Bad method id %u.", methodId);
       SendResponse(service_hash_, methodId, token, ERROR_RPC_INVALID_METHOD);
       break;
     }
 }
 
 uint32 PresenceService::HandleSubscribe(::bgs::protocol::presence::v1::SubscribeRequest const* request, ::bgs::protocol::NoData* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method PresenceService.Subscribe({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method PresenceService.Subscribe({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 PresenceService::HandleUnsubscribe(::bgs::protocol::presence::v1::UnsubscribeRequest const* request, ::bgs::protocol::NoData* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method PresenceService.Unsubscribe({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method PresenceService.Unsubscribe({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 PresenceService::HandleUpdate(::bgs::protocol::presence::v1::UpdateRequest const* request, ::bgs::protocol::NoData* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method PresenceService.Update({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method PresenceService.Update({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 PresenceService::HandleQuery(::bgs::protocol::presence::v1::QueryRequest const* request, ::bgs::protocol::presence::v1::QueryResponse* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method PresenceService.Query({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method PresenceService.Query({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 PresenceService::HandleOwnership(::bgs::protocol::presence::v1::OwnershipRequest const* request, ::bgs::protocol::NoData* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method PresenceService.Ownership({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method PresenceService.Ownership({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 PresenceService::HandleSubscribeNotification(::bgs::protocol::presence::v1::SubscribeNotificationRequest const* request, ::bgs::protocol::NoData* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method PresenceService.SubscribeNotification({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method PresenceService.SubscribeNotification({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 PresenceService::HandleMigrateOlympusCustomMessage(::bgs::protocol::presence::v1::MigrateOlympusCustomMessageRequest const* request, ::bgs::protocol::presence::v1::MigrateOlympusCustomMessageResponse* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method PresenceService.MigrateOlympusCustomMessage({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method PresenceService.MigrateOlympusCustomMessage({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }

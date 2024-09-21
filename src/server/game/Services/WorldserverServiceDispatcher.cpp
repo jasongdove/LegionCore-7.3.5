@@ -39,7 +39,7 @@ void Battlenet::WorldserverServiceDispatcher::Dispatch(WorldSession* session, ui
     if (itr != _dispatchers.end())
         itr->second(session, token, methodId, std::forward<MessageBuffer>(buffer));
     else
-        TC_LOG_DEBUG(LOG_FILTER_BATTLENET, "%s tried to call invalid service 0x%X", session->GetPlayerName().c_str(), serviceHash);
+        TC_LOG_DEBUG("server.bnetserver", "%s tried to call invalid service 0x%X", session->GetPlayerName().c_str(), serviceHash);
 }
 
 Battlenet::WorldserverServiceDispatcher& Battlenet::WorldserverServiceDispatcher::Instance()

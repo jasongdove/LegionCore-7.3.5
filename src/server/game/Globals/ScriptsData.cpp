@@ -122,7 +122,7 @@ void ScriptDataStoreMgr::CheckScripts(ScriptsType type, std::set<int32>& ids)
             case SCRIPT_COMMAND_TALK:
             {
                 if (!sObjectMgr->GetTrinityStringLocale(itrM->second.Talk.TextID))
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` references invalid text id %u from `db_script_string`, script id: %u.", GetScriptsTableNameByType(type).c_str(), itrM->second.Talk.TextID, itrMM->first);
+                    TC_LOG_ERROR("sql.sql", "Table `%s` references invalid text id %u from `db_script_string`, script id: %u.", GetScriptsTableNameByType(type).c_str(), itrM->second.Talk.TextID, itrMM->first);
 
                 if (ids.find(itrM->second.Talk.TextID) != ids.end())
                     ids.erase(itrM->second.Talk.TextID);
@@ -136,7 +136,7 @@ void ScriptDataStoreMgr::CheckScripts(ScriptsType type, std::set<int32>& ids)
 
 void ScriptDataStoreMgr::LoadDbScriptStrings()
 {
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Scripts text locales...");
+    TC_LOG_INFO("server.loading", "Loading Scripts text locales...");
 
     LoadTrinityStrings("db_script_string", MIN_DB_SCRIPT_STRING_ID, MAX_DB_SCRIPT_STRING_ID);
 
@@ -150,7 +150,7 @@ void ScriptDataStoreMgr::LoadDbScriptStrings()
         CheckScripts(ScriptsType(type), ids);
 
     for (std::set<int32>::const_iterator itr = ids.begin(); itr != ids.end(); ++itr)
-        TC_LOG_ERROR(LOG_FILTER_SQL, "Table `db_script_string` has unused string id  %u", *itr);
+        TC_LOG_ERROR("sql.sql", "Table `db_script_string` has unused string id  %u", *itr);
 }
 
 void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
@@ -168,7 +168,7 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
     if (sScriptMgr->IsScriptScheduled())                    // function cannot be called when scripts are in use.
         return;
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading %s...", tableName.c_str());
+    TC_LOG_INFO("server.loading", "Loading %s...", tableName.c_str());
 
     scripts->clear();                                       // need for reload support
 
@@ -178,7 +178,7 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
 
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 script definitions. DB table `%s` is empty!", tableName.c_str());
+        TC_LOG_INFO("server.loading", ">> Loaded 0 script definitions. DB table `%s` is empty!", tableName.c_str());
         return;
     }
 
@@ -209,19 +209,19 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
         {
             if (tmp.Talk.ChatType > CHAT_TYPE_WHISPER && tmp.Talk.ChatType != CHAT_MSG_RAID_BOSS_WHISPER)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has invalid talk type (datalong = %u) in SCRIPT_COMMAND_TALK for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has invalid talk type (datalong = %u) in SCRIPT_COMMAND_TALK for script id %u",
                     tableName.c_str(), tmp.Talk.ChatType, tmp.id);
                 continue;
             }
             if (!tmp.Talk.TextID)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has invalid talk text id (dataint = %i) in SCRIPT_COMMAND_TALK for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has invalid talk text id (dataint = %i) in SCRIPT_COMMAND_TALK for script id %u",
                     tableName.c_str(), tmp.Talk.TextID, tmp.id);
                 continue;
             }
             if (tmp.Talk.TextID < MIN_DB_SCRIPT_STRING_ID || tmp.Talk.TextID >= MAX_DB_SCRIPT_STRING_ID)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has out of range text id (dataint = %i expected %u-%u) in SCRIPT_COMMAND_TALK for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has out of range text id (dataint = %i expected %u-%u) in SCRIPT_COMMAND_TALK for script id %u",
                     tableName.c_str(), tmp.Talk.TextID, MIN_DB_SCRIPT_STRING_ID, MAX_DB_SCRIPT_STRING_ID, tmp.id);
                 continue;
             }
@@ -233,7 +233,7 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
         {
             if (!sEmotesStore.LookupEntry(tmp.Emote.EmoteID))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has invalid emote id (datalong = %u) in SCRIPT_COMMAND_EMOTE for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has invalid emote id (datalong = %u) in SCRIPT_COMMAND_EMOTE for script id %u",
                     tableName.c_str(), tmp.Emote.EmoteID, tmp.id);
                 continue;
             }
@@ -244,14 +244,14 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
         {
             if (!sMapStore.LookupEntry(tmp.TeleportTo.MapID))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has invalid map (Id: %u) in SCRIPT_COMMAND_TELEPORT_TO for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has invalid map (Id: %u) in SCRIPT_COMMAND_TELEPORT_TO for script id %u",
                     tableName.c_str(), tmp.TeleportTo.MapID, tmp.id);
                 continue;
             }
 
             if (!Trinity::IsValidMapCoord(tmp.TeleportTo.DestX, tmp.TeleportTo.DestY, tmp.TeleportTo.DestZ, tmp.TeleportTo.Orientation))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has invalid coordinates (X: %f Y: %f Z: %f O: %f) in SCRIPT_COMMAND_TELEPORT_TO for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has invalid coordinates (X: %f Y: %f Z: %f O: %f) in SCRIPT_COMMAND_TELEPORT_TO for script id %u",
                     tableName.c_str(), tmp.TeleportTo.DestX, tmp.TeleportTo.DestY, tmp.TeleportTo.DestZ, tmp.TeleportTo.Orientation, tmp.id);
                 continue;
             }
@@ -263,14 +263,14 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
             Quest const* quest = sQuestDataStore->GetQuestTemplate(tmp.QuestExplored.QuestID);
             if (!quest)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has invalid quest (ID: %u) in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has invalid quest (ID: %u) in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u",
                     tableName.c_str(), tmp.QuestExplored.QuestID, tmp.id);
                 continue;
             }
 
             if (!quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has quest (ID: %u) in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u, but quest not have flag QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT in quest flags. Script command or quest flags wrong. Quest modified to require objective.",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has quest (ID: %u) in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u, but quest not have flag QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT in quest flags. Script command or quest flags wrong. Quest modified to require objective.",
                     tableName.c_str(), tmp.QuestExplored.QuestID, tmp.id);
 
                 // this will prevent quest completing without objective
@@ -281,21 +281,21 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
 
             if (float(tmp.QuestExplored.Distance) > DEFAULT_VISIBILITY_DISTANCE)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has too large distance (%u) for exploring objective complete in `datalong2` in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has too large distance (%u) for exploring objective complete in `datalong2` in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u",
                     tableName.c_str(), tmp.QuestExplored.Distance, tmp.id);
                 continue;
             }
 
             if (tmp.QuestExplored.Distance && float(tmp.QuestExplored.Distance) > DEFAULT_VISIBILITY_DISTANCE)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has too large distance (%u) for exploring objective complete in `datalong2` in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u, max distance is %f or 0 for disable distance check",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has too large distance (%u) for exploring objective complete in `datalong2` in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u, max distance is %f or 0 for disable distance check",
                     tableName.c_str(), tmp.QuestExplored.Distance, tmp.id, DEFAULT_VISIBILITY_DISTANCE);
                 continue;
             }
 
             if (tmp.QuestExplored.Distance && float(tmp.QuestExplored.Distance) < INTERACTION_DISTANCE)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has too small distance (%u) for exploring objective complete in `datalong2` in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u, min distance is %f or 0 for disable distance check",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has too small distance (%u) for exploring objective complete in `datalong2` in SCRIPT_COMMAND_QUEST_EXPLORED in `datalong` for script id %u, min distance is %f or 0 for disable distance check",
                     tableName.c_str(), tmp.QuestExplored.Distance, tmp.id, INTERACTION_DISTANCE);
                 continue;
             }
@@ -307,7 +307,7 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
         {
             if (!sObjectMgr->GetCreatureTemplate(tmp.KillCredit.CreatureEntry))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has invalid creature (Entry: %u) in SCRIPT_COMMAND_KILL_CREDIT for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has invalid creature (Entry: %u) in SCRIPT_COMMAND_KILL_CREDIT for script id %u",
                     tableName.c_str(), tmp.KillCredit.CreatureEntry, tmp.id);
                 continue;
             }
@@ -319,7 +319,7 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
             GameObjectData const* data = sObjectMgr->GetGOData(tmp.RespawnGameobject.GOGuid);
             if (!data)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has invalid gameobject (GUID: %u) in SCRIPT_COMMAND_RESPAWN_GAMEOBJECT for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has invalid gameobject (GUID: %u) in SCRIPT_COMMAND_RESPAWN_GAMEOBJECT for script id %u",
                     tableName.c_str(), tmp.RespawnGameobject.GOGuid, tmp.id);
                 continue;
             }
@@ -327,7 +327,7 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
             GameObjectTemplate const* info = sObjectMgr->GetGameObjectTemplate(data->id);
             if (!info)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has gameobject with invalid entry (GUID: %u Entry: %u) in SCRIPT_COMMAND_RESPAWN_GAMEOBJECT for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has gameobject with invalid entry (GUID: %u Entry: %u) in SCRIPT_COMMAND_RESPAWN_GAMEOBJECT for script id %u",
                     tableName.c_str(), tmp.RespawnGameobject.GOGuid, data->id, tmp.id);
                 continue;
             }
@@ -338,7 +338,7 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
                 info->type == GAMEOBJECT_TYPE_BUTTON ||
                 info->type == GAMEOBJECT_TYPE_TRAP)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` have gameobject type (%u) unsupported by command SCRIPT_COMMAND_RESPAWN_GAMEOBJECT for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` have gameobject type (%u) unsupported by command SCRIPT_COMMAND_RESPAWN_GAMEOBJECT for script id %u",
                     tableName.c_str(), info->entry, tmp.id);
                 continue;
             }
@@ -349,14 +349,14 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
         {
             if (!Trinity::IsValidMapCoord(tmp.TempSummonCreature.PosX, tmp.TempSummonCreature.PosY, tmp.TempSummonCreature.PosZ, tmp.TempSummonCreature.Orientation))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has invalid coordinates (X: %f Y: %f Z: %f O: %f) in SCRIPT_COMMAND_TEMP_SUMMON_CREATURE for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has invalid coordinates (X: %f Y: %f Z: %f O: %f) in SCRIPT_COMMAND_TEMP_SUMMON_CREATURE for script id %u",
                     tableName.c_str(), tmp.TempSummonCreature.PosX, tmp.TempSummonCreature.PosY, tmp.TempSummonCreature.PosZ, tmp.TempSummonCreature.Orientation, tmp.id);
                 continue;
             }
 
             if (!sObjectMgr->GetCreatureTemplate(tmp.TempSummonCreature.CreatureEntry))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has invalid creature (Entry: %u) in SCRIPT_COMMAND_TEMP_SUMMON_CREATURE for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has invalid creature (Entry: %u) in SCRIPT_COMMAND_TEMP_SUMMON_CREATURE for script id %u",
                     tableName.c_str(), tmp.TempSummonCreature.CreatureEntry, tmp.id);
                 continue;
             }
@@ -369,7 +369,7 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
             GameObjectData const* data = sObjectMgr->GetGOData(tmp.ToggleDoor.GOGuid);
             if (!data)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has invalid gameobject (GUID: %u) in %s for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has invalid gameobject (GUID: %u) in %s for script id %u",
                     tableName.c_str(), tmp.ToggleDoor.GOGuid, GetScriptCommandName(tmp.command).c_str(), tmp.id);
                 continue;
             }
@@ -377,14 +377,14 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
             GameObjectTemplate const* info = sObjectMgr->GetGameObjectTemplate(data->id);
             if (!info)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has gameobject with invalid entry (GUID: %u Entry: %u) in %s for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has gameobject with invalid entry (GUID: %u Entry: %u) in %s for script id %u",
                     tableName.c_str(), tmp.ToggleDoor.GOGuid, data->id, GetScriptCommandName(tmp.command).c_str(), tmp.id);
                 continue;
             }
 
             if (info->type != GAMEOBJECT_TYPE_DOOR)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has gameobject type (%u) non supported by command %s for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` has gameobject type (%u) non supported by command %s for script id %u",
                     tableName.c_str(), info->entry, GetScriptCommandName(tmp.command).c_str(), tmp.id);
                 continue;
             }
@@ -396,13 +396,13 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
         {
             if (!sSpellMgr->GetSpellInfo(tmp.RemoveAura.SpellID))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` using non-existent spell (id: %u) in SCRIPT_COMMAND_REMOVE_AURA for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` using non-existent spell (id: %u) in SCRIPT_COMMAND_REMOVE_AURA for script id %u",
                     tableName.c_str(), tmp.RemoveAura.SpellID, tmp.id);
                 continue;
             }
             if (tmp.RemoveAura.Flags & ~0x1)                    // 1 bits (0, 1)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` using unknown flags in datalong2 (%u) in SCRIPT_COMMAND_REMOVE_AURA for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` using unknown flags in datalong2 (%u) in SCRIPT_COMMAND_REMOVE_AURA for script id %u",
                     tableName.c_str(), tmp.RemoveAura.Flags, tmp.id);
                 continue;
             }
@@ -413,25 +413,25 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
         {
             if (!sSpellMgr->GetSpellInfo(tmp.CastSpell.SpellID))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` using non-existent spell (id: %u) in SCRIPT_COMMAND_CAST_SPELL for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` using non-existent spell (id: %u) in SCRIPT_COMMAND_CAST_SPELL for script id %u",
                     tableName.c_str(), tmp.CastSpell.SpellID, tmp.id);
                 continue;
             }
             if (tmp.CastSpell.Flags > 4)                      // targeting type
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` using unknown target in datalong2 (%u) in SCRIPT_COMMAND_CAST_SPELL for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` using unknown target in datalong2 (%u) in SCRIPT_COMMAND_CAST_SPELL for script id %u",
                     tableName.c_str(), tmp.CastSpell.Flags, tmp.id);
                 continue;
             }
             if (tmp.CastSpell.Flags != 4 && tmp.CastSpell.CreatureEntry & ~0x1)                      // 1 bit (0, 1)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` using unknown flags in dataint (%u) in SCRIPT_COMMAND_CAST_SPELL for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` using unknown flags in dataint (%u) in SCRIPT_COMMAND_CAST_SPELL for script id %u",
                     tableName.c_str(), tmp.CastSpell.CreatureEntry, tmp.id);
                 continue;
             }
             if (tmp.CastSpell.Flags == 4 && !sObjectMgr->GetCreatureTemplate(tmp.CastSpell.CreatureEntry))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` using invalid creature entry in dataint (%u) in SCRIPT_COMMAND_CAST_SPELL for script id %u",
+                TC_LOG_ERROR("sql.sql", "Table `%s` using invalid creature entry in dataint (%u) in SCRIPT_COMMAND_CAST_SPELL for script id %u",
                     tableName.c_str(), tmp.CastSpell.CreatureEntry, tmp.id);
                 continue;
             }
@@ -442,12 +442,12 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
         {
             if (!sObjectMgr->GetItemTemplate(tmp.CreateItem.ItemEntry))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` has nonexistent item (entry: %u) in SCRIPT_COMMAND_CREATE_ITEM for script id %u", tableName.c_str(), tmp.CreateItem.ItemEntry, tmp.id);
+                TC_LOG_ERROR("sql.sql", "Table `%s` has nonexistent item (entry: %u) in SCRIPT_COMMAND_CREATE_ITEM for script id %u", tableName.c_str(), tmp.CreateItem.ItemEntry, tmp.id);
                 continue;
             }
             if (!tmp.CreateItem.Amount)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Table `%s` SCRIPT_COMMAND_CREATE_ITEM but amount is %u for script id %u", tableName.c_str(), tmp.CreateItem.Amount, tmp.id);
+                TC_LOG_ERROR("sql.sql", "Table `%s` SCRIPT_COMMAND_CREATE_ITEM but amount is %u for script id %u", tableName.c_str(), tmp.CreateItem.Amount, tmp.id);
                 continue;
             }
             break;
@@ -466,7 +466,7 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u script definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u script definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void ScriptDataStoreMgr::LoadGameObjectScripts()
@@ -477,7 +477,7 @@ void ScriptDataStoreMgr::LoadGameObjectScripts()
     for (ScriptMapMap::const_iterator itr = sGameObjectScripts.begin(); itr != sGameObjectScripts.end(); ++itr)
     {
         if (!sObjectMgr->GetGOData(itr->first))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Table `gameobject_scripts` has not existing gameobject (GUID: %u) as script id", itr->first);
+            TC_LOG_ERROR("sql.sql", "Table `gameobject_scripts` has not existing gameobject (GUID: %u) as script id", itr->first);
     }
 }
 
@@ -489,7 +489,7 @@ void ScriptDataStoreMgr::LoadQuestEndScripts()
     for (ScriptMapMap::const_iterator itr = sQuestEndScripts.begin(); itr != sQuestEndScripts.end(); ++itr)
     {
         if (!sQuestDataStore->GetQuestTemplate(itr->first))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Table `quest_end_scripts` has not existing quest (Id: %u) as script id", itr->first);
+            TC_LOG_ERROR("sql.sql", "Table `quest_end_scripts` has not existing quest (Id: %u) as script id", itr->first);
     }
 }
 
@@ -501,7 +501,7 @@ void ScriptDataStoreMgr::LoadQuestStartScripts()
     for (ScriptMapMap::const_iterator itr = sQuestStartScripts.begin(); itr != sQuestStartScripts.end(); ++itr)
     {
         if (!sQuestDataStore->GetQuestTemplate(itr->first))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Table `quest_start_scripts` has not existing quest (Id: %u) as script id", itr->first);
+            TC_LOG_ERROR("sql.sql", "Table `quest_start_scripts` has not existing quest (Id: %u) as script id", itr->first);
     }
 }
 
@@ -517,14 +517,14 @@ void ScriptDataStoreMgr::LoadSpellScripts()
 
         if (!spellInfo)
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Table `spell_scripts` has not existing spell (Id: %u) as script id", spellId);
+            TC_LOG_ERROR("sql.sql", "Table `spell_scripts` has not existing spell (Id: %u) as script id", spellId);
             continue;
         }
 
         uint8 i = static_cast<uint8>((uint32(itr->first) >> 24) & 0x000000FF);
         //check for correct spellEffect
         if (!spellInfo->Effects[i]->Effect || (spellInfo->Effects[i]->Effect != SPELL_EFFECT_SCRIPT_EFFECT && spellInfo->Effects[i]->Effect != SPELL_EFFECT_DUMMY))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Table `spell_scripts` - spell %u effect %u is not SPELL_EFFECT_SCRIPT_EFFECT or SPELL_EFFECT_DUMMY", spellId, i);
+            TC_LOG_ERROR("sql.sql", "Table `spell_scripts` - spell %u effect %u is not SPELL_EFFECT_SCRIPT_EFFECT or SPELL_EFFECT_DUMMY", spellId, i);
     }
 }
 
@@ -566,7 +566,7 @@ void ScriptDataStoreMgr::LoadEventScripts()
     {
         std::set<uint32>::const_iterator itr2 = evt_scripts.find(itr->first);
         if (itr2 == evt_scripts.end())
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Table `event_scripts` has script (Id: %u) not referring to any gameobject_template type 10 data2 field, type 3 data6 field, type 13 data 2 field or any spell effect %u",
+            TC_LOG_ERROR("sql.sql", "Table `event_scripts` has script (Id: %u) not referring to any gameobject_template type 10 data2 field, type 3 data6 field, type 13 data 2 field or any spell effect %u",
                 itr->first, SPELL_EFFECT_SEND_EVENT);
     }
 }
@@ -591,7 +591,7 @@ void ScriptDataStoreMgr::LoadWaypointScripts()
     }
 
     for (std::set<uint32>::iterator itr = actionSet.begin(); itr != actionSet.end(); ++itr)
-        TC_LOG_ERROR(LOG_FILTER_SQL, "There is no waypoint which links to the waypoint script %u", *itr);
+        TC_LOG_ERROR("sql.sql", "There is no waypoint which links to the waypoint script %u", *itr);
 }
 
 SpellScriptsBounds ScriptDataStoreMgr::GetSpellScriptsBounds(uint32 spellID)
@@ -601,7 +601,7 @@ SpellScriptsBounds ScriptDataStoreMgr::GetSpellScriptsBounds(uint32 spellID)
 
 void ScriptDataStoreMgr::LoadSpellScriptNames()
 {
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading spell script names...");
+    TC_LOG_INFO("server.loading", "Loading spell script names...");
 
     uint32 oldMSTime = getMSTime();
 
@@ -611,7 +611,7 @@ void ScriptDataStoreMgr::LoadSpellScriptNames()
 
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 spell script names. DB table `spell_script_names` is empty!");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 spell script names. DB table `spell_script_names` is empty!");
         return;
     }
 
@@ -634,7 +634,7 @@ void ScriptDataStoreMgr::LoadSpellScriptNames()
         auto spellInfo = sSpellMgr->GetSpellInfo(spellId);
         if (!spellInfo)
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Scriptname: `%s` spell (Id: %d) does not exist.", scriptName.c_str(), fields[0].GetInt32());
+            TC_LOG_ERROR("sql.sql", "Scriptname: `%s` spell (Id: %d) does not exist.", scriptName.c_str(), fields[0].GetInt32());
             WorldDatabase.PExecute("DELETE FROM `spell_script_names` WHERE spell_id = %i", fields[0].GetInt32());
             continue;
         }
@@ -642,11 +642,11 @@ void ScriptDataStoreMgr::LoadSpellScriptNames()
         if (allRanks)
         {
             if (!spellInfo->IsRanked())
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Scriptname: `%s` spell (Id: %d) has no ranks of spell.", scriptName.c_str(), fields[0].GetInt32());
+                TC_LOG_ERROR("sql.sql", "Scriptname: `%s` spell (Id: %d) has no ranks of spell.", scriptName.c_str(), fields[0].GetInt32());
 
             if (spellInfo->GetFirstRankSpell()->Id != uint32(spellId))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Scriptname: `%s` spell (Id: %d) is not first rank of spell.", scriptName.c_str(), fields[0].GetInt32());
+                TC_LOG_ERROR("sql.sql", "Scriptname: `%s` spell (Id: %d) is not first rank of spell.", scriptName.c_str(), fields[0].GetInt32());
                 continue;
             }
             while (spellInfo)
@@ -658,7 +658,7 @@ void ScriptDataStoreMgr::LoadSpellScriptNames()
         else
         {
             if (spellInfo->IsRanked())
-                TC_LOG_ERROR(LOG_FILTER_SQL, "Scriptname: `%s` spell (Id: %d) is ranked spell. Perhaps not all ranks are assigned to this script.", scriptName.c_str(), spellId);
+                TC_LOG_ERROR("sql.sql", "Scriptname: `%s` spell (Id: %d) is ranked spell. Perhaps not all ranks are assigned to this script.", scriptName.c_str(), spellId);
 
             _spellScriptsStore.insert(SpellScriptsContainer::value_type(spellInfo->Id, std::make_pair(sObjectMgr->GetScriptId(scriptName.c_str()), true)));
         }
@@ -666,18 +666,18 @@ void ScriptDataStoreMgr::LoadSpellScriptNames()
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u spell script names in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u spell script names in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void ScriptDataStoreMgr::ValidateSpellScripts()
 {
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Validating spell scripts...");
+    TC_LOG_INFO("server.loading", "Validating spell scripts...");
 
     uint32 oldMSTime = getMSTime();
 
     if (_spellScriptsStore.empty())
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Validated 0 scripts.");
+        TC_LOG_INFO("server.loading", ">> Validated 0 scripts.");
         return;
     }
 
@@ -699,7 +699,7 @@ void ScriptDataStoreMgr::ValidateSpellScripts()
 
                 if (!spellScript && !auraScript)
                 {
-                    TC_LOG_ERROR(LOG_FILTER_TSCR, "Functions GetSpellScript() and GetAuraScript() of script `%s` do not return objects - script skipped", sObjectMgr->GetScriptName(itr->second.first).c_str());
+                    TC_LOG_ERROR("scripts", "Functions GetSpellScript() and GetAuraScript() of script `%s` do not return objects - script skipped", sObjectMgr->GetScriptName(itr->second.first).c_str());
                     itr->second.second = false;
                     continue;
                 }
@@ -735,5 +735,5 @@ void ScriptDataStoreMgr::ValidateSpellScripts()
         }
     }
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Validated %u scripts in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Validated %u scripts in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }

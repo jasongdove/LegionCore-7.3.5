@@ -43,7 +43,7 @@ void WorldSession::HandleQuestGiverStatusQuery(WorldPackets::Quest::QuestGiverSt
     Object* questGiver = ObjectAccessor::GetObjectByTypeMask(*_player, packet.QuestGiverGUID, TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT);
     if (!questGiver)
     {
-        TC_LOG_INFO(LOG_FILTER_NETWORKIO, "Error in CMSG_QUESTGIVER_STATUS_QUERY, called for non-existing questgiver (%s)", packet.QuestGiverGUID.ToString().c_str());
+        TC_LOG_INFO("network", "Error in CMSG_QUESTGIVER_STATUS_QUERY, called for non-existing questgiver (%s)", packet.QuestGiverGUID.ToString().c_str());
         return;
     }
 
@@ -51,19 +51,19 @@ void WorldSession::HandleQuestGiverStatusQuery(WorldPackets::Quest::QuestGiverSt
     {
         case TYPEID_UNIT:
         {
-            TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "WORLD: Received CMSG_QUESTGIVER_STATUS_QUERY for npc, %s", questGiver->GetGUID().ToString().c_str());
+            TC_LOG_DEBUG("network", "WORLD: Received CMSG_QUESTGIVER_STATUS_QUERY for npc, %s", questGiver->GetGUID().ToString().c_str());
             if (!questGiver->ToCreature()->IsHostileTo(_player))       // do not show quest status to enemies
                 questStatus = _player->GetQuestDialogStatus(questGiver);
             break;
         }
         case TYPEID_GAMEOBJECT:
         {
-            TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "WORLD: Received CMSG_QUESTGIVER_STATUS_QUERY for GameObject %s", questGiver->GetGUID().ToString().c_str());
+            TC_LOG_DEBUG("network", "WORLD: Received CMSG_QUESTGIVER_STATUS_QUERY for GameObject %s", questGiver->GetGUID().ToString().c_str());
             questStatus = _player->GetQuestDialogStatus(questGiver);
             break;
         }
         default:
-            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "QuestGiver called for unexpected type %u", questGiver->GetTypeId());
+            TC_LOG_ERROR("network", "QuestGiver called for unexpected type %u", questGiver->GetTypeId());
             break;
     }
 
@@ -522,7 +522,7 @@ void WorldSession::HandleQuestLogRemoveQuest(WorldPackets::Quest::QuestLogRemove
         player->RemoveActiveQuest(questId);
         player->GetAchievementMgr()->RemoveTimedAchievement(CRITERIA_TIMED_TYPE_ITEM, questId);
 
-        TC_LOG_INFO(LOG_FILTER_NETWORKIO, "Player %u abandoned quest %u", player->GetGUIDLow(), questId);
+        TC_LOG_INFO("network", "Player %u abandoned quest %u", player->GetGUIDLow(), questId);
     }
 
     _player->SetQuestSlot(packet.Entry, 0);
@@ -573,13 +573,13 @@ void WorldSession::HandleQuestgiverCompleteQuest(WorldPackets::Quest::QuestGiver
     {
         if (packet.FromScript && !quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE))
         {
-            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Possible hacking attempt: Player %s [playerGuid: %s] tried to complete questId [entry: %u] by auto-submit flag for quest witch not suport it.",
+            TC_LOG_ERROR("network", "Possible hacking attempt: Player %s [playerGuid: %s] tried to complete questId [entry: %u] by auto-submit flag for quest witch not suport it.",
                 _player->GetName(), _player->GetGUID().ToString().c_str(), packet.QuestID);
             return;
         }
         if (!_player->CanSeeStartQuest(quest) && _player->GetQuestStatus(packet.QuestID) == QUEST_STATUS_NONE)
         {
-            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Possible hacking attempt: Player %s [playerGuid: %s] tried to complete questId [entry: %u] without being in possession of the questId!",
+            TC_LOG_ERROR("network", "Possible hacking attempt: Player %s [playerGuid: %s] tried to complete questId [entry: %u] without being in possession of the questId!",
                           _player->GetName(), _player->GetGUID().ToString().c_str(), packet.QuestID);
             return;
         }
@@ -772,7 +772,7 @@ void WorldSession::HandleGarrisonRequestScoutingMap(WorldPackets::Garrison::Garr
 
 void WorldSession::HandleRequestWorldQuestUpdate(WorldPackets::Quest::RequestWorldQuestUpdate& /*packet*/)
 {
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "HandleRequestWorldQuestUpdate");
+    TC_LOG_DEBUG("worldquest", "HandleRequestWorldQuestUpdate");
 
     WorldPackets::Quest::WorldQuestUpdate response;
     if (_player->getLevel() >= MAX_LEVEL && sWorld->getBoolConfig(CONFIG_WORLD_QUEST))

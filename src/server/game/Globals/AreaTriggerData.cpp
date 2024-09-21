@@ -44,7 +44,7 @@ void AreaTriggerDataStoreMgr::LoadQuestAreaTriggers()
     QueryResult result = WorldDatabase.Query("SELECT id, quest FROM areatrigger_questender");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "AreaTriggerDataStoreMgr::LoadQuestAreaTriggers() >> Loaded 0 quest trigger points. DB table `areatrigger_questender` is empty.");
+        TC_LOG_INFO("server.loading", "AreaTriggerDataStoreMgr::LoadQuestAreaTriggers() >> Loaded 0 quest trigger points. DB table `areatrigger_questender` is empty.");
         return;
     }
 
@@ -61,20 +61,20 @@ void AreaTriggerDataStoreMgr::LoadQuestAreaTriggers()
 
         if (!sAreaTriggerStore.LookupEntry(trigger_ID))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "AreaTriggerDataStoreMgr::LoadQuestAreaTriggers() >> Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", trigger_ID);
+            TC_LOG_ERROR("sql.sql", "AreaTriggerDataStoreMgr::LoadQuestAreaTriggers() >> Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", trigger_ID);
             continue;
         }
 
         Quest const* quest = sQuestDataStore->GetQuestTemplate(quest_ID);
         if (!quest)
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "AreaTriggerDataStoreMgr::LoadQuestAreaTriggers() >> Table `areatrigger_questender` has record (id: %u) for not existing quest %u", trigger_ID, quest_ID);
+            TC_LOG_ERROR("sql.sql", "AreaTriggerDataStoreMgr::LoadQuestAreaTriggers() >> Table `areatrigger_questender` has record (id: %u) for not existing quest %u", trigger_ID, quest_ID);
             continue;
         }
 
         if (!quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "AreaTriggerDataStoreMgr::LoadQuestAreaTriggers() >> Table `areatrigger_questender` has record (id: %u) for not quest %u, but quest not have flag QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT. Trigger or quest flags must be fixed, quest modified to require objective.", trigger_ID, quest_ID);
+            TC_LOG_ERROR("sql.sql", "AreaTriggerDataStoreMgr::LoadQuestAreaTriggers() >> Table `areatrigger_questender` has record (id: %u) for not quest %u, but quest not have flag QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT. Trigger or quest flags must be fixed, quest modified to require objective.", trigger_ID, quest_ID);
             const_cast<Quest*>(quest)->SetSpecialFlag(QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT); // this will prevent quest completing without objective
         }
 
@@ -82,7 +82,7 @@ void AreaTriggerDataStoreMgr::LoadQuestAreaTriggers()
 
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "AreaTriggerDataStoreMgr::LoadQuestAreaTriggers() >> Loaded %u quest trigger points in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "AreaTriggerDataStoreMgr::LoadQuestAreaTriggers() >> Loaded %u quest trigger points in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void AreaTriggerDataStoreMgr::LoadTavernAreaTriggers()
@@ -94,7 +94,7 @@ void AreaTriggerDataStoreMgr::LoadTavernAreaTriggers()
     QueryResult result = WorldDatabase.Query("SELECT id FROM areatrigger_tavern");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "AreaTriggerDataStoreMgr::LoadTavernAreaTriggers() >> Loaded 0 tavern triggers. DB table `areatrigger_tavern` is empty.");
+        TC_LOG_INFO("server.loading", "AreaTriggerDataStoreMgr::LoadTavernAreaTriggers() >> Loaded 0 tavern triggers. DB table `areatrigger_tavern` is empty.");
         return;
     }
 
@@ -110,14 +110,14 @@ void AreaTriggerDataStoreMgr::LoadTavernAreaTriggers()
 
         if (!sAreaTriggerStore.LookupEntry(Trigger_ID))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "AreaTriggerDataStoreMgr::LoadTavernAreaTriggers() >>Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", Trigger_ID);
+            TC_LOG_ERROR("sql.sql", "AreaTriggerDataStoreMgr::LoadTavernAreaTriggers() >>Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", Trigger_ID);
             continue;
         }
 
         _tavernAreaTriggerStore.insert(Trigger_ID);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "AreaTriggerDataStoreMgr::LoadTavernAreaTriggers() >> Loaded %u tavern triggers in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "AreaTriggerDataStoreMgr::LoadTavernAreaTriggers() >> Loaded %u tavern triggers in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void AreaTriggerDataStoreMgr::LoadAreaTriggerScripts()
@@ -129,7 +129,7 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerScripts()
     QueryResult result = WorldDatabase.Query("SELECT entry, ScriptName FROM areatrigger_scripts");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "AreaTriggerDataStoreMgr::LoadAreaTriggerScripts() >> Loaded 0 areatrigger scripts. DB table `areatrigger_scripts` is empty.");
+        TC_LOG_INFO("server.loading", "AreaTriggerDataStoreMgr::LoadAreaTriggerScripts() >> Loaded 0 areatrigger scripts. DB table `areatrigger_scripts` is empty.");
         return;
     }
 
@@ -146,14 +146,14 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerScripts()
 
         // if (!sAreaTriggerStore.LookupEntry(Trigger_ID))
         // {
-            // TC_LOG_ERROR(LOG_FILTER_SQL, "AreaTriggerDataStoreMgr::LoadAreaTriggerScripts() >>Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", Trigger_ID);
+            // TC_LOG_ERROR("sql.sql", "AreaTriggerDataStoreMgr::LoadAreaTriggerScripts() >>Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", Trigger_ID);
             // continue;
         // }
 
         _areaTriggerScriptStore[Trigger_ID] = sObjectMgr->GetScriptId(scriptName);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "AreaTriggerDataStoreMgr::LoadAreaTriggerScripts() >> Loaded %u areatrigger scripts in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "AreaTriggerDataStoreMgr::LoadAreaTriggerScripts() >> Loaded %u areatrigger scripts in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports()
@@ -167,7 +167,7 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports()
     QueryResult result = WorldDatabase.Query("SELECT id,  target_map, target_position_x, target_position_y, target_position_z, target_orientation FROM areatrigger_teleport");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports() >> Loaded 0 area trigger teleport definitions. DB table `areatrigger_teleport` is empty.");
+        TC_LOG_INFO("server.loading", "AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports() >> Loaded 0 area trigger teleport definitions. DB table `areatrigger_teleport` is empty.");
         return;
     }
 
@@ -192,19 +192,19 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports()
 
         if (!sAreaTriggerStore.LookupEntry(Trigger_ID))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports() >> Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", Trigger_ID);
+            TC_LOG_ERROR("sql.sql", "AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports() >> Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", Trigger_ID);
             continue;
         }
 
         if (!sMapStore.LookupEntry(at.target_mapId))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports() >> Area trigger (ID:%u) target map (ID: %u) does not exist in `Map.dbc`.", Trigger_ID, at.target_mapId);
+            TC_LOG_ERROR("sql.sql", "AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports() >> Area trigger (ID:%u) target map (ID: %u) does not exist in `Map.dbc`.", Trigger_ID, at.target_mapId);
             continue;
         }
 
         if (at.target_X == 0 && at.target_Y == 0 && at.target_Z == 0)
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports() >> Area trigger (ID:%u) target coordinates not provided.", Trigger_ID);
+            TC_LOG_ERROR("sql.sql", "AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports() >> Area trigger (ID:%u) target coordinates not provided.", Trigger_ID);
             continue;
         }
 
@@ -212,7 +212,7 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports()
 
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports() >> Loaded %u area trigger teleport definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "AreaTriggerDataStoreMgr::LoadAreaTriggerTeleports() >> Loaded %u area trigger teleport definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 AreaTriggerStruct const* AreaTriggerDataStoreMgr::GetGoBackTrigger(uint32 Map) const
@@ -422,10 +422,10 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerActionsAndData()
             ++counter;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadAreaTriggerActionsAndData() >> Loaded %u areatrigger template.", counter);
+        TC_LOG_INFO("server.loading", "LoadAreaTriggerActionsAndData() >> Loaded %u areatrigger template.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadAreaTriggerActionsAndData() >> Loaded 0 areatrigger template. DB table `areatrigger_template` is empty.");
+        TC_LOG_INFO("server.loading", "LoadAreaTriggerActionsAndData() >> Loaded 0 areatrigger template. DB table `areatrigger_template` is empty.");
 
     result = WorldDatabase.Query("SELECT `entry`, `customEntry`, `spellId`, `moveType`, `activationDelay`, `updateDelay`, `maxCount`, `hitType`, `waitTime`, `AngleToCaster`, `AnglePointA`, `AnglePointB`, `maxActiveTargets`, `Param`, `RandomRadiusOfSpawn`, `MoveEndDespawn`, `WithObjectSize`, `AliveOnly`, `AllowBoxCheck` FROM areatrigger_data");
     if (result)
@@ -459,10 +459,10 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerActionsAndData()
             ++counter;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadAreaTriggerActionsAndData() >> Loaded %u areatrigger data.", counter);
+        TC_LOG_INFO("server.loading", "LoadAreaTriggerActionsAndData() >> Loaded %u areatrigger data.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadAreaTriggerActionsAndData() >> Loaded 0 areatrigger data. DB table `areatrigger_data` is empty.");
+        TC_LOG_INFO("server.loading", "LoadAreaTriggerActionsAndData() >> Loaded 0 areatrigger data. DB table `areatrigger_data` is empty.");
 
     result = WorldDatabase.Query("SELECT `entry`,`spellId`, `Radius`, `Speed`, `HasTarget`, `HasCenterPoint`, `IsReverse`, `IsActive`, `RandRevers`, `IsDinamicRadius` FROM areatrigger_template_circle");
     if (result)
@@ -488,10 +488,10 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerActionsAndData()
             ++counter;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadAreaTriggerActionsAndData() >> Loaded %u areatrigger template circle.", counter);
+        TC_LOG_INFO("server.loading", "LoadAreaTriggerActionsAndData() >> Loaded %u areatrigger template circle.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadAreaTriggerActionsAndData() >> Loaded 0 areatrigger template circle. DB table `areatrigger_template_circle` is empty.");
+        TC_LOG_INFO("server.loading", "LoadAreaTriggerActionsAndData() >> Loaded 0 areatrigger template circle. DB table `areatrigger_template_circle` is empty.");
 
     result = WorldDatabase.Query("SELECT `entry`,`spellId`, `oncreated`, `entered`, `animationid`,  `timer1`, `entered1`, `animationid1`, `timer2`, `entered2`, `animationid2`, `cycle` FROM areatrigger_template_sequence");
     if (result)
@@ -519,10 +519,10 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerActionsAndData()
             ++counter;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadAreaTriggerActionsAndData() >> Loaded %u areatrigger_template_sequence.", counter);
+        TC_LOG_INFO("server.loading", "LoadAreaTriggerActionsAndData() >> Loaded %u areatrigger_template_sequence.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadAreaTriggerActionsAndData() >> Loaded 0 areatrigger template circle. DB table `areatrigger_template_sequence` is empty.");
+        TC_LOG_INFO("server.loading", "LoadAreaTriggerActionsAndData() >> Loaded 0 areatrigger template circle. DB table `areatrigger_template_sequence` is empty.");
 
     //                                                0           1        2    3         4            5          6         7               8              9        10        11       12         13         14        15           16               17         18        19        20           21
     QueryResult result2 = WorldDatabase.Query("SELECT entry, customEntry, id, moment, actionType, targetFlags, spellId, maxCharges, chargeRecoveryTime, hasAura, hasAura2, hasAura3, hasspell, scaleStep, scaleMin, scaleMax, scaleVisualUpdate, hitMaxCount, amount, onDespawn, auraCaster, minDistance FROM areatrigger_actions");
@@ -558,11 +558,11 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerActionsAndData()
             action.auraCaster = fields[i++].GetInt32();
             action.minDistance = fields[i++].GetFloat();
 
-            //TC_LOG_ERROR(LOG_FILTER_SQL, "DB table `areatrigger_actions` customEntry %u entry %u spellId %u", customEntry, entry, action.spellId);
+            //TC_LOG_ERROR("sql.sql", "DB table `areatrigger_actions` customEntry %u entry %u spellId %u", customEntry, entry, action.spellId);
 
             if (action.actionType >= AT_ACTION_TYPE_MAX)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadAreaTriggerActionsAndData() >> DB table `areatrigger_actions` has invalid action type '%u' for areatrigger entry %u",
+                TC_LOG_ERROR("sql.sql", "LoadAreaTriggerActionsAndData() >> DB table `areatrigger_actions` has invalid action type '%u' for areatrigger entry %u",
                     action.actionType, entry);
                 continue;
             }
@@ -572,7 +572,7 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerActionsAndData()
 
             if (!sSpellMgr->GetSpellInfo(action.spellId))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadAreaTriggerActionsAndData() >> DB table `areatrigger_actions` has non-existant spell id '%u' for areatrigger entry %u",
+                TC_LOG_ERROR("sql.sql", "LoadAreaTriggerActionsAndData() >> DB table `areatrigger_actions` has non-existant spell id '%u' for areatrigger entry %u",
                     action.spellId, entry);
                 continue;
             }
@@ -582,10 +582,10 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerActionsAndData()
             ++counter;
         } while (result2->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadAreaTriggerActionsAndData() >>  Loaded %u areatrigger actions.", counter);
+        TC_LOG_INFO("server.loading", "LoadAreaTriggerActionsAndData() >>  Loaded %u areatrigger actions.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadAreaTriggerActionsAndData() >>  Loaded 0 areatrigger actions. DB table `areatrigger_actions` is empty.");
+        TC_LOG_INFO("server.loading", "LoadAreaTriggerActionsAndData() >>  Loaded 0 areatrigger actions. DB table `areatrigger_actions` is empty.");
 }
 
 std::unordered_set<uint32> const* AreaTriggerDataStoreMgr::GetQuestsForAreaTrigger(uint32 areaTriggerID) const
@@ -635,10 +635,10 @@ void AreaTriggerDataStoreMgr::LoadAreaTriggerForces()
             ++counter;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "AreaTriggerDataStoreMgr::LoadAreaTriggerForces() >> Loaded %u areatrigger_force data.", counter);
+        TC_LOG_INFO("server.loading", "AreaTriggerDataStoreMgr::LoadAreaTriggerForces() >> Loaded %u areatrigger_force data.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "AreaTriggerDataStoreMgr::LoadAreaTriggerForces() >> Loaded 0 areatrigger_force data. DB table `areatrigger_force` is empty.");
+        TC_LOG_INFO("server.loading", "AreaTriggerDataStoreMgr::LoadAreaTriggerForces() >> Loaded 0 areatrigger_force data. DB table `areatrigger_force` is empty.");
 }
 
 const std::vector<AreaTriggerForce>* AreaTriggerDataStoreMgr::GetAreaTriggerForce(uint32 AuraID) const

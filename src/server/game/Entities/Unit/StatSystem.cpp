@@ -1342,7 +1342,7 @@ void Player::UpdateMeleeHastMod(float auraMods)
     amount *= auraMods;
     amount -= 100.0f;
 
-    //TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "UpdateMeleeHastMod mod %f", mod);
+    //TC_LOG_ERROR("network", "UpdateMeleeHastMod mod %f", mod);
 
     float value = 1.0f;
 
@@ -1367,7 +1367,7 @@ void Player::UpdateHastMod(float auraMods)
     amount *= auraMods;
     amount -= 100.0f;
 
-    //TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "UpdateHastMod amount %f", amount);
+    //TC_LOG_DEBUG("network", "UpdateHastMod amount %f", amount);
 
     float value = 1.0f;
 
@@ -1390,7 +1390,7 @@ void Player::UpdateRangeHastMod(float auraMods)
     amount *= auraMods;
     amount -= 100.0f;
 
-    //TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "UpdateRangeHastMod mod %f", mod);
+    //TC_LOG_ERROR("network", "UpdateRangeHastMod mod %f", mod);
 
     float value = 1.0f;
 
@@ -1720,7 +1720,7 @@ void Unit::UpdateHastMod()
     auratypelist.push_back(SPELL_AURA_HASTE_SPELLS);
     auratypelist.push_back(SPELL_AURA_MELEE_SLOW);
 
-    //TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "UpdateHastMod amount %f", amount);
+    //TC_LOG_DEBUG("network", "UpdateHastMod amount %f", amount);
 
     float value = 1.0f;
     if (isAnySummons())
@@ -1819,9 +1819,9 @@ void Unit::UpdatePowerRegen(uint32 power)
     valInCOmbat += GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_POWER_REGEN, power) / 5.0f;
     SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER + powerIndex, valInCOmbat);
 
-    // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Unit::UpdatePowerRegen RegenPeace valOutCOmbat %f, powerIndex %i, power %i", valOutCOmbat, powerIndex, power);
-    // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Unit::UpdatePowerRegen RegenCombat valInCOmbat %f, powerIndex %i, power %i", valInCOmbat, powerIndex, power);
-    // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Unit::UpdatePowerRegen powerIndex %i, power %i, RegenCombat %f, RegenPeace %f", powerIndex, power, powerEntry->RegenCombat, powerEntry->RegenPeace);
+    // TC_LOG_DEBUG("spells", "Unit::UpdatePowerRegen RegenPeace valOutCOmbat %f, powerIndex %i, power %i", valOutCOmbat, powerIndex, power);
+    // TC_LOG_DEBUG("spells", "Unit::UpdatePowerRegen RegenCombat valInCOmbat %f, powerIndex %i, power %i", valInCOmbat, powerIndex, power);
+    // TC_LOG_DEBUG("spells", "Unit::UpdatePowerRegen powerIndex %i, power %i, RegenCombat %f, RegenPeace %f", powerIndex, power, powerEntry->RegenCombat, powerEntry->RegenPeace);
 }
 
 /*#######################################
@@ -2197,7 +2197,7 @@ void Guardian::UpdateArmor()
     else
         value = m_owner->GetModifierValue(unitMod, BASE_VALUE);
 
-    //TC_LOG_DEBUG(LOG_FILTER_PETS, "Guardian::UpdateArmor value %f creature_ID %i", value, creature_ID);
+    //TC_LOG_DEBUG("misc", "Guardian::UpdateArmor value %f creature_ID %i", value, creature_ID);
 
     value *= GetModifierValue(unitMod, BASE_PCT);
     value *= GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_RESISTANCE_PCT, 1);
@@ -2234,7 +2234,7 @@ void Guardian::UpdateMaxHealth()
         //value += GetModifierValue(unitMod, TOTAL_VALUE);
         value *= GetModifierValue(unitMod, TOTAL_PCT);
 
-        //TC_LOG_DEBUG(LOG_FILTER_PETS, "Guardian::UpdateMaxHealth multiplicator %f creature_ID %i hp %f", multiplicator, creature_ID, value);
+        //TC_LOG_DEBUG("misc", "Guardian::UpdateMaxHealth multiplicator %f creature_ID %i hp %f", multiplicator, creature_ID, value);
     }
     else
     {
@@ -2269,7 +2269,7 @@ void Guardian::UpdateMaxPower(Powers power)
     value *= GetTotalAuraMultiplierByMiscValue(SPELL_AURA_MOD_MAX_MANA, power);
     value *= GetTotalAuraMultiplierByMiscValue(SPELL_AURA_MOD_ADD_ENERGY_PERCENT, power);
 
-    // TC_LOG_DEBUG(LOG_FILTER_PETS, "Guardian::UpdateMaxPower value %f creature_ID %i", value, creature_ID);
+    // TC_LOG_DEBUG("misc", "Guardian::UpdateMaxPower value %f creature_ID %i", value, creature_ID);
     SetMaxPower(power, value);
 }
 
@@ -2476,7 +2476,7 @@ void Player::UpdateLifesteal()
 
     SetFloatValue(PLAYER_FIELD_LIFESTEAL, std::max(0.0f, val));
 
-    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Player: UpdateLifesteal val %f", val);
+    //TC_LOG_DEBUG("spells", "Player: UpdateLifesteal val %f", val);
 }
 
 void Player::UpdateAvoidance()

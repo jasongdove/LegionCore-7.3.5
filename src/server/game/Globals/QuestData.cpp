@@ -141,10 +141,10 @@ void QuestDataStoreMgr::LoadWorldQuestTemplates()
             ++counter;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadWorldQuestTemplates() >> Loaded %u world_quest_template data.", counter);
+        TC_LOG_INFO("server.loading", "LoadWorldQuestTemplates() >> Loaded %u world_quest_template data.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadWorldQuestTemplates() >> Loaded 0 world_quest_template data. DB table `world_quest_template` is empty.");
+        TC_LOG_INFO("server.loading", "LoadWorldQuestTemplates() >> Loaded 0 world_quest_template data. DB table `world_quest_template` is empty.");
 
     //                                      0          1           2              3           4        5          6        7
     result = WorldDatabase.Query("SELECT `QuestID`, `Timer`, `VariableID`, `VariableID1`, `Value`, `Value1`, `EventID`, `AreaID` FROM `world_quest_update`");
@@ -199,10 +199,10 @@ void QuestDataStoreMgr::LoadWorldQuestTemplates()
             ++counter;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadWorldQuestTemplates() >> Loaded %u world_quest_update data.", counter);
+        TC_LOG_INFO("server.loading", "LoadWorldQuestTemplates() >> Loaded %u world_quest_update data.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadWorldQuestTemplates() >> Loaded 0 world_quest_update data. DB table `world_quest_update` is empty.");
+        TC_LOG_INFO("server.loading", "LoadWorldQuestTemplates() >> Loaded 0 world_quest_update data. DB table `world_quest_update` is empty.");
 
     //                                      0          1           2            3               4
     result = WorldDatabase.Query("SELECT `QuestID`, `ItemID`, `ItemCount`, `NotNeedSpell`, `NeedSpell` FROM `world_quest_item`");
@@ -228,10 +228,10 @@ void QuestDataStoreMgr::LoadWorldQuestTemplates()
             ++counter;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadWorldQuestTemplates() >> Loaded %u world_quest_item data.", counter);
+        TC_LOG_INFO("server.loading", "LoadWorldQuestTemplates() >> Loaded %u world_quest_item data.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadWorldQuestTemplates() >> Loaded 0 world_quest_item data. DB table `world_quest_item` is empty.");
+        TC_LOG_INFO("server.loading", "LoadWorldQuestTemplates() >> Loaded 0 world_quest_item data. DB table `world_quest_item` is empty.");
 
     //                                           0           1           2        3         4            5              6              7           8         9           10
     result = CharacterDatabase.Query("SELECT `QuestID`, `VariableID`, `Value`, `Timer`, `StartTime`, `ResetTime`, `CurrencyID`, `CurrencyCount`, `Gold`, `ItemList`, `RewardType` FROM `world_quest`");
@@ -314,15 +314,15 @@ void QuestDataStoreMgr::LoadWorldQuestTemplates()
             ++counter;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadWorldQuestTemplates() >> Loaded %u world_quest data.", counter);
+        TC_LOG_INFO("server.loading", "LoadWorldQuestTemplates() >> Loaded %u world_quest data.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadWorldQuestTemplates() >> Loaded 0 world_quest data. DB table `world_quest` is empty.");
+        TC_LOG_INFO("server.loading", "LoadWorldQuestTemplates() >> Loaded 0 world_quest data. DB table `world_quest` is empty.");
 
     std::set<uint32> const* itemListIDs = sDB2Manager.GetItemsByBonusTree(455); // For 137 item can be 367 and 455
     if (itemListIDs && !itemListIDs->empty())
     {
-        TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "LoadWorldQuestTemplates() >> Loaded world_quest_update itemListIDs %u", itemListIDs->size());
+        TC_LOG_DEBUG("worldquest", "LoadWorldQuestTemplates() >> Loaded world_quest_update itemListIDs %u", itemListIDs->size());
 
         for (auto& itemID : *itemListIDs)
         {
@@ -338,7 +338,7 @@ void QuestDataStoreMgr::LoadWorldQuestTemplates()
     itemListIDs = sDB2Manager.GetItemsByBonusTree(463);
     if (itemListIDs && !itemListIDs->empty())
     {
-        TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "LoadWorldQuestTemplates() >> Loaded world_quest_update itemListIDs for dungeon %u", itemListIDs->size());
+        TC_LOG_DEBUG("worldquest", "LoadWorldQuestTemplates() >> Loaded world_quest_update itemListIDs for dungeon %u", itemListIDs->size());
 
         for (auto& itemID : *itemListIDs)
         {
@@ -365,10 +365,10 @@ void QuestDataStoreMgr::LoadWorldQuestTemplates()
             (_worldQuestsFactionAnalogs[1])[hquest] = aquest;
         } while (result->NextRow());
 
-        TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "LoadWorldQuestTemplates() >> Loaded world_quest_faction_analogs %u", counter);
+        TC_LOG_DEBUG("worldquest", "LoadWorldQuestTemplates() >> Loaded world_quest_faction_analogs %u", counter);
     }
     else
-        TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "LoadWorldQuestTemplates() >> Loaded world_quest_faction_analogs %u", 0);
+        TC_LOG_DEBUG("worldquest", "LoadWorldQuestTemplates() >> Loaded world_quest_faction_analogs %u", 0);
 
 
     for (uint8 QuestInfoID = QUEST_INFO_GROUP; QuestInfoID < QUEST_INFO_MAX; ++QuestInfoID)
@@ -381,9 +381,9 @@ void QuestDataStoreMgr::LoadWorldQuestTemplates()
                 _worldQuestSet[vTest.quest->QuestInfoID][vTest.quest->IsEmissary() ? 0 : vTest.quest->QuestSortID].insert(&vTest);
             }
 
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "LoadWorldQuestTemplates() >> Loaded world_quest_update _worldQuestRelic %u _worldQuestItem %u", _worldQuestRelic.size(), _worldQuestItem.size());
+    TC_LOG_DEBUG("worldquest", "LoadWorldQuestTemplates() >> Loaded world_quest_update _worldQuestRelic %u _worldQuestItem %u", _worldQuestRelic.size(), _worldQuestItem.size());
     // for (uint8 i = 0; i < QUEST_INFO_MAX; ++i)
-        // TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "LoadWorldQuestTemplates() >> Loaded world_quest_update Info %u _worldQuestUpdate %u _worldQuestSet %u", i, _worldQuestUpdate[i].size(), _worldQuestSet[i].size());
+        // TC_LOG_DEBUG("worldquest", "LoadWorldQuestTemplates() >> Loaded world_quest_update Info %u _worldQuestUpdate %u _worldQuestSet %u", i, _worldQuestUpdate[i].size(), _worldQuestSet[i].size());
 }
 
 void QuestDataStoreMgr::LoadPointOfInterestLocales()
@@ -408,7 +408,7 @@ void QuestDataStoreMgr::LoadPointOfInterestLocales()
             sObjectMgr->AddLocaleString(fields[i].GetString(), LocaleConstant(i), data.IconName);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadPointOfInterestLocales() >> Loaded %lu points_of_interest locale strings in %u ms", (unsigned long)_pointOfInterestLocaleStore.size(), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "LoadPointOfInterestLocales() >> Loaded %lu points_of_interest locale strings in %u ms", (unsigned long)_pointOfInterestLocaleStore.size(), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void QuestDataStoreMgr::LoadQuestRelations()
@@ -450,7 +450,7 @@ void QuestDataStoreMgr::LoadQuests()
         " FROM quest_template");
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Loaded 0 quests definitions. DB table `quest_template` is empty.");
+        TC_LOG_ERROR("server.loading", "LoadQuests() >> Loaded 0 quests definitions. DB table `quest_template` is empty.");
 
         return;
     }
@@ -487,7 +487,7 @@ void QuestDataStoreMgr::LoadQuests()
 
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Loaded 0 quest details. DB table `quest_details` is empty.");
+        TC_LOG_ERROR("server.loading", "LoadQuests() >> Loaded 0 quest details. DB table `quest_details` is empty.");
     }
     else
     {
@@ -500,7 +500,7 @@ void QuestDataStoreMgr::LoadQuests()
             if (itr != _questTemplates.end())
                 itr->second->LoadQuestDetails(fields);
             else
-                TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Table `quest_details` has data for quest %u but such quest does not exist", questId);
+                TC_LOG_ERROR("server.loading", "LoadQuests() >> Table `quest_details` has data for quest %u but such quest does not exist", questId);
         } while (result->NextRow());
     }
 
@@ -510,7 +510,7 @@ void QuestDataStoreMgr::LoadQuests()
 
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 quest request items. DB table `quest_request_items` is empty.");
+        TC_LOG_ERROR("server.loading", ">> Loaded 0 quest request items. DB table `quest_request_items` is empty.");
     }
     else
     {
@@ -523,7 +523,7 @@ void QuestDataStoreMgr::LoadQuests()
             if (itr != _questTemplates.end())
                 itr->second->LoadQuestRequestItems(fields);
             else
-                TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Table `quest_request_items` has data for quest %u but such quest does not exist", questId);
+                TC_LOG_ERROR("server.loading", "LoadQuests() >> Table `quest_request_items` has data for quest %u but such quest does not exist", questId);
         } while (result->NextRow());
     }
 
@@ -533,7 +533,7 @@ void QuestDataStoreMgr::LoadQuests()
 
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Loaded 0 quest reward emotes. DB table `quest_offer_reward` is empty.");
+        TC_LOG_ERROR("server.loading", "LoadQuests() >> Loaded 0 quest reward emotes. DB table `quest_offer_reward` is empty.");
     }
     else
     {
@@ -546,7 +546,7 @@ void QuestDataStoreMgr::LoadQuests()
             if (itr != _questTemplates.end())
                 itr->second->LoadQuestOfferReward(fields);
             else
-                TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >>Table `quest_offer_reward` has data for quest %u but such quest does not exist", questId);
+                TC_LOG_ERROR("server.loading", "LoadQuests() >>Table `quest_offer_reward` has data for quest %u but such quest does not exist", questId);
         } while (result->NextRow());
     }
 
@@ -558,7 +558,7 @@ void QuestDataStoreMgr::LoadQuests()
 
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Loaded 0 quest template addons. DB table `quest_template_addon` is empty.");
+        TC_LOG_ERROR("server.loading", "LoadQuests() >> Loaded 0 quest template addons. DB table `quest_template_addon` is empty.");
     }
     else
     {
@@ -571,7 +571,7 @@ void QuestDataStoreMgr::LoadQuests()
             if (itr != _questTemplates.end())
                 itr->second->LoadQuestTemplateAddon(fields);
             else
-                TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Table `quest_template_addon` has data for quest %u but such quest does not exist", questId);
+                TC_LOG_ERROR("server.loading", "LoadQuests() >> Table `quest_template_addon` has data for quest %u but such quest does not exist", questId);
         } while (result->NextRow());
     }
 
@@ -581,7 +581,7 @@ void QuestDataStoreMgr::LoadQuests()
 
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Loaded 0 quest objectives. DB table `quest_objectives` is empty.");
+        TC_LOG_ERROR("server.loading", "LoadQuests() >> Loaded 0 quest objectives. DB table `quest_objectives` is empty.");
     }
     else
     {
@@ -611,7 +611,7 @@ void QuestDataStoreMgr::LoadQuests()
                 _questObjectiveByType[QuestObjectiveType(obj.Type)].push_back(obj);
             }
             else
-                TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Table `quest_objectives` has objective for quest %u but such quest does not exist", questId);
+                TC_LOG_ERROR("server.loading", "LoadQuests() >> Table `quest_objectives` has objective for quest %u but such quest does not exist", questId);
         } while (result->NextRow());
     }
 
@@ -621,7 +621,7 @@ void QuestDataStoreMgr::LoadQuests()
 
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Loaded 0 quest visual effects. DB table `quest_visual_effect` is empty.");
+        TC_LOG_ERROR("server.loading", "LoadQuests() >> Loaded 0 quest visual effects. DB table `quest_visual_effect` is empty.");
     }
     else
     {
@@ -633,7 +633,7 @@ void QuestDataStoreMgr::LoadQuests()
 
             if (!vID)
             {
-                TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Table `quest_visual_effect` has visual effect for null objective id");
+                TC_LOG_ERROR("server.loading", "LoadQuests() >> Table `quest_visual_effect` has visual effect for null objective id");
                 WorldDatabase.PExecute("DELETE FROM quest_visual_effect WHERE ID = %u", vID);
                 continue;
             }
@@ -641,7 +641,7 @@ void QuestDataStoreMgr::LoadQuests()
             // objID will be null if match for table join is not found
             if (vID != oID)
             {
-                TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Table `quest_visual_effect` has visual effect for objective %u but such objective does not exist.", vID);
+                TC_LOG_ERROR("server.loading", "LoadQuests() >> Table `quest_visual_effect` has visual effect for objective %u but such objective does not exist.", vID);
                 WorldDatabase.PExecute("DELETE FROM quest_visual_effect WHERE ID = %u", vID);
                 continue;
             }
@@ -685,62 +685,62 @@ void QuestDataStoreMgr::LoadQuests()
         Quest* qinfo = iter.second;
 
         if (qinfo->Type >= MAX_QUEST_TYPES)
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `Method` = %u, expected values are 0, 1 or 2.", qinfo->GetQuestId(), qinfo->Type);
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `Method` = %u, expected values are 0, 1 or 2.", qinfo->GetQuestId(), qinfo->Type);
 
         if (qinfo->SpecialFlags & ~QUEST_SPECIAL_FLAGS_DB_ALLOWED)
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `SpecialFlags` = %u > max allowed value. Correct `SpecialFlags` to value <= %u", qinfo->GetQuestId(), qinfo->SpecialFlags, QUEST_SPECIAL_FLAGS_DB_ALLOWED);
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `SpecialFlags` = %u > max allowed value. Correct `SpecialFlags` to value <= %u", qinfo->GetQuestId(), qinfo->SpecialFlags, QUEST_SPECIAL_FLAGS_DB_ALLOWED);
             qinfo->SpecialFlags &= QUEST_SPECIAL_FLAGS_DB_ALLOWED;
         }
 
         if (qinfo->IsDaily() && qinfo->IsWeekly())
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Weekly Quest %u is marked as daily quest in `Flags`, removed daily flag.", qinfo->GetQuestId());
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Weekly Quest %u is marked as daily quest in `Flags`, removed daily flag.", qinfo->GetQuestId());
             qinfo->Flags &= ~QUEST_FLAGS_DAILY;
         }
 
         if (qinfo->IsDaily() && !qinfo->IsRepeatable())
         {
             //WorldDatabase.PExecute("UPDATE `quest_template_addon` SET `SpecialFlags` = SpecialFlags | 1 WHERE `ID` = %u", qinfo->GetQuestId());
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Daily Quest %u not marked as repeatable in `SpecialFlags`, added.", qinfo->GetQuestId());
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Daily Quest %u not marked as repeatable in `SpecialFlags`, added.", qinfo->GetQuestId());
             qinfo->SpecialFlags |= QUEST_SPECIAL_FLAGS_REPEATABLE;
         }
 
         if ((qinfo->Flags & QUEST_FLAGS_WEEKLY) && !qinfo->IsRepeatable())
         {
             //WorldDatabase.PExecute("UPDATE `quest_template_addon` SET `SpecialFlags` = SpecialFlags | 1 WHERE `ID` = %u", qinfo->GetQuestId());
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Weekly Quest %u not marked as repeatable in `SpecialFlags`, added.", qinfo->GetQuestId());
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Weekly Quest %u not marked as repeatable in `SpecialFlags`, added.", qinfo->GetQuestId());
             qinfo->SpecialFlags |= QUEST_SPECIAL_FLAGS_REPEATABLE;
         }
 
         if (qinfo->Flags & QUEST_FLAGS_TRACKING)
             for (uint8 j = 1; j < QUEST_REWARD_CHOICES_COUNT; ++j)
                 if (uint32 id = qinfo->RewardChoiceItemId[j])
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardChoiceItemId%d` = %u but item from `RewardChoiceItemId%d` can't be rewarded with quest flag QUEST_FLAGS_TRACKING.", qinfo->GetQuestId(), j + 1, id, j + 1);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardChoiceItemId%d` = %u but item from `RewardChoiceItemId%d` can't be rewarded with quest flag QUEST_FLAGS_TRACKING.", qinfo->GetQuestId(), j + 1, id, j + 1);
 
         if (qinfo->MinLevel == uint32(-1) || qinfo->MinLevel > MAX_LEVEL)
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u should be disabled because `MinLevel` = %i", qinfo->GetQuestId(), int32(qinfo->MinLevel));
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u should be disabled because `MinLevel` = %i", qinfo->GetQuestId(), int32(qinfo->MinLevel));
 
         if (qinfo->QuestSortID > 0)
             if (!sAreaTableStore.LookupEntry(qinfo->QuestSortID))
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `QuestSortID` = %u (zone case) but zone with this id does not exist.",
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `QuestSortID` = %u (zone case) but zone with this id does not exist.",
                     qinfo->GetQuestId(), qinfo->QuestSortID);
 
         if (qinfo->QuestSortID < 0)
         {
             if (!sQuestSortStore.LookupEntry(-int32(qinfo->QuestSortID)))
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `QuestSortID` = %i (sort case) but quest sort with this id does not exist.", qinfo->GetQuestId(), qinfo->QuestSortID);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `QuestSortID` = %i (sort case) but quest sort with this id does not exist.", qinfo->GetQuestId(), qinfo->QuestSortID);
 
             if (uint32 skill_id = SkillByQuestSort(-int32(qinfo->QuestSortID)))
                 if (qinfo->RequiredSkillId != skill_id)
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `QuestSortID` = %i but `RequiredSkillId` does not have a corresponding value (%d).", qinfo->GetQuestId(), qinfo->QuestSortID, skill_id);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `QuestSortID` = %i but `RequiredSkillId` does not have a corresponding value (%d).", qinfo->GetQuestId(), qinfo->QuestSortID, skill_id);
         }
 
         if (qinfo->AllowableClasses)
         {
             if (!(qinfo->AllowableClasses & CLASSMASK_ALL_PLAYABLE))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u does not contain any playable classes in `AllowableClasses` (%u), value set to 0 (all classes).", qinfo->GetQuestId(), qinfo->AllowableClasses);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u does not contain any playable classes in `AllowableClasses` (%u), value set to 0 (all classes).", qinfo->GetQuestId(), qinfo->AllowableClasses);
                 qinfo->AllowableClasses = 0;
             }
         }
@@ -749,40 +749,40 @@ void QuestDataStoreMgr::LoadQuests()
         {
             if (!(qinfo->AllowableRaces & RACEMASK_ALL_PLAYABLE))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u does not contain any playable races in `AllowableRaces` (%u), value set to 0 (all races).", qinfo->GetQuestId(), qinfo->AllowableRaces);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u does not contain any playable races in `AllowableRaces` (%u), value set to 0 (all races).", qinfo->GetQuestId(), qinfo->AllowableRaces);
                 qinfo->AllowableRaces = uint64(-1);
             }
         }
 
         if (qinfo->RequiredSkillId)
             if (!sSkillLineStore.LookupEntry(qinfo->RequiredSkillId))
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RequiredSkillId` = %u but this skill does not exist", qinfo->GetQuestId(), qinfo->RequiredSkillId);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RequiredSkillId` = %u but this skill does not exist", qinfo->GetQuestId(), qinfo->RequiredSkillId);
 
         if (qinfo->RequiredSkillPoints && (qinfo->RequiredSkillPoints > sWorld->GetConfigMaxSkillValue()))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RequiredSkillPoints` = %u but max possible skill is %u, quest can't be done.", qinfo->GetQuestId(), qinfo->RequiredSkillPoints, sWorld->GetConfigMaxSkillValue());
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RequiredSkillPoints` = %u but max possible skill is %u, quest can't be done.", qinfo->GetQuestId(), qinfo->RequiredSkillPoints, sWorld->GetConfigMaxSkillValue());
 
         if (qinfo->RequiredMinRepFaction && !sFactionStore.LookupEntry(qinfo->RequiredMinRepFaction))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RequiredMinRepFaction` = %u but faction template %u does not exist, quest can't be done.",  qinfo->GetQuestId(), qinfo->RequiredMinRepFaction, qinfo->RequiredMinRepFaction);
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RequiredMinRepFaction` = %u but faction template %u does not exist, quest can't be done.",  qinfo->GetQuestId(), qinfo->RequiredMinRepFaction, qinfo->RequiredMinRepFaction);
 
         if (qinfo->RequiredMaxRepFaction && !sFactionStore.LookupEntry(qinfo->RequiredMaxRepFaction))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RequiredMaxRepFaction` = %u but faction template %u does not exist, quest can't be done.", qinfo->GetQuestId(), qinfo->RequiredMaxRepFaction, qinfo->RequiredMaxRepFaction);
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RequiredMaxRepFaction` = %u but faction template %u does not exist, quest can't be done.", qinfo->GetQuestId(), qinfo->RequiredMaxRepFaction, qinfo->RequiredMaxRepFaction);
 
         if (qinfo->RequiredMinRepValue && qinfo->RequiredMinRepValue > Reputation_Cap)
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RequiredMinRepValue` = %d but max reputation is %u, quest can't be done.",
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RequiredMinRepValue` = %d but max reputation is %u, quest can't be done.",
                 qinfo->GetQuestId(), qinfo->RequiredMinRepValue, Reputation_Cap);
 
         if (qinfo->RequiredMinRepValue && qinfo->RequiredMaxRepValue && qinfo->RequiredMaxRepValue <= qinfo->RequiredMinRepValue)
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RequiredMaxRepValue` = %d and `RequiredMinRepValue` = %d, quest can't be done.", qinfo->GetQuestId(), qinfo->RequiredMaxRepValue, qinfo->RequiredMinRepValue);
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RequiredMaxRepValue` = %d and `RequiredMinRepValue` = %d, quest can't be done.", qinfo->GetQuestId(), qinfo->RequiredMaxRepValue, qinfo->RequiredMinRepValue);
 
         if (!qinfo->RequiredMinRepFaction && qinfo->RequiredMinRepValue != 0)
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RequiredMinRepValue` = %d but `RequiredMinRepFaction` is 0, value has no effect", qinfo->GetQuestId(), qinfo->RequiredMinRepValue);
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RequiredMinRepValue` = %d but `RequiredMinRepFaction` is 0, value has no effect", qinfo->GetQuestId(), qinfo->RequiredMinRepValue);
 
         if (!qinfo->RequiredMaxRepFaction && qinfo->RequiredMaxRepValue != 0)
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RequiredMaxRepValue` = %d but `RequiredMaxRepFaction` is 0, value has no effect", qinfo->GetQuestId(), qinfo->RequiredMaxRepValue);
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RequiredMaxRepValue` = %d but `RequiredMaxRepFaction` is 0, value has no effect", qinfo->GetQuestId(), qinfo->RequiredMaxRepValue);
 
         if (qinfo->RewardTitleId && !sCharTitlesStore.LookupEntry(qinfo->RewardTitleId))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardTitleId` = %u but CharTitle Id %u does not exist, quest can't be rewarded with title.", qinfo->GetQuestId(), qinfo->RewardTitleId, qinfo->RewardTitleId);
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardTitleId` = %u but CharTitle Id %u does not exist, quest can't be rewarded with title.", qinfo->GetQuestId(), qinfo->RewardTitleId, qinfo->RewardTitleId);
             qinfo->RewardTitleId = 0;
         }
 
@@ -790,21 +790,21 @@ void QuestDataStoreMgr::LoadQuests()
         {
             if (!sObjectMgr->GetItemTemplate(qinfo->SourceItemId))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `SourceItemId` = %u but item with entry %u does not exist, quest can't be done.", qinfo->GetQuestId(), qinfo->SourceItemId, qinfo->SourceItemId);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `SourceItemId` = %u but item with entry %u does not exist, quest can't be done.", qinfo->GetQuestId(), qinfo->SourceItemId, qinfo->SourceItemId);
                 qinfo->SourceItemId = 0;
                 //WorldDatabase.PExecute("UPDATE `quest_template` SET `StartItem` = 0 WHERE `ID` = %u", qinfo->GetQuestId());
                 //WorldDatabase.PExecute("UPDATE `quest_template_addon` SET `ProvidedItemCount` = 0 WHERE `ID` = %u", qinfo->GetQuestId());
             }
             else if (qinfo->SourceItemIdCount == 0)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `SourceItemId` = %u but `SourceItemIdCount` = 0, set to 1 but need fix in DB.", qinfo->GetQuestId(), qinfo->SourceItemId);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `SourceItemId` = %u but `SourceItemIdCount` = 0, set to 1 but need fix in DB.", qinfo->GetQuestId(), qinfo->SourceItemId);
                 qinfo->SourceItemIdCount = 1; // update to 1 for allow quest work for backward compatibility with DB
                 //WorldDatabase.PExecute("UPDATE `quest_template_addon` SET `ProvidedItemCount` = 1 WHERE `ID` = %u", qinfo->GetQuestId());
             }
         }
         else if (qinfo->SourceItemIdCount > 0)
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `SourceItemId` = 0 but `SourceItemIdCount` = %u, useless value.", qinfo->GetQuestId(), qinfo->SourceItemIdCount);
+            TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `SourceItemId` = 0 but `SourceItemIdCount` = %u, useless value.", qinfo->GetQuestId(), qinfo->SourceItemIdCount);
             qinfo->SourceItemIdCount = 0;
             //WorldDatabase.PExecute("UPDATE `quest_template_addon` SET `ProvidedItemCount` = 0 WHERE `ID` = %u", qinfo->GetQuestId());
         }
@@ -814,12 +814,12 @@ void QuestDataStoreMgr::LoadQuests()
             SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(qinfo->SourceSpellID);
             if (!spellInfo)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `SourceSpellID` = %u but spell %u doesn't exist, quest can't be done.", qinfo->GetQuestId(), qinfo->SourceSpellID, qinfo->SourceSpellID);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `SourceSpellID` = %u but spell %u doesn't exist, quest can't be done.", qinfo->GetQuestId(), qinfo->SourceSpellID, qinfo->SourceSpellID);
                 qinfo->SourceSpellID = 0;
             }
             else if (!SpellMgr::IsSpellValid(spellInfo))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `SourceSpellID` = %u but spell %u is broken, quest can't be done.", qinfo->GetQuestId(), qinfo->SourceSpellID, qinfo->SourceSpellID);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `SourceSpellID` = %u but spell %u is broken, quest can't be done.", qinfo->GetQuestId(), qinfo->SourceSpellID, qinfo->SourceSpellID);
                 qinfo->SourceSpellID = 0;
             }
         }
@@ -830,14 +830,14 @@ void QuestDataStoreMgr::LoadQuests()
             {
                 if (!sObjectMgr->GetItemTemplate(id))
                 {
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `ItemDrop%d` = %u but item with entry %u does not exist, quest can't be done. Set 0", qinfo->GetQuestId(), j + 1, id, id);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `ItemDrop%d` = %u but item with entry %u does not exist, quest can't be done. Set 0", qinfo->GetQuestId(), j + 1, id, id);
                     qinfo->ItemDrop[j] = 0;
                     //WorldDatabase.PExecute("UPDATE `quest_template` SET `ItemDrop1` = %u, `ItemDrop2` = %u, `ItemDrop3` = %u, `ItemDrop4` = %u WHERE `ID` = %u", qinfo->ItemDrop[0], qinfo->ItemDrop[1], qinfo->ItemDrop[2], qinfo->ItemDrop[3], qinfo->GetQuestId());
                 }
             }
             else if (qinfo->ItemDropQuantity[j] > 0)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `ItemDrop%d` = 0 but `ItemDropQuantity%d` = %u. Set 0", qinfo->GetQuestId(), j + 1, j + 1, qinfo->ItemDropQuantity[j]);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `ItemDrop%d` = 0 but `ItemDropQuantity%d` = %u. Set 0", qinfo->GetQuestId(), j + 1, j + 1, qinfo->ItemDropQuantity[j]);
                 qinfo->ItemDropQuantity[j] = 0;
             }
         }
@@ -854,7 +854,7 @@ void QuestDataStoreMgr::LoadQuests()
                     case QUEST_OBJECTIVE_TALKTO:
                     case QUEST_OBJECTIVE_PLAYERKILLS:
                     case QUEST_OBJECTIVE_AREATRIGGER:
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u objective %u has invalid StorageIndex = %d for objective type %u", qinfo->GetQuestId(), obj.ID, obj.StorageIndex, obj.Type);
+                        TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u objective %u has invalid StorageIndex = %d for objective type %u", qinfo->GetQuestId(), obj.ID, obj.StorageIndex, obj.Type);
                         break;
                     default:
                         break;
@@ -867,7 +867,7 @@ void QuestDataStoreMgr::LoadQuests()
                     qinfo->SetSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER);
                     if (!sObjectMgr->GetItemTemplate(obj.ObjectID))
                     {
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u objective %u has non existing item entry %u, quest can't be done.", qinfo->GetQuestId(), obj.ID, obj.ObjectID);
+                        TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u objective %u has non existing item entry %u, quest can't be done.", qinfo->GetQuestId(), obj.ID, obj.ObjectID);
                         //WorldDatabase.PExecute("delete from `quest_objectives` WHERE `ObjectId` = %u and `QuestID` = %u and type = 1", obj.ObjectID, qinfo->GetQuestId());
                     }
                     break;
@@ -879,13 +879,13 @@ void QuestDataStoreMgr::LoadQuests()
                             const_cast<CreatureTemplate*>(cInfo)->QuestPersonalLoot = true;
                     }
                     else
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u objective %u has non existing creature entry %u, quest can't be done.", qinfo->GetQuestId(), obj.ID, uint32(obj.ObjectID));
+                        TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u objective %u has non existing creature entry %u, quest can't be done.", qinfo->GetQuestId(), obj.ID, uint32(obj.ObjectID));
                     break;
                 case QUEST_OBJECTIVE_GAMEOBJECT:
                     qinfo->SetSpecialFlag(QUEST_SPECIAL_FLAGS_KILL | QUEST_SPECIAL_FLAGS_CAST);
                     if (!sObjectMgr->GetGameObjectTemplate(obj.ObjectID))
                     {
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u objective %u has non existing gameobject entry %u, quest can't be done.", qinfo->GetQuestId(), obj.ID, uint32(obj.ObjectID));
+                        TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u objective %u has non existing gameobject entry %u, quest can't be done.", qinfo->GetQuestId(), obj.ID, uint32(obj.ObjectID));
                         //WorldDatabase.PExecute("delete from `quest_objectives` WHERE `ObjectId` = %u and `QuestID` = %u and type = 2", obj.ObjectID, qinfo->GetQuestId());
                     }
                     break;
@@ -895,28 +895,28 @@ void QuestDataStoreMgr::LoadQuests()
                 case QUEST_OBJECTIVE_MIN_REPUTATION:
                 case QUEST_OBJECTIVE_MAX_REPUTATION:
                     if (!sFactionStore.LookupEntry(obj.ObjectID))
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u objective %u has non existing faction id %u", qinfo->GetQuestId(), obj.ID, obj.ObjectID);
+                        TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u objective %u has non existing faction id %u", qinfo->GetQuestId(), obj.ID, obj.ObjectID);
                     break;
                 case QUEST_OBJECTIVE_PLAYERKILLS:
                     qinfo->SetSpecialFlag(QUEST_SPECIAL_FLAGS_PLAYER_KILL);
                     if (obj.Amount <= 0)
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u objective %u has invalid player kills count %d", qinfo->GetQuestId(), obj.ID, obj.Amount);
+                        TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u objective %u has invalid player kills count %d", qinfo->GetQuestId(), obj.ID, obj.Amount);
                     break;
                 case QUEST_OBJECTIVE_OBTAIN_CURRENCY:
                 case QUEST_OBJECTIVE_HAVE_CURRENCY:
                 case QUEST_OBJECTIVE_CURRENCY:
                     if (!sCurrencyTypesStore.LookupEntry(obj.ObjectID))
                     {
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u objective %u has non existing currency %u", qinfo->GetQuestId(), obj.ID, obj.ObjectID);
+                        TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u objective %u has non existing currency %u", qinfo->GetQuestId(), obj.ID, obj.ObjectID);
                         //WorldDatabase.PExecute("delete from `quest_objectives` WHERE `ObjectId` = %u and `QuestID` = %u and type = 4", obj.ObjectID, qinfo->GetQuestId());
                     }
                     if (obj.Amount <= 0)
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u objective %u has invalid currency amount %d", qinfo->GetQuestId(), obj.ID, obj.Amount);
+                        TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u objective %u has invalid currency amount %d", qinfo->GetQuestId(), obj.ID, obj.Amount);
                     break;
                 case QUEST_OBJECTIVE_LEARNSPELL:
                     if (!sSpellMgr->GetSpellInfo(obj.ObjectID))
                     {
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has not exist SpellID: %u in ObjectID field ", qinfo->GetQuestId(), obj.ObjectID);
+                        TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has not exist SpellID: %u in ObjectID field ", qinfo->GetQuestId(), obj.ObjectID);
                         //WorldDatabase.PExecute("delete from `quest_objectives` WHERE `ObjectId` = %u and `QuestID` = %u and type = 5", obj.ObjectID, qinfo->GetQuestId());
                     }
                     break;
@@ -926,7 +926,7 @@ void QuestDataStoreMgr::LoadQuests()
                     if (sAreaTriggerStore.LookupEntry(uint32(obj.ObjectID)))
                         sAreaTriggerDataStore->AddDataToQuestAreatriggerStore(qinfo->Id, obj.ObjectID);
                     else if (obj.ObjectID != -1)
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u objective %u has non existing areatrigger id %d", qinfo->GetQuestId(), obj.ID, obj.ObjectID);
+                        TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u objective %u has non existing areatrigger id %d", qinfo->GetQuestId(), obj.ID, obj.ObjectID);
                     break;
                 case QUEST_OBJECTIVE_MONEY:
                 case QUEST_OBJECTIVE_DEFEATBATTLEPET:
@@ -934,7 +934,7 @@ void QuestDataStoreMgr::LoadQuests()
                     break;
                 case QUEST_OBJECTIVE_COMPLETE_CRITERIA_TREE:
                     if (!sCriteriaTreeStore.LookupEntry(obj.ObjectID))
-                        TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has not exist CriteriaTreeID: %u in ObjectID field ", qinfo->GetQuestId(), obj.ObjectID);
+                        TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has not exist CriteriaTreeID: %u in ObjectID field ", qinfo->GetQuestId(), obj.ObjectID);
                     break;
                 case QUEST_OBJECTIVE_TASK_IN_ZONE:
                     qinfo->SpecialFlags |= QUEST_SPECIAL_FLAGS_AUTO_REWARD;
@@ -944,7 +944,7 @@ void QuestDataStoreMgr::LoadQuests()
                         continue;
                     break;
                 default:
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u objective %u has unhandled type %u", qinfo->GetQuestId(), obj.ID, obj.Type);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u objective %u has unhandled type %u", qinfo->GetQuestId(), obj.ID, obj.Type);
             }
         }
 
@@ -954,15 +954,15 @@ void QuestDataStoreMgr::LoadQuests()
             {
                 if (!sObjectMgr->GetItemTemplate(id))
                 {
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardChoiceItemId%d` = %u but item with entry %u does not exist, quest will not reward this item.", qinfo->GetQuestId(), j + 1, id, id);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardChoiceItemId%d` = %u but item with entry %u does not exist, quest will not reward this item.", qinfo->GetQuestId(), j + 1, id, id);
                     qinfo->RewardChoiceItemId[j] = 0;
                 }
 
                 if (!qinfo->RewardChoiceItemCount[j])
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardChoiceItemId%d` = %u but `RewardChoiceItemCount%d` = 0, quest can't be done.", qinfo->GetQuestId(), j + 1, id, j + 1);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardChoiceItemId%d` = %u but `RewardChoiceItemCount%d` = 0, quest can't be done.", qinfo->GetQuestId(), j + 1, id, j + 1);
             }
             else if (qinfo->RewardChoiceItemCount[j] > 0)
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardChoiceItemId%d` = 0 but `RewardChoiceItemCount%d` = %u.", qinfo->GetQuestId(), j + 1, j + 1, qinfo->RewardChoiceItemCount[j]);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardChoiceItemId%d` = 0 but `RewardChoiceItemCount%d` = %u.", qinfo->GetQuestId(), j + 1, j + 1, qinfo->RewardChoiceItemCount[j]);
         }
 
         for (uint8 j = 0; j < QUEST_ITEM_COUNT; ++j)
@@ -971,16 +971,16 @@ void QuestDataStoreMgr::LoadQuests()
             {
                 if (!sObjectMgr->GetItemTemplate(id))
                 {
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardItemId%d` = %u but item with entry %u does not exist, quest will not reward this item.", qinfo->GetQuestId(), j + 1, id, id);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardItemId%d` = %u but item with entry %u does not exist, quest will not reward this item.", qinfo->GetQuestId(), j + 1, id, id);
                     qinfo->RewardItemId[j] = 0;
                     //WorldDatabase.PExecute("UPDATE `quest_template` SET `RewardItem1` = %u, `RewardItem2` = %u WHERE `ID` = %u", qinfo->RewardItemId[0], qinfo->RewardItemId[1], qinfo->GetQuestId());
                 }
 
                 if (!qinfo->RewardItemCount[j])
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardItemId%d` = %u but `RewardItemCount%d` = 0, quest will not reward this item.", qinfo->GetQuestId(), j + 1, id, j + 1);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardItemId%d` = %u but `RewardItemCount%d` = 0, quest will not reward this item.", qinfo->GetQuestId(), j + 1, id, j + 1);
             }
             else if (qinfo->RewardItemCount[j] > 0)
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardItemId%d` = 0 but `RewardItemCount%d` = %u.", qinfo->GetQuestId(), j + 1, j + 1, qinfo->RewardItemCount[j]);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardItemId%d` = 0 but `RewardItemCount%d` = %u.", qinfo->GetQuestId(), j + 1, j + 1, qinfo->RewardItemCount[j]);
         }
 
         for (uint8 j = 0; j < QUEST_REWARD_REPUTATIONS_COUNT; ++j)
@@ -988,17 +988,17 @@ void QuestDataStoreMgr::LoadQuests()
             if (qinfo->RewardFactionId[j])
             {
                 if (abs(qinfo->RewardFactionValue[j]) > 10)
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has RewardFactionValue%d = %i. That is outside the range of valid values (-9 to 9).", qinfo->GetQuestId(), j + 1, qinfo->RewardFactionValue[j]);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has RewardFactionValue%d = %i. That is outside the range of valid values (-9 to 9).", qinfo->GetQuestId(), j + 1, qinfo->RewardFactionValue[j]);
 
                 if (!sFactionStore.LookupEntry(qinfo->RewardFactionId[j]))
                 {
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardFactionId%d` = %u but raw faction (faction.dbc) %u does not exist, quest will not reward reputation for this faction.", qinfo->GetQuestId(), j + 1, qinfo->RewardFactionId[j], qinfo->RewardFactionId[j]);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardFactionId%d` = %u but raw faction (faction.dbc) %u does not exist, quest will not reward reputation for this faction.", qinfo->GetQuestId(), j + 1, qinfo->RewardFactionId[j], qinfo->RewardFactionId[j]);
                     qinfo->RewardFactionId[j] = 0;
                 }
             }
 
             else if (qinfo->RewardFactionOverride[j] != 0)
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardFactionId%d` = 0 but `RewardFactionOverride%d` = %i.", qinfo->GetQuestId(), j + 1, j + 1, qinfo->RewardFactionOverride[j]);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardFactionId%d` = 0 but `RewardFactionOverride%d` = %i.", qinfo->GetQuestId(), j + 1, j + 1, qinfo->RewardFactionOverride[j]);
         }
 
         for (uint32 i = 0; i < QUEST_REWARD_DISPLAY_SPELL_COUNT; ++i)
@@ -1008,13 +1008,13 @@ void QuestDataStoreMgr::LoadQuests()
                 SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(qinfo->RewardDisplaySpell[i]);
                 if (!spellInfo)
                 {
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardDisplaySpell%u` = %u but spell %u does not exist, spell removed as display reward.", qinfo->GetQuestId(), i, qinfo->RewardDisplaySpell[i], qinfo->RewardDisplaySpell[i]);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardDisplaySpell%u` = %u but spell %u does not exist, spell removed as display reward.", qinfo->GetQuestId(), i, qinfo->RewardDisplaySpell[i], qinfo->RewardDisplaySpell[i]);
                     qinfo->RewardDisplaySpell[i] = 0;
                     //WorldDatabase.PExecute("UPDATE `quest_template` SET `RewardDisplaySpell1` = %u, `RewardDisplaySpell2` = %u, `RewardDisplaySpell3` = %u WHERE `id` = %u", qinfo->RewardDisplaySpell[0], qinfo->RewardDisplaySpell[1], qinfo->RewardDisplaySpell[2], qinfo->GetQuestId());
                 }
                 else if (!SpellMgr::IsSpellValid(spellInfo))
                 {
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardDisplaySpell%u` = %u but spell %u is broken, quest will not have a spell reward.", qinfo->GetQuestId(), i, qinfo->RewardDisplaySpell[i], qinfo->RewardDisplaySpell[i]);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardDisplaySpell%u` = %u but spell %u is broken, quest will not have a spell reward.", qinfo->GetQuestId(), i, qinfo->RewardDisplaySpell[i], qinfo->RewardDisplaySpell[i]);
                     qinfo->RewardDisplaySpell[i] = 0;
                     //WorldDatabase.PExecute("UPDATE `quest_template` SET `RewardDisplaySpell1` = %u, `RewardDisplaySpell2` = %u, `RewardDisplaySpell3` = %u WHERE `id` = %u", qinfo->RewardDisplaySpell[0], qinfo->RewardDisplaySpell[1], qinfo->RewardDisplaySpell[2], qinfo->GetQuestId());
                 }
@@ -1026,13 +1026,13 @@ void QuestDataStoreMgr::LoadQuests()
             SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(qinfo->RewardSpell);
             if (!spellInfo)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardSpell` = %u but spell %u does not exist, quest will not have a spell reward.", qinfo->GetQuestId(), qinfo->RewardSpell, qinfo->RewardSpell);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardSpell` = %u but spell %u does not exist, quest will not have a spell reward.", qinfo->GetQuestId(), qinfo->RewardSpell, qinfo->RewardSpell);
                 qinfo->RewardSpell = 0;
                 //WorldDatabase.PExecute("UPDATE `quest_template` SET `RewardSpell` = 0 WHERE `id` = %u", qinfo->GetQuestId());
             }
             else if (!SpellMgr::IsSpellValid(spellInfo))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardSpell` = %u but spell %u is broken, quest will not have a spell reward.", qinfo->GetQuestId(), qinfo->RewardSpell, qinfo->RewardSpell);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardSpell` = %u but spell %u is broken, quest will not have a spell reward.", qinfo->GetQuestId(), qinfo->RewardSpell, qinfo->RewardSpell);
                 qinfo->RewardSpell = 0;
                 //WorldDatabase.PExecute("UPDATE `quest_template` SET `RewardSpell` = 0 WHERE `id` = %u", qinfo->GetQuestId());
             }
@@ -1042,14 +1042,14 @@ void QuestDataStoreMgr::LoadQuests()
         {
             if (!sMailTemplateStore.LookupEntry(qinfo->RewardMailTemplateId))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardMailTemplateId` = %u but mail template  %u does not exist, quest will not have a mail reward.", qinfo->GetQuestId(), qinfo->RewardMailTemplateId, qinfo->RewardMailTemplateId);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardMailTemplateId` = %u but mail template  %u does not exist, quest will not have a mail reward.", qinfo->GetQuestId(), qinfo->RewardMailTemplateId, qinfo->RewardMailTemplateId);
                 qinfo->RewardMailTemplateId = 0;
                 qinfo->RewardMailDelay = 0;
             }
             else if (usedMailTemplates.find(qinfo->RewardMailTemplateId) != usedMailTemplates.end())
             {
                 std::map<uint32, uint32>::const_iterator used_mt_itr = usedMailTemplates.find(qinfo->RewardMailTemplateId);
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardMailTemplateId` = %u but mail template  %u already used for quest %u, quest will not have a mail reward.", qinfo->GetQuestId(), qinfo->RewardMailTemplateId, qinfo->RewardMailTemplateId, used_mt_itr->second);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardMailTemplateId` = %u but mail template  %u already used for quest %u, quest will not have a mail reward.", qinfo->GetQuestId(), qinfo->RewardMailTemplateId, qinfo->RewardMailTemplateId, used_mt_itr->second);
                 qinfo->RewardMailTemplateId = 0;
                 qinfo->RewardMailDelay = 0;
             }
@@ -1062,7 +1062,7 @@ void QuestDataStoreMgr::LoadQuests()
             QuestMap::iterator qNextItr = _questTemplates.find(qinfo->NextQuestIdChain);
             if (qNextItr == _questTemplates.end())
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `NextQuestIdChain` = %u but quest %u does not exist, quest chain will not work.", qinfo->GetQuestId(), qinfo->NextQuestIdChain, qinfo->NextQuestIdChain);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `NextQuestIdChain` = %u but quest %u does not exist, quest chain will not work.", qinfo->GetQuestId(), qinfo->NextQuestIdChain, qinfo->NextQuestIdChain);
                 qinfo->NextQuestIdChain = 0;
                 //WorldDatabase.PExecute("UPDATE `quest_template` SET `RewardNextQuest` = 0 WHERE `ID` = %u", qinfo->GetQuestId());
             }
@@ -1075,17 +1075,17 @@ void QuestDataStoreMgr::LoadQuests()
             if (qinfo->RewardCurrencyId[j])
             {
                 if (qinfo->RewardCurrencyCount[j] == 0)
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardCurrencyId%d` = %u but `RewardCurrencyCount%d` = 0, quest can't be done.", qinfo->GetQuestId(), j + 1, qinfo->RewardCurrencyId[j], j + 1);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardCurrencyId%d` = %u but `RewardCurrencyCount%d` = 0, quest can't be done.", qinfo->GetQuestId(), j + 1, qinfo->RewardCurrencyId[j], j + 1);
 
                 if (!sCurrencyTypesStore.LookupEntry(qinfo->RewardCurrencyId[j]))
                 {
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardCurrencyId%d` = %u but currency with entry %u does not exist, quest can't be done.", qinfo->GetQuestId(), j + 1, qinfo->RewardCurrencyId[j], qinfo->RewardCurrencyId[j]);
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardCurrencyId%d` = %u but currency with entry %u does not exist, quest can't be done.", qinfo->GetQuestId(), j + 1, qinfo->RewardCurrencyId[j], qinfo->RewardCurrencyId[j]);
                     qinfo->RewardCurrencyCount[j] = 0;
                 }
             }
             else if (qinfo->RewardCurrencyCount[j] > 0)
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardCurrencyId%d` = 0 but `RewardCurrencyCount%d` = %u, quest can't be done.", qinfo->GetQuestId(), j + 1, j + 1, qinfo->RewardCurrencyCount[j]);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardCurrencyId%d` = 0 but `RewardCurrencyCount%d` = %u, quest can't be done.", qinfo->GetQuestId(), j + 1, j + 1, qinfo->RewardCurrencyCount[j]);
                 qinfo->RewardCurrencyCount[j] = 0;
             }
         }
@@ -1093,26 +1093,26 @@ void QuestDataStoreMgr::LoadQuests()
         if (qinfo->RewardSkillId)
         {
             if (!sSkillLineStore.LookupEntry(qinfo->RewardSkillId))
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardSkillId` = %u but this skill does not exist", qinfo->GetQuestId(), qinfo->RewardSkillId);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardSkillId` = %u but this skill does not exist", qinfo->GetQuestId(), qinfo->RewardSkillId);
 
             if (!qinfo->RewardSkillPoints)
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardSkillId` = %u but `RewardSkillPoints` is 0", qinfo->GetQuestId(), qinfo->RewardSkillId);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardSkillId` = %u but `RewardSkillPoints` is 0", qinfo->GetQuestId(), qinfo->RewardSkillId);
         }
 
         if (qinfo->RewardSkillPoints)
         {
             if (qinfo->RewardSkillPoints > sWorld->GetConfigMaxSkillValue())
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardSkillPoints` = %u but max possible skill is %u, quest can't be done.", qinfo->GetQuestId(), qinfo->RewardSkillPoints, sWorld->GetConfigMaxSkillValue());
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardSkillPoints` = %u but max possible skill is %u, quest can't be done.", qinfo->GetQuestId(), qinfo->RewardSkillPoints, sWorld->GetConfigMaxSkillValue());
 
             if (!qinfo->RewardSkillId)
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %u has `RewardSkillPoints` = %u but `RewardSkillId` is 0", qinfo->GetQuestId(), qinfo->RewardSkillPoints);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardSkillPoints` = %u but `RewardSkillId` is 0", qinfo->GetQuestId(), qinfo->RewardSkillPoints);
         }
 
         if (qinfo->PrevQuestID)
         {
             if (_questTemplates.find(abs(qinfo->PrevQuestID)) == _questTemplates.end())
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %d has PrevQuestID %i, but no such quest", qinfo->GetQuestId(), qinfo->PrevQuestID);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %d has PrevQuestID %i, but no such quest", qinfo->GetQuestId(), qinfo->PrevQuestID);
                 //WorldDatabase.PExecute("update `quest_template_addon` set PrevQuestID = 0 WHERE `ID` = %u", qinfo->GetQuestId());
             }
             else
@@ -1124,7 +1124,7 @@ void QuestDataStoreMgr::LoadQuests()
             QuestMap::iterator qNextItr = _questTemplates.find(abs(qinfo->NextQuestID));
             if (qNextItr == _questTemplates.end())
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Quest %d has NextQuestID %i, but no such quest", qinfo->GetQuestId(), qinfo->NextQuestID);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %d has NextQuestID %i, but no such quest", qinfo->GetQuestId(), qinfo->NextQuestID);
                 //WorldDatabase.PExecute("update `quest_template_addon` set NextQuestID = 0 WHERE `ID` = %u", qinfo->GetQuestId());
             }
             else
@@ -1156,14 +1156,14 @@ void QuestDataStoreMgr::LoadQuests()
 
             if (!quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuests() >> Spell (id: %u) have SPELL_EFFECT_QUEST_COMPLETE for quest %u, but quest not have flag QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT. Quest flags must be fixed, quest modified to enable objective.", spellInfo->Id, questID);
+                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Spell (id: %u) have SPELL_EFFECT_QUEST_COMPLETE for quest %u, but quest not have flag QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT. Quest flags must be fixed, quest modified to enable objective.", spellInfo->Id, questID);
                 const_cast<Quest*>(quest)->SetSpecialFlag(QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT);
                 //WorldDatabase.PExecute("UPDATE `quest_template_addon` SET `SpecialFlags` = SpecialFlags | 2 WHERE `ID` = %u", quest->GetQuestId());
             }
         }
     }
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadQuests() >> Loaded %lu quests definitions in %u ms", (unsigned long)_questTemplates.size(), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "LoadQuests() >> Loaded %lu quests definitions in %u ms", (unsigned long)_questTemplates.size(), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void QuestDataStoreMgr::LoadQuestTemplateLocale()
@@ -1199,7 +1199,7 @@ void QuestDataStoreMgr::LoadQuestTemplateLocale()
         sObjectMgr->AddLocaleString(fields[10].GetString(), locale, data.QuestCompletionLog);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadQuestTemplateLocale() Loaded %u Quest Tempalate locale strings in %u ms", uint32(_questTemplateLocaleStore.size()), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "LoadQuestTemplateLocale() Loaded %u Quest Tempalate locale strings in %u ms", uint32(_questTemplateLocaleStore.size()), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void QuestDataStoreMgr::LoadQuestRequestItemsLocale()
@@ -1224,7 +1224,7 @@ void QuestDataStoreMgr::LoadQuestRequestItemsLocale()
         sObjectMgr->AddLocaleString(fields[2].GetString(), localeConstant, data.RequestItemsText);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadQuestRequestItemsLocale() >> Loaded %u quest request items locale strings in %u ms", uint32(_questRequestItemsLocaleStore.size()), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "LoadQuestRequestItemsLocale() >> Loaded %u quest request items locale strings in %u ms", uint32(_questRequestItemsLocaleStore.size()), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void QuestDataStoreMgr::LoadQuestOfferRewardLocale()
@@ -1249,7 +1249,7 @@ void QuestDataStoreMgr::LoadQuestOfferRewardLocale()
         sObjectMgr->AddLocaleString(fields[2].GetString(), localeConstant, data.OfferRewardText);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadQuestOfferRewardLocale() >> Loaded %u quest offer reward locale strings in %u ms", uint32(_questOfferRewardLocaleStore.size()), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "LoadQuestOfferRewardLocale() >> Loaded %u quest offer reward locale strings in %u ms", uint32(_questOfferRewardLocaleStore.size()), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void QuestDataStoreMgr::LoadQuestObjectivesLocale()
@@ -1274,7 +1274,7 @@ void QuestDataStoreMgr::LoadQuestObjectivesLocale()
         sObjectMgr->AddLocaleString(fields[2].GetString(), localeConstant, data.Description);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadQuestObjectivesLocale() >> Loaded %u Quest Objectives locale strings in %u ms", uint32(_questObjectivesLocaleStore.size()), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "LoadQuestObjectivesLocale() >> Loaded %u Quest Objectives locale strings in %u ms", uint32(_questObjectivesLocaleStore.size()), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void QuestDataStoreMgr::LoadPointsOfInterest()
@@ -1289,7 +1289,7 @@ void QuestDataStoreMgr::LoadPointsOfInterest()
     QueryResult result = WorldDatabase.Query("SELECT entry, x, y, icon, flags, data, icon_name FROM points_of_interest");
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadPointsOfInterest() >> Loaded 0 Points of Interest definitions. DB table `points_of_interest` is empty.");
+        TC_LOG_ERROR("server.loading", "LoadPointsOfInterest() >> Loaded 0 Points of Interest definitions. DB table `points_of_interest` is empty.");
 
         return;
     }
@@ -1311,7 +1311,7 @@ void QuestDataStoreMgr::LoadPointsOfInterest()
 
         if (!Trinity::IsValidMapCoord(POI.x, POI.y))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadPointsOfInterest() >> Table `points_of_interest` (Entry: %u) have invalid coordinates (X: %f Y: %f), ignored.", point_id, POI.x, POI.y);
+            TC_LOG_ERROR("sql.sql", "LoadPointsOfInterest() >> Table `points_of_interest` (Entry: %u) have invalid coordinates (X: %f Y: %f), ignored.", point_id, POI.x, POI.y);
             continue;
         }
 
@@ -1320,7 +1320,7 @@ void QuestDataStoreMgr::LoadPointsOfInterest()
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadPointsOfInterest() >> Loaded %u Points of Interest definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "LoadPointsOfInterest() >> Loaded %u Points of Interest definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void QuestDataStoreMgr::LoadQuestPOI()
@@ -1338,7 +1338,7 @@ void QuestDataStoreMgr::LoadQuestPOI()
 
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuestPOI() >> Loaded 0 quest POI definitions. DB table `quest_poi` is empty.");
+        TC_LOG_ERROR("server.loading", "LoadQuestPOI() >> Loaded 0 quest POI definitions. DB table `quest_poi` is empty.");
 
         return;
     }
@@ -1407,13 +1407,13 @@ void QuestDataStoreMgr::LoadQuestPOI()
         else
         {
             if (!sConfigMgr->GetIntDefault("QuestPOI.DisableErrors", 0))
-                TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuestPOI() >> Table quest_poi references unknown quest points for quest %i POI id %i", QuestID, BlobIndex);
+                TC_LOG_ERROR("server.loading", "LoadQuestPOI() >> Table quest_poi references unknown quest points for quest %i POI id %i", QuestID, BlobIndex);
         }
 
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadQuestPOI() >> Loaded %u quest POI definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "LoadQuestPOI() >> Loaded %u quest POI definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void QuestDataStoreMgr::LoadQuestRelationsHelper(QuestRelations& map, QuestStarter& _map, std::string const& table, bool starter, bool go)
@@ -1431,7 +1431,7 @@ void QuestDataStoreMgr::LoadQuestRelationsHelper(QuestRelations& map, QuestStart
 
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "LoadQuestRelationsHelper >> Loaded 0 quest relations from `%s`, table is empty.", table.c_str());
+        TC_LOG_ERROR("server.loading", "LoadQuestRelationsHelper >> Loaded 0 quest relations from `%s`, table is empty.", table.c_str());
 
         return;
     }
@@ -1448,7 +1448,7 @@ void QuestDataStoreMgr::LoadQuestRelationsHelper(QuestRelations& map, QuestStart
 
         if (_questTemplates.find(quest) == _questTemplates.end())
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadQuestRelationsHelper >> Table `%s`: Quest %u listed for entry %u does not exist.", table.c_str(), quest, id);
+            TC_LOG_ERROR("sql.sql", "LoadQuestRelationsHelper >> Table `%s`: Quest %u listed for entry %u does not exist.", table.c_str(), quest, id);
             //WorldDatabase.PExecute("DELETE FROM creature_questender WHERE quest = %u", quest);
             //WorldDatabase.PExecute("DELETE FROM creature_queststarter WHERE quest = %u", quest);
             continue;
@@ -1465,7 +1465,7 @@ void QuestDataStoreMgr::LoadQuestRelationsHelper(QuestRelations& map, QuestStart
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadQuestRelationsHelper >> Loaded %u quest relations from %s in %u ms", count, table.c_str(), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "LoadQuestRelationsHelper >> Loaded %u quest relations from %s in %u ms", count, table.c_str(), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void QuestDataStoreMgr::LoadGameobjectQuestRelations()
@@ -1476,10 +1476,10 @@ void QuestDataStoreMgr::LoadGameobjectQuestRelations()
     {
         GameObjectTemplate const* goInfo = sObjectMgr->GetGameObjectTemplate(itr->first);
         if (!goInfo)
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadGameobjectQuestRelations() >> Table `gameobject_queststarter` have data for not existed gameobject entry (%u) and existed quest %u", itr->first, itr->second);
+            TC_LOG_ERROR("sql.sql", "LoadGameobjectQuestRelations() >> Table `gameobject_queststarter` have data for not existed gameobject entry (%u) and existed quest %u", itr->first, itr->second);
         else if (goInfo->type != GAMEOBJECT_TYPE_QUESTGIVER)
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadGameobjectQuestRelations() >> Table `gameobject_queststarter` have data gameobject entry (%u) for quest %u, but GO is not GAMEOBJECT_TYPE_QUESTGIVER", itr->first, itr->second);
+            TC_LOG_ERROR("sql.sql", "LoadGameobjectQuestRelations() >> Table `gameobject_queststarter` have data gameobject entry (%u) for quest %u, but GO is not GAMEOBJECT_TYPE_QUESTGIVER", itr->first, itr->second);
             //WorldDatabase.PExecute("DELETE FROM gameobject_queststarter WHERE id = %u and quest = %u", itr->first, itr->second);
         }
     }
@@ -1493,10 +1493,10 @@ void QuestDataStoreMgr::LoadGameobjectInvolvedRelations()
     {
         GameObjectTemplate const* goInfo = sObjectMgr->GetGameObjectTemplate(itr->first);
         if (!goInfo)
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadGameobjectInvolvedRelations() >> Table `gameobject_questender` have data for not existed gameobject entry (%u) and existed quest %u", itr->first, itr->second);
+            TC_LOG_ERROR("sql.sql", "LoadGameobjectInvolvedRelations() >> Table `gameobject_questender` have data for not existed gameobject entry (%u) and existed quest %u", itr->first, itr->second);
         else if (goInfo->type != GAMEOBJECT_TYPE_QUESTGIVER)
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadGameobjectInvolvedRelations() >>  Table `gameobject_questender` have data gameobject entry (%u) for quest %u, but GO is not GAMEOBJECT_TYPE_QUESTGIVER", itr->first, itr->second);
+            TC_LOG_ERROR("sql.sql", "LoadGameobjectInvolvedRelations() >>  Table `gameobject_questender` have data gameobject entry (%u) for quest %u, but GO is not GAMEOBJECT_TYPE_QUESTGIVER", itr->first, itr->second);
             //WorldDatabase.PExecute("DELETE FROM gameobject_questender WHERE id = %u and quest = %u", itr->first, itr->second);
         }
 
@@ -1512,9 +1512,9 @@ void QuestDataStoreMgr::LoadCreatureQuestRelations()
     {
         CreatureTemplate const* cInfo = sObjectMgr->GetCreatureTemplate(itr->first);
         if (!cInfo)
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadCreatureQuestRelations() >> Table `creature_queststarter` have data for not existed creature entry (%u) and existed quest %u", itr->first, itr->second);
+            TC_LOG_ERROR("sql.sql", "LoadCreatureQuestRelations() >> Table `creature_queststarter` have data for not existed creature entry (%u) and existed quest %u", itr->first, itr->second);
         //else if (!(cInfo->npcflag & UNIT_NPC_FLAG_QUESTGIVER))
-        //    TC_LOG_ERROR(LOG_FILTER_SQL, "LoadCreatureQuestRelations() >> Table `creature_queststarter` has creature entry (%u) for quest %u, but npcflag does not include UNIT_NPC_FLAG_QUESTGIVER", itr->first, itr->second);
+        //    TC_LOG_ERROR("sql.sql", "LoadCreatureQuestRelations() >> Table `creature_queststarter` has creature entry (%u) for quest %u, but npcflag does not include UNIT_NPC_FLAG_QUESTGIVER", itr->first, itr->second);
     }
 }
 
@@ -1524,7 +1524,7 @@ void QuestDataStoreMgr::LoadAreaQuestRelations()
 
     for (QuestRelations::iterator itr = _areaQuestRelations.begin(); itr != _areaQuestRelations.end(); ++itr)
         if (!sAreaTableStore.LookupEntry(itr->first))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadAreaQuestRelations() >> Table `area_questrelation` have data for not existed area entry (%u) and existed quest %u", itr->first, itr->second);
+            TC_LOG_ERROR("sql.sql", "LoadAreaQuestRelations() >> Table `area_questrelation` have data for not existed area entry (%u) and existed quest %u", itr->first, itr->second);
 }
 
 void QuestDataStoreMgr::LoadCreatureInvolvedRelations()
@@ -1535,9 +1535,9 @@ void QuestDataStoreMgr::LoadCreatureInvolvedRelations()
     {
         CreatureTemplate const* cInfo = sObjectMgr->GetCreatureTemplate(itr->first);
         if (!cInfo)
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadCreatureInvolvedRelations() >> Table `creature_questender` have data for not existed creature entry (%u) and existed quest %u", itr->first, itr->second);
+            TC_LOG_ERROR("sql.sql", "LoadCreatureInvolvedRelations() >> Table `creature_questender` have data for not existed creature entry (%u) and existed quest %u", itr->first, itr->second);
         //else if (!(cInfo->npcflag & UNIT_NPC_FLAG_QUESTGIVER))
-        //    TC_LOG_ERROR(LOG_FILTER_SQL, "Table `creature_questender` has creature entry (%u) for quest %u, but npcflag does not include UNIT_NPC_FLAG_QUESTGIVER", itr->first, itr->second);
+        //    TC_LOG_ERROR("sql.sql", "Table `creature_questender` has creature entry (%u) for quest %u, but npcflag does not include UNIT_NPC_FLAG_QUESTGIVER", itr->first, itr->second);
     
         _creatureQuestInvolvedRelationsByQuest.insert({ itr->second, itr->first });
     }
@@ -1551,7 +1551,7 @@ void QuestDataStoreMgr::LoadGameObjectForQuests()
 
     if (sObjectMgr->GetGameObjectTemplates()->empty())
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadGameObjectForQuests() >> Loaded 0 GameObjects for quests");
+        TC_LOG_INFO("server.loading", "LoadGameObjectForQuests() >> Loaded 0 GameObjects for quests");
         return;
     }
 
@@ -1609,7 +1609,7 @@ void QuestDataStoreMgr::LoadGameObjectForQuests()
         }
     }
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "LoadGameObjectForQuests() >> Loaded %u GameObjects for quests in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "LoadGameObjectForQuests() >> Loaded %u GameObjects for quests in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 Quest const* QuestDataStoreMgr::GetQuestTemplate(uint32 quest_id) const
@@ -1763,7 +1763,7 @@ WorldQuestUpdate const* QuestDataStoreMgr::GetWorldQuestUpdate(uint32 QuestID, u
 
 void QuestDataStoreMgr::GenerateWorldQuestUpdate()
 {
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateWorldQuestUpdate");
+    TC_LOG_DEBUG("worldquest", "GenerateWorldQuestUpdate");
 
     // 7637 - suramar, 7558 - valsharah, 7541 - stormheim, 7503 - highmountain, 7334 - azsuna, 7543 - Broken Shore
     ResetWorldQuest();
@@ -1774,7 +1774,7 @@ void QuestDataStoreMgr::GenerateWorldQuestUpdate()
         {
             WorldQuestTemplate const* wqTemplate = &(*iter);
 
-            TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateWorldQuestUpdate wqTemplate QuestInfoID %u Min %u Max %u _worldQuestSet %u", wqTemplate->QuestInfoID, wqTemplate->Min, wqTemplate->Max, _worldQuestSet[wqTemplate->QuestInfoID].size());
+            TC_LOG_DEBUG("worldquest", "GenerateWorldQuestUpdate wqTemplate QuestInfoID %u Min %u Max %u _worldQuestSet %u", wqTemplate->QuestInfoID, wqTemplate->Min, wqTemplate->Max, _worldQuestSet[wqTemplate->QuestInfoID].size());
 
             if (_worldQuestSet[wqTemplate->QuestInfoID].empty() || (wqTemplate->Chance && !roll_chance_f(wqTemplate->Chance)))
                 continue;
@@ -1798,7 +1798,7 @@ void QuestDataStoreMgr::GenerateWorldQuestUpdate()
             {
                 uint32 ZoneID = v.first;
                 std::set<WorldQuestUpdate const*> _wQS = v.second;
-                TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateWorldQuestUpdate ZoneID %u _wQS size %u wqTemplate->ZoneID %u", ZoneID, _wQS.size(), wqTemplate->ZoneID);
+                TC_LOG_DEBUG("worldquest", "GenerateWorldQuestUpdate ZoneID %u _wQS size %u wqTemplate->ZoneID %u", ZoneID, _wQS.size(), wqTemplate->ZoneID);
 
                 if (_wQS.empty() || (wqTemplate->ZoneID && wqTemplate->ZoneID != ZoneID))
                     continue;
@@ -1820,7 +1820,7 @@ void QuestDataStoreMgr::GenerateWorldQuestUpdate()
                 if (countMaxQuest <= 0 && wqTemplate->AllMax)
                     break;
 
-                TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateWorldQuestUpdate QuestInfoID %u countQuest %i _wQS %u ZoneID %u countMaxQuest %u WorldLegionInvasionZoneID %u", wqTemplate->QuestInfoID, countQuest, _wQS.size(), ZoneID, countMaxQuest, WorldLegionInvasionZoneID);
+                TC_LOG_DEBUG("worldquest", "GenerateWorldQuestUpdate QuestInfoID %u countQuest %i _wQS %u ZoneID %u countMaxQuest %u WorldLegionInvasionZoneID %u", wqTemplate->QuestInfoID, countQuest, _wQS.size(), ZoneID, countMaxQuest, WorldLegionInvasionZoneID);
 
                 while (countQuest > 0 && !_wQS.empty())
                 {
@@ -1843,7 +1843,7 @@ void QuestDataStoreMgr::GenerateWorldQuestUpdate()
                     if (!CanBeActivate(wqTemplate, questUpdate))
                         continue;
 
-                    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateWorldQuestUpdate add QuestID %u QuestSortID %i Timer %u countQuest %u", questUpdate->QuestID, questUpdate->quest->QuestSortID, questUpdate->Timer, countQuest);
+                    TC_LOG_DEBUG("worldquest", "GenerateWorldQuestUpdate add QuestID %u QuestSortID %i Timer %u countQuest %u", questUpdate->QuestID, questUpdate->quest->QuestSortID, questUpdate->Timer, countQuest);
 
                     GenerateWorldQuest(questUpdate, wqTemplate);
 
@@ -1860,7 +1860,7 @@ void QuestDataStoreMgr::GenerateWorldQuestUpdate()
         {
             WorldQuestTemplate const* wqTemplate = &(*iter);
 
-            TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateWorldQuestUpdate wqTemplate QuestInfoID %u Min %u Max %u _worldQuestSet %u PrimaryID %u",
+            TC_LOG_DEBUG("worldquest", "GenerateWorldQuestUpdate wqTemplate QuestInfoID %u Min %u Max %u _worldQuestSet %u PrimaryID %u",
             wqTemplate->QuestInfoID, wqTemplate->Min, wqTemplate->Max, _worldQuestSet[wqTemplate->QuestInfoID].size(), wqTemplate->PrimaryID);
 
             if (_worldQuestSet[wqTemplate->QuestInfoID].empty() || (wqTemplate->Chance && !roll_chance_f(wqTemplate->Chance)))
@@ -1869,20 +1869,20 @@ void QuestDataStoreMgr::GenerateWorldQuestUpdate()
             if (!wqTemplate->PrimaryID) // Activate only have primary QuestInfoID
                 continue;
 
-            TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateWorldQuestUpdate _worldQuestSetPrimaryID %u", _worldQuestSet[wqTemplate->PrimaryID].size());
+            TC_LOG_DEBUG("worldquest", "GenerateWorldQuestUpdate _worldQuestSetPrimaryID %u", _worldQuestSet[wqTemplate->PrimaryID].size());
 
             if (_worldQuestSet[wqTemplate->PrimaryID].empty())
                 continue;
 
             int16 countMaxQuest = wqTemplate->AllMax;
 
-            TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateWorldQuestUpdate countMaxQuest %u WorldLegionInvasionZoneID %u", countMaxQuest, WorldLegionInvasionZoneID);
+            TC_LOG_DEBUG("worldquest", "GenerateWorldQuestUpdate countMaxQuest %u WorldLegionInvasionZoneID %u", countMaxQuest, WorldLegionInvasionZoneID);
 
             for (auto& v : _worldQuestSet[wqTemplate->QuestInfoID])
             {
                 uint32 ZoneID = v.first;
                 std::set<WorldQuestUpdate const*> _wQS = v.second;
-                TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateWorldQuestUpdate ZoneID %u _wQS size %u", ZoneID, _wQS.size());
+                TC_LOG_DEBUG("worldquest", "GenerateWorldQuestUpdate ZoneID %u _wQS size %u", ZoneID, _wQS.size());
 
                 if (_wQS.empty() || WorldLegionInvasionZoneID != ZoneID || (wqTemplate->ZoneID && wqTemplate->ZoneID != ZoneID))
                     continue;
@@ -1904,7 +1904,7 @@ void QuestDataStoreMgr::GenerateWorldQuestUpdate()
                 if (countMaxQuest <= 0 && wqTemplate->AllMax)
                     break;
 
-                TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateWorldQuestUpdate QuestInfoID %u countQuest %i _wQS %u ZoneID %u countMaxQuest %u", wqTemplate->QuestInfoID, countQuest, _wQS.size(), ZoneID, countMaxQuest);
+                TC_LOG_DEBUG("worldquest", "GenerateWorldQuestUpdate QuestInfoID %u countQuest %i _wQS %u ZoneID %u countMaxQuest %u", wqTemplate->QuestInfoID, countQuest, _wQS.size(), ZoneID, countMaxQuest);
 
                 while (countQuest > 0 && !_wQS.empty())
                 {
@@ -1920,7 +1920,7 @@ void QuestDataStoreMgr::GenerateWorldQuestUpdate()
                     if (!CanBeActivate(wqTemplate, questUpdate))
                         continue;
 
-                    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateWorldQuestUpdate add QuestID %u QuestSortID %i Timer %u countQuest %u", questUpdate->QuestID, questUpdate->quest->QuestSortID, questUpdate->Timer, countQuest);
+                    TC_LOG_DEBUG("worldquest", "GenerateWorldQuestUpdate add QuestID %u QuestSortID %i Timer %u countQuest %u", questUpdate->QuestID, questUpdate->quest->QuestSortID, questUpdate->Timer, countQuest);
 
                     GenerateWorldQuest(questUpdate, wqTemplate);
 
@@ -1947,7 +1947,7 @@ void QuestDataStoreMgr::GenerateWorldQuestUpdate()
 
 void QuestDataStoreMgr::GenerateInvasionPointUpdate()
 {
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateInvasionPointUpdate");
+    TC_LOG_DEBUG("worldquest", "GenerateInvasionPointUpdate");
 
     ResetWorldQuest();
 
@@ -1957,7 +1957,7 @@ void QuestDataStoreMgr::GenerateInvasionPointUpdate()
         {
             WorldQuestTemplate const* wqTemplate = &(*iter);
 
-            TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateInvasionPointUpdate wqTemplate QuestInfoID %u Min %u Max %u _worldQuestSet %u", QuestInfoID, wqTemplate->Min, wqTemplate->Max, _worldQuestSet[QuestInfoID].size());
+            TC_LOG_DEBUG("worldquest", "GenerateInvasionPointUpdate wqTemplate QuestInfoID %u Min %u Max %u _worldQuestSet %u", QuestInfoID, wqTemplate->Min, wqTemplate->Max, _worldQuestSet[QuestInfoID].size());
 
             if (_worldQuestSet[QuestInfoID].empty() || (wqTemplate->Chance && !roll_chance_f(wqTemplate->Chance)))
                 continue;
@@ -1968,7 +1968,7 @@ void QuestDataStoreMgr::GenerateInvasionPointUpdate()
             {
                 uint32 ZoneID = v.first;
                 std::set<WorldQuestUpdate const*> _wQS = v.second;
-                TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateInvasionPointUpdate ZoneID %u _wQS size %u wqTemplate->ZoneID %u", ZoneID, _wQS.size(), wqTemplate->ZoneID);
+                TC_LOG_DEBUG("worldquest", "GenerateInvasionPointUpdate ZoneID %u _wQS size %u wqTemplate->ZoneID %u", ZoneID, _wQS.size(), wqTemplate->ZoneID);
 
                 if (_wQS.empty() || (wqTemplate->ZoneID && wqTemplate->ZoneID != ZoneID))
                     continue;
@@ -1990,7 +1990,7 @@ void QuestDataStoreMgr::GenerateInvasionPointUpdate()
                 if (countMaxQuest <= 0 && wqTemplate->AllMax)
                     break;
 
-                TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateInvasionPointUpdate QuestInfoID %u countQuest %i _wQS %u ZoneID %u countMaxQuest %u", QuestInfoID, countQuest, _wQS.size(), ZoneID, countMaxQuest);
+                TC_LOG_DEBUG("worldquest", "GenerateInvasionPointUpdate QuestInfoID %u countQuest %i _wQS %u ZoneID %u countMaxQuest %u", QuestInfoID, countQuest, _wQS.size(), ZoneID, countMaxQuest);
 
                 while (countQuest > 0 && !_wQS.empty())
                 {
@@ -2006,7 +2006,7 @@ void QuestDataStoreMgr::GenerateInvasionPointUpdate()
                     if (!CanBeActivate(wqTemplate, questUpdate))
                         continue;
 
-                    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateInvasionPointUpdate add QuestID %u QuestSortID %i Timer %u countQuest %u", questUpdate->QuestID, questUpdate->quest->QuestSortID, questUpdate->Timer, countQuest);
+                    TC_LOG_DEBUG("worldquest", "GenerateInvasionPointUpdate add QuestID %u QuestSortID %i Timer %u countQuest %u", questUpdate->QuestID, questUpdate->quest->QuestSortID, questUpdate->Timer, countQuest);
 
                     WorldQuest& Wq = _worldQuest[questUpdate->quest->QuestSortID][questUpdate->QuestID];
                     Wq.QuestID = questUpdate->QuestID;
@@ -2146,7 +2146,7 @@ void QuestDataStoreMgr::CalculateWorldQuestReward(WorldQuestTemplate const* qTem
 
     Wq->Recipe = GetRecipesForQuest(Wq->QuestID);
 
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "CalculateWorldQuestReward >> CurrencyID %u CurrencyCount %u Gold %u ItemID %u ItemID %u", Wq->CurrencyID, Wq->CurrencyCount, Wq->Gold, Wq->ItemList[CLASS_NONE].ItemIDH, Wq->ItemList[CLASS_NONE].ItemCount);
+    TC_LOG_DEBUG("worldquest", "CalculateWorldQuestReward >> CurrencyID %u CurrencyCount %u Gold %u ItemID %u ItemID %u", Wq->CurrencyID, Wq->CurrencyCount, Wq->Gold, Wq->ItemList[CLASS_NONE].ItemIDH, Wq->ItemList[CLASS_NONE].ItemCount);
 }
 
 WorldQuestTypeReward QuestDataStoreMgr::GetWorldQuestTypeReward(WorldQuestTemplate const* qTemplate)
@@ -2170,7 +2170,7 @@ WorldQuestTypeReward QuestDataStoreMgr::GetWorldQuestTypeReward(WorldQuestTempla
     else if (qTemplate->CurrencyID && roll_chance_f(chance)) // Currency chance
         rewardType = WORLD_QUEST_TYPE_REWARD_CURRENCY;
 
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GetWorldQuestTypeReward >> rewardType %u HasArmor %u GoldMax %u CurrencyID %u", rewardType, qTemplate->HasArmor, qTemplate->GoldMax, qTemplate->CurrencyID);
+    TC_LOG_DEBUG("worldquest", "GetWorldQuestTypeReward >> rewardType %u HasArmor %u GoldMax %u CurrencyID %u", rewardType, qTemplate->HasArmor, qTemplate->GoldMax, qTemplate->CurrencyID);
 
     return rewardType;
 }
@@ -2197,7 +2197,7 @@ WorldQuestTypeReward QuestDataStoreMgr::GetWorldQuestReward(WorldQuestTemplate c
     else if (!qTemplate->ItemResourceList.empty() && qTemplate->ItemCAList.empty() && !qTemplate->HasArmor)
         rewardType = WORLD_QUEST_TYPE_REWARD_RESOURCE;
 
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GetWorldQuestReward >> rewardType %u HasArmor %u ItemResourceList %u ItemCAList %u", rewardType, qTemplate->HasArmor, qTemplate->ItemResourceList.size(), qTemplate->ItemCAList.size());
+    TC_LOG_DEBUG("worldquest", "GetWorldQuestReward >> rewardType %u HasArmor %u ItemResourceList %u ItemCAList %u", rewardType, qTemplate->HasArmor, qTemplate->ItemResourceList.size(), qTemplate->ItemCAList.size());
 
     return rewardType;
 }
@@ -2211,7 +2211,7 @@ void QuestDataStoreMgr::CheckGemForClass(std::set<uint8>& classListH, std::set<u
     if (!gem)
         return;
 
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "CheckGemForClass start classListH %u classListA %u gem->Type %u", classListH.size(), classListA.size(), gem->Type);
+    TC_LOG_DEBUG("worldquest", "CheckGemForClass start classListH %u classListA %u gem->Type %u", classListH.size(), classListA.size(), gem->Type);
 
     if (gem->Type & SOCKET_COLOR_RELIC_IRON)
     {
@@ -2324,7 +2324,7 @@ void QuestDataStoreMgr::CheckGemForClass(std::set<uint8>& classListH, std::set<u
         }
     }
 
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "CheckGemForClass end classListH %u classListA %u", classListH.size(), classListA.size());
+    TC_LOG_DEBUG("worldquest", "CheckGemForClass end classListH %u classListA %u", classListH.size(), classListA.size());
 }
 
 void QuestDataStoreMgr::CheckItemForClass(std::set<uint8>& classListH, std::set<uint8>& classListA, ItemTemplate const* proto, WorldQuest* Wq)
@@ -2332,7 +2332,7 @@ void QuestDataStoreMgr::CheckItemForClass(std::set<uint8>& classListH, std::set<
     if (!proto || sGemPropertiesStore.LookupEntry(proto->GetGemProperties()))
         return;
 
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "CheckItemForClass start ItemId %u classListH %u classListA %u AllowableClass %i Class %i SubClass %i ItemSpecExist %i",
+    TC_LOG_DEBUG("worldquest", "CheckItemForClass start ItemId %u classListH %u classListA %u AllowableClass %i Class %i SubClass %i ItemSpecExist %i",
     proto->GetId(), classListH.size(), classListA.size(), proto->AllowableClass, proto->GetClass(), proto->GetSubClass(), proto->ItemSpecExist);
 
     if (!proto->AllowableClass || proto->AllowableClass > CLASSMASK_ALL_PLAYABLE)
@@ -2421,7 +2421,7 @@ void QuestDataStoreMgr::CheckItemForClass(std::set<uint8>& classListH, std::set<
             classListA.clear();
             Wq->ItemList[CLASS_NONE].ItemIDA = proto->GetId();
         }
-        TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "CheckItemForClass >> clear");
+        TC_LOG_DEBUG("worldquest", "CheckItemForClass >> clear");
     }
 
     if (proto->AllowableClass & (1 << (CLASS_WARRIOR - 1)))
@@ -2581,7 +2581,7 @@ void QuestDataStoreMgr::CheckItemForClass(std::set<uint8>& classListH, std::set<
         }
     }
 
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "CheckItemForClass end classListH %u classListA %u", classListH.size(), classListA.size());
+    TC_LOG_DEBUG("worldquest", "CheckItemForClass end classListH %u classListA %u", classListH.size(), classListA.size());
 }
 
 void QuestDataStoreMgr::CheckItemForSpec(std::set<uint8>& classListH, std::set<uint8>& classListA, ItemTemplate const* proto, WorldQuest* Wq)
@@ -2589,7 +2589,7 @@ void QuestDataStoreMgr::CheckItemForSpec(std::set<uint8>& classListH, std::set<u
     if (!proto)
         return;
 
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "CheckItemForSpec >> start classListH size %u classListA size %u", classListH.size(), classListA.size());
+    TC_LOG_DEBUG("worldquest", "CheckItemForSpec >> start classListH size %u classListA size %u", classListH.size(), classListA.size());
 
     for (auto const specId : { SPEC_MAGE_ARCANE, SPEC_MAGE_FIRE, SPEC_MAGE_FROST, SPEC_PALADIN_HOLY, SPEC_PALADIN_PROTECTION, SPEC_PALADIN_RETRIBUTION, SPEC_WARRIOR_ARMS, SPEC_WARRIOR_FURY, SPEC_WARRIOR_PROTECTION, SPEC_DRUID_BALANCE, SPEC_DRUID_CAT, SPEC_DRUID_BEAR, SPEC_DRUID_RESTORATION, SPEC_DK_BLOOD, SPEC_DK_FROST, SPEC_DK_UNHOLY, SPEC_HUNTER_BEASTMASTER, SPEC_HUNTER_MARKSMAN, SPEC_HUNTER_SURVIVAL, SPEC_PRIEST_DISCIPLINE, SPEC_PRIEST_HOLY, SPEC_PRIEST_SHADOW, SPEC_ROGUE_ASSASSINATION, SPEC_ROGUE_COMBAT, SPEC_ROGUE_SUBTLETY, SPEC_SHAMAN_ELEMENTAL, SPEC_SHAMAN_ENHANCEMENT, SPEC_SHAMAN_RESTORATION, SPEC_WARLOCK_AFFLICTION, SPEC_WARLOCK_DEMONOLOGY, SPEC_WARLOCK_DESTRUCTION, SPEC_MONK_BREWMASTER, SPEC_MONK_WINDWALKER, SPEC_MONK_MISTWEAVER, SPEC_DEMON_HUNER_HAVOC, SPEC_DEMON_HUNER_VENGEANCE, SPEC_MAGE_ARCANE, SPEC_MAGE_FIRE, SPEC_MAGE_FROST, SPEC_PALADIN_HOLY, SPEC_PALADIN_PROTECTION, SPEC_PALADIN_RETRIBUTION, SPEC_WARRIOR_ARMS, SPEC_WARRIOR_FURY, SPEC_WARRIOR_PROTECTION, SPEC_DRUID_BALANCE, SPEC_DRUID_CAT, SPEC_DRUID_BEAR, SPEC_DRUID_RESTORATION, SPEC_DK_BLOOD, SPEC_DK_FROST, SPEC_DK_UNHOLY, SPEC_HUNTER_BEASTMASTER, SPEC_HUNTER_MARKSMAN, SPEC_HUNTER_SURVIVAL, SPEC_PRIEST_DISCIPLINE, SPEC_PRIEST_HOLY, SPEC_PRIEST_SHADOW, SPEC_ROGUE_ASSASSINATION, SPEC_ROGUE_COMBAT, SPEC_ROGUE_SUBTLETY, SPEC_SHAMAN_ELEMENTAL, SPEC_SHAMAN_ENHANCEMENT, SPEC_SHAMAN_RESTORATION, SPEC_WARLOCK_AFFLICTION, SPEC_WARLOCK_DEMONOLOGY, SPEC_WARLOCK_DESTRUCTION, SPEC_MONK_BREWMASTER, SPEC_MONK_WINDWALKER, SPEC_MONK_MISTWEAVER, SPEC_DEMON_HUNER_HAVOC, SPEC_DEMON_HUNER_VENGEANCE })
     {
@@ -2771,7 +2771,7 @@ void QuestDataStoreMgr::CheckItemForSpec(std::set<uint8>& classListH, std::set<u
         }
     }
 
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "CheckItemForSpec >> end classListH size %u classListA size %u", classListH.size(), classListA.size());
+    TC_LOG_DEBUG("worldquest", "CheckItemForSpec >> end classListH size %u classListA size %u", classListH.size(), classListA.size());
 }
 
 bool QuestDataStoreMgr::CheckItemForHorde(ItemTemplate const* proto)
@@ -2795,11 +2795,11 @@ void QuestDataStoreMgr::SaveWorldQuest()
     SQLTransaction trans = CharacterDatabase.BeginTransaction();
     PreparedStatement* stmt = nullptr;
 
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "SaveWorldQuest() _worldQuest size %u", _worldQuest.size());
+    TC_LOG_DEBUG("worldquest", "SaveWorldQuest() _worldQuest size %u", _worldQuest.size());
 
     for (auto& v : _worldQuest)
     {
-        TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "SaveWorldQuest() QuestSortID %u size %u", v.first, v.second.size());
+        TC_LOG_DEBUG("worldquest", "SaveWorldQuest() QuestSortID %u size %u", v.first, v.second.size());
 
         for (auto& vs : v.second)
         {
@@ -2844,7 +2844,7 @@ void QuestDataStoreMgr::SaveWorldQuest()
 void QuestDataStoreMgr::ResetWorldQuest()
 {
     needWait = true;
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "ResetWorldQuest()");
+    TC_LOG_DEBUG("worldquest", "ResetWorldQuest()");
 
     SQLTransaction trans = CharacterDatabase.BeginTransaction();
     std::ostringstream ss;
@@ -2880,7 +2880,7 @@ void QuestDataStoreMgr::ResetWorldQuest()
                     sWorldStateMgr.SetWorldState(itrState->first, 0, 0);
 
                 RemoveWorldQuestTask(worldQuest->quest);
-                TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "ResetWorldQuest() >> QuestID %u ResetTime %u time(nullptr) %u", worldQuest->QuestID, worldQuest->ResetTime, time(nullptr));
+                TC_LOG_DEBUG("worldquest", "ResetWorldQuest() >> QuestID %u ResetTime %u time(nullptr) %u", worldQuest->QuestID, worldQuest->ResetTime, time(nullptr));
                 itr->second.erase(iter++);
                 continue;
             }
@@ -2902,7 +2902,7 @@ void QuestDataStoreMgr::SetQuestObjectiveBuggedState(uint32 questId, uint32 obje
 
 void QuestDataStoreMgr::ClearWorldQuest()
 {
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "ClearWorldQuest()");
+    TC_LOG_DEBUG("worldquest", "ClearWorldQuest()");
 
     CharacterDatabase.Execute("TRUNCATE world_quest;");
     CharacterDatabase.Execute("TRUNCATE character_queststatus_world;");
@@ -2935,7 +2935,7 @@ void QuestDataStoreMgr::ClearWorldQuest()
                 sWorldStateMgr.SetWorldState(itrState->first, 0, 0);
 
             RemoveWorldQuestTask(worldQuest->quest);
-            TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "ClearWorldQuest() >> QuestID %u ResetTime %u time(nullptr) %u", worldQuest->QuestID, worldQuest->ResetTime, time(nullptr));
+            TC_LOG_DEBUG("worldquest", "ClearWorldQuest() >> QuestID %u ResetTime %u time(nullptr) %u", worldQuest->QuestID, worldQuest->ResetTime, time(nullptr));
             itr->second.erase(iter++);
         }
         CharacterDatabase.CommitTransaction(trans);
@@ -2953,7 +2953,7 @@ WorldQuest const* QuestDataStoreMgr::GetWorldQuest(Quest const* quest)
 
 WorldQuest const* QuestDataStoreMgr::GenerateNewWorldQuest(uint32 QuestID, uint32 VariableID)
 {
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "GenerateNewWorldQuest QuestID %u", QuestID);
+    TC_LOG_DEBUG("worldquest", "GenerateNewWorldQuest QuestID %u", QuestID);
 
     Quest const* quest = GetQuestTemplate(QuestID);
     if (!quest)
@@ -3004,7 +3004,7 @@ WorldQuest const* QuestDataStoreMgr::GenerateWorldQuest(WorldQuestUpdate const* 
 void QuestDataStoreMgr::ResetWorldQuest(uint32 QuestID)
 {
     needWait = true;
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "ResetWorldQuest %u", QuestID);
+    TC_LOG_DEBUG("worldquest", "ResetWorldQuest %u", QuestID);
 
     SQLTransaction trans = CharacterDatabase.BeginTransaction();
     std::ostringstream ss;
@@ -3040,7 +3040,7 @@ void QuestDataStoreMgr::ResetWorldQuest(uint32 QuestID)
                     sWorldStateMgr.SetWorldState(itrState->first, 0, 0);
 
                 RemoveWorldQuestTask(worldQuest->quest);
-                TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "ResetWorldQuest() >> QuestID %u ResetTime %u time(nullptr) %u", worldQuest->QuestID, worldQuest->ResetTime, time(nullptr));
+                TC_LOG_DEBUG("worldquest", "ResetWorldQuest() >> QuestID %u ResetTime %u time(nullptr) %u", worldQuest->QuestID, worldQuest->ResetTime, time(nullptr));
                 itr->second.erase(iter++);
                 continue;
             }
@@ -3129,7 +3129,7 @@ bool QuestDataStoreMgr::CanBeActivate(WorldQuestTemplate const* qTemplate, World
 
     Quest const* quest = questUpdate->quest;
 
-    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "CanBeActivate QuestInfoID %u QuestInfoID %u QuestID %u QuestSortID %u VariableID %u QuestID %u EventID %u", quest->QuestInfoID, qTemplate->QuestInfoID, quest->GetQuestId(), quest->QuestSortID, questUpdate->VariableID, questUpdate->QuestID, questUpdate->EventID);
+    TC_LOG_DEBUG("worldquest", "CanBeActivate QuestInfoID %u QuestInfoID %u QuestID %u QuestSortID %u VariableID %u QuestID %u EventID %u", quest->QuestInfoID, qTemplate->QuestInfoID, quest->GetQuestId(), quest->QuestSortID, questUpdate->VariableID, questUpdate->QuestID, questUpdate->EventID);
 
     if (questUpdate->EventID)
         return false;
@@ -3146,7 +3146,7 @@ bool QuestDataStoreMgr::CanBeActivate(WorldQuestTemplate const* qTemplate, World
                     if (!worldQuest || !worldQuest->quest || !worldQuest->quest->IsEmissary())
                         continue;
 
-                    TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "CanBeActivate >> ResetTime %u QuestID %u if %u", worldQuest->ResetTime, worldQuest->QuestID, worldQuest->ResetTime >= (time(nullptr) + WORLD_QUEST_2_DAY));
+                    TC_LOG_DEBUG("worldquest", "CanBeActivate >> ResetTime %u QuestID %u if %u", worldQuest->ResetTime, worldQuest->QuestID, worldQuest->ResetTime >= (time(nullptr) + WORLD_QUEST_2_DAY));
 
                     if (worldQuest->ResetTime >= (time(nullptr) + WORLD_QUEST_2_DAY)) // Only one Emissary quest peer day
                         return false;

@@ -184,7 +184,7 @@ void UnitAI::DoCastTopAggro(uint32 spellId, bool triggered, bool onlyPlayer /*= 
 void UnitAI::DoCast(uint32 spellId)
 {
     Unit* target = nullptr;
-    //TC_LOG_ERROR(LOG_FILTER_GENERAL, "aggre %u %u", spellId, (uint32)AISpellInfo[spellId].target);
+    //TC_LOG_ERROR("misc", "aggre %u %u", spellId, (uint32)AISpellInfo[spellId].target);
     switch (AISpellInfo[spellId].target)
     {
     default:

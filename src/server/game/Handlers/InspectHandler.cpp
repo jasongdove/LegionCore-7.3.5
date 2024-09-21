@@ -78,7 +78,7 @@ void WorldSession::HandleRequestHonorStats(WorldPackets::Inspect::RequestHonorSt
     Player* player = ObjectAccessor::FindPlayer(packet.TargetGUID);
     if (!player)
     {
-        TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "WorldSession::HandleRequestHonorStats: Target %s not found.", packet.TargetGUID.ToString().c_str());
+        TC_LOG_DEBUG("network", "WorldSession::HandleRequestHonorStats: Target %s not found.", packet.TargetGUID.ToString().c_str());
         return;
     }
 

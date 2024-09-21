@@ -319,30 +319,30 @@ enum __QuestSpecialFlags
 
 struct QuestTemplateLocale
 {
-    StringVector LogTitle;
-    StringVector LogDescription;
-    StringVector QuestDescription;
-    StringVector AreaDescription;
-    StringVector PortraitGiverText;
-    StringVector PortraitGiverName;
-    StringVector PortraitTurnInText;
-    StringVector PortraitTurnInName;
-    StringVector QuestCompletionLog;
+    std::vector<std::string> LogTitle;
+    std::vector<std::string> LogDescription;
+    std::vector<std::string> QuestDescription;
+    std::vector<std::string> AreaDescription;
+    std::vector<std::string> PortraitGiverText;
+    std::vector<std::string> PortraitGiverName;
+    std::vector<std::string> PortraitTurnInText;
+    std::vector<std::string> PortraitTurnInName;
+    std::vector<std::string> QuestCompletionLog;
 };
 
 struct QuestObjectivesLocale
 {
-    StringVector Description;
+    std::vector<std::string> Description;
 };
 
 struct QuestRequestItemsLocale
 {
-    StringVector RequestItemsText;
+    std::vector<std::string> RequestItemsText;
 };
 
 struct QuestOfferRewardLocale
 {
-    StringVector OfferRewardText;
+    std::vector<std::string> OfferRewardText;
 };
 
 enum QuestObjectiveFlags

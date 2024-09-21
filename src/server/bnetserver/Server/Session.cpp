@@ -65,7 +65,7 @@ void Battlenet::Session::AsyncHandshake()
 void Battlenet::Session::Start()
 {
     std::string ip_address = GetRemoteIpAddress().to_string();
-    TC_LOG_TRACE(LOG_FILTER_BATTLENET, "%s Accepted connection", GetClientInfo().c_str());
+    TC_LOG_TRACE("server.bnetserver", "%s Accepted connection", GetClientInfo().c_str());
 
     // Verify that this IP is not in the ip_banned table
     LoginDatabase.Execute(LoginDatabase.GetPreparedStatement(LOGIN_DEL_EXPIRED_IP_BANS));
@@ -76,7 +76,7 @@ void Battlenet::Session::Start()
 
     if (result)
     {
-        TC_LOG_DEBUG(LOG_FILTER_BATTLENET, "%s tries to log in using banned IP!", GetClientInfo().c_str());
+        TC_LOG_DEBUG("server.bnetserver", "%s tries to log in using banned IP!", GetClientInfo().c_str());
         CloseSocket();
         return;
     }
@@ -88,7 +88,7 @@ bool Battlenet::Session::Update()
 {
     if (!BattlenetSocket::Update())
     {
-        TC_LOG_TRACE(LOG_FILTER_BATTLENET, "%s BattlenetSocket::Update() failture", GetClientInfo().c_str());
+        TC_LOG_TRACE("server.bnetserver", "%s BattlenetSocket::Update() failture", GetClientInfo().c_str());
         return false;
     }
 
@@ -110,7 +110,7 @@ void Battlenet::Session::AsyncWrite(MessageBuffer* packet)
 {
     if (!IsOpen())
     {
-        TC_LOG_TRACE(LOG_FILTER_BATTLENET, "%s Battlenet::Session::AsyncWrite !IsOpen()", GetClientInfo().c_str());
+        TC_LOG_TRACE("server.bnetserver", "%s Battlenet::Session::AsyncWrite !IsOpen()", GetClientInfo().c_str());
         return;
     }
 
@@ -186,19 +186,19 @@ uint32 Battlenet::Session::HandleLogon(authentication::v1::LogonRequest const* l
 {
     /*if (logonRequest->program() != "WoW" || logonRequest->program() != "WoWB")
     {
-        TC_LOG_DEBUG(LOG_FILTER_BATTLENET, "[Battlenet::LogonRequest] %s attempted to log in with game other than WoW (using %s)!", GetClientInfo().c_str(), logonRequest->program().c_str());
+        TC_LOG_DEBUG("server.bnetserver", "[Battlenet::LogonRequest] %s attempted to log in with game other than WoW (using %s)!", GetClientInfo().c_str(), logonRequest->program().c_str());
         return ERROR_BAD_PROGRAM;
     }*/
 
     if (logonRequest->platform() != "Win" && logonRequest->platform() != "Wn64" && logonRequest->platform() != "Mc64")
     {
-        TC_LOG_DEBUG(LOG_FILTER_BATTLENET, "[Battlenet::LogonRequest] %s attempted to log in from an unsupported platform (using %s)!", GetClientInfo().c_str(), logonRequest->platform().c_str());
+        TC_LOG_DEBUG("server.bnetserver", "[Battlenet::LogonRequest] %s attempted to log in from an unsupported platform (using %s)!", GetClientInfo().c_str(), logonRequest->platform().c_str());
         return ERROR_BAD_PLATFORM;
     }
 
     if (GetLocaleByName(logonRequest->locale()) == LOCALE_enUS && logonRequest->locale() != "enUS")
     {
-        TC_LOG_DEBUG(LOG_FILTER_BATTLENET, "[Battlenet::LogonRequest] %s attempted to log in with unsupported locale (using %s)!", GetClientInfo().c_str(), logonRequest->locale().c_str());
+        TC_LOG_DEBUG("server.bnetserver", "[Battlenet::LogonRequest] %s attempted to log in with unsupported locale (using %s)!", GetClientInfo().c_str(), logonRequest->locale().c_str());
         return ERROR_BAD_LOCALE;
     }
 
@@ -221,7 +221,7 @@ uint32 Battlenet::Session::HandleVerifyWebCredentials(authentication::v1::Verify
     _accountInfo = sLoginService.VerifyLoginTicket(verifyWebCredentialsRequest->web_credentials());
     if (!_accountInfo)
     {
-        TC_LOG_TRACE(LOG_FILTER_BATTLENET, "%s Battlenet::Session::HandleVerifyWebCredentials ERROR_DENIED", GetClientInfo().c_str());
+        TC_LOG_TRACE("server.bnetserver", "%s Battlenet::Session::HandleVerifyWebCredentials ERROR_DENIED", GetClientInfo().c_str());
         return ERROR_DENIED;
     }
 
@@ -230,7 +230,7 @@ uint32 Battlenet::Session::HandleVerifyWebCredentials(authentication::v1::Verify
     // If the IP is 'locked', check that the player comes indeed from the correct IP address
     if (_accountInfo->IsLockedToIP)
     {
-        TC_LOG_DEBUG(LOG_FILTER_BATTLENET, "[Session::HandleVerifyWebCredentials] Account '%s' is locked to IP - '%s' is logging in from '%s'",
+        TC_LOG_DEBUG("server.bnetserver", "[Session::HandleVerifyWebCredentials] Account '%s' is locked to IP - '%s' is logging in from '%s'",
             _accountInfo->Login.c_str(), _accountInfo->LastIP.c_str(), ip_address.c_str());
 
         if (_accountInfo->LastIP != ip_address)
@@ -238,12 +238,12 @@ uint32 Battlenet::Session::HandleVerifyWebCredentials(authentication::v1::Verify
     }
     else
     {
-        TC_LOG_DEBUG(LOG_FILTER_BATTLENET, "[Session::HandleVerifyWebCredentials] Account '%s' is not locked to ip", _accountInfo->Login.c_str());
+        TC_LOG_DEBUG("server.bnetserver", "[Session::HandleVerifyWebCredentials] Account '%s' is not locked to ip", _accountInfo->Login.c_str());
         if (_accountInfo->LockCountry.empty() || _accountInfo->LockCountry == "00")
-            TC_LOG_DEBUG(LOG_FILTER_BATTLENET, "[Session::HandleVerifyWebCredentials] Account '%s' is not locked to country", _accountInfo->Login.c_str());
+            TC_LOG_DEBUG("server.bnetserver", "[Session::HandleVerifyWebCredentials] Account '%s' is not locked to country", _accountInfo->Login.c_str());
         else if (!_accountInfo->LockCountry.empty() && !_ipCountry.empty())
         {
-            TC_LOG_DEBUG(LOG_FILTER_BATTLENET, "[Session::HandleVerifyWebCredentials] Account '%s' is locked to country: '%s' Player country is '%s'",
+            TC_LOG_DEBUG("server.bnetserver", "[Session::HandleVerifyWebCredentials] Account '%s' is locked to country: '%s' Player country is '%s'",
                 _accountInfo->Login.c_str(), _accountInfo->LockCountry.c_str(), _ipCountry.c_str());
 
             if (_ipCountry != _accountInfo->LockCountry)
@@ -253,7 +253,7 @@ uint32 Battlenet::Session::HandleVerifyWebCredentials(authentication::v1::Verify
 
     if (!_accountInfo->IsActivated)
     {
-        TC_LOG_DEBUG(LOG_FILTER_BATTLENET, "[Session::HandleVerifyWebCredentials] Account '%s' is not activate", _accountInfo->Login.c_str());
+        TC_LOG_DEBUG("server.bnetserver", "[Session::HandleVerifyWebCredentials] Account '%s' is not activate", _accountInfo->Login.c_str());
         return ERROR_PARENTAL_CONTROL_RESTRICTION;
     }
     
@@ -301,12 +301,12 @@ uint32 Battlenet::Session::HandleVerifyWebCredentials(authentication::v1::Verify
     // If the account is banned, reject the logon attempt
     if (_accountInfo->IsBanned)
     {
-        TC_LOG_DEBUG(LOG_FILTER_BATTLENET, "%s [Session::HandleVerifyWebCredentials] Banned account %s tried to login!", GetClientInfo().c_str(), _accountInfo->Login.c_str());
+        TC_LOG_DEBUG("server.bnetserver", "%s [Session::HandleVerifyWebCredentials] Banned account %s tried to login!", GetClientInfo().c_str(), _accountInfo->Login.c_str());
         return ERROR_GAME_ACCOUNT_BANNED;
     }
     else if (_accountInfo->IsSuspended)
     {
-        TC_LOG_DEBUG(LOG_FILTER_BATTLENET, "%s [Session::HandleVerifyWebCredentials] Temporarily banned account %s tried to login!", GetClientInfo().c_str(), _accountInfo->Login.c_str());
+        TC_LOG_DEBUG("server.bnetserver", "%s [Session::HandleVerifyWebCredentials] Temporarily banned account %s tried to login!", GetClientInfo().c_str(), _accountInfo->Login.c_str());
         return ERROR_GAME_ACCOUNT_SUSPENDED;
     }
 
@@ -333,7 +333,7 @@ uint32 Battlenet::Session::HandleGetAccountState(account::v1::GetAccountStateReq
 {
     if (!_authed)
     {
-        TC_LOG_TRACE(LOG_FILTER_BATTLENET, "%s Battlenet::Session::HandleGetAccountState ERROR_DENIED", GetClientInfo().c_str());
+        TC_LOG_TRACE("server.bnetserver", "%s Battlenet::Session::HandleGetAccountState ERROR_DENIED", GetClientInfo().c_str());
         return ERROR_DENIED;
     }
 
@@ -387,7 +387,7 @@ uint32 Battlenet::Session::HandleProcessClientRequest(game_utilities::v1::Client
 {
     if (!_authed)
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLENET, "%s sent ClientRequest with ERROR_DENIED", GetClientInfo().c_str());
+        TC_LOG_ERROR("server.bnetserver", "%s sent ClientRequest with ERROR_DENIED", GetClientInfo().c_str());
         return ERROR_DENIED;
     }
 
@@ -404,14 +404,14 @@ uint32 Battlenet::Session::HandleProcessClientRequest(game_utilities::v1::Client
 
     if (!command)
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLENET, "%s sent ClientRequest with no command.", GetClientInfo().c_str());
+        TC_LOG_ERROR("server.bnetserver", "%s sent ClientRequest with no command.", GetClientInfo().c_str());
         return ERROR_RPC_MALFORMED_REQUEST;
     }
 
     auto itr = ClientRequestHandlers.find(command->name());
     if (itr == ClientRequestHandlers.end())
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLENET, "%s sent ClientRequest with unknown command %s.", GetClientInfo().c_str(), command->name().c_str());
+        TC_LOG_ERROR("server.bnetserver", "%s sent ClientRequest with unknown command %s.", GetClientInfo().c_str(), command->name().c_str());
         return ERROR_RPC_NOT_IMPLEMENTED;
     }
 
@@ -565,7 +565,7 @@ uint32 Battlenet::Session::HandleGetAllValuesForAttribute(game_utilities::v1::Ge
 {
     if (!_authed)
     {
-        TC_LOG_TRACE(LOG_FILTER_BATTLENET, "%s Battlenet::Session::HandleGetAllValuesForAttribute ERROR_DENIED", GetClientInfo().c_str());
+        TC_LOG_TRACE("server.bnetserver", "%s Battlenet::Session::HandleGetAllValuesForAttribute ERROR_DENIED", GetClientInfo().c_str());
         return ERROR_DENIED;
     }
 
@@ -582,7 +582,7 @@ void Battlenet::Session::HandshakeHandler(boost::system::error_code const& error
 {
     if (error)
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLENET, "%s SSL Handshake failed %s", GetClientInfo().c_str(), error.message().c_str());
+        TC_LOG_ERROR("server.bnetserver", "%s SSL Handshake failed %s", GetClientInfo().c_str(), error.message().c_str());
         CloseSocket();
         return;
     }
@@ -606,7 +606,7 @@ inline bool PartialProcessPacket(Battlenet::Session* session, MessageBuffer& inp
 
     if (buffer.GetRemainingSpace() > 0)
     {
-        TC_LOG_TRACE(LOG_FILTER_BATTLENET, "%s PartialProcessPacket", session->GetClientInfo().c_str());
+        TC_LOG_TRACE("server.bnetserver", "%s PartialProcessPacket", session->GetClientInfo().c_str());
         // Couldn't receive the whole data this time.
         ASSERT(inputBuffer.GetActiveSize() == 0);
         return false;
@@ -615,7 +615,7 @@ inline bool PartialProcessPacket(Battlenet::Session* session, MessageBuffer& inp
     // just received fresh new payload
     if (!(session->*processMethod)())
     {
-        TC_LOG_TRACE(LOG_FILTER_BATTLENET, "%s PartialProcessPacket processMethod", session->GetClientInfo().c_str());
+        TC_LOG_TRACE("server.bnetserver", "%s PartialProcessPacket processMethod", session->GetClientInfo().c_str());
         session->CloseSocket();
         return false;
     }
@@ -627,7 +627,7 @@ void Battlenet::Session::ReadHandler()
 {
     if (!IsOpen())
     {
-        TC_LOG_TRACE(LOG_FILTER_BATTLENET, "%s ReadHandler() !IsOpen()", GetClientInfo().c_str());
+        TC_LOG_TRACE("server.bnetserver", "%s ReadHandler() !IsOpen()", GetClientInfo().c_str());
         return;
     }
 

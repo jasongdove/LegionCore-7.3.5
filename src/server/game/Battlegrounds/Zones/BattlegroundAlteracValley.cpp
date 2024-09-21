@@ -43,7 +43,7 @@ void BattlegroundAlteracValley::HandleKillPlayer(Player* player, Player* killer)
 
 void BattlegroundAlteracValley::HandleKillUnit(Creature* unit, Player* killer)
 {
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "bg_av HandleKillUnit %i", unit->GetEntry());
+    TC_LOG_DEBUG("bg.battleground", "bg_av HandleKillUnit %i", unit->GetEntry());
     if (GetStatus() != STATUS_IN_PROGRESS)
         return;
     uint32 entry = unit->GetEntry();
@@ -78,7 +78,7 @@ void BattlegroundAlteracValley::HandleKillUnit(Creature* unit, Player* killer)
     {
         if (!m_CaptainAlive[0])
         {
-            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "Killed a Captain twice, please report this bug, if you haven't done \".respawn\"");
+            TC_LOG_ERROR("bg.battleground", "Killed a Captain twice, please report this bug, if you haven't done \".respawn\"");
             return;
         }
         m_CaptainAlive[0] = false;
@@ -97,7 +97,7 @@ void BattlegroundAlteracValley::HandleKillUnit(Creature* unit, Player* killer)
     {
         if (!m_CaptainAlive[1])
         {
-            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "Killed a Captain twice, please report this bug, if you haven't done \".respawn\"");
+            TC_LOG_ERROR("bg.battleground", "Killed a Captain twice, please report this bug, if you haven't done \".respawn\"");
             return;
         }
         m_CaptainAlive[1] = false;
@@ -124,7 +124,7 @@ void BattlegroundAlteracValley::HandleQuestComplete(uint32 questid, Player* play
         return;//maybe we should log this, cause this must be a cheater or a big bug
     TeamId team = player->GetBGTeamId();
     //TODO add reputation, events (including quest not available anymore, next quest availabe, go/npc de/spawning)and maybe honor
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed", questid);
+    TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed", questid);
     switch (questid)
     {
         case AV_QUEST_A_SCRAPS1:
@@ -134,7 +134,7 @@ void BattlegroundAlteracValley::HandleQuestComplete(uint32 questid, Player* play
             m_Team_QuestStatus[team][0] += 20;
             if (m_Team_QuestStatus[team][0] == 500 || m_Team_QuestStatus[team][0] == 1000 || m_Team_QuestStatus[team][0] == 1500) //25, 50, 75 turn ins
             {
-                TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed starting with unit upgrading..", questid);
+                TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed starting with unit upgrading..", questid);
                 for (BG_AV_Nodes i = BG_AV_NODES_FIRSTAID_STATION; i <= BG_AV_NODES_FROSTWOLF_HUT; ++i)
                     if (m_Nodes[i].Owner == player->GetBGTeam() && m_Nodes[i].State == POINT_CONTROLED)
                     {
@@ -149,21 +149,21 @@ void BattlegroundAlteracValley::HandleQuestComplete(uint32 questid, Player* play
             m_Team_QuestStatus[team][1]++;
             RewardReputationToTeam(team, team, 1, player->GetBGTeam());
             if (m_Team_QuestStatus[team][1] == 30)
-                TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed (need to implement some events here", questid);
+                TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
             break;
         case AV_QUEST_A_COMMANDER2:
         case AV_QUEST_H_COMMANDER2:
             m_Team_QuestStatus[team][2]++;
             RewardReputationToTeam(team, team, 1, player->GetBGTeam());
             if (m_Team_QuestStatus[team][2] == 60)
-                TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed (need to implement some events here", questid);
+                TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
             break;
         case AV_QUEST_A_COMMANDER3:
         case AV_QUEST_H_COMMANDER3:
             m_Team_QuestStatus[team][3]++;
             RewardReputationToTeam(team, team, 1, player->GetBGTeam());
             if (m_Team_QuestStatus[team][1] == 120)
-                TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed (need to implement some events here", questid);
+                TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
             break;
         case AV_QUEST_A_BOSS1:
         case AV_QUEST_H_BOSS1:
@@ -172,16 +172,16 @@ void BattlegroundAlteracValley::HandleQuestComplete(uint32 questid, Player* play
         case AV_QUEST_H_BOSS2:
             m_Team_QuestStatus[team][4]++;
             if (m_Team_QuestStatus[team][4] >= 200)
-                TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed (need to implement some events here", questid);
+                TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
             break;
         case AV_QUEST_A_NEAR_MINE:
         case AV_QUEST_H_NEAR_MINE:
             m_Team_QuestStatus[team][5]++;
             if (m_Team_QuestStatus[team][5] == 28)
             {
-                TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed (need to implement some events here", questid);
+                TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
                 if (m_Team_QuestStatus[team][6] == 7)
-                    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed (need to implement some events here - ground assault ready", questid);
+                    TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here - ground assault ready", questid);
             }
             break;
         case AV_QUEST_A_OTHER_MINE:
@@ -189,9 +189,9 @@ void BattlegroundAlteracValley::HandleQuestComplete(uint32 questid, Player* play
             m_Team_QuestStatus[team][6]++;
             if (m_Team_QuestStatus[team][6] == 7)
             {
-                TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed (need to implement some events here", questid);
+                TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
                 if (m_Team_QuestStatus[team][5] == 20)
-                    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed (need to implement some events here - ground assault ready", questid);
+                    TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here - ground assault ready", questid);
             }
             break;
         case AV_QUEST_A_RIDER_HIDE:
@@ -199,9 +199,9 @@ void BattlegroundAlteracValley::HandleQuestComplete(uint32 questid, Player* play
             m_Team_QuestStatus[team][7]++;
             if (m_Team_QuestStatus[team][7] == 25)
             {
-                TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed (need to implement some events here", questid);
+                TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
                 if (m_Team_QuestStatus[team][8] == 25)
-                    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed (need to implement some events here - rider assault ready", questid);
+                    TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here - rider assault ready", questid);
             }
             break;
         case AV_QUEST_A_RIDER_TAME:
@@ -209,13 +209,13 @@ void BattlegroundAlteracValley::HandleQuestComplete(uint32 questid, Player* play
             m_Team_QuestStatus[team][8]++;
             if (m_Team_QuestStatus[team][8] == 25)
             {
-                TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed (need to implement some events here", questid);
+                TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here", questid);
                 if (m_Team_QuestStatus[team][7] == 25)
-                    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed (need to implement some events here - rider assault ready", questid);
+                    TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed (need to implement some events here - rider assault ready", questid);
             }
             break;
         default:
-            TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV Quest %i completed but is not interesting at all", questid);
+            TC_LOG_DEBUG("bg.battleground", "BG_AV Quest %i completed but is not interesting at all", questid);
             return; //was no interesting quest at all
     }
 }
@@ -389,7 +389,7 @@ void BattlegroundAlteracValley::StartingEventCloseDoors()
 
 void BattlegroundAlteracValley::StartingEventOpenDoors()
 {
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV: start spawning mine stuff");
+    TC_LOG_DEBUG("bg.battleground", "BG_AV: start spawning mine stuff");
     for (uint16 i = BG_AV_OBJECT_MINE_SUPPLY_N_MIN; i <= BG_AV_OBJECT_MINE_SUPPLY_N_MAX; i++)
         SpawnBGObject(i, RESPAWN_IMMEDIATELY);
     for (uint16 i = BG_AV_OBJECT_MINE_SUPPLY_S_MIN; i <= BG_AV_OBJECT_MINE_SUPPLY_S_MAX; i++)
@@ -445,7 +445,7 @@ void BattlegroundAlteracValley::RemovePlayer(Player* player, ObjectGuid /*guid*/
 {
     if (!player)
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "bg_AV no player at remove");
+        TC_LOG_ERROR("bg.battleground", "bg_AV no player at remove");
         return;
     }
     //TODO search more buffs
@@ -483,7 +483,7 @@ void BattlegroundAlteracValley::EventPlayerDestroyedPoint(BG_AV_Nodes node)
 {
 
     uint32 object = GetObjectThroughNode(node);
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "bg_av: player destroyed point node %i object %i", node, object);
+    TC_LOG_DEBUG("bg.battleground", "bg_av: player destroyed point node %i object %i", node, object);
 
     //despawn banner
     SpawnBGObject(object, RESPAWN_ONE_DAY);
@@ -498,7 +498,7 @@ void BattlegroundAlteracValley::EventPlayerDestroyedPoint(BG_AV_Nodes node)
         if (!BgCreatures[AV_CPLACE_A_MARSHAL_SOUTH + tmp].IsEmpty())
             DelCreature(AV_CPLACE_A_MARSHAL_SOUTH + tmp);
         else
-            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BG_AV: playerdestroyedpoint: marshal %i doesn't exist", AV_CPLACE_A_MARSHAL_SOUTH + tmp);
+            TC_LOG_ERROR("bg.battleground", "BG_AV: playerdestroyedpoint: marshal %i doesn't exist", AV_CPLACE_A_MARSHAL_SOUTH + tmp);
         //spawn destroyed aura
         for (uint8 i = 0; i <= 9; i++)
             SpawnBGObject(BG_AV_OBJECT_BURN_DUNBALDAR_SOUTH + i + (tmp * 10), RESPAWN_IMMEDIATELY);
@@ -556,7 +556,7 @@ void BattlegroundAlteracValley::ChangeMineOwner(uint8 mine, uint32 team, bool in
 
     if (!initial)
     {
-        TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "bg_av depopulating mine %i (0=north, 1=south)", mine);
+        TC_LOG_DEBUG("bg.battleground", "bg_av depopulating mine %i (0=north, 1=south)", mine);
         if (mine == AV_SOUTH_MINE)
             for (uint16 i = AV_CPLACE_MINE_S_S_MIN; i <= AV_CPLACE_MINE_S_S_MAX; i++)
                 if (!BgCreatures[i].IsEmpty())
@@ -567,7 +567,7 @@ void BattlegroundAlteracValley::ChangeMineOwner(uint8 mine, uint32 team, bool in
     }
     SendMineWorldStates(mine);
 
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "bg_av populating mine %i (0=north, 1=south)", mine);
+    TC_LOG_DEBUG("bg.battleground", "bg_av populating mine %i (0=north, 1=south)", mine);
     uint16 miner;
     //also neutral team exists.. after a big time, the neutral team tries to conquer the mine
     if (mine == AV_NORTH_MINE)
@@ -589,7 +589,7 @@ void BattlegroundAlteracValley::ChangeMineOwner(uint8 mine, uint32 team, bool in
         else
             miner = AV_NPC_S_MINE_N_1;
         //vermin
-        TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "spawning vermin");
+        TC_LOG_DEBUG("bg.battleground", "spawning vermin");
         if (team == ALLIANCE)
             cinfo = AV_NPC_S_MINE_A_3;
         else if (team == HORDE)
@@ -664,7 +664,7 @@ void BattlegroundAlteracValley::PopulateNode(BG_AV_Nodes node)
             DelCreature(node);
 
         if (!AddSpiritGuide(node, BG_AV_CreaturePos[node], team2))
-            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "AV: couldn't spawn spiritguide at node %i", node);
+            TC_LOG_ERROR("bg.battleground", "AV: couldn't spawn spiritguide at node %i", node);
 
     }
 
@@ -711,7 +711,7 @@ void BattlegroundAlteracValley::DePopulateNode(BG_AV_Nodes node)
 
 BG_AV_Nodes BattlegroundAlteracValley::GetNodeThroughObject(uint32 object)
 {
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "bg_AV getnodethroughobject %i", object);
+    TC_LOG_DEBUG("bg.battleground", "bg_AV getnodethroughobject %i", object);
     if (object <= BG_AV_OBJECT_FLAG_A_STONEHEART_BUNKER)
         return BG_AV_Nodes(object);
     if (object <= BG_AV_OBJECT_FLAG_C_A_FROSTWOLF_HUT)
@@ -726,14 +726,14 @@ BG_AV_Nodes BattlegroundAlteracValley::GetNodeThroughObject(uint32 object)
         return BG_AV_Nodes(object - 29);
     if (object == BG_AV_OBJECT_FLAG_N_SNOWFALL_GRAVE)
         return BG_AV_NODES_SNOWFALL_GRAVE;
-    TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundAlteracValley: ERROR! GetPlace got a wrong object :(");
+    TC_LOG_ERROR("bg.battleground", "BattlegroundAlteracValley: ERROR! GetPlace got a wrong object :(");
     ASSERT(false);
     return BG_AV_Nodes(0);
 }
 
 uint32 BattlegroundAlteracValley::GetObjectThroughNode(BG_AV_Nodes node)
 { //this function is the counterpart to GetNodeThroughObject()
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "bg_AV GetObjectThroughNode %i", node);
+    TC_LOG_DEBUG("bg.battleground", "bg_AV GetObjectThroughNode %i", node);
     if (m_Nodes[node].Owner == ALLIANCE)
     {
         if (m_Nodes[node].State == POINT_ASSAULTED)
@@ -764,7 +764,7 @@ uint32 BattlegroundAlteracValley::GetObjectThroughNode(BG_AV_Nodes node)
     }
     else if (m_Nodes[node].Owner == AV_NEUTRAL_TEAM)
         return BG_AV_OBJECT_FLAG_N_SNOWFALL_GRAVE;
-    TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BattlegroundAlteracValley: Error! GetPlaceNode couldn't resolve node %i", node);
+    TC_LOG_ERROR("bg.battleground", "BattlegroundAlteracValley: Error! GetPlaceNode couldn't resolve node %i", node);
     ASSERT(false);
     return 0;
 }
@@ -776,7 +776,7 @@ void BattlegroundAlteracValley::EventPlayerClickedOnFlag(Player* source, GameObj
     if (GetStatus() != STATUS_IN_PROGRESS)
         return;
     int32 object = GetObjectType(target_obj->GetGUID());
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV using gameobject %i with type %i", target_obj->GetEntry(), object);
+    TC_LOG_DEBUG("bg.battleground", "BG_AV using gameobject %i with type %i", target_obj->GetEntry(), object);
     if (object < 0)
         return;
     switch (target_obj->GetEntry())
@@ -815,10 +815,10 @@ void BattlegroundAlteracValley::EventPlayerDefendsPoint(Player* player, uint32 o
         EventPlayerAssaultsPoint(player, object);
         return;
     }
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "player defends point object: %i node: %i", object, node);
+    TC_LOG_DEBUG("bg.battleground", "player defends point object: %i node: %i", object, node);
     if (m_Nodes[node].PrevOwner != team)
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BG_AV: player defends point which doesn't belong to his team %i", node);
+        TC_LOG_ERROR("bg.battleground", "BG_AV: player defends point which doesn't belong to his team %i", node);
         return;
     }
 
@@ -877,7 +877,7 @@ void BattlegroundAlteracValley::EventPlayerAssaultsPoint(Player* player, uint32 
     BG_AV_Nodes node = GetNodeThroughObject(object);
     uint32 owner = m_Nodes[node].Owner; //maybe name it prevowner
     uint32 team = player->GetBGTeam();
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "bg_av: player assaults point object %i node %i", object, node);
+    TC_LOG_DEBUG("bg.battleground", "bg_av: player assaults point object %i node %i", object, node);
     if (owner == team || team == m_Nodes[node].TotalOwner)
         return; //surely a gm used this object
 
@@ -1022,7 +1022,7 @@ uint8 BattlegroundAlteracValley::GetWorldStateType(uint8 state, uint16 team) //t
         if (state == POINT_ASSAULTED)
             return 3;
     }
-    TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BG_AV: should update a strange worldstate state:%i team:%i", state, team);
+    TC_LOG_ERROR("bg.battleground", "BG_AV: should update a strange worldstate state:%i team:%i", state, team);
     return 5; //this will crash the game, but i want to know if something is wrong here
 }
 
@@ -1097,7 +1097,7 @@ bool BattlegroundAlteracValley::SetupBattleground()
         // horde gates
         || !AddObject(BG_AV_OBJECT_DOOR_H, BG_AV_OBJECTID_GATE_H, BG_AV_DoorPositons[1][0], BG_AV_DoorPositons[1][1], BG_AV_DoorPositons[1][2], BG_AV_DoorPositons[1][3], 0, 0, std::sin(BG_AV_DoorPositons[1][3] / 2), std::cos(BG_AV_DoorPositons[1][3] / 2), RESPAWN_IMMEDIATELY))
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundAV: Failed to spawn some object Battleground not created!1");
+        TC_LOG_ERROR("sql.sql", "BatteGroundAV: Failed to spawn some object Battleground not created!1");
         return false;
     }
 
@@ -1115,7 +1115,7 @@ bool BattlegroundAlteracValley::SetupBattleground()
                 || !AddObject(BG_AV_OBJECT_AURA_A_FIRSTAID_STATION + i * 3, BG_AV_OBJECTID_AURA_A, BG_AV_ObjectPos[i][0], BG_AV_ObjectPos[i][1], BG_AV_ObjectPos[i][2], BG_AV_ObjectPos[i][3], 0, 0, std::sin(BG_AV_ObjectPos[i][3] / 2), std::cos(BG_AV_ObjectPos[i][3] / 2), RESPAWN_ONE_DAY)
                 || !AddObject(BG_AV_OBJECT_AURA_H_FIRSTAID_STATION + i * 3, BG_AV_OBJECTID_AURA_H, BG_AV_ObjectPos[i][0], BG_AV_ObjectPos[i][1], BG_AV_ObjectPos[i][2], BG_AV_ObjectPos[i][3], 0, 0, std::sin(BG_AV_ObjectPos[i][3] / 2), std::cos(BG_AV_ObjectPos[i][3] / 2), RESPAWN_ONE_DAY))
             {
-                TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BatteGroundAV: Failed to spawn some object Battleground not created!2");
+                TC_LOG_ERROR("bg.battleground", "BatteGroundAV: Failed to spawn some object Battleground not created!2");
                 return false;
             }
         }
@@ -1130,7 +1130,7 @@ bool BattlegroundAlteracValley::SetupBattleground()
                     || !AddObject(BG_AV_OBJECT_TFLAG_A_DUNBALDAR_SOUTH + (2 * (i - BG_AV_NODES_DUNBALDAR_SOUTH)), BG_AV_OBJECTID_TOWER_BANNER_A, BG_AV_ObjectPos[i + 8][0], BG_AV_ObjectPos[i + 8][1], BG_AV_ObjectPos[i + 8][2], BG_AV_ObjectPos[i + 8][3], 0, 0, std::sin(BG_AV_ObjectPos[i + 8][3] / 2), std::cos(BG_AV_ObjectPos[i + 8][3] / 2), RESPAWN_ONE_DAY)
                     || !AddObject(BG_AV_OBJECT_TFLAG_H_DUNBALDAR_SOUTH + (2 * (i - BG_AV_NODES_DUNBALDAR_SOUTH)), BG_AV_OBJECTID_TOWER_BANNER_PH, BG_AV_ObjectPos[i + 8][0], BG_AV_ObjectPos[i + 8][1], BG_AV_ObjectPos[i + 8][2], BG_AV_ObjectPos[i + 8][3], 0, 0, std::sin(BG_AV_ObjectPos[i + 8][3] / 2), std::cos(BG_AV_ObjectPos[i + 8][3] / 2), RESPAWN_ONE_DAY))
                 {
-                    TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BatteGroundAV: Failed to spawn some object Battleground not created!3");
+                    TC_LOG_ERROR("bg.battleground", "BatteGroundAV: Failed to spawn some object Battleground not created!3");
                     return false;
                 }
             }
@@ -1143,7 +1143,7 @@ bool BattlegroundAlteracValley::SetupBattleground()
                     || !AddObject(BG_AV_OBJECT_TFLAG_A_DUNBALDAR_SOUTH + (2 * (i - BG_AV_NODES_DUNBALDAR_SOUTH)), BG_AV_OBJECTID_TOWER_BANNER_PA, BG_AV_ObjectPos[i + 8][0], BG_AV_ObjectPos[i + 8][1], BG_AV_ObjectPos[i + 8][2], BG_AV_ObjectPos[i + 8][3], 0, 0, std::sin(BG_AV_ObjectPos[i + 8][3] / 2), std::cos(BG_AV_ObjectPos[i + 8][3] / 2), RESPAWN_ONE_DAY)
                     || !AddObject(BG_AV_OBJECT_TFLAG_H_DUNBALDAR_SOUTH + (2 * (i - BG_AV_NODES_DUNBALDAR_SOUTH)), BG_AV_OBJECTID_TOWER_BANNER_H, BG_AV_ObjectPos[i + 8][0], BG_AV_ObjectPos[i + 8][1], BG_AV_ObjectPos[i + 8][2], BG_AV_ObjectPos[i + 8][3], 0, 0, std::sin(BG_AV_ObjectPos[i + 8][3] / 2), std::cos(BG_AV_ObjectPos[i + 8][3] / 2), RESPAWN_ONE_DAY))
                 {
-                    TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BatteGroundAV: Failed to spawn some object Battleground not created!4");
+                    TC_LOG_ERROR("bg.battleground", "BatteGroundAV: Failed to spawn some object Battleground not created!4");
                     return false;
                 }
             }
@@ -1151,7 +1151,7 @@ bool BattlegroundAlteracValley::SetupBattleground()
             {
                 if (!AddObject(BG_AV_OBJECT_BURN_DUNBALDAR_SOUTH + ((i - BG_AV_NODES_DUNBALDAR_SOUTH) * 10) + j, BG_AV_OBJECTID_FIRE, BG_AV_ObjectPos[AV_OPLACE_BURN_DUNBALDAR_SOUTH + ((i - BG_AV_NODES_DUNBALDAR_SOUTH) * 10) + j][0], BG_AV_ObjectPos[AV_OPLACE_BURN_DUNBALDAR_SOUTH + ((i - BG_AV_NODES_DUNBALDAR_SOUTH) * 10) + j][1], BG_AV_ObjectPos[AV_OPLACE_BURN_DUNBALDAR_SOUTH + ((i - BG_AV_NODES_DUNBALDAR_SOUTH) * 10) + j][2], BG_AV_ObjectPos[AV_OPLACE_BURN_DUNBALDAR_SOUTH + ((i - BG_AV_NODES_DUNBALDAR_SOUTH) * 10) + j][3], 0, 0, std::sin(BG_AV_ObjectPos[AV_OPLACE_BURN_DUNBALDAR_SOUTH + ((i - BG_AV_NODES_DUNBALDAR_SOUTH) * 10) + j][3] / 2), std::cos(BG_AV_ObjectPos[AV_OPLACE_BURN_DUNBALDAR_SOUTH + ((i - BG_AV_NODES_DUNBALDAR_SOUTH) * 10) + j][3] / 2), RESPAWN_ONE_DAY))
                 {
-                    TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BatteGroundAV: Failed to spawn some object Battleground not created!5.%i", i);
+                    TC_LOG_ERROR("bg.battleground", "BatteGroundAV: Failed to spawn some object Battleground not created!5.%i", i);
                     return false;
                 }
             }
@@ -1165,7 +1165,7 @@ bool BattlegroundAlteracValley::SetupBattleground()
             {
                 if (!AddObject(BG_AV_OBJECT_BURN_BUILDING_ALLIANCE + (i * 10) + j, BG_AV_OBJECTID_SMOKE, BG_AV_ObjectPos[AV_OPLACE_BURN_BUILDING_A + (i * 10) + j][0], BG_AV_ObjectPos[AV_OPLACE_BURN_BUILDING_A + (i * 10) + j][1], BG_AV_ObjectPos[AV_OPLACE_BURN_BUILDING_A + (i * 10) + j][2], BG_AV_ObjectPos[AV_OPLACE_BURN_BUILDING_A + (i * 10) + j][3], 0, 0, std::sin(BG_AV_ObjectPos[AV_OPLACE_BURN_BUILDING_A + (i * 10) + j][3] / 2), std::cos(BG_AV_ObjectPos[AV_OPLACE_BURN_BUILDING_A + (i * 10) + j][3] / 2), RESPAWN_ONE_DAY))
                 {
-                    TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BatteGroundAV: Failed to spawn some object Battleground not created!6.%i", i);
+                    TC_LOG_ERROR("bg.battleground", "BatteGroundAV: Failed to spawn some object Battleground not created!6.%i", i);
                     return false;
                 }
             }
@@ -1173,7 +1173,7 @@ bool BattlegroundAlteracValley::SetupBattleground()
             {
                 if (!AddObject(BG_AV_OBJECT_BURN_BUILDING_ALLIANCE + (i * 10) + j, BG_AV_OBJECTID_FIRE, BG_AV_ObjectPos[AV_OPLACE_BURN_BUILDING_A + (i * 10) + j][0], BG_AV_ObjectPos[AV_OPLACE_BURN_BUILDING_A + (i * 10) + j][1], BG_AV_ObjectPos[AV_OPLACE_BURN_BUILDING_A + (i * 10) + j][2], BG_AV_ObjectPos[AV_OPLACE_BURN_BUILDING_A + (i * 10) + j][3], 0, 0, std::sin(BG_AV_ObjectPos[AV_OPLACE_BURN_BUILDING_A + (i * 10) + j][3] / 2), std::cos(BG_AV_ObjectPos[AV_OPLACE_BURN_BUILDING_A + (i * 10) + j][3] / 2), RESPAWN_ONE_DAY))
                 {
-                    TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BatteGroundAV: Failed to spawn some object Battleground not created!7.%i", i);
+                    TC_LOG_ERROR("bg.battleground", "BatteGroundAV: Failed to spawn some object Battleground not created!7.%i", i);
                     return false;
                 }
             }
@@ -1183,7 +1183,7 @@ bool BattlegroundAlteracValley::SetupBattleground()
     {
         if (!AddObject(BG_AV_OBJECT_MINE_SUPPLY_N_MIN + i, BG_AV_OBJECTID_MINE_N, BG_AV_ObjectPos[AV_OPLACE_MINE_SUPPLY_N_MIN + i][0], BG_AV_ObjectPos[AV_OPLACE_MINE_SUPPLY_N_MIN + i][1], BG_AV_ObjectPos[AV_OPLACE_MINE_SUPPLY_N_MIN + i][2], BG_AV_ObjectPos[AV_OPLACE_MINE_SUPPLY_N_MIN + i][3], 0, 0, std::sin(BG_AV_ObjectPos[AV_OPLACE_MINE_SUPPLY_N_MIN + i][3] / 2), std::cos(BG_AV_ObjectPos[AV_OPLACE_MINE_SUPPLY_N_MIN + i][3] / 2), RESPAWN_ONE_DAY))
         {
-            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BatteGroundAV: Failed to spawn some mine supplies Battleground not created!7.5.%i", i);
+            TC_LOG_ERROR("bg.battleground", "BatteGroundAV: Failed to spawn some mine supplies Battleground not created!7.5.%i", i);
             return false;
         }
     }
@@ -1191,14 +1191,14 @@ bool BattlegroundAlteracValley::SetupBattleground()
     {
         if (!AddObject(BG_AV_OBJECT_MINE_SUPPLY_S_MIN + i, BG_AV_OBJECTID_MINE_S, BG_AV_ObjectPos[AV_OPLACE_MINE_SUPPLY_S_MIN + i][0], BG_AV_ObjectPos[AV_OPLACE_MINE_SUPPLY_S_MIN + i][1], BG_AV_ObjectPos[AV_OPLACE_MINE_SUPPLY_S_MIN + i][2], BG_AV_ObjectPos[AV_OPLACE_MINE_SUPPLY_S_MIN + i][3], 0, 0, std::sin(BG_AV_ObjectPos[AV_OPLACE_MINE_SUPPLY_S_MIN + i][3] / 2), std::cos(BG_AV_ObjectPos[AV_OPLACE_MINE_SUPPLY_S_MIN + i][3] / 2), RESPAWN_ONE_DAY))
         {
-            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BatteGroundAV: Failed to spawn some mine supplies Battleground not created!7.6.%i", i);
+            TC_LOG_ERROR("bg.battleground", "BatteGroundAV: Failed to spawn some mine supplies Battleground not created!7.6.%i", i);
             return false;
         }
     }
 
     if (!AddObject(BG_AV_OBJECT_FLAG_N_SNOWFALL_GRAVE, BG_AV_OBJECTID_BANNER_SNOWFALL_N, BG_AV_ObjectPos[BG_AV_NODES_SNOWFALL_GRAVE][0], BG_AV_ObjectPos[BG_AV_NODES_SNOWFALL_GRAVE][1], BG_AV_ObjectPos[BG_AV_NODES_SNOWFALL_GRAVE][2], BG_AV_ObjectPos[BG_AV_NODES_SNOWFALL_GRAVE][3], 0, 0, sin(BG_AV_ObjectPos[BG_AV_NODES_SNOWFALL_GRAVE][3] / 2), std::cos(BG_AV_ObjectPos[BG_AV_NODES_SNOWFALL_GRAVE][3] / 2), RESPAWN_ONE_DAY))
     {
-        TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BatteGroundAV: Failed to spawn some object Battleground not created!8");
+        TC_LOG_ERROR("bg.battleground", "BatteGroundAV: Failed to spawn some object Battleground not created!8");
         return false;
     }
     for (uint8 i = 0; i < 4; i++)
@@ -1208,13 +1208,13 @@ bool BattlegroundAlteracValley::SetupBattleground()
             || !AddObject(BG_AV_OBJECT_SNOW_EYECANDY_H + i, BG_AV_OBJECTID_SNOWFALL_CANDY_H, BG_AV_ObjectPos[AV_OPLACE_SNOW_1 + i][0], BG_AV_ObjectPos[AV_OPLACE_SNOW_1 + i][1], BG_AV_ObjectPos[AV_OPLACE_SNOW_1 + i][2], BG_AV_ObjectPos[AV_OPLACE_SNOW_1 + i][3], 0, 0, std::sin(BG_AV_ObjectPos[AV_OPLACE_SNOW_1 + i][3] / 2), std::cos(BG_AV_ObjectPos[AV_OPLACE_SNOW_1 + i][3] / 2), RESPAWN_ONE_DAY)
             || !AddObject(BG_AV_OBJECT_SNOW_EYECANDY_PH + i, BG_AV_OBJECTID_SNOWFALL_CANDY_PH, BG_AV_ObjectPos[AV_OPLACE_SNOW_1 + i][0], BG_AV_ObjectPos[AV_OPLACE_SNOW_1 + i][1], BG_AV_ObjectPos[AV_OPLACE_SNOW_1 + i][2], BG_AV_ObjectPos[AV_OPLACE_SNOW_1 + i][3], 0, 0, std::sin(BG_AV_ObjectPos[AV_OPLACE_SNOW_1 + i][3] / 2), std::cos(BG_AV_ObjectPos[AV_OPLACE_SNOW_1 + i][3] / 2), RESPAWN_ONE_DAY))
         {
-            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "BatteGroundAV: Failed to spawn some object Battleground not created!9.%i", i);
+            TC_LOG_ERROR("bg.battleground", "BatteGroundAV: Failed to spawn some object Battleground not created!9.%i", i);
             return false;
         }
     }
 
     uint16 i;
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "Alterac Valley: entering state STATUS_WAIT_JOIN ...");
+    TC_LOG_DEBUG("bg.battleground", "Alterac Valley: entering state STATUS_WAIT_JOIN ...");
     // Initial Nodes
     for (i = 0; i < BG_AV_OBJECT_MAX; i++)
         SpawnBGObject(i, RESPAWN_ONE_DAY);
@@ -1254,22 +1254,22 @@ bool BattlegroundAlteracValley::SetupBattleground()
     SpawnBGObject(BG_AV_OBJECT_AURA_N_SNOWFALL_GRAVE, RESPAWN_IMMEDIATELY);
 
     //creatures
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV start populating nodes");
+    TC_LOG_DEBUG("bg.battleground", "BG_AV start populating nodes");
     for (i = BG_AV_NODES_FIRSTAID_STATION; i < BG_AV_NODES_MAX; ++i)
     {
         if (m_Nodes[i].Owner)
             PopulateNode(BG_AV_Nodes(i));
     }
     //all creatures which don't get despawned through the script are static
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV: start spawning static creatures");
+    TC_LOG_DEBUG("bg.battleground", "BG_AV: start spawning static creatures");
     for (i = 0; i < AV_STATICCPLACE_MAX; i++)
         AddAVCreature(0, i + AV_CPLACE_MAX);
     //mainspiritguides:
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV: start spawning spiritguides creatures");
+    TC_LOG_DEBUG("bg.battleground", "BG_AV: start spawning spiritguides creatures");
     AddSpiritGuide(7, BG_AV_CreaturePos[7], TEAM_ALLIANCE);
     AddSpiritGuide(8, BG_AV_CreaturePos[8], TEAM_HORDE);
     //spawn the marshals (those who get deleted, if a tower gets destroyed)
-    TC_LOG_DEBUG(LOG_FILTER_BATTLEGROUND, "BG_AV: start spawning marshal creatures");
+    TC_LOG_DEBUG("bg.battleground", "BG_AV: start spawning marshal creatures");
     for (i = AV_NPC_A_MARSHAL_SOUTH; i <= AV_NPC_H_MARSHAL_WTOWER; i++)
         AddAVCreature(i, AV_CPLACE_A_MARSHAL_SOUTH + (i - AV_NPC_A_MARSHAL_SOUTH));
     AddAVCreature(AV_NPC_HERALD, AV_CPLACE_HERALD);
@@ -1296,7 +1296,7 @@ const char* BattlegroundAlteracValley::GetNodeName(BG_AV_Nodes node)
         case BG_AV_NODES_FROSTWOLF_WTOWER:  return GetTrinityString(LANG_BG_AV_NODE_TOWER_FROST_W);
         case BG_AV_NODES_FROSTWOLF_HUT:     return GetTrinityString(LANG_BG_AV_NODE_GRAVE_FROST_HUT);
         default:
-            TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "tried to get name for node %u", node);
+            TC_LOG_ERROR("bg.battleground", "tried to get name for node %u", node);
             break;
     }
 
@@ -1307,22 +1307,22 @@ void BattlegroundAlteracValley::AssaultNode(BG_AV_Nodes node, uint16 team)
 {
     if (m_Nodes[node].TotalOwner == team)
     {
-        TC_LOG_FATAL(LOG_FILTER_BATTLEGROUND, "Assaulting team is TotalOwner of node");
+        TC_LOG_FATAL("bg.battleground", "Assaulting team is TotalOwner of node");
         ASSERT(false);
     }
     if (m_Nodes[node].Owner == team)
     {
-        TC_LOG_FATAL(LOG_FILTER_BATTLEGROUND, "Assaulting team is owner of node");
+        TC_LOG_FATAL("bg.battleground", "Assaulting team is owner of node");
         ASSERT(false);
     }
     if (m_Nodes[node].State == POINT_DESTROYED)
     {
-        TC_LOG_FATAL(LOG_FILTER_BATTLEGROUND, "Destroyed node is being assaulted");
+        TC_LOG_FATAL("bg.battleground", "Destroyed node is being assaulted");
         ASSERT(false);
     }
     if (m_Nodes[node].State == POINT_ASSAULTED && m_Nodes[node].TotalOwner) //only assault an assaulted node if no totalowner exists
     {
-        TC_LOG_FATAL(LOG_FILTER_BATTLEGROUND, "Assault on an not assaulted node with total owner");
+        TC_LOG_FATAL("bg.battleground", "Assault on an not assaulted node with total owner");
         ASSERT(false);
     }
     //the timer gets another time, if the previous owner was 0 == Neutral

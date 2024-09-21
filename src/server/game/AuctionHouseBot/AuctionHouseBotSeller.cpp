@@ -44,7 +44,7 @@ bool AuctionBotSeller::Initialize()
     std::unordered_set<uint32> includeItems;
     std::unordered_set<uint32> excludeItems;
 
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "AHBot seller filters:");
+    TC_LOG_DEBUG("auctionHouse", "AHBot seller filters:");
 
     {
         std::stringstream includeStream(sAuctionBotConfig->GetAHBotIncludes());
@@ -60,10 +60,10 @@ bool AuctionBotSeller::Initialize()
             excludeItems.insert(atoi(temp.c_str()));
     }
 
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Forced Inclusion %u items", (uint32)includeItems.size());
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Forced Exclusion %u items", (uint32)excludeItems.size());
+    TC_LOG_DEBUG("auctionHouse", "Forced Inclusion %u items", (uint32)includeItems.size());
+    TC_LOG_DEBUG("auctionHouse", "Forced Exclusion %u items", (uint32)excludeItems.size());
 
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Loading npc vendor items for filter..");
+    TC_LOG_DEBUG("auctionHouse", "Loading npc vendor items for filter..");
 
     //typedef std::unordered_map<uint32, CreatureTemplate> CreatureTemplateContainerMap;
     CreatureTemplateContainerMap const* creatures = sObjectMgr->GetCreatureTemplates();
@@ -72,9 +72,9 @@ bool AuctionBotSeller::Initialize()
             for (auto& vendorItem : data->m_items)
                 npcItems.insert(vendorItem->item);
 
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Npc vendor filter has %u items", (uint32)npcItems.size());
+    TC_LOG_DEBUG("auctionHouse", "Npc vendor filter has %u items", (uint32)npcItems.size());
 
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Loading loot items for filter..");
+    TC_LOG_DEBUG("auctionHouse", "Loading loot items for filter..");
     QueryResult result = WorldDatabase.PQuery(
         "SELECT `item` FROM `creature_loot_template` UNION "
         "SELECT `item` FROM `disenchant_loot_template` UNION "
@@ -102,8 +102,8 @@ bool AuctionBotSeller::Initialize()
         } while (result->NextRow());
     }
 
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Loot filter has %u items", (uint32)lootItems.size());
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Sorting and cleaning items for AHBot seller...");
+    TC_LOG_DEBUG("auctionHouse", "Loot filter has %u items", (uint32)lootItems.size());
+    TC_LOG_DEBUG("auctionHouse", "Sorting and cleaning items for AHBot seller...");
 
     uint32 itemsAdded = 0;
 
@@ -347,25 +347,25 @@ bool AuctionBotSeller::Initialize()
 
     if (!itemsAdded)
     {
-        TC_LOG_ERROR(LOG_FILTER_AUCTIONHOUSE, "AuctionHouseBot seller not have items, disabled.");
+        TC_LOG_ERROR("auctionHouse", "AuctionHouseBot seller not have items, disabled.");
         sAuctionBotConfig->SetConfig(CONFIG_AHBOT_ALLIANCE_ITEM_AMOUNT_RATIO, 0);
         sAuctionBotConfig->SetConfig(CONFIG_AHBOT_HORDE_ITEM_AMOUNT_RATIO, 0);
         sAuctionBotConfig->SetConfig(CONFIG_AHBOT_NEUTRAL_ITEM_AMOUNT_RATIO, 0);
         return false;
     }
 
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "AuctionHouseBot seller will use %u items to fill auction house (according your config choices)", itemsAdded);
+    TC_LOG_DEBUG("auctionHouse", "AuctionHouseBot seller will use %u items to fill auction house (according your config choices)", itemsAdded);
 
     LoadConfig();
 
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Items loaded \tGray\tWhite\tGreen\tBlue\tPurple\tOrange\tYellow");
+    TC_LOG_DEBUG("auctionHouse", "Items loaded \tGray\tWhite\tGreen\tBlue\tPurple\tOrange\tYellow");
     for (uint32 i = 0; i < MAX_ITEM_CLASS; ++i)
-        TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "\t\t%u\t%u\t%u\t%u\t%u\t%u\t%u",
+        TC_LOG_DEBUG("auctionHouse", "\t\t%u\t%u\t%u\t%u\t%u\t%u\t%u",
         (uint32)_itemPool[0][i].size(), (uint32)_itemPool[1][i].size(), (uint32)_itemPool[2][i].size(),
         (uint32)_itemPool[3][i].size(), (uint32)_itemPool[4][i].size(), (uint32)_itemPool[5][i].size(),
         (uint32)_itemPool[6][i].size());
 
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "AHBot seller configuration data loaded and initialized");
+    TC_LOG_DEBUG("auctionHouse", "AHBot seller configuration data loaded and initialized");
     return true;
 }
 
@@ -551,10 +551,10 @@ uint32 AuctionBotSeller::SetStat(SellerConfiguration& config)
         }
     }
 
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "AHBot: Missed Item       \tGray\tWhite\tGreen\tBlue\tPurple\tOrange\tYellow");
+    TC_LOG_DEBUG("auctionHouse", "AHBot: Missed Item       \tGray\tWhite\tGreen\tBlue\tPurple\tOrange\tYellow");
     for (uint32 i = 0; i < MAX_ITEM_CLASS; ++i)
     {
-        TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "AHBot: \t\t%u\t%u\t%u\t%u\t%u\t%u\t%u",
+        TC_LOG_DEBUG("auctionHouse", "AHBot: \t\t%u\t%u\t%u\t%u\t%u\t%u\t%u",
             config.GetMissedItemsPerClass(AUCTION_QUALITY_GRAY, (ItemClass)i),
             config.GetMissedItemsPerClass(AUCTION_QUALITY_WHITE, (ItemClass)i),
             config.GetMissedItemsPerClass(AUCTION_QUALITY_GREEN, (ItemClass)i),
@@ -833,7 +833,7 @@ void AuctionBotSeller::AddNewAuctions(SellerConfiguration& config)
     if (config.LastMissedItem > sAuctionBotConfig->GetItemPerCycleBoost())
     {
         items = sAuctionBotConfig->GetItemPerCycleBoost();
-        TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "AHBot: Boost value used to fill AH! (if this happens often adjust both ItemsPerCycle in worldserver.conf)");
+        TC_LOG_DEBUG("auctionHouse", "AHBot: Boost value used to fill AH! (if this happens often adjust both ItemsPerCycle in worldserver.conf)");
     }
     else
         items = sAuctionBotConfig->GetItemPerCycleNormal();
@@ -874,14 +874,14 @@ void AuctionBotSeller::AddNewAuctions(SellerConfiguration& config)
 
         if (!itemId)
         {
-            TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "AHBot: Item entry 0 auction creating attempt.");
+            TC_LOG_DEBUG("auctionHouse", "AHBot: Item entry 0 auction creating attempt.");
             continue;
         }
 
         ItemTemplate const* prototype = sObjectMgr->GetItemTemplate(itemId);
         if (!prototype)
         {
-            TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "AHBot: Unknown item %u auction creating attempt.", itemId);
+            TC_LOG_DEBUG("auctionHouse", "AHBot: Unknown item %u auction creating attempt.", itemId);
             continue;
         }
 
@@ -890,7 +890,7 @@ void AuctionBotSeller::AddNewAuctions(SellerConfiguration& config)
         Item* item = Item::CreateItem(itemId, stackCount);
         if (!item)
         {
-            TC_LOG_ERROR(LOG_FILTER_AUCTIONHOUSE, "AHBot: Item::CreateItem() returned NULL for item %u (stack: %u)", itemId, stackCount);
+            TC_LOG_ERROR("auctionHouse", "AHBot: Item::CreateItem() returned NULL for item %u (stack: %u)", itemId, stackCount);
             return;
         }
 
@@ -946,14 +946,14 @@ void AuctionBotSeller::AddNewAuctions(SellerConfiguration& config)
     }
     CharacterDatabase.CommitTransaction(trans);
 
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "AHBot: Added %u items to auction", count);
+    TC_LOG_DEBUG("auctionHouse", "AHBot: Added %u items to auction", count);
 }
 
 bool AuctionBotSeller::Update(AuctionHouseType houseType)
 {
     if (sAuctionBotConfig->GetConfigItemAmountRatio(houseType) > 0)
     {
-        TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "AHBot: %s selling ...", AuctionBotConfig::GetHouseTypeName(houseType));
+        TC_LOG_DEBUG("auctionHouse", "AHBot: %s selling ...", AuctionBotConfig::GetHouseTypeName(houseType));
         if (SetStat(_houseConfig[houseType]))
             AddNewAuctions(_houseConfig[houseType]);
         return true;

@@ -4111,7 +4111,7 @@ google::protobuf::ServiceDescriptor const* UserManagerService::descriptor() {
 }
 
 void UserManagerService::Subscribe(::bgs::protocol::user_manager::v1::SubscribeRequest const* request, std::function<void(::bgs::protocol::user_manager::v1::SubscribeResponse const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method UserManagerService.Subscribe(bgs.protocol.user_manager.v1.SubscribeRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method UserManagerService.Subscribe(bgs.protocol.user_manager.v1.SubscribeRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::user_manager::v1::SubscribeResponse response;
@@ -4122,7 +4122,7 @@ void UserManagerService::Subscribe(::bgs::protocol::user_manager::v1::SubscribeR
 }
 
 void UserManagerService::AddRecentPlayers(::bgs::protocol::user_manager::v1::AddRecentPlayersRequest const* request, std::function<void(::bgs::protocol::user_manager::v1::AddRecentPlayersResponse const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method UserManagerService.AddRecentPlayers(bgs.protocol.user_manager.v1.AddRecentPlayersRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method UserManagerService.AddRecentPlayers(bgs.protocol.user_manager.v1.AddRecentPlayersRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::user_manager::v1::AddRecentPlayersResponse response;
@@ -4133,7 +4133,7 @@ void UserManagerService::AddRecentPlayers(::bgs::protocol::user_manager::v1::Add
 }
 
 void UserManagerService::ClearRecentPlayers(::bgs::protocol::user_manager::v1::ClearRecentPlayersRequest const* request, std::function<void(::bgs::protocol::user_manager::v1::ClearRecentPlayersResponse const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method UserManagerService.ClearRecentPlayers(bgs.protocol.user_manager.v1.ClearRecentPlayersRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method UserManagerService.ClearRecentPlayers(bgs.protocol.user_manager.v1.ClearRecentPlayersRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::user_manager::v1::ClearRecentPlayersResponse response;
@@ -4144,7 +4144,7 @@ void UserManagerService::ClearRecentPlayers(::bgs::protocol::user_manager::v1::C
 }
 
 void UserManagerService::BlockPlayer(::bgs::protocol::user_manager::v1::BlockPlayerRequest const* request, std::function<void(::bgs::protocol::NoData const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method UserManagerService.BlockPlayer(bgs.protocol.user_manager.v1.BlockPlayerRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method UserManagerService.BlockPlayer(bgs.protocol.user_manager.v1.BlockPlayerRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::NoData response;
@@ -4155,7 +4155,7 @@ void UserManagerService::BlockPlayer(::bgs::protocol::user_manager::v1::BlockPla
 }
 
 void UserManagerService::UnblockPlayer(::bgs::protocol::user_manager::v1::UnblockPlayerRequest const* request, std::function<void(::bgs::protocol::NoData const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method UserManagerService.UnblockPlayer(bgs.protocol.user_manager.v1.UnblockPlayerRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method UserManagerService.UnblockPlayer(bgs.protocol.user_manager.v1.UnblockPlayerRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::NoData response;
@@ -4166,7 +4166,7 @@ void UserManagerService::UnblockPlayer(::bgs::protocol::user_manager::v1::Unbloc
 }
 
 void UserManagerService::BlockPlayerForSession(::bgs::protocol::user_manager::v1::BlockPlayerRequest const* request, std::function<void(::bgs::protocol::NoData const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method UserManagerService.BlockPlayerForSession(bgs.protocol.user_manager.v1.BlockPlayerRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method UserManagerService.BlockPlayerForSession(bgs.protocol.user_manager.v1.BlockPlayerRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::NoData response;
@@ -4177,7 +4177,7 @@ void UserManagerService::BlockPlayerForSession(::bgs::protocol::user_manager::v1
 }
 
 void UserManagerService::LoadBlockList(::bgs::protocol::EntityId const* request, std::function<void(::bgs::protocol::NoData const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method UserManagerService.LoadBlockList(bgs.protocol.EntityId{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method UserManagerService.LoadBlockList(bgs.protocol.EntityId{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::NoData response;
@@ -4188,7 +4188,7 @@ void UserManagerService::LoadBlockList(::bgs::protocol::EntityId const* request,
 }
 
 void UserManagerService::Unsubscribe(::bgs::protocol::user_manager::v1::UnsubscribeRequest const* request, std::function<void(::bgs::protocol::NoData const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method UserManagerService.Unsubscribe(bgs.protocol.user_manager.v1.UnsubscribeRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method UserManagerService.Unsubscribe(bgs.protocol.user_manager.v1.UnsubscribeRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::NoData response;
@@ -4203,14 +4203,14 @@ void UserManagerService::CallServerMethod(uint32 token, uint32 methodId, Message
     case 1: {
       ::bgs::protocol::user_manager::v1::SubscribeRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for UserManagerService.Subscribe server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for UserManagerService.Subscribe server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 1, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::user_manager::v1::SubscribeResponse response;
       uint32 status = HandleSubscribe(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method UserManagerService.Subscribe(bgs.protocol.user_manager.v1.SubscribeRequest{ %s }) returned bgs.protocol.user_manager.v1.SubscribeResponse{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method UserManagerService.Subscribe(bgs.protocol.user_manager.v1.SubscribeRequest{ %s }) returned bgs.protocol.user_manager.v1.SubscribeResponse{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 1, token, &response);
@@ -4221,14 +4221,14 @@ void UserManagerService::CallServerMethod(uint32 token, uint32 methodId, Message
     case 10: {
       ::bgs::protocol::user_manager::v1::AddRecentPlayersRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for UserManagerService.AddRecentPlayers server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for UserManagerService.AddRecentPlayers server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 10, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::user_manager::v1::AddRecentPlayersResponse response;
       uint32 status = HandleAddRecentPlayers(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method UserManagerService.AddRecentPlayers(bgs.protocol.user_manager.v1.AddRecentPlayersRequest{ %s }) returned bgs.protocol.user_manager.v1.AddRecentPlayersResponse{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method UserManagerService.AddRecentPlayers(bgs.protocol.user_manager.v1.AddRecentPlayersRequest{ %s }) returned bgs.protocol.user_manager.v1.AddRecentPlayersResponse{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 10, token, &response);
@@ -4239,14 +4239,14 @@ void UserManagerService::CallServerMethod(uint32 token, uint32 methodId, Message
     case 11: {
       ::bgs::protocol::user_manager::v1::ClearRecentPlayersRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for UserManagerService.ClearRecentPlayers server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for UserManagerService.ClearRecentPlayers server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 11, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::user_manager::v1::ClearRecentPlayersResponse response;
       uint32 status = HandleClearRecentPlayers(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method UserManagerService.ClearRecentPlayers(bgs.protocol.user_manager.v1.ClearRecentPlayersRequest{ %s }) returned bgs.protocol.user_manager.v1.ClearRecentPlayersResponse{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method UserManagerService.ClearRecentPlayers(bgs.protocol.user_manager.v1.ClearRecentPlayersRequest{ %s }) returned bgs.protocol.user_manager.v1.ClearRecentPlayersResponse{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 11, token, &response);
@@ -4257,14 +4257,14 @@ void UserManagerService::CallServerMethod(uint32 token, uint32 methodId, Message
     case 20: {
       ::bgs::protocol::user_manager::v1::BlockPlayerRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for UserManagerService.BlockPlayer server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for UserManagerService.BlockPlayer server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 20, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::NoData response;
       uint32 status = HandleBlockPlayer(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method UserManagerService.BlockPlayer(bgs.protocol.user_manager.v1.BlockPlayerRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method UserManagerService.BlockPlayer(bgs.protocol.user_manager.v1.BlockPlayerRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 20, token, &response);
@@ -4275,14 +4275,14 @@ void UserManagerService::CallServerMethod(uint32 token, uint32 methodId, Message
     case 21: {
       ::bgs::protocol::user_manager::v1::UnblockPlayerRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for UserManagerService.UnblockPlayer server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for UserManagerService.UnblockPlayer server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 21, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::NoData response;
       uint32 status = HandleUnblockPlayer(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method UserManagerService.UnblockPlayer(bgs.protocol.user_manager.v1.UnblockPlayerRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method UserManagerService.UnblockPlayer(bgs.protocol.user_manager.v1.UnblockPlayerRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 21, token, &response);
@@ -4293,14 +4293,14 @@ void UserManagerService::CallServerMethod(uint32 token, uint32 methodId, Message
     case 40: {
       ::bgs::protocol::user_manager::v1::BlockPlayerRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for UserManagerService.BlockPlayerForSession server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for UserManagerService.BlockPlayerForSession server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 40, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::NoData response;
       uint32 status = HandleBlockPlayerForSession(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method UserManagerService.BlockPlayerForSession(bgs.protocol.user_manager.v1.BlockPlayerRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method UserManagerService.BlockPlayerForSession(bgs.protocol.user_manager.v1.BlockPlayerRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 40, token, &response);
@@ -4311,14 +4311,14 @@ void UserManagerService::CallServerMethod(uint32 token, uint32 methodId, Message
     case 50: {
       ::bgs::protocol::EntityId request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for UserManagerService.LoadBlockList server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for UserManagerService.LoadBlockList server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 50, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::NoData response;
       uint32 status = HandleLoadBlockList(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method UserManagerService.LoadBlockList(bgs.protocol.EntityId{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method UserManagerService.LoadBlockList(bgs.protocol.EntityId{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 50, token, &response);
@@ -4329,14 +4329,14 @@ void UserManagerService::CallServerMethod(uint32 token, uint32 methodId, Message
     case 51: {
       ::bgs::protocol::user_manager::v1::UnsubscribeRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for UserManagerService.Unsubscribe server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for UserManagerService.Unsubscribe server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 51, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::NoData response;
       uint32 status = HandleUnsubscribe(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method UserManagerService.Unsubscribe(bgs.protocol.user_manager.v1.UnsubscribeRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method UserManagerService.Unsubscribe(bgs.protocol.user_manager.v1.UnsubscribeRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 51, token, &response);
@@ -4345,56 +4345,56 @@ void UserManagerService::CallServerMethod(uint32 token, uint32 methodId, Message
       break;
     }
     default:
-      TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "Bad method id %u.", methodId);
+      TC_LOG_ERROR("service.protobuf", "Bad method id %u.", methodId);
       SendResponse(service_hash_, methodId, token, ERROR_RPC_INVALID_METHOD);
       break;
     }
 }
 
 uint32 UserManagerService::HandleSubscribe(::bgs::protocol::user_manager::v1::SubscribeRequest const* request, ::bgs::protocol::user_manager::v1::SubscribeResponse* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method UserManagerService.Subscribe({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method UserManagerService.Subscribe({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 UserManagerService::HandleAddRecentPlayers(::bgs::protocol::user_manager::v1::AddRecentPlayersRequest const* request, ::bgs::protocol::user_manager::v1::AddRecentPlayersResponse* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method UserManagerService.AddRecentPlayers({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method UserManagerService.AddRecentPlayers({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 UserManagerService::HandleClearRecentPlayers(::bgs::protocol::user_manager::v1::ClearRecentPlayersRequest const* request, ::bgs::protocol::user_manager::v1::ClearRecentPlayersResponse* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method UserManagerService.ClearRecentPlayers({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method UserManagerService.ClearRecentPlayers({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 UserManagerService::HandleBlockPlayer(::bgs::protocol::user_manager::v1::BlockPlayerRequest const* request, ::bgs::protocol::NoData* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method UserManagerService.BlockPlayer({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method UserManagerService.BlockPlayer({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 UserManagerService::HandleUnblockPlayer(::bgs::protocol::user_manager::v1::UnblockPlayerRequest const* request, ::bgs::protocol::NoData* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method UserManagerService.UnblockPlayer({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method UserManagerService.UnblockPlayer({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 UserManagerService::HandleBlockPlayerForSession(::bgs::protocol::user_manager::v1::BlockPlayerRequest const* request, ::bgs::protocol::NoData* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method UserManagerService.BlockPlayerForSession({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method UserManagerService.BlockPlayerForSession({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 UserManagerService::HandleLoadBlockList(::bgs::protocol::EntityId const* request, ::bgs::protocol::NoData* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method UserManagerService.LoadBlockList({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method UserManagerService.LoadBlockList({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 UserManagerService::HandleUnsubscribe(::bgs::protocol::user_manager::v1::UnsubscribeRequest const* request, ::bgs::protocol::NoData* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method UserManagerService.Unsubscribe({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method UserManagerService.Unsubscribe({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
@@ -4413,25 +4413,25 @@ google::protobuf::ServiceDescriptor const* UserManagerListener::descriptor() {
 }
 
 void UserManagerListener::OnBlockedPlayerAdded(::bgs::protocol::user_manager::v1::BlockedPlayerAddedNotification const* request) { 
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method UserManagerListener.OnBlockedPlayerAdded(bgs.protocol.user_manager.v1.BlockedPlayerAddedNotification{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method UserManagerListener.OnBlockedPlayerAdded(bgs.protocol.user_manager.v1.BlockedPlayerAddedNotification{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   SendRequest(service_hash_, 1, request);
 }
 
 void UserManagerListener::OnBlockedPlayerRemoved(::bgs::protocol::user_manager::v1::BlockedPlayerRemovedNotification const* request) { 
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method UserManagerListener.OnBlockedPlayerRemoved(bgs.protocol.user_manager.v1.BlockedPlayerRemovedNotification{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method UserManagerListener.OnBlockedPlayerRemoved(bgs.protocol.user_manager.v1.BlockedPlayerRemovedNotification{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   SendRequest(service_hash_, 2, request);
 }
 
 void UserManagerListener::OnRecentPlayersAdded(::bgs::protocol::user_manager::v1::RecentPlayersAddedNotification const* request) { 
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method UserManagerListener.OnRecentPlayersAdded(bgs.protocol.user_manager.v1.RecentPlayersAddedNotification{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method UserManagerListener.OnRecentPlayersAdded(bgs.protocol.user_manager.v1.RecentPlayersAddedNotification{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   SendRequest(service_hash_, 11, request);
 }
 
 void UserManagerListener::OnRecentPlayersRemoved(::bgs::protocol::user_manager::v1::RecentPlayersRemovedNotification const* request) { 
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method UserManagerListener.OnRecentPlayersRemoved(bgs.protocol.user_manager.v1.RecentPlayersRemovedNotification{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method UserManagerListener.OnRecentPlayersRemoved(bgs.protocol.user_manager.v1.RecentPlayersRemovedNotification{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   SendRequest(service_hash_, 12, request);
 }
@@ -4441,13 +4441,13 @@ void UserManagerListener::CallServerMethod(uint32 token, uint32 methodId, Messag
     case 1: {
       ::bgs::protocol::user_manager::v1::BlockedPlayerAddedNotification request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for UserManagerListener.OnBlockedPlayerAdded server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for UserManagerListener.OnBlockedPlayerAdded server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 1, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       uint32 status = HandleOnBlockedPlayerAdded(&request);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method UserManagerListener.OnBlockedPlayerAdded(bgs.protocol.user_manager.v1.BlockedPlayerAddedNotification{ %s }) status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method UserManagerListener.OnBlockedPlayerAdded(bgs.protocol.user_manager.v1.BlockedPlayerAddedNotification{ %s }) status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), status);
       if (status)
         SendResponse(service_hash_, 1, token, status);
@@ -4456,13 +4456,13 @@ void UserManagerListener::CallServerMethod(uint32 token, uint32 methodId, Messag
     case 2: {
       ::bgs::protocol::user_manager::v1::BlockedPlayerRemovedNotification request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for UserManagerListener.OnBlockedPlayerRemoved server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for UserManagerListener.OnBlockedPlayerRemoved server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 2, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       uint32 status = HandleOnBlockedPlayerRemoved(&request);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method UserManagerListener.OnBlockedPlayerRemoved(bgs.protocol.user_manager.v1.BlockedPlayerRemovedNotification{ %s }) status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method UserManagerListener.OnBlockedPlayerRemoved(bgs.protocol.user_manager.v1.BlockedPlayerRemovedNotification{ %s }) status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), status);
       if (status)
         SendResponse(service_hash_, 2, token, status);
@@ -4471,13 +4471,13 @@ void UserManagerListener::CallServerMethod(uint32 token, uint32 methodId, Messag
     case 11: {
       ::bgs::protocol::user_manager::v1::RecentPlayersAddedNotification request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for UserManagerListener.OnRecentPlayersAdded server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for UserManagerListener.OnRecentPlayersAdded server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 11, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       uint32 status = HandleOnRecentPlayersAdded(&request);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method UserManagerListener.OnRecentPlayersAdded(bgs.protocol.user_manager.v1.RecentPlayersAddedNotification{ %s }) status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method UserManagerListener.OnRecentPlayersAdded(bgs.protocol.user_manager.v1.RecentPlayersAddedNotification{ %s }) status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), status);
       if (status)
         SendResponse(service_hash_, 11, token, status);
@@ -4486,45 +4486,45 @@ void UserManagerListener::CallServerMethod(uint32 token, uint32 methodId, Messag
     case 12: {
       ::bgs::protocol::user_manager::v1::RecentPlayersRemovedNotification request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for UserManagerListener.OnRecentPlayersRemoved server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for UserManagerListener.OnRecentPlayersRemoved server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 12, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       uint32 status = HandleOnRecentPlayersRemoved(&request);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method UserManagerListener.OnRecentPlayersRemoved(bgs.protocol.user_manager.v1.RecentPlayersRemovedNotification{ %s }) status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method UserManagerListener.OnRecentPlayersRemoved(bgs.protocol.user_manager.v1.RecentPlayersRemovedNotification{ %s }) status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), status);
       if (status)
         SendResponse(service_hash_, 12, token, status);
       break;
     }
     default:
-      TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "Bad method id %u.", methodId);
+      TC_LOG_ERROR("service.protobuf", "Bad method id %u.", methodId);
       SendResponse(service_hash_, methodId, token, ERROR_RPC_INVALID_METHOD);
       break;
     }
 }
 
 uint32 UserManagerListener::HandleOnBlockedPlayerAdded(::bgs::protocol::user_manager::v1::BlockedPlayerAddedNotification const* request) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method UserManagerListener.OnBlockedPlayerAdded({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method UserManagerListener.OnBlockedPlayerAdded({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 UserManagerListener::HandleOnBlockedPlayerRemoved(::bgs::protocol::user_manager::v1::BlockedPlayerRemovedNotification const* request) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method UserManagerListener.OnBlockedPlayerRemoved({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method UserManagerListener.OnBlockedPlayerRemoved({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 UserManagerListener::HandleOnRecentPlayersAdded(::bgs::protocol::user_manager::v1::RecentPlayersAddedNotification const* request) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method UserManagerListener.OnRecentPlayersAdded({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method UserManagerListener.OnRecentPlayersAdded({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 UserManagerListener::HandleOnRecentPlayersRemoved(::bgs::protocol::user_manager::v1::RecentPlayersRemovedNotification const* request) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method UserManagerListener.OnRecentPlayersRemoved({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method UserManagerListener.OnRecentPlayersRemoved({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }

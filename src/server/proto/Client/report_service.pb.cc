@@ -671,7 +671,7 @@ google::protobuf::ServiceDescriptor const* ReportService::descriptor() {
 }
 
 void ReportService::SendReport(::bgs::protocol::report::v1::SendReportRequest const* request, std::function<void(::bgs::protocol::NoData const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method ReportService.SendReport(bgs.protocol.report.v1.SendReportRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method ReportService.SendReport(bgs.protocol.report.v1.SendReportRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::NoData response;
@@ -682,7 +682,7 @@ void ReportService::SendReport(::bgs::protocol::report::v1::SendReportRequest co
 }
 
 void ReportService::SubmitReport(::bgs::protocol::report::v1::SubmitReportRequest const* request, std::function<void(::bgs::protocol::NoData const*)> responseCallback) {
-  TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Server called client method ReportService.SubmitReport(bgs.protocol.report.v1.SubmitReportRequest{ %s })",
+  TC_LOG_DEBUG("service.protobuf", "%s Server called client method ReportService.SubmitReport(bgs.protocol.report.v1.SubmitReportRequest{ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   std::function<void(MessageBuffer)> callback = [responseCallback](MessageBuffer buffer) -> void {
     ::bgs::protocol::NoData response;
@@ -697,14 +697,14 @@ void ReportService::CallServerMethod(uint32 token, uint32 methodId, MessageBuffe
     case 1: {
       ::bgs::protocol::report::v1::SendReportRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for ReportService.SendReport server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for ReportService.SendReport server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 1, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::NoData response;
       uint32 status = HandleSendReport(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method ReportService.SendReport(bgs.protocol.report.v1.SendReportRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method ReportService.SendReport(bgs.protocol.report.v1.SendReportRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 1, token, &response);
@@ -715,14 +715,14 @@ void ReportService::CallServerMethod(uint32 token, uint32 methodId, MessageBuffe
     case 2: {
       ::bgs::protocol::report::v1::SubmitReportRequest request;
       if (!request.ParseFromArray(buffer.GetReadPointer(), buffer.GetActiveSize())) {
-        TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Failed to parse request for ReportService.SubmitReport server method call.", GetCallerInfo().c_str());
+        TC_LOG_DEBUG("service.protobuf", "%s Failed to parse request for ReportService.SubmitReport server method call.", GetCallerInfo().c_str());
         SendResponse(service_hash_, 2, token, ERROR_RPC_MALFORMED_REQUEST);
         return;
       }
 
       ::bgs::protocol::NoData response;
       uint32 status = HandleSubmitReport(&request, &response);
-      TC_LOG_DEBUG(LOG_FILTER_PROTOBUF, "%s Client called server method ReportService.SubmitReport(bgs.protocol.report.v1.SubmitReportRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
+      TC_LOG_DEBUG("service.protobuf", "%s Client called server method ReportService.SubmitReport(bgs.protocol.report.v1.SubmitReportRequest{ %s }) returned bgs.protocol.NoData{ %s } status %u.",
         GetCallerInfo().c_str(), request.ShortDebugString().c_str(), response.ShortDebugString().c_str(), status);
       if (!status)
         SendResponse(service_hash_, 2, token, &response);
@@ -731,20 +731,20 @@ void ReportService::CallServerMethod(uint32 token, uint32 methodId, MessageBuffe
       break;
     }
     default:
-      TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "Bad method id %u.", methodId);
+      TC_LOG_ERROR("service.protobuf", "Bad method id %u.", methodId);
       SendResponse(service_hash_, methodId, token, ERROR_RPC_INVALID_METHOD);
       break;
     }
 }
 
 uint32 ReportService::HandleSendReport(::bgs::protocol::report::v1::SendReportRequest const* request, ::bgs::protocol::NoData* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method ReportService.SendReport({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method ReportService.SendReport({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
 uint32 ReportService::HandleSubmitReport(::bgs::protocol::report::v1::SubmitReportRequest const* request, ::bgs::protocol::NoData* response) {
-  TC_LOG_ERROR(LOG_FILTER_PROTOBUF, "%s Client tried to call not implemented method ReportService.SubmitReport({ %s })",
+  TC_LOG_ERROR("service.protobuf", "%s Client tried to call not implemented method ReportService.SubmitReport({ %s })",
     GetCallerInfo().c_str(), request->ShortDebugString().c_str());
   return ERROR_RPC_NOT_IMPLEMENTED;
 }

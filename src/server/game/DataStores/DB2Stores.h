@@ -374,7 +374,7 @@ public:
     typedef std::unordered_map<uint32, std::unordered_map<uint32, MapDifficultyEntry const*>> MapDifficultyContainer;
     typedef std::set<MountTypeXCapabilityEntry const*, MountTypeXCapabilityEntryComparator> MountTypeXCapabilitySet;
     typedef std::vector<MountXDisplayEntry const*> MountXDisplayContainer;
-    typedef std::map<uint32 /*word length*/, StringVector> LanguageWordsContainer;
+    typedef std::map<uint32 /*word length*/, std::vector<std::string>> LanguageWordsContainer;
     typedef std::set<uint32> PetFamilySpellsSet;
     typedef std::unordered_map<uint32, PetFamilySpellsSet > PetFamilySpellsContainer;
     typedef std::vector<uint32> SimpleFactionsList;
@@ -429,7 +429,7 @@ public:
     ItemBonusList const* GetItemBonusList(uint32 bonusListId) const;
     uint32 GetItemBonusListForItemLevelDelta(int16 delta) const;
     LanguageWordsContainer const* GetLanguageWordMap(uint32 landID);
-    StringVector const* GetLanguageWordsBySize(uint32 landID, uint32 size);
+    std::vector<std::string> const* GetLanguageWordsBySize(uint32 landID, uint32 size);
     std::vector<QuestPackageItemEntry const*> const* GetQuestPackageItems(uint32 questPackageID) const;
     MountEntry const* GetMount(uint32 spellId) const;
     static MountEntry const* GetMountById(uint32 id);

@@ -232,7 +232,7 @@ public:
 
         void PrepareEncounter()
         {
-            TC_LOG_DEBUG(LOG_FILTER_TSCR, "Barnes Opera Event - Introduction complete - preparing encounter %d", m_uiEventId);
+            TC_LOG_DEBUG("scripts", "Barnes Opera Event - Introduction complete - preparing encounter %d", m_uiEventId);
             uint8 index = 0;
             uint8 count = 0;
 
@@ -351,17 +351,17 @@ public:
             case GOSSIP_ACTION_INFO_DEF+3:
                 player->CLOSE_GOSSIP_MENU();
                 pBarnesAI->m_uiEventId = EVENT_OZ;
-                TC_LOG_INFO(LOG_FILTER_TSCR, "TSCR: player (GUID " UI64FMTD ") manually set Opera event to EVENT_OZ", player->GetGUID().GetCounter());
+                TC_LOG_INFO("scripts", "TSCR: player (GUID " UI64FMTD ") manually set Opera event to EVENT_OZ", player->GetGUID().GetCounter());
                 break;
             case GOSSIP_ACTION_INFO_DEF+4:
                 player->CLOSE_GOSSIP_MENU();
                 pBarnesAI->m_uiEventId = EVENT_HOOD;
-                TC_LOG_INFO(LOG_FILTER_TSCR, "TSCR: player (GUID " UI64FMTD ") manually set Opera event to EVENT_HOOD", player->GetGUID().GetCounter());
+                TC_LOG_INFO("scripts", "TSCR: player (GUID " UI64FMTD ") manually set Opera event to EVENT_HOOD", player->GetGUID().GetCounter());
                 break;
             case GOSSIP_ACTION_INFO_DEF+5:
                 player->CLOSE_GOSSIP_MENU();
                 pBarnesAI->m_uiEventId = EVENT_RAJ;
-                TC_LOG_INFO(LOG_FILTER_TSCR, "TSCR: player (GUID " UI64FMTD ") manually set Opera event to EVENT_RAJ", player->GetGUID().GetCounter());
+                TC_LOG_INFO("scripts", "TSCR: player (GUID " UI64FMTD ") manually set Opera event to EVENT_RAJ", player->GetGUID().GetCounter());
                 break;
         }
 

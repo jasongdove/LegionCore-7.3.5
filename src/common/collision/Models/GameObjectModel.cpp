@@ -74,7 +74,7 @@ void LoadGameObjectModelList(std::string const& dataPath)
     FILE* model_list_file = fopen((dataPath + "vmaps/" + VMAP::GAMEOBJECT_MODELS).c_str(), "rb");
     if (!model_list_file)
     {
-        TC_LOG_DEBUG(LOG_FILTER_VMAPS, "Unable to open '%s' file.", VMAP::GAMEOBJECT_MODELS);
+        TC_LOG_DEBUG("maps", "Unable to open '%s' file.", VMAP::GAMEOBJECT_MODELS);
         return;
     }
 
@@ -82,7 +82,7 @@ void LoadGameObjectModelList(std::string const& dataPath)
     if (fread(magic, 1, 8, model_list_file) != 8
         || memcmp(magic, VMAP::VMAP_MAGIC, 8) != 0)
     {
-        TC_LOG_DEBUG(LOG_FILTER_VMAPS, "File '%s' has wrong header, expected %s.", VMAP::GAMEOBJECT_MODELS, VMAP::VMAP_MAGIC);
+        TC_LOG_DEBUG("maps", "File '%s' has wrong header, expected %s.", VMAP::GAMEOBJECT_MODELS, VMAP::VMAP_MAGIC);
         fclose(model_list_file);
         return;
     }
@@ -104,13 +104,13 @@ void LoadGameObjectModelList(std::string const& dataPath)
             || fread(&v1, sizeof(Vector3), 1, model_list_file) != 1
             || fread(&v2, sizeof(Vector3), 1, model_list_file) != 1)
         {
-            TC_LOG_DEBUG(LOG_FILTER_VMAPS, "File '%s' seems to be corrupted!", VMAP::GAMEOBJECT_MODELS);
+            TC_LOG_DEBUG("maps", "File '%s' seems to be corrupted!", VMAP::GAMEOBJECT_MODELS);
             break;
         }
 
         if (v1.isNaN() || v2.isNaN())
         {
-            TC_LOG_DEBUG(LOG_FILTER_VMAPS, "File '%s' Model '%s' has invalid v1%s v2%s values!", VMAP::GAMEOBJECT_MODELS, std::string(buff, name_length).c_str(), v1.toString().c_str(), v2.toString().c_str());
+            TC_LOG_DEBUG("maps", "File '%s' Model '%s' has invalid v1%s v2%s values!", VMAP::GAMEOBJECT_MODELS, std::string(buff, name_length).c_str(), v1.toString().c_str(), v2.toString().c_str());
             continue;
         }
 
@@ -118,7 +118,7 @@ void LoadGameObjectModelList(std::string const& dataPath)
     }
 
     fclose(model_list_file);
-    TC_LOG_DEBUG(LOG_FILTER_VMAPS, ">> Loaded %u GameObject models in %u ms", uint32(model_list.size()), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_DEBUG("maps", ">> Loaded %u GameObject models in %u ms", uint32(model_list.size()), GetMSTimeDiffToNow(oldMSTime));
 }
 
 GameObjectModel::~GameObjectModel()
@@ -137,7 +137,7 @@ bool GameObjectModel::initialize(std::unique_ptr<GameObjectModelOwnerBase> model
     // ignore models with no bounds
     if (mdl_box == G3D::AABox::zero())
     {
-        TC_LOG_DEBUG(LOG_FILTER_VMAPS, "GameObject model %s has zero bounds, loading skipped", it->second.name.c_str());
+        TC_LOG_DEBUG("maps", "GameObject model %s has zero bounds, loading skipped", it->second.name.c_str());
         return false;
     }
 
@@ -356,7 +356,7 @@ bool GameObjectModel::UpdatePosition()
     // ignore models with no bounds
     if (mdl_box == G3D::AABox::zero())
     {
-        TC_LOG_DEBUG(LOG_FILTER_VMAPS, "GameObject model %s has zero bounds, loading skipped", it->second.name.c_str());
+        TC_LOG_DEBUG("maps", "GameObject model %s has zero bounds, loading skipped", it->second.name.c_str());
         return false;
     }
 

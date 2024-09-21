@@ -105,7 +105,7 @@ void PhaseMgr::Recalculate()
             {
                 phaseData.AddPhaseDefinition(&(*phase));
 
-                TC_LOG_DEBUG(LOG_FILTER_PLAYER_LOADING, "PhaseMgr::recalculete enable id: %u zone %u: ", phase->entry, phase->zoneId);
+                TC_LOG_DEBUG("sql.sql", "PhaseMgr::recalculete enable id: %u zone %u: ", phase->entry, phase->zoneId);
 
                 if (phase->phasemask)
                     _UpdateFlags |= PHASE_UPDATE_FLAG_SERVERSIDE_CHANGED;
@@ -201,7 +201,7 @@ void PhaseMgr::UnRegisterPhasingAuraEffect(AuraEffect const* auraEffect)
 
 void PhaseMgr::RegisterPhasingAura(uint32 spellId, Unit* target)
 {
-    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "PhaseMgr::RegisterPhasingAura: spellId %u", spellId);
+    //TC_LOG_DEBUG("spells", "PhaseMgr::RegisterPhasingAura: spellId %u", spellId);
 
     SpellPhaseStore::const_iterator itr = _SpellPhaseStore->find(spellId);
     if (itr == _SpellPhaseStore->end())
@@ -233,7 +233,7 @@ void PhaseMgr::RegisterPhasingAura(uint32 spellId, Unit* target)
 
 void PhaseMgr::UnRegisterPhasingAura(uint32 spellId, Unit* target)
 {
-    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "PhaseMgr::RegisterPhasingAura: spellId %u", spellId);
+    //TC_LOG_DEBUG("spells", "PhaseMgr::RegisterPhasingAura: spellId %u", spellId);
 
     SpellPhaseStore::const_iterator itr = _SpellPhaseStore->find(spellId);
     if (itr == _SpellPhaseStore->end())

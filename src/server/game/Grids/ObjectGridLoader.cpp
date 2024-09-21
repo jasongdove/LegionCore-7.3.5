@@ -154,7 +154,7 @@ void ObjectGridLoader::LoadN(NGrid const &grid, Map *map, Cell cell)
         }
     }
 
-    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "%u GameObjects, %u Creatures %u Conversations %u EventObjects, and %u Corpses/Bones loaded for grid [%d, %d] on map %u",
+    TC_LOG_DEBUG("spells", "%u GameObjects, %u Creatures %u Conversations %u EventObjects, and %u Corpses/Bones loaded for grid [%d, %d] on map %u",
                  gameObjects, creatures, conversations, eventobjects, corpses, grid.getX(), grid.getY(), map->GetId());
 }
 

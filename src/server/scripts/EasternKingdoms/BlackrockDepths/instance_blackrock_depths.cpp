@@ -209,7 +209,7 @@ public:
 
         void SetGuidData(uint32 type, ObjectGuid data)
         {
-            TC_LOG_DEBUG(LOG_FILTER_TSCR, "Instance Blackrock Depths: SetGuidData update (Type: %u Data " UI64FMTD ")", type, data.GetGUIDLow());
+            TC_LOG_DEBUG("scripts", "Instance Blackrock Depths: SetGuidData update (Type: %u Data " UI64FMTD ")", type, data.GetGUIDLow());
 
             switch (type)
             {
@@ -225,7 +225,7 @@ public:
 
         void SetData(uint32 type, uint32 data)
         {
-            TC_LOG_DEBUG(LOG_FILTER_TSCR, "Instance Blackrock Depths: SetData update (Type: %u Data %u)", type, data);
+            TC_LOG_DEBUG("scripts", "Instance Blackrock Depths: SetData update (Type: %u Data %u)", type, data);
 
             switch (type)
             {

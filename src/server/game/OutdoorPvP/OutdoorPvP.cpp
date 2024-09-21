@@ -39,14 +39,14 @@ bool OPvPCapturePoint::HandlePlayerEnter(Player* player)
 {
     if (m_capturePoint)
     {
-        TC_LOG_TRACE(LOG_FILTER_GENERAL, "OPvPCapturePoint::HandlePlayerEnter!");
+        TC_LOG_TRACE("misc", "OPvPCapturePoint::HandlePlayerEnter!");
 
         player->SendUpdateWorldState(m_capturePoint->GetGOInfo()->controlZone.worldState1, 1);
         player->SendUpdateWorldState(m_capturePoint->GetGOInfo()->controlZone.worldstate2, static_cast<uint32>(ceil((m_value + m_maxValue) / (2 * m_maxValue) * 100.0f)));
         player->SendUpdateWorldState(m_capturePoint->GetGOInfo()->controlZone.worldstate3, m_neutralValuePct);
     }
     else
-        TC_LOG_TRACE(LOG_FILTER_GENERAL, "OPvPCapturePoint::HandlePlayerEnter !!!!!!m_capturePoint!");
+        TC_LOG_TRACE("misc", "OPvPCapturePoint::HandlePlayerEnter !!!!!!m_capturePoint!");
 
     if (player->GetTeamId() < 2)
         return m_activePlayers[player->GetTeamId()].insert(player).second;
@@ -133,22 +133,22 @@ bool OPvPCapturePoint::AddCreature(uint32 type, uint32 entry, uint32 team, uint3
 
 bool OPvPCapturePoint::SetCapturePointData(uint32 entry, uint32 map, float x, float y, float z, float o, float rotation0, float rotation1, float rotation2, float rotation3)
 {
-    TC_LOG_TRACE(LOG_FILTER_GENERAL, "Creating capture point %u", entry);
+    TC_LOG_TRACE("misc", "Creating capture point %u", entry);
     GameObjectTemplate const* goinfo = sObjectMgr->GetGameObjectTemplate(entry);
     if (!goinfo || goinfo->type != GAMEOBJECT_TYPE_CONTROL_ZONE)
     {
-        TC_LOG_TRACE(LOG_FILTER_OUTDOORPVP, "OutdoorPvP: GO %u is not capture point!", entry);
+        TC_LOG_TRACE("outdoorpvp", "OutdoorPvP: GO %u is not capture point!", entry);
         return false;
     }
 
     m_capturePointGUID = ObjectGuid::Create<HighGuid::GameObject>(map, entry, sObjectMgr->AddGOData(entry, map, x, y, z, o, 0, rotation0, rotation1, rotation2, rotation3));
     if (!m_capturePointGUID)
     {
-        TC_LOG_TRACE(LOG_FILTER_GENERAL, "OPvPCapturePoint::SetCapturePointData  - NOT CREATEDCreating capture point %u", entry);
+        TC_LOG_TRACE("misc", "OPvPCapturePoint::SetCapturePointData  - NOT CREATEDCreating capture point %u", entry);
         return false;
     }
 
-    TC_LOG_TRACE(LOG_FILTER_GENERAL, "OPvPCapturePoint::SetCapturePointData::Creating capture point entry %u, map%u, x %f, y %f, z %f m_capturePointGUID %s", entry, map, x, y, z, m_capturePointGUID.ToString().c_str());
+    TC_LOG_TRACE("misc", "OPvPCapturePoint::SetCapturePointData::Creating capture point entry %u, map%u, x %f, y %f, z %f m_capturePointGUID %s", entry, map, x, y, z, m_capturePointGUID.ToString().c_str());
 
     m_maxValue = static_cast<float>(goinfo->controlZone.maxTime);
     m_maxSpeed = m_maxValue / (goinfo->controlZone.minTime ? goinfo->controlZone.minTime : 60);
@@ -177,7 +177,7 @@ bool OPvPCapturePoint::DelCreature(uint32 type)
 {
     if (!m_Creatures[type])
     {
-        TC_LOG_TRACE(LOG_FILTER_GENERAL, "opvp creature type %u was already deleted", type);
+        TC_LOG_TRACE("misc", "opvp creature type %u was already deleted", type);
         return false;
     }
 
@@ -188,7 +188,7 @@ bool OPvPCapturePoint::DelCreature(uint32 type)
         m_Creatures[type].Clear();
         return false;
     }
-    TC_LOG_TRACE(LOG_FILTER_GENERAL, "deleting opvp creature type %u", type);
+    TC_LOG_TRACE("misc", "deleting opvp creature type %u", type);
     ObjectGuid::LowType guid = cr->GetDBTableGUIDLow();
     // Don't save respawn time
     cr->SetRespawnTime(0);
@@ -300,7 +300,7 @@ void OutdoorPvP::HandlePlayerLeaveZone(ObjectGuid guid, uint32 /*zone*/)
 
     m_players[player->GetTeamId()].erase(guid);
 
-    TC_LOG_TRACE(LOG_FILTER_GENERAL, "Player %s left an outdoorpvp zone", player->GetName());
+    TC_LOG_TRACE("misc", "Player %s left an outdoorpvp zone", player->GetName());
 }
 
 void OutdoorPvP::HandlePlayerEnterArea(ObjectGuid guid, uint32 /*area*/)
@@ -453,7 +453,7 @@ bool OPvPCapturePoint::Update(uint32 diff)
 
     if (m_OldState != m_State)
     {
-        //TC_LOG_TRACE(LOG_FILTER_OUTDOORPVP, "%u->%u", m_OldState, m_State);
+        //TC_LOG_TRACE("outdoorpvp", "%u->%u", m_OldState, m_State);
         if (oldTeam != m_team)
             ChangeTeam(oldTeam);
         ChangeState();
@@ -674,7 +674,7 @@ void OutdoorPvP::AddCapturePoint(OPvPCapturePoint* cp)
     if (auto go = sObjectAccessor->FindGameObject(cp->m_capturePointGUID))
         cp->m_capturePoint = go;
     else
-        TC_LOG_TRACE(LOG_FILTER_GENERAL, "OutdoorPvP::AddCapturePoint !!!!!!m_capturePoint! %s", cp->m_capturePointGUID.ToString().c_str());
+        TC_LOG_TRACE("misc", "OutdoorPvP::AddCapturePoint !!!!!!m_capturePoint! %s", cp->m_capturePointGUID.ToString().c_str());
 }
 
 OPvPCapturePoint* OutdoorPvP::GetCapturePoint(ObjectGuid guid) const
@@ -747,7 +747,7 @@ bool OutdoorPvP::DelCreature(uint32 type)
 {
     if (!m_Creatures[type])
     {
-        TC_LOG_TRACE(LOG_FILTER_GENERAL, "OutdoorPvP::DelCreature, creature type %u was already deleted", type);
+        TC_LOG_TRACE("misc", "OutdoorPvP::DelCreature, creature type %u was already deleted", type);
         return false;
     }
 
@@ -758,7 +758,7 @@ bool OutdoorPvP::DelCreature(uint32 type)
         return false;
     }
 
-    TC_LOG_TRACE(LOG_FILTER_GENERAL, "OutdoorPvP::DelCreature, deleting creature type %u", type);
+    TC_LOG_TRACE("misc", "OutdoorPvP::DelCreature, deleting creature type %u", type);
 
     uint64 guid = l_Creature->GetDBTableGUIDLow();
 
@@ -920,10 +920,10 @@ OutdoorGraveyard* OutdoorPvP::GetGraveyardById(uint32 id)
     {
         if (m_GraveyardList[id])
             return m_GraveyardList[id];
-        TC_LOG_TRACE(LOG_FILTER_BATTLEFIELD, "OutdoorPvP::GetGraveyardById Id:%u not existed", id);
+        TC_LOG_TRACE("bg.battlefield", "OutdoorPvP::GetGraveyardById Id:%u not existed", id);
     }
     else
-        TC_LOG_TRACE(LOG_FILTER_BATTLEFIELD, "OutdoorPvP::GetGraveyardById Id:%u cant be found", id);
+        TC_LOG_TRACE("bg.battlefield", "OutdoorPvP::GetGraveyardById Id:%u cant be found", id);
 
     return nullptr;
 }
@@ -976,7 +976,7 @@ void OutdoorGraveyard::SetSpirit(Creature* p_Spirit, TeamId team)
 {
     if (p_Spirit == nullptr)
     {
-        TC_LOG_TRACE(LOG_FILTER_BATTLEFIELD, "OutdoorGraveyard::SetSpirit -> Invalid Spirit.");
+        TC_LOG_TRACE("bg.battlefield", "OutdoorGraveyard::SetSpirit -> Invalid Spirit.");
         return;
     }
 

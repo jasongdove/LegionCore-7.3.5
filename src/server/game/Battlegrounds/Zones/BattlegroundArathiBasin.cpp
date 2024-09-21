@@ -242,7 +242,7 @@ void BattlegroundArathiBasin::_NodeOccupied(uint8 node, TeamId teamID)
     Team team = MS::Battlegrounds::GetTeamByTeamId(teamID);
 
     if (!AddSpiritGuide(node, BgAbSpiritsPos[node], teamID))
-        TC_LOG_ERROR(LOG_FILTER_BATTLEGROUND, "Failed to spawn spirit guide! point: %u, team: %u, ", node, team);
+        TC_LOG_ERROR("bg.battleground", "Failed to spawn spirit guide! point: %u, team: %u, ", node, team);
 
     uint8 capturedNodes = 0;
     for (uint8 i = 0; i < BG_AB_DYNAMIC_NODES_COUNT; ++i)

@@ -278,7 +278,7 @@ bool BattlegroundWarsongGulch::SetupBattleground()
         || !AddObject(BG_WS_OBJECT_DOOR_H_4, BG_OBJECT_DOOR_H_4_WS_ENTRY, 950.7952f, 1459.583f, 342.1523f, 0.05235988f, 0, 0, 0.02617695f, 0.9996573f, RESPAWN_IMMEDIATELY)
         )
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundWS: Failed to spawn some object Battleground not created!");
+        TC_LOG_ERROR("sql.sql", "BatteGroundWS: Failed to spawn some object Battleground not created!");
         return false;
     }
 
@@ -287,7 +287,7 @@ bool BattlegroundWarsongGulch::SetupBattleground()
         if (!AddObject(BG_WS_OBJECT_A_FLAG, BG_OBJECT_A_FLAG_WS_ENTRY, 1540.423f, 1481.325f, 351.8284f, 3.089233f, 0.0f, 0.0f, 0.9996573f, 0.02617699f, BG_WS_FLAG_RESPAWN_TIME / 1000) ||
             !AddObject(BG_WS_OBJECT_H_FLAG, BG_OBJECT_H_FLAG_WS_ENTRY, 916.0226f, 1434.405f, 345.413f, 0.01745329f, 0.0f, 0.0f, 0.008726535f, 0.9999619f, BG_WS_FLAG_RESPAWN_TIME / 1000))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundWS: Failed to spawn some object Battleground not created!");
+            TC_LOG_ERROR("sql.sql", "BatteGroundWS: Failed to spawn some object Battleground not created!");
             return false;
         }
     }
@@ -296,7 +296,7 @@ bool BattlegroundWarsongGulch::SetupBattleground()
         if (!AddObject(BG_WS_OBJECT_A_FLAG, BG_OBJECT_A_FLAG_WS_ENTRY, 1357.948f, 1462.004f, 325.2907f, 3.064396f, 0.0f, 0.0f, 0.9996573f, 0.02617699f, BG_WS_FLAG_RESPAWN_TIME / 1000) ||
             !AddObject(BG_WS_OBJECT_H_FLAG, BG_OBJECT_H_FLAG_WS_ENTRY, 1119.123f, 1462.448f, 316.926f, 0.01745246f, 0.0f, 0.0f, 0.008726535f, 0.9999619f, BG_WS_FLAG_RESPAWN_TIME / 1000))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundWS: Failed to spawn some object Battleground not created!");
+            TC_LOG_ERROR("sql.sql", "BatteGroundWS: Failed to spawn some object Battleground not created!");
             return false;
         }
     }
@@ -305,7 +305,7 @@ bool BattlegroundWarsongGulch::SetupBattleground()
         if (!AddObject(BG_WS_OBJECT_A_FLAG, BG_OBJECT_A_FLAG_WS_ENTRY, 1540.423f, 1481.325f, 351.8284f, 3.089233f, 0.0f, 0.0f, 0.9996573f, 0.02617699f, BG_WS_FLAG_RESPAWN_TIME / 1000) ||
             !AddObject(BG_WS_OBJECT_H_FLAG, BG_OBJECT_H_FLAG_WS_ENTRY, 916.0226f, 1434.405f, 345.413f, 0.01745329f, 0.0f, 0.0f, 0.008726535f, 0.9999619f, BG_WS_FLAG_RESPAWN_TIME / 1000))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundWS: Failed to spawn some object Battleground not created!");
+            TC_LOG_ERROR("sql.sql", "BatteGroundWS: Failed to spawn some object Battleground not created!");
             return false;
         }
 
@@ -314,7 +314,7 @@ bool BattlegroundWarsongGulch::SetupBattleground()
         {
             if (!AddObject(i, pair.first, pair.second, {}, BG_WS_FLAG_RESPAWN_TIME / 1000))
             {
-                TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundWS: Failed to spawn some object Battleground not created!");
+                TC_LOG_ERROR("sql.sql", "BatteGroundWS: Failed to spawn some object Battleground not created!");
                 return false;
             }
             else if (i - BG_WS_BRAWL_A_FLAG_2 >= 8)
@@ -332,14 +332,14 @@ bool BattlegroundWarsongGulch::SetupBattleground()
     WorldSafeLocsEntry const* sg = sWorldSafeLocsStore.LookupEntry(WS_GRAVEYARD_MAIN_ALLIANCE);
     if (!sg || !AddSpiritGuide(WS_SPIRIT_MAIN_ALLIANCE, sg->Loc, TEAM_ALLIANCE))
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundWS: Failed to spawn Alliance spirit guide! Battleground not created!");
+        TC_LOG_ERROR("sql.sql", "BatteGroundWS: Failed to spawn Alliance spirit guide! Battleground not created!");
         return false;
     }
 
     sg = sWorldSafeLocsStore.LookupEntry(WS_GRAVEYARD_MAIN_HORDE);
     if (!sg || !AddSpiritGuide(WS_SPIRIT_MAIN_HORDE, sg->Loc, TEAM_HORDE))
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundWS: Failed to spawn Horde spirit guide! Battleground not created!");
+        TC_LOG_ERROR("sql.sql", "BatteGroundWS: Failed to spawn Horde spirit guide! Battleground not created!");
         return false;
     }
 

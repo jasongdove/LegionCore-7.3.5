@@ -21,6 +21,7 @@
 #include "Packet.h"
 #include "PacketUtilities.h"
 #include "LFGPacketsCommon.h"
+#include "Optional.h"
 
 namespace lfg
 {

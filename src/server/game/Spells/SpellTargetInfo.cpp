@@ -516,22 +516,22 @@ void SpellCastTargets::SetCaster(Unit* caster)
 void SpellCastTargets::OutDebug() const
 {
     if (!m_targetMask)
-        TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "No targets");
+        TC_LOG_INFO("spells", "No targets");
 
-    TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "target mask: %u", m_targetMask);
+    TC_LOG_INFO("spells", "target mask: %u", m_targetMask);
     if (m_targetMask & (TARGET_FLAG_UNIT_MASK | TARGET_FLAG_CORPSE_MASK | TARGET_FLAG_GAMEOBJECT_MASK))
-        TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "Object target: %s", m_objectTargetGUID.ToString().c_str());
+        TC_LOG_INFO("spells", "Object target: %s", m_objectTargetGUID.ToString().c_str());
     if (m_targetMask & TARGET_FLAG_ITEM)
-        TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "Item target: %s", m_itemTargetGUID.ToString().c_str());
+        TC_LOG_INFO("spells", "Item target: %s", m_itemTargetGUID.ToString().c_str());
     if (m_targetMask & TARGET_FLAG_TRADE_ITEM)
-        TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "Trade item target: %s", m_itemTargetGUID.ToString().c_str());
+        TC_LOG_INFO("spells", "Trade item target: %s", m_itemTargetGUID.ToString().c_str());
     if (m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
-        TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "Source location: transport guid: %s trans offset: %s position: %s", m_src._transportGUID.ToString().c_str(), m_src._transportOffset.ToString().c_str(), m_src._position.ToString().c_str());
+        TC_LOG_INFO("spells", "Source location: transport guid: %s trans offset: %s position: %s", m_src._transportGUID.ToString().c_str(), m_src._transportOffset.ToString().c_str(), m_src._position.ToString().c_str());
     if (m_targetMask & TARGET_FLAG_DEST_LOCATION)
-        TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "Destination location: transport guid: %s trans offset: %s position: %s", m_dst._transportGUID.ToString().c_str(), m_dst._transportOffset.ToString().c_str(), m_dst._position.ToString().c_str());
+        TC_LOG_INFO("spells", "Destination location: transport guid: %s trans offset: %s position: %s", m_dst._transportGUID.ToString().c_str(), m_dst._transportOffset.ToString().c_str(), m_dst._position.ToString().c_str());
     if (m_targetMask & TARGET_FLAG_STRING)
-        TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "String: %s", m_strTarget.c_str());
+        TC_LOG_INFO("spells", "String: %s", m_strTarget.c_str());
 
-    TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "speed: %f", m_speed);
-    TC_LOG_INFO(LOG_FILTER_SPELLS_AURAS, "elevation: %f", m_pitch);
+    TC_LOG_INFO("spells", "speed: %f", m_speed);
+    TC_LOG_INFO("spells", "elevation: %f", m_pitch);
 }

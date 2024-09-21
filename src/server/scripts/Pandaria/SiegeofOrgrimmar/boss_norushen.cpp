@@ -722,7 +722,7 @@ public:
                             break;
                         default:
                             p->CastSpell(p, SPELL_TEST_OF_SERENITY, false);
-                            TC_LOG_ERROR(LOG_FILTER_PLAYER, "Script::npc_norushen_purifying_light: Player %s has not localized role specID.", p->ToString().c_str());
+                            TC_LOG_ERROR("entities.player", "Script::npc_norushen_purifying_light: Player %s has not localized role specID.", p->ToString().c_str());
                             break;
                     }
                 }

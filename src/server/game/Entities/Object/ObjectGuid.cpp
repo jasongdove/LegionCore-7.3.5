@@ -502,7 +502,7 @@ ObjectGuid::LowType ObjectGuidGenerator<high>::Generate()
 {
     if (_nextGuid >= ObjectGuid::GetMaxCounter(high) - 1)
     {
-        //TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "%s guid overflow!! Can't continue, shutting down server. ", ObjectGuid::GetTypeName(high));
+        //TC_LOG_ERROR("server.loading", "%s guid overflow!! Can't continue, shutting down server. ", ObjectGuid::GetTypeName(high));
         World::StopNow(ERROR_EXIT_CODE);
     }
 
@@ -516,7 +516,7 @@ uint32 ObjectGuidGenerator<high>::GenerateLow()
 {
     if (_nextGuid >= ObjectGuid::GetMaxCounter(high) - 1)
     {
-        //TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "%s guid overflow!! Can't continue, shutting down server. ", ObjectGuid::GetTypeName(high));
+        //TC_LOG_ERROR("server.loading", "%s guid overflow!! Can't continue, shutting down server. ", ObjectGuid::GetTypeName(high));
         World::StopNow(ERROR_EXIT_CODE);
     }
 

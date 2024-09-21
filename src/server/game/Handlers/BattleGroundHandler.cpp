@@ -62,7 +62,7 @@ void WorldSession::HandleBattlemasterJoin(WorldPackets::Battleground::Join& pack
 
     if (!sBattlemasterListStore.LookupEntry(queueID))
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Battleground: invalid bgtype (%u) received. possible cheater? player guid %u", queueID, _player->GetGUIDLow());
+        TC_LOG_ERROR("network", "Battleground: invalid bgtype (%u) received. possible cheater? player guid %u", queueID, _player->GetGUIDLow());
         return;
     }
 
@@ -525,7 +525,7 @@ void WorldSession::JoinBracket(uint8 bracketType, uint8 rolesMask /*= ROLES_DEFA
     auto bg = sBattlegroundMgr->GetBattlegroundTemplate(bgTypeId);
     if (!bg)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Battleground: template bg not found BgTypeID %u", bgTypeId);
+        TC_LOG_ERROR("network", "Battleground: template bg not found BgTypeID %u", bgTypeId);
         return;
     }
 

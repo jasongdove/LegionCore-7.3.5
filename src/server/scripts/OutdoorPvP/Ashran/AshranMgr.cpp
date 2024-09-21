@@ -661,7 +661,7 @@ OutdoorPvPAshran::OutdoorPvPAshran()
 
 bool OutdoorPvPAshran::SetupOutdoorPvP()
 {
-    TC_LOG_ERROR(LOG_FILTER_GENERAL, "OutdoorPvPAshran: SetupOutdoorPvP");
+    TC_LOG_ERROR("misc", "OutdoorPvPAshran: SetupOutdoorPvP");
 
     RegisterZone(AshranZoneID);
 
@@ -693,7 +693,7 @@ void OutdoorPvPAshran::Initialize(uint32 zone)
 
         AddCapturePoint(m_ControlPoints[i]);
 
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "OutdoorPvPAshran: SetupOutdoorPvP:: AddCapturePoint %u", i);
+        TC_LOG_ERROR("misc", "OutdoorPvPAshran: SetupOutdoorPvP:: AddCapturePoint %u", i);
     }
 
     m_GraveYard = new OPvPCapturePoint_Graveyard(this);
@@ -1493,7 +1493,7 @@ void OutdoorPvPAshran::SetEventData(uint8 p_EventID, uint8 teamID, uint32 p_Data
 void OutdoorPvPAshran::FillInitialWorldStates(WorldPackets::WorldState::InitWorldStates& packet)
 {
     
-    TC_LOG_ERROR(LOG_FILTER_GENERAL, "OutdoorPvPAshran: FillInitialWorldStates");
+    TC_LOG_ERROR("misc", "OutdoorPvPAshran: FillInitialWorldStates");
 
     packet.Worldstates.emplace_back(WorldStateEnnemiesSlainAlliance, int32(m_EnnemiesKilled[TEAM_ALLIANCE]));
     packet.Worldstates.emplace_back(WorldStateEnnemiesSlainHorde, int32(m_EnnemiesKilled[TEAM_HORDE]));

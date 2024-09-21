@@ -46,7 +46,7 @@ GameTable<GtChallengeModeDamageEntry>       sChallengeModeDamageTable;
 GameTable<GtChallengeModeHealthEntry>       sChallengeModeHealthTable;
 
 template<class T>
-uint32 LoadGameTable(StringVector& errors, GameTable<T>& storage, boost::filesystem::path const& path)
+uint32 LoadGameTable(std::vector<std::string>& errors, GameTable<T>& storage, boost::filesystem::path const& path)
 {
     std::ifstream stream(path.string());
     if (!stream)
@@ -66,7 +66,7 @@ uint32 LoadGameTable(StringVector& errors, GameTable<T>& storage, boost::filesys
     Tokenizer columnDefs(headers, '\t', 0, false);
 
     if (columnDefs.size() != sizeof(T) / sizeof(float))
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "GameTable '%s' has different count of columns " SZFMTD " than expected by size of C++ structure (" SZFMTD ").", path.string().c_str(), columnDefs.size(), sizeof(T) / sizeof(float));
+        TC_LOG_INFO("server.loading", "GameTable '%s' has different count of columns " SZFMTD " than expected by size of C++ structure (" SZFMTD ").", path.string().c_str(), columnDefs.size(), sizeof(T) / sizeof(float));
         // errors.push_back(Trinity::StringFormat("GameTable '%s' has different count of columns " SZFMTD " than expected by size of C++ structure (" SZFMTD ").", path.string().c_str(), columnDefs.size(), sizeof(T) / sizeof(float)));
     // ASSERT(columnDefs.size() - 1 == sizeof(T) / sizeof(float),
         // "GameTable '%s' has different count of columns " SZFMTD " than expected by size of C++ structure (" SZFMTD ").",
@@ -115,7 +115,7 @@ void LoadGameTables(std::string const& dataPath)
     boost::filesystem::path gtPath(dataPath);
     gtPath /= "gt";
 
-    StringVector bad_gt_files;
+    std::vector<std::string> bad_gt_files;
     uint32 gameTableCount = 0;
 
 #define LOAD_GT(store, file) gameTableCount += LoadGameTable(bad_gt_files, store, gtPath / file)
@@ -161,9 +161,9 @@ void LoadGameTables(std::string const& dataPath)
         for (std::string const& err  : bad_gt_files)
             str << err << std::endl;
 
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "\nSome required *.txt GameTable files (" SZFMTD ") not found or not compatible:\n%s", bad_gt_files.size(), str.str().c_str());
+        TC_LOG_ERROR("misc", "\nSome required *.txt GameTable files (" SZFMTD ") not found or not compatible:\n%s", bad_gt_files.size(), str.str().c_str());
         exit(1);
     }
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Initialized %d GameTables in %u ms", gameTableCount, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Initialized %d GameTables in %u ms", gameTableCount, GetMSTimeDiffToNow(oldMSTime));
 }

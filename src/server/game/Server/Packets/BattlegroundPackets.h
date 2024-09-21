@@ -21,6 +21,7 @@
 #include "Packet.h"
 #include "Packets/LFGPackets.h"
 #include "BattlegroundDefines.h" // remove this shit -_-
+#include "Optional.h"
 
 namespace WorldPackets
 {

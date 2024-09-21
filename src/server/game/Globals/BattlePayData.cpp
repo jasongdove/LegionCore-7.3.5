@@ -57,7 +57,7 @@ void BattlePayDataStoreMgr::Initialize()
 
 void BattlePayDataStoreMgr::LoadDisplayInfos()
 {
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Battlepay display info ...");
+    TC_LOG_INFO("server.loading", "Loading Battlepay display info ...");
     _displayInfos.clear();
 
     auto result = WorldDatabase.PQuery("SELECT DisplayInfoId, CreatureDisplayInfoID, FileDataID, Flags, Name1, Name2, Name3, Name4 FROM battlepay_display_info");
@@ -81,12 +81,12 @@ void BattlePayDataStoreMgr::LoadDisplayInfos()
         _displayInfos.insert(std::make_pair(fields[0].GetUInt32(), displaInfo));
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %lu Battlepay display info in %u ms.", uint64(_displayInfos.size()), GetMSTimeDiffToNow(oldMsTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %lu Battlepay display info in %u ms.", uint64(_displayInfos.size()), GetMSTimeDiffToNow(oldMsTime));
 }
 
 void BattlePayDataStoreMgr::LoadDisplayInfoVisuals()
 {
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Battlepay display info visuals ...");
+    TC_LOG_INFO("server.loading", "Loading Battlepay display info visuals ...");
     _visuals.clear();
 
     auto result = WorldDatabase.PQuery("SELECT DisplayInfoId, DisplayId, VisualId, ProductName FROM battlepay_display_info_visuals");
@@ -106,12 +106,12 @@ void BattlePayDataStoreMgr::LoadDisplayInfoVisuals()
         _visuals[fields[0].GetUInt32()].emplace_back(displaInfo);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %lu Battlepay display info visuals in %u ms.", uint64(_visuals.size()), GetMSTimeDiffToNow(oldMsTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %lu Battlepay display info visuals in %u ms.", uint64(_visuals.size()), GetMSTimeDiffToNow(oldMsTime));
 }
 
 void BattlePayDataStoreMgr::LoadProductGroups()
 {
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Battlepay product groups ...");
+    TC_LOG_INFO("server.loading", "Loading Battlepay product groups ...");
     _productGroups.clear();
 
     auto result = WorldDatabase.PQuery("SELECT GroupID, Name, IconFileDataID, DisplayType, Ordering, Flags, TokenType, IngameOnly, OwnsTokensOnly FROM battlepay_product_group");
@@ -137,12 +137,12 @@ void BattlePayDataStoreMgr::LoadProductGroups()
         _productGroups.push_back(productGroup);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %lu Battlepay product groups in %u ms", uint64(_productGroups.size()), GetMSTimeDiffToNow(oldMsTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %lu Battlepay product groups in %u ms", uint64(_productGroups.size()), GetMSTimeDiffToNow(oldMsTime));
 }
 
 void BattlePayDataStoreMgr::LoadProduct()
 {
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Battlepay products ...");
+    TC_LOG_INFO("server.loading", "Loading Battlepay products ...");
     _products.clear();
 
     auto result = WorldDatabase.PQuery("SELECT ProductID, NormalPriceFixedPoint, CurrentPriceFixedPoint, Type, WebsiteType, ChoiceType, Flags, DisplayInfoID, ClassMask, ScriptName FROM battlepay_product");
@@ -160,7 +160,7 @@ void BattlePayDataStoreMgr::LoadProduct()
         product.WebsiteType = fields[4].GetUInt8();
         if (product.WebsiteType >= Battlepay::MaxWebsiteType)
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "BattlePayDataStoreMgr: battlepay_product websiteType >= max types - skip loading: type %u; productId: %u ", product.WebsiteType, product.ProductID);
+            TC_LOG_ERROR("sql.sql", "BattlePayDataStoreMgr: battlepay_product websiteType >= max types - skip loading: type %u; productId: %u ", product.WebsiteType, product.ProductID);
             continue;
         }
 
@@ -203,12 +203,12 @@ void BattlePayDataStoreMgr::LoadProduct()
         _products[productID].Items.push_back(productItem);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %lu Battlepay products in %u ms", uint64(_products.size()), GetMSTimeDiffToNow(oldMsTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %lu Battlepay products in %u ms", uint64(_products.size()), GetMSTimeDiffToNow(oldMsTime));
 }
 
 void BattlePayDataStoreMgr::LoadShopEntires()
 {
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Battlepay shop entries ...");
+    TC_LOG_INFO("server.loading", "Loading Battlepay shop entries ...");
     _shopEntries.clear();
 
     auto result = WorldDatabase.PQuery("SELECT EntryID, GroupID, ProductID, Ordering, Flags, BannerType, DisplayInfoID FROM battlepay_shop_entry");
@@ -232,12 +232,12 @@ void BattlePayDataStoreMgr::LoadShopEntires()
         _shopEntries.push_back(shopEntry);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %lu Battlepay shop entries in %u ms", uint64(_shopEntries.size()), GetMSTimeDiffToNow(oldMsTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %lu Battlepay shop entries in %u ms", uint64(_shopEntries.size()), GetMSTimeDiffToNow(oldMsTime));
 }
 
 void BattlePayDataStoreMgr::LoadProductGroupLocales()
 {
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Battlepay product group locales ...");
+    TC_LOG_INFO("server.loading", "Loading Battlepay product group locales ...");
 
     auto oldMsTime = getMSTime();
 
@@ -259,12 +259,12 @@ void BattlePayDataStoreMgr::LoadProductGroupLocales()
         sObjectMgr->AddLocaleString(fields[2].GetString(), locale, data.Name);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %lu Battlepay product group locales strings in %u ms", uint64(_productGroupLocales.size()), GetMSTimeDiffToNow(oldMsTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %lu Battlepay product group locales strings in %u ms", uint64(_productGroupLocales.size()), GetMSTimeDiffToNow(oldMsTime));
 }
 
 void BattlePayDataStoreMgr::LoadDisplayInfoLocales()
 {
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Battlepay display info locales ...");
+    TC_LOG_INFO("server.loading", "Loading Battlepay display info locales ...");
 
     auto oldMsTime = getMSTime();
 
@@ -289,12 +289,12 @@ void BattlePayDataStoreMgr::LoadDisplayInfoLocales()
         sObjectMgr->AddLocaleString(fields[5].GetString(), locale, data.Name4);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %lu Battlepay display info locales strings in %u ms", uint64(_displayInfoLocales.size()), GetMSTimeDiffToNow(oldMsTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %lu Battlepay display info locales strings in %u ms", uint64(_displayInfoLocales.size()), GetMSTimeDiffToNow(oldMsTime));
 }
 
 void BattlePayDataStoreMgr::LoadTokenTypes()
 {
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Loading Battlepay token types ...");
+    TC_LOG_INFO("server.loading", "Loading Battlepay token types ...");
 
     auto oldMsTime = getMSTime();
 
@@ -304,7 +304,7 @@ void BattlePayDataStoreMgr::LoadTokenTypes()
 
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 Battlepay token types in %u ms. DB table `battlepay_tokens` is empty.", uint64(_tokenTypes.size()), GetMSTimeDiffToNow(oldMsTime));
+        TC_LOG_INFO("server.loading", ">> Loaded 0 Battlepay token types in %u ms. DB table `battlepay_tokens` is empty.", uint64(_tokenTypes.size()), GetMSTimeDiffToNow(oldMsTime));
         return;
     }
 
@@ -322,7 +322,7 @@ void BattlePayDataStoreMgr::LoadTokenTypes()
         _tokenTypes[token.type] = token;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %lu Battlepay token types in %u ms", uint64(_tokenTypes.size()), GetMSTimeDiffToNow(oldMsTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %lu Battlepay token types in %u ms", uint64(_tokenTypes.size()), GetMSTimeDiffToNow(oldMsTime));
 }
 
 std::vector<Battlepay::ProductGroup> const& BattlePayDataStoreMgr::GetProductGroups() const

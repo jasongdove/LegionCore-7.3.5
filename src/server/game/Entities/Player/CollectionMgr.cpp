@@ -823,7 +823,7 @@ void CollectionMgr::LoadMountDefinitions()
     QueryResult result = WorldDatabase.Query("SELECT spellID, otherSpellId FROM mount_definitions");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 mount definitions. DB table `mount_definitions` is empty.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 mount definitions. DB table `mount_definitions` is empty.");
         return;
     }
 
@@ -836,13 +836,13 @@ void CollectionMgr::LoadMountDefinitions()
 
         if (!sDB2Manager.GetMount(spellID))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Mount spell %u defined in `mount_definitions` does not exists in Mount.db2, skipped", spellID);
+            TC_LOG_ERROR("sql.sql", "Mount spell %u defined in `mount_definitions` does not exists in Mount.db2, skipped", spellID);
             continue;
         }
 
         if (otherSpellId && !sDB2Manager.GetMount(otherSpellId))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "OtherSpell %u defined in `mount_definitions` for spellID %u does not exists in Mount.db2, skipped", otherSpellId, spellID);
+            TC_LOG_ERROR("sql.sql", "OtherSpell %u defined in `mount_definitions` for spellID %u does not exists in Mount.db2, skipped", otherSpellId, spellID);
             continue;
         }
 
@@ -850,7 +850,7 @@ void CollectionMgr::LoadMountDefinitions()
     }
     while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u mount definitions in %u ms", uint32(_mountDefinitions.size()), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u mount definitions in %u ms", uint32(_mountDefinitions.size()), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void CollectionMgr::Clear()

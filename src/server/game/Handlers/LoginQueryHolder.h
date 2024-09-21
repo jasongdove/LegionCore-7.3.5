@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DatabaseEnv.h"
+#include "QueryHolder.h"
 
 class LoginQueryHolder : public SQLQueryHolder
 {

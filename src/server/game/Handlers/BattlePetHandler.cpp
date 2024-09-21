@@ -155,7 +155,7 @@ void WorldSession::HandleCageBattlePet(WorldPackets::BattlePet::BattlePetGuidRea
 
 void WorldSession::HandleBattlePetSetSlot(WorldPackets::BattlePet::SetBattleSlot& packet)
 {
-    // TC_LOG_DEBUG(LOG_FILTER_BATTLEPET, "HandleBattlePetSetSlot m_IsPetBattleJournalLocked %u", m_IsPetBattleJournalLocked);
+    // TC_LOG_DEBUG("battlepet", "HandleBattlePetSetSlot m_IsPetBattleJournalLocked %u", m_IsPetBattleJournalLocked);
 
     if (m_IsPetBattleJournalLocked)
         return;
@@ -770,7 +770,7 @@ void WorldSession::HandleLeaveQueue(WorldPackets::BattlePet::LeaveQueue& /*packe
 
 void WorldSession::SendPetBattleSlotUpdates(bool newSlotUnlocked /*= false*/)
 {
-    // TC_LOG_DEBUG(LOG_FILTER_BATTLEPET, "SendPetBattleSlotUpdates");
+    // TC_LOG_DEBUG("battlepet", "SendPetBattleSlotUpdates");
 
     auto unlockedSlotCount = _player->GetUnlockedPetBattleSlot();
     auto petSlots = _player->GetBattlePetCombatTeam();
@@ -942,7 +942,7 @@ void WorldSession::SendPetBattleInitialUpdate(PetBattle* petBattle)
 
 void WorldSession::SendPetBattleFirstRound(PetBattle* petBattle)
 {
-    // TC_LOG_DEBUG(LOG_FILTER_BATTLEPET, "SendPetBattleFirstRound");
+    // TC_LOG_DEBUG("battlepet", "SendPetBattleFirstRound");
 
     auto isPVP = petBattle->BattleType != PETBATTLE_TYPE_PVE;
     uint16 pvpMaxRoundTime = isPVP ? 30 : 0;
@@ -1022,7 +1022,7 @@ void WorldSession::SendPetBattleFirstRound(PetBattle* petBattle)
 
 void WorldSession::SendPetBattleRoundResult(PetBattle* petBattle)
 {
-    // TC_LOG_DEBUG(LOG_FILTER_BATTLEPET, "SendPetBattleRoundResult");
+    // TC_LOG_DEBUG("battlepet", "SendPetBattleRoundResult");
 
     auto isPVP = petBattle->BattleType != PETBATTLE_TYPE_PVE;
     uint16 pvpMaxRoundTime = isPVP ? 30 : 0;
@@ -1181,7 +1181,7 @@ void WorldSession::SendPetBattleReplacementMade(PetBattle* petBattle)
 
 void WorldSession::SendPetBattleFinalRound(PetBattle* petBattle)
 {
-    // TC_LOG_DEBUG(LOG_FILTER_BATTLEPET, "SendPetBattleFinalRound");
+    // TC_LOG_DEBUG("battlepet", "SendPetBattleFinalRound");
 
     WorldPackets::BattlePet::PetBattleFinalRound roundUpdate;
     roundUpdate.MsgData.Abandoned = petBattle->CombatResult == PETBATTLE_RESULT_ABANDON;

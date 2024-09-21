@@ -42,7 +42,7 @@ target_link_libraries(shared
     trinity-core-interface
     process
   PUBLIC
-    mysql
+    database
     cds
     boost
     fmt

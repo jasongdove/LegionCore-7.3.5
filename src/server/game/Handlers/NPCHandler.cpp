@@ -103,12 +103,12 @@ void WorldSession::SendTrainerList(ObjectGuid const& guid)
 
 void WorldSession::SendTrainerList(ObjectGuid const& guid, std::string const& strTitle)
 {
-    TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "WORLD: SendTrainerList");
+    TC_LOG_DEBUG("network", "WORLD: SendTrainerList");
 
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_TRAINER);
     if (!unit)
     {
-        TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "WORLD: SendTrainerList - Unit (GUID: %u) not found or you can not interact with him.", uint32(guid.GetGUIDLow()));
+        TC_LOG_DEBUG("network", "WORLD: SendTrainerList - Unit (GUID: %u) not found or you can not interact with him.", uint32(guid.GetGUIDLow()));
         return;
     }
 
@@ -124,14 +124,14 @@ void WorldSession::SendTrainerList(ObjectGuid const& guid, std::string const& st
 
     if (!ci)
     {
-        TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "WORLD: SendTrainerList - (GUID: %u) NO CREATUREINFO!", guid.GetGUIDLow());
+        TC_LOG_DEBUG("network", "WORLD: SendTrainerList - (GUID: %u) NO CREATUREINFO!", guid.GetGUIDLow());
         return;
     }
 
     TrainerSpellData const* trainer_spells = unit->GetTrainerSpells();
     if (!trainer_spells)
     {
-        TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "WORLD: SendTrainerList - Training spells not found for creature (GUID: %u Entry: %u)",
+        TC_LOG_DEBUG("network", "WORLD: SendTrainerList - Training spells not found for creature (GUID: %u Entry: %u)",
             guid.GetGUIDLow(), unit->GetEntry());
         return;
     }
@@ -339,13 +339,13 @@ void WorldSession::HandleGossipSelectOption(WorldPackets::NPC::GossipSelectOptio
         go = player->GetMap()->GetGameObject(packet.GossipUnit);
         if (!go)
         {
-            TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "WORLD: HandleGossipSelectOption - GameObject (GUID: %s) not found.", packet.GossipUnit.ToString());
+            TC_LOG_DEBUG("network", "WORLD: HandleGossipSelectOption - GameObject (GUID: %s) not found.", packet.GossipUnit.ToString().c_str());
             return;
         }
     }
     else
     {
-        TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "WORLD: HandleGossipSelectOption - unsupported GUID %s", packet.GossipUnit.ToString());
+        TC_LOG_DEBUG("network", "WORLD: HandleGossipSelectOption - unsupported GUID %s", packet.GossipUnit.ToString().c_str());
         return;
     }
 
@@ -354,7 +354,7 @@ void WorldSession::HandleGossipSelectOption(WorldPackets::NPC::GossipSelectOptio
 
     if ((unit && unit->GetCreatureTemplate()->ScriptID != unit->LastUsedScriptID) || (go && go->GetGOInfo()->ScriptId != go->LastUsedScriptID))
     {
-        TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "WORLD: HandleGossipSelectOption - Script reloaded while in use, ignoring and set new scipt id");
+        TC_LOG_DEBUG("network", "WORLD: HandleGossipSelectOption - Script reloaded while in use, ignoring and set new scipt id");
         if (unit)
             unit->LastUsedScriptID = unit->GetCreatureTemplate()->ScriptID;
         if (go)
@@ -698,7 +698,7 @@ void WorldSession::HandleRequestStabledPets(WorldPackets::NPC::RequestStabledPet
 {
     if (!GetPlayer()->GetNPCIfCanInteractWith(packet.StableMaster, UNIT_NPC_FLAG_STABLEMASTER))
     {
-        TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "Stablemaster (GUID:%u) not found or you can't interact with him.", packet.StableMaster.GetGUIDLow());
+        TC_LOG_DEBUG("network", "Stablemaster (GUID:%u) not found or you can't interact with him.", packet.StableMaster.GetGUIDLow());
         SendStableResult(STABLE_ERR_STABLE);
         return;
     }

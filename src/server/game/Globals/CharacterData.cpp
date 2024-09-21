@@ -58,7 +58,7 @@ void CharacterDataStoreMgr::LoadCharacterTemplates()
     auto templates = WorldDatabase.Query(WorldDatabase.GetPreparedStatement(WORLD_SEL_CHARACTER_TEMPLATES));
     if (!templates)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadCharacterTemplates() >> Loaded 0 character templates. DB table `character_template` is empty.");
+        TC_LOG_INFO("server.loading", "CharacterDataStoreMgr::LoadCharacterTemplates() >> Loaded 0 character templates. DB table `character_template` is empty.");
         return;
     }
 
@@ -173,7 +173,7 @@ void CharacterDataStoreMgr::LoadCharacterTemplates()
         }
     } while (templates->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadCharacterTemplates() >> Loaded %u character templates with character_template for %u classes in %u ms.", count[0], count[1], GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "CharacterDataStoreMgr::LoadCharacterTemplates() >> Loaded %u character templates with character_template for %u classes in %u ms.", count[0], count[1], GetMSTimeDiffToNow(oldMSTime));
 }
 
 CharacterTemplateContainer const& CharacterDataStoreMgr::GetCharacterTemplates() const
@@ -193,7 +193,7 @@ void CharacterDataStoreMgr::LoadFactionChangeAchievements()
     auto result = WorldDatabase.Query("SELECT alliance_id, horde_id FROM player_factionchange_achievement");
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadFactionChangeAchievements() >> Loaded 0 faction change achievement pairs. DB table `player_factionchange_achievement` is empty.");
+        TC_LOG_ERROR("server.loading", "CharacterDataStoreMgr::LoadFactionChangeAchievements() >> Loaded 0 faction change achievement pairs. DB table `player_factionchange_achievement` is empty.");
         return;
     }
 
@@ -207,16 +207,16 @@ void CharacterDataStoreMgr::LoadFactionChangeAchievements()
         auto horde = fields[1].GetUInt32();
 
         if (!sAchievementStore.LookupEntry(alliance))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Achievement %u referenced in `player_factionchange_achievement` does not exist, pair skipped!", alliance);
+            TC_LOG_ERROR("sql.sql", "Achievement %u referenced in `player_factionchange_achievement` does not exist, pair skipped!", alliance);
         else if (!sAchievementStore.LookupEntry(horde))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Achievement %u referenced in `player_factionchange_achievement` does not exist, pair skipped!", horde);
+            TC_LOG_ERROR("sql.sql", "Achievement %u referenced in `player_factionchange_achievement` does not exist, pair skipped!", horde);
         else
             _factionChangeAchievements[alliance] = horde;
 
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadFactionChangeAchievements() >> Loaded %u faction change achievement pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "CharacterDataStoreMgr::LoadFactionChangeAchievements() >> Loaded %u faction change achievement pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void CharacterDataStoreMgr::LoadFactionChangeItems()
@@ -226,7 +226,7 @@ void CharacterDataStoreMgr::LoadFactionChangeItems()
     auto result = WorldDatabase.Query("SELECT alliance_id, horde_id FROM player_factionchange_items");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadFactionChangeItems() >> Loaded 0 faction change item pairs. DB table `player_factionchange_items` is empty.");
+        TC_LOG_INFO("server.loading", "CharacterDataStoreMgr::LoadFactionChangeItems() >> Loaded 0 faction change item pairs. DB table `player_factionchange_items` is empty.");
         return;
     }
 
@@ -240,9 +240,9 @@ void CharacterDataStoreMgr::LoadFactionChangeItems()
         auto horde = fields[1].GetUInt32();
 
         if (!sObjectMgr->GetItemTemplate(alliance))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Item %u referenced in `player_factionchange_items` does not exist, pair skipped!", alliance);
+            TC_LOG_ERROR("sql.sql", "Item %u referenced in `player_factionchange_items` does not exist, pair skipped!", alliance);
         else if (!sObjectMgr->GetItemTemplate(horde))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Item %u referenced in `player_factionchange_items` does not exist, pair skipped!", horde);
+            TC_LOG_ERROR("sql.sql", "Item %u referenced in `player_factionchange_items` does not exist, pair skipped!", horde);
         else
             _factionChangeItems[alliance] = horde;
 
@@ -278,7 +278,7 @@ void CharacterDataStoreMgr::LoadFactionChangeItems()
         }
     }
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadFactionChangeItems() >> Loaded %u faction change item pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "CharacterDataStoreMgr::LoadFactionChangeItems() >> Loaded %u faction change item pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void CharacterDataStoreMgr::LoadFactionChangeSpells()
@@ -288,7 +288,7 @@ void CharacterDataStoreMgr::LoadFactionChangeSpells()
     auto result = WorldDatabase.Query("SELECT alliance_id, horde_id FROM player_factionchange_spells");
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadFactionChangeSpells() >> Loaded 0 faction change spell pairs. DB table `player_factionchange_spells` is empty.");
+        TC_LOG_ERROR("server.loading", "CharacterDataStoreMgr::LoadFactionChangeSpells() >> Loaded 0 faction change spell pairs. DB table `player_factionchange_spells` is empty.");
         return;
     }
 
@@ -301,16 +301,16 @@ void CharacterDataStoreMgr::LoadFactionChangeSpells()
         auto horde = fields[1].GetUInt32();
 
         if (!sSpellMgr->GetSpellInfo(alliance))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Spell %u referenced in `player_factionchange_spells` does not exist, pair skipped!", alliance);
+            TC_LOG_ERROR("sql.sql", "Spell %u referenced in `player_factionchange_spells` does not exist, pair skipped!", alliance);
         else if (!sSpellMgr->GetSpellInfo(horde))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Spell %u referenced in `player_factionchange_spells` does not exist, pair skipped!", horde);
+            TC_LOG_ERROR("sql.sql", "Spell %u referenced in `player_factionchange_spells` does not exist, pair skipped!", horde);
         else
             _factionChangeSpells[alliance] = horde;
 
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadFactionChangeSpells() >> Loaded %u faction change spell pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "CharacterDataStoreMgr::LoadFactionChangeSpells() >> Loaded %u faction change spell pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void CharacterDataStoreMgr::LoadFactionChangeReputations()
@@ -320,7 +320,7 @@ void CharacterDataStoreMgr::LoadFactionChangeReputations()
     auto result = WorldDatabase.Query("SELECT alliance_id, horde_id FROM player_factionchange_reputations");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadFactionChangeReputations() >> Loaded 0 faction change reputation pairs. DB table `player_factionchange_reputations` is empty.");
+        TC_LOG_INFO("server.loading", "CharacterDataStoreMgr::LoadFactionChangeReputations() >> Loaded 0 faction change reputation pairs. DB table `player_factionchange_reputations` is empty.");
         return;
     }
 
@@ -334,16 +334,16 @@ void CharacterDataStoreMgr::LoadFactionChangeReputations()
         auto horde = fields[1].GetUInt32();
 
         if (!sFactionStore.LookupEntry(alliance))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Reputation %u referenced in `player_factionchange_reputations` does not exist, pair skipped!", alliance);
+            TC_LOG_ERROR("sql.sql", "Reputation %u referenced in `player_factionchange_reputations` does not exist, pair skipped!", alliance);
         else if (!sFactionStore.LookupEntry(horde))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Reputation %u referenced in `player_factionchange_reputations` does not exist, pair skipped!", horde);
+            TC_LOG_ERROR("sql.sql", "Reputation %u referenced in `player_factionchange_reputations` does not exist, pair skipped!", horde);
         else
             _factionChangeReputation[alliance] = horde;
 
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadFactionChangeReputations() >> Loaded %u faction change reputation pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "CharacterDataStoreMgr::LoadFactionChangeReputations() >> Loaded %u faction change reputation pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void CharacterDataStoreMgr::LoadFactionChangeTitles()
@@ -353,7 +353,7 @@ void CharacterDataStoreMgr::LoadFactionChangeTitles()
     auto result = WorldDatabase.Query("SELECT alliance_id, horde_id FROM player_factionchange_titles");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadFactionChangeTitles() >> Loaded 0 faction change title pairs. DB table `player_factionchange_title` is empty.");
+        TC_LOG_INFO("server.loading", "CharacterDataStoreMgr::LoadFactionChangeTitles() >> Loaded 0 faction change title pairs. DB table `player_factionchange_title` is empty.");
         return;
     }
 
@@ -367,16 +367,16 @@ void CharacterDataStoreMgr::LoadFactionChangeTitles()
         auto horde = fields[1].GetUInt32();
 
         if (!sCharTitlesStore.LookupEntry(alliance))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Title %u referenced in `player_factionchange_title` does not exist, pair skipped!", alliance);
+            TC_LOG_ERROR("sql.sql", "Title %u referenced in `player_factionchange_title` does not exist, pair skipped!", alliance);
         else if (!sCharTitlesStore.LookupEntry(horde))
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Title %u referenced in `player_factionchange_title` does not exist, pair skipped!", horde);
+            TC_LOG_ERROR("sql.sql", "Title %u referenced in `player_factionchange_title` does not exist, pair skipped!", horde);
         else
             _factionChangeTitles[alliance] = horde;
 
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadFactionChangeTitles() >> Loaded %u faction change title pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "CharacterDataStoreMgr::LoadFactionChangeTitles() >> Loaded %u faction change title pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 CharacterConversionMap CharacterDataStoreMgr::GetFactionChangeAchievements()
@@ -413,7 +413,7 @@ void CharacterDataStoreMgr::LoadReservedPlayersNames()
     auto result = CharacterDatabase.Query("SELECT name FROM reserved_name");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadReservedPlayersNames() >> Loaded 0 reserved player names. DB table `reserved_name` is empty!");
+        TC_LOG_INFO("server.loading", "CharacterDataStoreMgr::LoadReservedPlayersNames() >> Loaded 0 reserved player names. DB table `reserved_name` is empty!");
         return;
     }
 
@@ -426,7 +426,7 @@ void CharacterDataStoreMgr::LoadReservedPlayersNames()
         std::wstring wstr;
         if (!Utf8toWStr(name, wstr))
         {
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "Table `reserved_name` have invalid name: %s", name.c_str());
+            TC_LOG_ERROR("misc", "Table `reserved_name` have invalid name: %s", name.c_str());
             continue;
         }
 
@@ -436,7 +436,7 @@ void CharacterDataStoreMgr::LoadReservedPlayersNames()
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "CharacterDataStoreMgr::LoadReservedPlayersNames() >> Loaded %u reserved player names in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "CharacterDataStoreMgr::LoadReservedPlayersNames() >> Loaded %u reserved player names in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 bool CharacterDataStoreMgr::IsReservedName(std::string const& name) const

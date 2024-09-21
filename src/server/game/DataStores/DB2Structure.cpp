@@ -770,7 +770,7 @@ int32 WorldStateExpression_EvalPush(Player const* player, char const** unpackedE
         int32 l_WorldStateID;
         UNPACK_INT32(l_WorldStateID);
 
-        // TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "INSERT INTO `world_state_expression` (`WorldStateExpressionID`, `WorldStateID`) VALUES (%u, %u);", ID, l_WorldStateID); // Need for convert WorldStateExpressionID -> WorldStateID
+        // TC_LOG_DEBUG("worldquest", "INSERT INTO `world_state_expression` (`WorldStateExpressionID`, `WorldStateID`) VALUES (%u, %u);", ID, l_WorldStateID); // Need for convert WorldStateExpressionID -> WorldStateID
 
         *_worldStateID = l_WorldStateID;
         if (player)
@@ -844,14 +844,14 @@ bool WorldStateExpression_EvalCompare(Player const* player, char const** unpacke
         if (*_worldStateID && state)
             state->insert(std::make_pair(*_worldStateID, leftValue > 0 ? leftValue : 1));
 
-        // TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "INSERT INTO `world_state_expression` (`WorldStateExpressionID`, `WorldStateID`, `Value0`) VALUES (%u, %u, %i);", ID, *_worldStateID, leftValue); // Need for convert WorldStateExpressionID -> WorldStateID
+        // TC_LOG_DEBUG("worldquest", "INSERT INTO `world_state_expression` (`WorldStateExpressionID`, `WorldStateID`, `Value0`) VALUES (%u, %u, %i);", ID, *_worldStateID, leftValue); // Need for convert WorldStateExpressionID -> WorldStateID
         return !!leftValue;
     }
 
     int32 _worldStateID2 = 0;
     auto rValue = WorldStateExpression_EvalArithmetic(player, unpackedExpression, ID, &_worldStateID2);
 
-    // TC_LOG_DEBUG(LOG_FILTER_WORLD_QUEST, "INSERT INTO `world_state_expression` (`WorldStateExpressionID`, `WorldStateID`, `Value0`, `Value1`) VALUES (%u, %u, %i, %i);", ID, *_worldStateID, rValue, opperand); // Need for convert WorldStateExpressionID -> WorldStateID
+    // TC_LOG_DEBUG("worldquest", "INSERT INTO `world_state_expression` (`WorldStateExpressionID`, `WorldStateID`, `Value0`, `Value1`) VALUES (%u, %u, %i, %i);", ID, *_worldStateID, rValue, opperand); // Need for convert WorldStateExpressionID -> WorldStateID
 
     switch (opperand)
     {

@@ -160,7 +160,7 @@ namespace WorldPackets
 
             WorldPacket const* Write() override;
 
-            StringVector const* Text = nullptr;
+            std::vector<std::string> const* Text = nullptr;
         };
 
         class SetTimeZoneInformation final : public ServerPacket

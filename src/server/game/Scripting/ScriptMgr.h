@@ -211,7 +211,7 @@ class MapScript : public UpdatableScript<TMap>
         MapScript(uint32 mapId) : _mapEntry(sMapStore.LookupEntry(mapId))
         {
             if (!_mapEntry)
-                TC_LOG_ERROR(LOG_FILTER_TSCR, "Invalid MapScript for %u; no such map ID.", mapId);
+                TC_LOG_ERROR("scripts", "Invalid MapScript for %u; no such map ID.", mapId);
         }
 
     public:

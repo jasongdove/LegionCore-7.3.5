@@ -41,7 +41,7 @@ bool BattlegroundMap::CanEnter(Player* player)
 {
     if (player->GetMapRef().getTarget() == this)
     {
-        TC_LOG_ERROR(LOG_FILTER_MAPS, "BGMap::CanEnter - player %u is already in map!", player->GetGUIDLow());
+        TC_LOG_ERROR("maps", "BGMap::CanEnter - player %u is already in map!", player->GetGUIDLow());
         ASSERT(false);
         return false;
     }
@@ -73,7 +73,7 @@ void BattlegroundMap::RemovePlayerFromMap(Player* player, bool remove)
             GetBG()->RemoveSpectator(player);
 
 #ifdef TRINITY_DEBUG
-    TC_LOG_INFO(LOG_FILTER_MAPS, "MAP: Removing player '%s' from bg '%u' of map '%s' before relocating to another map", player->GetName(), GetInstanceId(), GetMapName());
+    TC_LOG_INFO("maps", "MAP: Removing player '%s' from bg '%u' of map '%s' before relocating to another map", player->GetName(), GetInstanceId(), GetMapName());
 #endif
     Map::RemovePlayerFromMap(player, remove);
 }

@@ -77,7 +77,7 @@ void BlackMarketMgr::LoadTemplates()
     }
     while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u black market templates in %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u black market templates in %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void BlackMarketMgr::LoadAuctions()
@@ -96,7 +96,7 @@ void BlackMarketMgr::LoadAuctions()
     PreparedQueryResult result = CharacterDatabase.Query(stmt);
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 black market auctions. DB table `blackmarket_auctions` is empty.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 black market auctions. DB table `blackmarket_auctions` is empty.");
         return;
     }
 
@@ -123,7 +123,7 @@ void BlackMarketMgr::LoadAuctions()
 
     CharacterDatabase.CommitTransaction(trans);
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u black market auctions in %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u black market auctions in %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void BlackMarketMgr::Update(bool updateTime)
@@ -277,7 +277,7 @@ void BlackMarketMgr::SendAuctionWonMail(BlackMarketEntry* entry, SQLTransaction&
 
     entry->MailSent();
 
-    TC_LOG_DEBUG(LOG_FILTER_GOLD, "Player %s (GUID: %u) Won Item: %u in Black Market on cost " UI64FMTD "", bidder->GetName(), bidder->GetGUIDLow(), item->GetEntry(), entry->GetCurrentBid());
+    TC_LOG_DEBUG("auctionHouse", "Player %s (GUID: %u) Won Item: %u in Black Market on cost " UI64FMTD "", bidder->GetName(), bidder->GetGUIDLow(), item->GetEntry(), entry->GetCurrentBid());
 }
 
 void BlackMarketMgr::SendAuctionOutbidMail(BlackMarketEntry* entry, SQLTransaction& trans)
@@ -479,7 +479,7 @@ void BlackMarketEntry::PlaceBid(uint64 bid, Player* player, SQLTransaction& tran
 
     trans->Append(stmt);
 
-    TC_LOG_DEBUG(LOG_FILTER_GOLD, "Player %s (GUID: %u) Place Bid (Item: %u) in Black Market on cost " UI64FMTD "", player->GetName(), player->GetGUIDLow(), GetTemplate()->Item.ItemID, _currentBid);
+    TC_LOG_DEBUG("auctionHouse", "Player %s (GUID: %u) Place Bid (Item: %u) in Black Market on cost " UI64FMTD "", player->GetName(), player->GetGUIDLow(), GetTemplate()->Item.ItemID, _currentBid);
 
     sBlackMarketMgr->Update(true);
 }

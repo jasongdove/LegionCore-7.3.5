@@ -75,19 +75,19 @@ void OpcodeTable::ValidateAndSetClientOpcode(OpcodeClient opcode, char const* na
 {
     if (uint16(opcode) == NULL_OPCODE)
     {
-        TC_LOG_TRACE(LOG_FILTER_NETWORKIO, "Opcode %s does not have a value", name);
+        TC_LOG_TRACE("network", "Opcode %s does not have a value", name);
         return;
     }
 
     if (uint16(opcode) >= NUM_OPCODE_HANDLERS)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Tried to set handler for an invalid opcode %d", opcode);
+        TC_LOG_ERROR("network", "Tried to set handler for an invalid opcode %d", opcode);
         return;
     }
 
     if (_internalTableClient[opcode] != nullptr)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Tried to override client handler of %s with %s (opcode %u)", GetOpcodeNameForLogging(opcode).c_str(), name, opcode);
+        TC_LOG_ERROR("network", "Tried to override client handler of %s with %s (opcode %u)", GetOpcodeNameForLogging(opcode).c_str(), name, opcode);
         return;
     }
 
@@ -119,37 +119,37 @@ void OpcodeTable::ValidateAndSetServerOpcode(OpcodeServer opcode, char const* na
 {
     if (uint16(opcode) == NULL_OPCODE)
     {
-        TC_LOG_TRACE(LOG_FILTER_NETWORKIO, "Opcode %s does not have a value", name);
+        TC_LOG_TRACE("network", "Opcode %s does not have a value", name);
         return;
     }
 
     if (uint16(opcode) >= NUM_OPCODE_HANDLERS)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Tried to set handler for an invalid opcode %d", opcode);
+        TC_LOG_ERROR("network", "Tried to set handler for an invalid opcode %d", opcode);
         return;
     }
 
     if (_internalTableServer[opcode] != nullptr)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Tried to override server handler of %s with %s (opcode %u)", GetOpcodeNameForLogging(opcode).c_str(), name, opcode);
+        TC_LOG_ERROR("network", "Tried to override server handler of %s with %s (opcode %u)", GetOpcodeNameForLogging(opcode).c_str(), name, opcode);
         return;
     }
 
     if (conIdx >= MAX_CONNECTION_TYPES)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Tried to set invalid connection type %u for opcode %s", conIdx, name);
+        TC_LOG_ERROR("network", "Tried to set invalid connection type %u for opcode %s", conIdx, name);
         return;
     }
 
     if (IsInstanceOnlyOpcode(opcode) && conIdx != CONNECTION_TYPE_INSTANCE)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Tried to set invalid connection type %u for instance only opcode %s", conIdx, name);
+        TC_LOG_ERROR("network", "Tried to set invalid connection type %u for instance only opcode %s", conIdx, name);
         return;
     }
 
     if (_internalTableServer[opcode] != nullptr)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Tried to override server handler of %s with %s (opcode %u)", opcodeTable[opcode]->Name, name, opcode);
+        TC_LOG_ERROR("network", "Tried to override server handler of %s with %s (opcode %u)", opcodeTable[opcode]->Name, name, opcode);
         return;
     }
 

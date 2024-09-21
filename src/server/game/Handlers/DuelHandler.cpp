@@ -41,8 +41,8 @@ void WorldSession::HandleDuelResponse(WorldPackets::Duel::DuelResponse& packet)
             if (_player->GetGUID() == _player->duel->initiator)
                 return;
 
-            TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "Player 1 is: %s (%s)", _player->GetGUID().ToString().c_str(), _player->GetName());
-            TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "Player 2 is: %s (%s)", dueler->GetGUID().ToString().c_str(), dueler->GetName());
+            TC_LOG_DEBUG("network", "Player 1 is: %s (%s)", _player->GetGUID().ToString().c_str(), _player->GetName());
+            TC_LOG_DEBUG("network", "Player 2 is: %s (%s)", dueler->GetGUID().ToString().c_str(), dueler->GetName());
 
             _player->SendDuelCountdown(_player->duel->countdownTimer);
             dueler->SendDuelCountdown(dueler->duel->countdownTimer);

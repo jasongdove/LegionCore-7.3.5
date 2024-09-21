@@ -52,7 +52,7 @@ bool ArenaTheTigersPeak::SetupBattleground()
         !AddObject(BG_TTP_OBJECT_BUFF_1, BG_TTP_OBJECT_TYPE_BUFF_1, 566.6805f, 602.2274f, 383.6813f, 3.316144f, 0, 0, -1.f, 0, 120) ||
         !AddObject(BG_TTP_OBJECT_BUFF_2, BG_TTP_OBJECT_TYPE_BUFF_2, 566.6563f, 664.566f, 383.6809f, 2.460913f, 0, 0, 0, 1.f, 120))
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "ArenaTheTigersPeak: Failed to spawn some object!");
+        TC_LOG_ERROR("sql.sql", "ArenaTheTigersPeak: Failed to spawn some object!");
         return false;
     }
 

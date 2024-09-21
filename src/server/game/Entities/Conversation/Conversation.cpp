@@ -87,7 +87,7 @@ bool Conversation::CreateConversation(ObjectGuid::LowType guidlow, uint32 trigge
     Relocate(pos);
     if (!IsPositionValid())
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Conversation (spell %u) not created. Suggested coordinates isn't valid (X: %f Y: %f)", info ? info->Id : 0, GetPositionX(), GetPositionY());
+        TC_LOG_ERROR("misc", "Conversation (spell %u) not created. Suggested coordinates isn't valid (X: %f Y: %f)", info ? info->Id : 0, GetPositionX(), GetPositionY());
         return false;
     }
 
@@ -129,7 +129,7 @@ bool Conversation::CreateConversation(ObjectGuid::LowType guidlow, uint32 trigge
 
     if (!GetMap()->AddToMap(this))
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Conversation (spell %u) not created. Suggested coordinates (X: %f Y: %f). Error on add to map.", info ? info->Id : 0, GetPositionX(), GetPositionY());
+        TC_LOG_ERROR("misc", "Conversation (spell %u) not created. Suggested coordinates (X: %f Y: %f). Error on add to map.", info ? info->Id : 0, GetPositionX(), GetPositionY());
         return false;
     }
 
@@ -207,7 +207,7 @@ void Conversation::BuildDynamicValuesUpdate(uint8 updateType, ByteBuffer* data, 
     std::size_t maskPos = data->wpos();
     data->resize(data->size() + blockCount * sizeof(UpdateMask::BlockType));
 
-    // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Item::BuildDynamicValuesUpdate GetEntry %u flags %u blockCount %u visibleFlag %u maskPos %u _dynamicValuesCount %u _changesMask %u _fieldNotifyFlags %u BlockSize %u",
+    // TC_LOG_DEBUG("spells", "Item::BuildDynamicValuesUpdate GetEntry %u flags %u blockCount %u visibleFlag %u maskPos %u _dynamicValuesCount %u _changesMask %u _fieldNotifyFlags %u BlockSize %u",
     // GetEntry(), flags, blockCount, visibleFlag, maskPos, _dynamicValuesCount, _changesMask[ITEM_FIELD_MODIFIERS_MASK], _fieldNotifyFlags, data->size() + blockCount * sizeof(UpdateMask::BlockType));
 
     for (uint16 index = 0; index < _dynamicValuesCount; ++index)
@@ -270,7 +270,7 @@ bool Conversation::LoadConversationFromDB(ObjectGuid::LowType guid, Map* map, bo
     ConversationSpawnData const* data = sConversationDataStore->GetConversationData(guid);
     if (!data)
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "Creature (GUID: %u) not found in table `creature`, can't load. ", guid);
+        TC_LOG_ERROR("sql.sql", "Creature (GUID: %u) not found in table `creature`, can't load. ", guid);
         return false;
     }
 
@@ -297,7 +297,7 @@ bool Conversation::LoadConversationFromDB(ObjectGuid::LowType guid, Map* map, bo
     Relocate(data->posX, data->posY, data->posZ, data->orientation);
     if (!IsPositionValid())
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Conversation (conversation %u) not created. Suggested coordinates isn't valid (X: %f Y: %f)", data->id, GetPositionX(), GetPositionY());
+        TC_LOG_ERROR("misc", "Conversation (conversation %u) not created. Suggested coordinates isn't valid (X: %f Y: %f)", data->id, GetPositionX(), GetPositionY());
         return false;
     }
 
@@ -425,7 +425,7 @@ bool Conversation::GenerateDynamicFieldData(uint32 triggerEntry, WorldObject* se
                 Creature* creature = sercher->FindNearestCreature(itr.creatureId, sercher->GetVisibilityRange());
                 if (!creature)
                 {
-                    TC_LOG_DEBUG(LOG_FILTER_GENERAL, "Conversation not created. Suggested coordinates (X: %f Y: %f). Can't find npc entry %u", GetPositionX(), GetPositionY(),
+                    TC_LOG_DEBUG("misc", "Conversation not created. Suggested coordinates (X: %f Y: %f). Can't find npc entry %u", GetPositionX(), GetPositionY(),
                                    itr.creatureId);
                     return false;
                 }

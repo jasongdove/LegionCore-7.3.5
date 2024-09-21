@@ -46,7 +46,7 @@ void WaypointMovementGenerator<Creature>::LoadPath(Creature &creature)
     if (!i_path)
     {
         // No movement found for entry
-        //TC_LOG_ERROR(LOG_FILTER_SQL, "WaypointMovementGenerator::LoadPath: creature %s (Entry: %u GUID: %u) doesn't have waypoint path id: %u", creature.GetName(), creature.GetEntry(), creature.GetGUIDLow(), path_id);
+        //TC_LOG_ERROR("sql.sql", "WaypointMovementGenerator::LoadPath: creature %s (Entry: %u GUID: %u) doesn't have waypoint path id: %u", creature.GetName(), creature.GetEntry(), creature.GetGUIDLow(), path_id);
         return;
     }
 
@@ -83,7 +83,7 @@ void WaypointMovementGenerator<Creature>::OnArrived(Creature& creature)
 
     if (currentPath->event_id && roll_chance_i(currentPath->event_chance))
     {
-        TC_LOG_DEBUG(LOG_FILTER_MAPSCRIPTS, "Creature movement start script %u at point %u for %u.", currentPath->event_id, i_currentNode, creature.GetGUID().GetCounter());
+        TC_LOG_DEBUG("maps.scripts", "Creature movement start script %u at point %u for %s.", currentPath->event_id, i_currentNode, creature.GetGUID().ToString().c_str());
         creature.ClearUnitState(UNIT_STATE_ROAMING_MOVE);
         creature.GetMap()->ScriptsStart(sWaypointScripts, currentPath->event_id, &creature, nullptr);
     }
@@ -311,7 +311,7 @@ void WaypointMovementGenerator<Player>::LoadPath(Player &player)
     if (!i_path)
     {
         // No movement found for entry
-        //TC_LOG_ERROR(LOG_FILTER_SQL, "WaypointMovementGenerator::LoadPath: player %s (Entry: %u GUID: %u) doesn't have waypoint path id: %u", player.GetName(), player.GetEntry(), player.GetGUIDLow(), path_id);
+        //TC_LOG_ERROR("sql.sql", "WaypointMovementGenerator::LoadPath: player %s (Entry: %u GUID: %u) doesn't have waypoint path id: %u", player.GetName(), player.GetEntry(), player.GetGUIDLow(), path_id);
         return;
     }
 
@@ -346,7 +346,7 @@ void WaypointMovementGenerator<Player>::OnArrived(Player& player)
 
     if (currentPath->event_id && roll_chance_i(currentPath->event_chance))
     {
-        TC_LOG_DEBUG(LOG_FILTER_MAPSCRIPTS, "Player movement start script %u at point %u for %u.", currentPath->event_id, i_currentNode, player.GetGUID().GetCounter());
+        TC_LOG_DEBUG("maps.script", "Player movement start script %u at point %u for %u.", currentPath->event_id, i_currentNode, player.GetGUID().GetCounter());
         player.ClearUnitState(UNIT_STATE_ROAMING_MOVE);
         player.GetMap()->ScriptsStart(sWaypointScripts, currentPath->event_id, &player, nullptr);
     }
@@ -609,7 +609,7 @@ void FlightPathMovementGenerator::DoEventIfAny(Player& player, TaxiPathNodeEntry
 {
     if (uint32 eventid = departure ? node.DepartureEventID : node.ArrivalEventID)
     {
-        TC_LOG_DEBUG(LOG_FILTER_MAPSCRIPTS, "Taxi %s event %u of node %u of path %u for player %s", departure ? "departure" : "arrival", eventid, node.NodeIndex, node.PathID, player.GetName());
+        TC_LOG_DEBUG("maps.script", "Taxi %s event %u of node %u of path %u for player %s", departure ? "departure" : "arrival", eventid, node.NodeIndex, node.PathID, player.GetName());
         player.GetMap()->ScriptsStart(sEventScripts, eventid, &player, &player);
     }
 }
@@ -655,9 +655,9 @@ void FlightPathMovementGenerator::PreloadEndGrid()
     // Load the grid
     if (endMap)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Preloading grid (%f, %f) for map %u at node index %u/%u", _endGridX, _endGridY, _endMapId, _preloadTargetNode, (uint32)(i_path.size() - 1));
+        TC_LOG_INFO("misc", "Preloading grid (%f, %f) for map %u at node index %u/%u", _endGridX, _endGridY, _endMapId, _preloadTargetNode, (uint32)(i_path.size() - 1));
         endMap->LoadGrid(_endGridX, _endGridY);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Unable to determine map to preload flightmaster grid");
+        TC_LOG_INFO("misc", "Unable to determine map to preload flightmaster grid");
 }

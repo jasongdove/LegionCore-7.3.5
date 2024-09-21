@@ -648,7 +648,7 @@ void PetBattleAbilityEffect::Kill(uint32 target)
 {
     if (Flags & FailFlags)
     {
-        // TC_LOG_DEBUG(LOG_FILTER_BATTLEPET, "PetBattleAbilityEffect::Kill BATTLEPET_STATE_Is_Dead");
+        // TC_LOG_DEBUG("battlepet", "PetBattleAbilityEffect::Kill BATTLEPET_STATE_Is_Dead");
         SetState(target, BATTLEPET_STATE_Is_Dead, 1);
         return;
     }
@@ -671,7 +671,7 @@ void PetBattleAbilityEffect::Kill(uint32 target)
         return;
     }
 
-    // TC_LOG_DEBUG(LOG_FILTER_BATTLEPET, "PetBattleAbilityEffect::Kill BATTLEPET_STATE_Special_ConsumedCorpse");
+    // TC_LOG_DEBUG("battlepet", "PetBattleAbilityEffect::Kill BATTLEPET_STATE_Special_ConsumedCorpse");
 
     // SetState(target, BATTLEPET_STATE_Special_ConsumedCorpse, 1);
 
@@ -767,7 +767,7 @@ bool PetBattleAbilityEffect::AddAura(uint32 target, int32 duration, int32 maxAll
 void PetBattleAbilityEffect::SelectTargets()
 {
     if (EffectInfo->BattlePetEffectPropertiesID > MAX_PETBATTLE_EFFECT_TYPES)
-        TC_LOG_ERROR(LOG_FILTER_BATTLEPET, "Function: %s; Line: %u EffectInfo->effect > MAX_PETBATTLE_EFFECT_TYPES; effect: %u", __FUNCTION__, __LINE__, EffectInfo->BattlePetEffectPropertiesID);
+        TC_LOG_ERROR("battlepet", "Function: %s; Line: %u EffectInfo->effect > MAX_PETBATTLE_EFFECT_TYPES; effect: %u", __FUNCTION__, __LINE__, EffectInfo->BattlePetEffectPropertiesID);
 
     Targets.clear();
     AddTarget(Handlers[EffectInfo->BattlePetEffectPropertiesID].ImplicitTarget);

@@ -84,7 +84,7 @@ void PlayerCheatsMgr::LoadFromDB()
     if (!EnableAnticheat())
         return;
 
-    TC_LOG_INFO(LOG_FILTER_GENERAL, "Loading table 'cheat_sanctions'");
+    TC_LOG_INFO("misc", "Loading table 'cheat_sanctions'");
     _sanctions.clear();
 
     QueryResult result = WorldDatabase.Query("SELECT cheatType, tickCount, tickAction, totalCount, totalAction, comment FROM cheat_sanctions;");
@@ -103,15 +103,15 @@ void PlayerCheatsMgr::LoadFromDB()
         s.comment       = fields[5].GetString();
 
         if (s.cheatType >= CHEATS_COUNT)
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "cheat_sanctions has record with invalid cheatType %u > CHEATS_COUNT (%u)", s.cheatType, CHEATS_COUNT);
+            TC_LOG_ERROR("misc", "cheat_sanctions has record with invalid cheatType %u > CHEATS_COUNT (%u)", s.cheatType, CHEATS_COUNT);
         else if (s.tickSanction >= CHEAT_MAX_ACTIONS || s.totalSanction >= CHEAT_MAX_ACTIONS)
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "cheat_sanctions has record with invalid action (must be < %u)", CHEAT_MAX_ACTIONS);
+            TC_LOG_ERROR("misc", "cheat_sanctions has record with invalid action (must be < %u)", CHEAT_MAX_ACTIONS);
         else
             _sanctions.emplace_back(s);
     }
     while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_GENERAL, ">> %u anticheat checks loaded", _sanctions.size());
+    TC_LOG_INFO("misc", ">> %u anticheat checks loaded", _sanctions.size());
 }
 
 void PlayerCheatsMgr::LoadConfig()
@@ -895,7 +895,7 @@ bool PlayerCheatData::InterpolateMovement(MovementInfo const& mi, uint32 diffMs,
     else if (mi.MoveFlags[0] & (MOVEMENTFLAG_PITCH_UP | MOVEMENTFLAG_PITCH_DOWN))
         speed = GetClientSpeed(MOVE_PITCH_RATE);
     if (mi.MoveFlags[0] & MOVEMENTFLAG_BACKWARD)
-        o += M_PI_F;
+        o += M_PI;
     else if (mi.MoveFlags[0] & MOVEMENTFLAG_STRAFE_LEFT)
     {
         if (mi.MoveFlags[0] & MOVEMENTFLAG_FORWARD)

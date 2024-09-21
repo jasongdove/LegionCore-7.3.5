@@ -257,7 +257,7 @@ public:
                 {
                     if (FelCrystals.empty())
                     {
-                        TC_LOG_ERROR(LOG_FILTER_TSCR, "Magisters Terrace: No Fel Crystals loaded in Inst Data");
+                        TC_LOG_ERROR("scripts", "Magisters Terrace: No Fel Crystals loaded in Inst Data");
                         return ObjectGuid::Empty;
                     }
 

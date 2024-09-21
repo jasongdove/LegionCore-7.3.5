@@ -78,7 +78,7 @@ void WorldSession::HandleWorldPortAck()
     if (newMap && GetMap() != newMap)
     {
         //move us to destination phread for future perfom addto map by this function
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "WorldSession::HandleMoveWorldportAckOpcode Map %d could not be enter player %d with bed session code", loc.GetMapId(), player->GetGUIDLow());
+        TC_LOG_ERROR("network", "WorldSession::HandleMoveWorldportAckOpcode Map %d could not be enter player %d with bed session code", loc.GetMapId(), player->GetGUIDLow());
         player->TeleportTo(loc, GetPlayer()->GetTeleportOptions());
         return;
     }
@@ -481,7 +481,7 @@ void WorldSession::HandleSetActiveMover(WorldPackets::Movement::SetActiveMover& 
         if (player->IsInWorld() && player->m_mover && player->m_mover->IsInWorld())
         {
             if (player->m_mover->GetGUID() != packet.ActiveMover)
-                TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "HandleSetActiveMover: incorrect mover guid: mover is %s  and should be %s",
+                TC_LOG_ERROR("network", "HandleSetActiveMover: incorrect mover guid: mover is %s  and should be %s",
                     packet.ActiveMover.ToString().c_str(), player->m_mover->GetGUID().ToString().c_str());
         }
     }
@@ -576,12 +576,12 @@ void WorldSession::HandleTimeSyncResponse(WorldPackets::Movement::TimeSyncRespon
 
     if (player->m_timeSyncQueue.empty())
     {
-        TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "Received CMSG_TIME_SYNC_RESPONSE from player %s without requesting it (hacker?)", player->GetName());
+        TC_LOG_DEBUG("network", "Received CMSG_TIME_SYNC_RESPONSE from player %s without requesting it (hacker?)", player->GetName());
         return;
     }
 
     if (packet.SequenceIndex != player->m_timeSyncQueue.front())
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Wrong time sync counter from player %s (cheater?)", player->GetName());
+        TC_LOG_ERROR("network", "Wrong time sync counter from player %s (cheater?)", player->GetName());
 
     player->m_timeSyncClient = packet.ClientTime;
     player->m_timeSyncQueue.pop();
@@ -592,7 +592,7 @@ void WorldSession::HandleDiscardedTimeSyncAcks(WorldPackets::Movement::Discarded
     Player* player = GetPlayer();
 
     if (player->m_sequenceIndex != packet.MaxSequenceIndex)
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Received CMSG_DISCARDED_TIME_SYNC_ACKS from player %s, but maxSequenceIndex %u isn't equal real server SequenceIndex %u", player->GetName(), packet.MaxSequenceIndex, player->m_sequenceIndex);
+        TC_LOG_ERROR("network", "Received CMSG_DISCARDED_TIME_SYNC_ACKS from player %s, but maxSequenceIndex %u isn't equal real server SequenceIndex %u", player->GetName(), packet.MaxSequenceIndex, player->m_sequenceIndex);
 
     player->m_sequenceIndex = 0;
 }
@@ -606,7 +606,7 @@ void WorldSession::HandleTimeSyncResponseFailed(WorldPackets::Movement::TimeSync
 {
     Player* player = GetPlayer();
 
-    TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "WorldSession::HandleTimeSyncResponseFailed:: what we should do with it?: Player: %s, packet.SequenceIndex: %u, PlayerSequenceIndex: %u ",
+    TC_LOG_ERROR("network", "WorldSession::HandleTimeSyncResponseFailed:: what we should do with it?: Player: %s, packet.SequenceIndex: %u, PlayerSequenceIndex: %u ",
         player->GetName(), packet.SequenceIndex, player->m_sequenceIndex);
 }
 
@@ -758,7 +758,7 @@ void WorldSession::RelocateMover(MovementInfo &movementInfo)
 
             if (undermap)
                 if (plrMover->UndermapRecall())
-                    TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "[UNDERMAP] %s [GUID %u]. MapId:%u %f %f %f", plrMover->GetName(), plrMover->GetGUIDLow(), plrMover->GetMapId(), plrMover->GetPositionX(), plrMover->GetPositionY(), plrMover->GetPositionZ());
+                    TC_LOG_ERROR("network", "[UNDERMAP] %s [GUID %u]. MapId:%u %f %f %f", plrMover->GetName(), plrMover->GetGUIDLow(), plrMover->GetMapId(), plrMover->GetPositionX(), plrMover->GetPositionY(), plrMover->GetPositionZ());
         }
         else if (plrMover->CanFreeMove())
             plrMover->SaveNoUndermapPosition(movementInfo.Pos.GetPositionX(), movementInfo.Pos.GetPositionY(), movementInfo.Pos.GetPositionZ() + 3.0f);

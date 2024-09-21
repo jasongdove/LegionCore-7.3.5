@@ -47,7 +47,7 @@ void WildBattlePetMgr::Load()
     QueryResult result = WorldDatabase.Query("SELECT Zone, Species, `BattlePetEntry`, `Max`, RespawnTime, MinLevel, MaxLevel, CreatureEntry FROM battlepet_wild_zone_pool");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 species definitions. DB table `WildBattlePetZoneSpecies` is empty");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 species definitions. DB table `WildBattlePetZoneSpecies` is empty");
         return;
     }
 
@@ -66,7 +66,7 @@ void WildBattlePetMgr::Load()
 
         if (mapID == -1)
         {
-            TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "WildBattlePetMgr::Load() no map id found for zone %u", zoneID);
+            TC_LOG_ERROR("server.loading", "WildBattlePetMgr::Load() no map id found for zone %u", zoneID);
             continue;
         }
 
@@ -77,7 +77,7 @@ void WildBattlePetMgr::Load()
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u species definitions.", count);
+    TC_LOG_INFO("server.loading", ">> Loaded %u species definitions.", count);
 }
 
 void WildBattlePetMgr::Populate(WildPetPoolTemplate* wTemplate, WildBattlePetPool* pTemplate)

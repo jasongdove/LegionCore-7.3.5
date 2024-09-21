@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -19,22 +19,28 @@
 #define APPENDERFILE_H
 
 #include "Appender.h"
+#include <atomic>
 
-class AppenderFile : public Appender
+class TC_COMMON_API AppenderFile : public Appender
 {
-public:
-    AppenderFile(uint8 _id, std::string const& _name, LogLevel level, const char* filename, const char* logDir, const char* mode, AppenderFlags flags);
-    ~AppenderFile();
-    FILE* OpenFile(std::string const& _name, std::string const& _mode, bool _backup);
+    public:
+        typedef std::integral_constant<AppenderType, APPENDER_FILE>::type TypeIndex;
 
-private:
-    void _write(LogMessage const* message) override;
-    FILE* logfile;
-    std::string filename;
-    std::string logDir;
-    std::string mode;
-    bool dynamicName;
-    bool backup;
+        AppenderFile(uint8 id, std::string const& name, LogLevel level, AppenderFlags flags, std::vector<char const*> extraArgs);
+        ~AppenderFile();
+        FILE* OpenFile(std::string const& name, std::string const& mode, bool backup);
+        AppenderType getType() const override { return TypeIndex::value; }
+
+    private:
+        void CloseFile();
+        void _write(LogMessage const* message) override;
+        FILE* logfile;
+        std::string _fileName;
+        std::string _logDir;
+        bool _dynamicName;
+        bool _backup;
+        uint64 _maxFileSize;
+        std::atomic<uint64> _fileSize;
 };
 
 #endif

@@ -181,7 +181,7 @@ public:
         {
             instance = creature->GetInstanceScript();
             if (!instance)
-                TC_LOG_ERROR(LOG_FILTER_TSCR, "No Instance eye_of_cthunAI");
+                TC_LOG_ERROR("scripts", "No Instance eye_of_cthunAI");
         }
 
         InstanceScript* instance;
@@ -487,7 +487,7 @@ public:
 
             instance = creature->GetInstanceScript();
             if (!instance)
-                TC_LOG_ERROR(LOG_FILTER_TSCR, "No Instance eye_of_cthunAI");
+                TC_LOG_ERROR("scripts", "No Instance eye_of_cthunAI");
         }
 
         InstanceScript* instance;

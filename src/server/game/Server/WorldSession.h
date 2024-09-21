@@ -2104,7 +2104,7 @@ class WorldSession
         uint32 _tutorials[MAX_ACCOUNT_TUTORIAL_VALUES];
         bool   _tutorialsChanged;
         AddonsList m_addonsList;
-        StringSet _registeredAddonPrefixes;
+        std::vector<std::string> _registeredAddonPrefixes;
         bool _filterAddonMessages;
         uint32 recruiterId;
         bool isRecruiter;

@@ -26,7 +26,7 @@
 #define PROCESS_HIGH_PRIORITY -15 // [-20, 19], default is 0
 #endif
 
-void SetProcessPriority(const std::string /*logChannel*/)
+inline void SetProcessPriority(const std::string logChannel)
 {
 #if defined(_WIN32) || defined(__linux__)
 
@@ -48,20 +48,20 @@ void SetProcessPriority(const std::string /*logChannel*/)
             ULONG_PTR currentAffinity = affinity & appAff;
 
             if (!currentAffinity)
-                TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "Processors marked in UseProcessors bitmask (hex) %x are not accessible. Accessible processors bitmask (hex): %x", affinity, appAff);
+                TC_LOG_ERROR("server.loading", "Processors marked in UseProcessors bitmask (hex) %x are not accessible. Accessible processors bitmask (hex): %x", affinity, appAff);
             else if (SetProcessAffinityMask(hProcess, currentAffinity))
-                TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Using processors (bitmask, hex): %x", currentAffinity);
+                TC_LOG_INFO("server.loading", "Using processors (bitmask, hex): %x", currentAffinity);
             else
-                TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "Can't set used processors (hex): %x", currentAffinity);
+                TC_LOG_ERROR("server.loading", "Can't set used processors (hex): %x", currentAffinity);
         }
     }
 
     if (highPriority)
     {
         if (SetPriorityClass(hProcess, HIGH_PRIORITY_CLASS))
-            TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "Process priority class set to HIGH");
+            TC_LOG_INFO("server.loading", "Process priority class set to HIGH");
         else
-            TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "Can't set process priority class.");
+            TC_LOG_ERROR("server.loading", "Can't set process priority class.");
     }
 
 #else // Linux
@@ -76,21 +76,21 @@ void SetProcessPriority(const std::string /*logChannel*/)
                 CPU_SET(i, &mask);
 
         if (sched_setaffinity(0, sizeof(mask), &mask))
-            TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "Can't set used processors (hex): %x, error: %s", affinity, strerror(errno));
+            TC_LOG_ERROR(logChannel, "Can't set used processors (hex): %x, error: %s", affinity, strerror(errno));
         else
         {
             CPU_ZERO(&mask);
             sched_getaffinity(0, sizeof(mask), &mask);
-            TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "Using processors (bitmask, hex): %lx", *(__cpu_mask*)(&mask));
+            TC_LOG_ERROR(logChannel, "Using processors (bitmask, hex): %lx", *(__cpu_mask*)(&mask));
         }
     }
 
     if (highPriority)
     {
         if (setpriority(PRIO_PROCESS, 0, PROCESS_HIGH_PRIORITY))
-            TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "Can't set process priority class, error: %s", strerror(errno));
+            TC_LOG_ERROR(logChannel, "Can't set process priority class, error: %s", strerror(errno));
         else
-            TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "Process priority class set to %i", getpriority(PRIO_PROCESS, 0));
+            TC_LOG_ERROR(logChannel, "Process priority class set to %i", getpriority(PRIO_PROCESS, 0));
     }
 
 #endif

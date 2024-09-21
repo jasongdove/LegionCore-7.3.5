@@ -316,8 +316,8 @@ typedef std::vector<AchievementReward*> AchievementRewardVector;
 
 struct AchievementRewardLocale
 {
-    StringVector subject;
-    StringVector text;
+    std::vector<std::string> subject;
+    std::vector<std::string> text;
 };
 
 typedef std::unordered_map<uint32, AchievementRewardLocale> AchievementRewardLocales;

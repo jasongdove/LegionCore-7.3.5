@@ -406,7 +406,7 @@ typedef std::vector<std::vector<CellObjectGuidsMap>> MapObjectGuids;
 
 struct TrinityStringLocale
 {
-    StringVector Content;
+    std::vector<std::string> Content;
 };
 
 typedef std::unordered_map<ObjectGuid, ObjectGuid> LinkedRespawnContainer;
@@ -616,7 +616,7 @@ class ObjectMgr
         typedef std::unordered_map<uint32, RepRewardRate > RepRewardRateContainer;
         typedef std::unordered_map<uint32, std::vector<ReputationOnKillEntry>> RepOnKillContainer;
         typedef std::unordered_map<uint32, RepSpilloverTemplate> RepSpilloverTemplateContainer;
-        typedef StringVector ScriptNameContainer;
+        typedef std::vector<std::string> ScriptNameContainer;
         typedef std::list<CurrencyLoot> CurrencysLoot;
         typedef std::unordered_map<uint32, uint32> CreatureSpellBonusList;
         typedef std::unordered_map<uint32, NpcText> NpcTextContainer;
@@ -624,7 +624,7 @@ class ObjectMgr
         typedef std::vector<uint32> PlayerXPperLevel;       // [level]
         typedef std::map<uint32, uint32> BaseXPContainer;          // [area level][base xp]
         typedef std::map<uint32, int32> FishingBaseSkillContainer; // [areaId][base skill level]
-        typedef std::map<uint32, StringVector> HalfNameContainer;
+        typedef std::map<uint32, std::vector<std::string>> HalfNameContainer;
 
     static ObjectMgr* instance();
         std::list<CurrencyLoot> GetCurrencyLoot(uint32 entry, uint8 type, uint8 spawnMode);
@@ -987,8 +987,8 @@ class ObjectMgr
         // for wintergrasp only
         GraveYardContainer GraveYardStore;
 
-        static void AddLocaleString(std::string&& value, LocaleConstant localeConstant, StringVector& data);
-        static void GetLocaleString(StringVector const& data, LocaleConstant localeConstant, std::string& value);
+        static void AddLocaleString(std::string&& value, LocaleConstant localeConstant, std::vector<std::string>& data);
+        static void GetLocaleString(std::vector<std::string> const& data, LocaleConstant localeConstant, std::string& value);
 
         GameObjectDataContainer _gameObjectDataStore;
         //Get item count from spawnmode

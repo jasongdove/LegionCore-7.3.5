@@ -57,7 +57,7 @@ public:
                 }
                 catch (boost::system::system_error const& err)
                 {
-                    TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Failed to initialize client's socket %s", err.what());
+                    TC_LOG_ERROR("network", "Failed to initialize client's socket %s", err.what());
                 }
             }
 
@@ -100,7 +100,7 @@ void AsyncAcceptor::AsyncAccept()
             }
             catch (boost::system::system_error const& err)
             {
-                TC_LOG_INFO(LOG_FILTER_NETWORKIO, "Failed to retrieve client's remote address %s", err.what());
+                TC_LOG_INFO("network", "Failed to retrieve client's remote address %s", err.what());
             }
         }
 

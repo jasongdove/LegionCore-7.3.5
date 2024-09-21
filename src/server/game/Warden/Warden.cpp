@@ -74,11 +74,11 @@ bool Warden::Create(BigNumber *k)
     //sLog->outWarden("Module ID: %s", ByteArrayToHexStr(_currentModule->ID, 32).c_str());
     //RequestModule();
 
-    //TC_LOG_DEBUG(LOG_FILTER_WARDEN, "Server side warden for client %u initializing...", session->GetAccountId());
-    //TC_LOG_DEBUG(LOG_FILTER_WARDEN, "C->S Key: %s", ByteArrayToHexStr(_inputKey, 16).c_str());
-    //TC_LOG_DEBUG(LOG_FILTER_WARDEN, "S->C Key: %s", ByteArrayToHexStr(_outputKey, 16).c_str());
-    //TC_LOG_DEBUG(LOG_FILTER_WARDEN, "Seed: %s", ByteArrayToHexStr(_seed, 16).c_str());
-    //TC_LOG_DEBUG(LOG_FILTER_WARDEN, "Loading Module...");
+    //TC_LOG_DEBUG("warden", "Server side warden for client %u initializing...", session->GetAccountId());
+    //TC_LOG_DEBUG("warden", "C->S Key: %s", ByteArrayToHexStr(_inputKey, 16).c_str());
+    //TC_LOG_DEBUG("warden", "S->C Key: %s", ByteArrayToHexStr(_outputKey, 16).c_str());
+    //TC_LOG_DEBUG("warden", "Seed: %s", ByteArrayToHexStr(_seed, 16).c_str());
+    //TC_LOG_DEBUG("warden", "Loading Module...");
     SetNewState(WARDEN_MODULE_NOT_LOADED);
 
     return true;
@@ -105,7 +105,7 @@ void Warden::ConnectToMaievModule()
 
 void Warden::RequestModule()
 {
-    TC_LOG_DEBUG(LOG_FILTER_WARDEN, "WARDEN: Request module(0x00)");
+    TC_LOG_DEBUG("warden", "WARDEN: Request module(0x00)");
 
     SetNewState(WARDEN_MODULE_REQUESTING);
 
@@ -130,7 +130,7 @@ void Warden::RequestModule()
 
 void Warden::SendModuleToClient()
 {
-    TC_LOG_DEBUG(LOG_FILTER_WARDEN, "WARDEN: Send module to client(0x01)");
+    TC_LOG_DEBUG("warden", "WARDEN: Send module to client(0x01)");
 
     // CMSG_MODULE_MISSING, change state and stop timer
     SetNewState(WARDEN_MODULE_SENDING);
@@ -165,7 +165,7 @@ void Warden::SendModuleToClient()
 
 void Warden::RequestHash()
 {
-    TC_LOG_DEBUG(LOG_FILTER_WARDEN, "WARDEN: Request hash(0x05)");
+    TC_LOG_DEBUG("warden", "WARDEN: Request hash(0x05)");
 
     SetNewState(WARDEN_MODULE_SEND_CHALLENGE);
 

@@ -100,7 +100,7 @@ void PetAI::_stopAttack()
 {
     if (!me->isAlive())
     {
-        TC_LOG_DEBUG(LOG_FILTER_PETS, "Creature stoped attacking cuz his dead [guid=%s]", me->GetGUID().ToString().c_str());
+        TC_LOG_DEBUG("misc", "Creature stoped attacking cuz his dead [guid=%s]", me->GetGUID().ToString().c_str());
         me->GetMotionMaster()->Clear();
         me->GetMotionMaster()->MoveIdle();
         me->CombatStop();
@@ -143,7 +143,7 @@ void PetAI::UpdateAI(uint32 diff)
 
         if (_needToStop())
         {
-            TC_LOG_DEBUG(LOG_FILTER_PETS, "Pet AI stopped attacking [guid=%s]", me->GetGUID().ToString().c_str());
+            TC_LOG_DEBUG("misc", "Pet AI stopped attacking [guid=%s]", me->GetGUID().ToString().c_str());
             _stopAttack();
             return;
         }
@@ -156,7 +156,7 @@ void PetAI::UpdateAI(uint32 diff)
     }
     else if (owner && me->GetCharmInfo()) //no victim
     {
-        //TC_LOG_DEBUG(LOG_FILTER_PETS, "PetAI::UpdateAI [guid=%u] no victim GetCasterPet %i", me->GetGUIDLow(), me->GetCasterPet());
+        //TC_LOG_DEBUG("misc", "PetAI::UpdateAI [guid=%u] no victim GetCasterPet %i", me->GetGUIDLow(), me->GetCasterPet());
         // Only aggressive pets do target search every update.
         // Defensive pets do target search only in these cases:
         //  * Owner attacks something - handled by OwnerAttacked()
@@ -185,7 +185,7 @@ void PetAI::UpdateAI(uint32 diff)
     {
         typedef std::vector<std::pair<Unit*, Spell*> > TargetSpellList;
         TargetSpellList targetSpellStore;
-        // TC_LOG_DEBUG(LOG_FILTER_PETS, "PetAI::UpdateAI GetPetAutoSpellSize %i", me->GetPetAutoSpellSize());
+        // TC_LOG_DEBUG("misc", "PetAI::UpdateAI GetPetAutoSpellSize %i", me->GetPetAutoSpellSize());
 
         for (uint8 i = 0; i < me->GetPetAutoSpellSize(); ++i)
         {
@@ -197,7 +197,7 @@ void PetAI::UpdateAI(uint32 diff)
             if (!spellInfo)
                 continue;
 
-            // TC_LOG_DEBUG(LOG_FILTER_PETS, "PetAI::UpdateAI spellID %i, Cooldown %i IsPositive %i CanBeUsedInCombat %i GUID %u",
+            // TC_LOG_DEBUG("misc", "PetAI::UpdateAI spellID %i, Cooldown %i IsPositive %i CanBeUsedInCombat %i GUID %u",
             // spellID, me->HasCreatureSpellCooldown(spellID), spellInfo->IsPositive(), spellInfo->CanBeUsedInCombat(), me->GetGUIDLow());
 
             if (me->GetCharmInfo() && me->GetGlobalCooldownMgr().HasGlobalCooldown(spellInfo))
@@ -473,7 +473,7 @@ Unit* PetAI::SelectNextTarget()
 void PetAI::HandleReturnMovement()
 {
     // Handles moving the pet back to stay or owner
-    //TC_LOG_DEBUG(LOG_FILTER_PETS, "PetAI::HandleReturnMovement [guid=%u] GetCommandState %i", me->GetGUIDLow(), me->GetCharmInfo()->GetCommandState());
+    //TC_LOG_DEBUG("misc", "PetAI::HandleReturnMovement [guid=%u] GetCommandState %i", me->GetGUIDLow(), me->GetCharmInfo()->GetCommandState());
 
     if (me->GetCharmInfo()->HasCommandState(COMMAND_STAY))
     {
@@ -499,7 +499,7 @@ void PetAI::HandleReturnMovement()
     {
         if (!me->GetCharmInfo()->IsFollowing() && !me->GetCharmInfo()->IsReturning() && me->GetDistance(me->GetCharmerOrOwner()) > sWorld->getRate(RATE_TARGET_POS_RECALCULATION_RANGE))
         {
-            //TC_LOG_DEBUG(LOG_FILTER_PETS, "PetAI::HandleReturnMovement Pet %u", me->GetEntry());
+            //TC_LOG_DEBUG("misc", "PetAI::HandleReturnMovement Pet %u", me->GetEntry());
 
             //if (!me->GetCharmInfo()->IsCommandAttack())
             {
@@ -544,7 +544,7 @@ void PetAI::DoAttack(Unit* target, bool chase)
 
 void PetAI::MovementInform(uint32 moveType, uint32 data)
 {
-    //TC_LOG_DEBUG(LOG_FILTER_PETS, "PetAI::MovementInform Pet %u moveType %i data %i", me->GetEntry(), moveType, data);
+    //TC_LOG_DEBUG("misc", "PetAI::MovementInform Pet %u moveType %i data %i", me->GetEntry(), moveType, data);
     // Receives notification when pet reaches stay or follow owner
     switch (moveType)
     {

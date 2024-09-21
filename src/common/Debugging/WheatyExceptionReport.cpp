@@ -5,7 +5,7 @@
 //==========================================
 #include "CompilerDefs.h"
 
-#if PLATFORM == TC_PLATFORM_WINDOWS && !defined(__MINGW32__)
+#if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS && !defined(__MINGW32__)
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif

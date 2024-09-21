@@ -101,7 +101,7 @@ WorldObject::~WorldObject()
     {
         if (IsCorpse())
         {
-            TC_LOG_FATAL(LOG_FILTER_GENERAL, "Object::~Object Corpse guid=" UI64FMTD ", type=%d, entry=%u deleted but still in map!!", GetGUID().GetCounter(), ToCorpse()->GetType(), GetEntry());
+            TC_LOG_FATAL("misc", "Object::~Object Corpse guid=" UI64FMTD ", type=%d, entry=%u deleted but still in map!!", GetGUID().GetCounter(), ToCorpse()->GetType(), GetEntry());
             ASSERT(false);
         }
         WorldObject::ResetMap();
@@ -121,16 +121,16 @@ Object::~Object()
 {
     if (IsInWorld())
     {
-        TC_LOG_FATAL(LOG_FILTER_GENERAL, "Object::~Object - guid=" UI64FMTD ", typeid=%d, entry=%u deleted but still in world!!", GetGUID().GetCounter(), GetTypeId(), GetEntry());
+        TC_LOG_FATAL("misc", "Object::~Object - guid=" UI64FMTD ", typeid=%d, entry=%u deleted but still in world!!", GetGUID().GetCounter(), GetTypeId(), GetEntry());
         if (isType(TYPEMASK_ITEM))
-            TC_LOG_FATAL(LOG_FILTER_GENERAL, "Item slot %u",ToItem()->GetSlot());
+            TC_LOG_FATAL("misc", "Item slot %u",ToItem()->GetSlot());
         //ASSERT(false);
         Object::RemoveFromWorld();
     }
 
     if (m_objectUpdated)
     {
-        TC_LOG_FATAL(LOG_FILTER_GENERAL, "Object::~Object - guid=" UI64FMTD ", typeid=%d, entry=%u deleted but still in update list!!", GetGUID().GetCounter(), GetTypeId(), GetEntry());
+        TC_LOG_FATAL("misc", "Object::~Object - guid=" UI64FMTD ", typeid=%d, entry=%u deleted but still in update list!!", GetGUID().GetCounter(), GetTypeId(), GetEntry());
         //ASSERT(false);
     }
 
@@ -237,17 +237,17 @@ void Object::BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target) c
 
     if ((flags & UPDATEFLAG_SELF) != 0)
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "BuildCreateUpdateBlockForPlayer start UPDATEFLAG_SELF wrong flags %u for object GUID %s", flags, GetGUID().ToString().c_str());
+        TC_LOG_ERROR("misc", "BuildCreateUpdateBlockForPlayer start UPDATEFLAG_SELF wrong flags %u for object GUID %s", flags, GetGUID().ToString().c_str());
         return;
     }
     if ((flags & UPDATEFLAG_HAS_WORLDEFFECTID) != 0 && !ToGameObject())
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "BuildCreateUpdateBlockForPlayer start UPDATEFLAG_HAS_WORLDEFFECTID wrong flags %u for object GUID %s", flags, GetGUID().ToString().c_str());
+        TC_LOG_ERROR("misc", "BuildCreateUpdateBlockForPlayer start UPDATEFLAG_HAS_WORLDEFFECTID wrong flags %u for object GUID %s", flags, GetGUID().ToString().c_str());
         return;
     }
     if ((flags & UPDATEFLAG_ANIMKITS) != 0 && !ToWorldObject()->GetAIAnimKitId() && !ToWorldObject()->GetMovementAnimKitId() && !ToWorldObject()->GetMeleeAnimKitId())
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "BuildCreateUpdateBlockForPlayer start UPDATEFLAG_ANIMKITS wrong flags %u for object GUID %s", flags, GetGUID().ToString().c_str());
+        TC_LOG_ERROR("misc", "BuildCreateUpdateBlockForPlayer start UPDATEFLAG_ANIMKITS wrong flags %u for object GUID %s", flags, GetGUID().ToString().c_str());
         return;
     }
 
@@ -320,17 +320,17 @@ void Object::BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target) c
 
     if ((flags & UPDATEFLAG_SELF) != 0 && !ToPlayer())
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "BuildCreateUpdateBlockForPlayer end UPDATEFLAG_SELF wrong flags %u for object GUID %s", flags, GetGUID().ToString().c_str());
+        TC_LOG_ERROR("misc", "BuildCreateUpdateBlockForPlayer end UPDATEFLAG_SELF wrong flags %u for object GUID %s", flags, GetGUID().ToString().c_str());
         return;
     }
     if ((flags & UPDATEFLAG_HAS_WORLDEFFECTID) != 0 && !ToGameObject())
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "BuildCreateUpdateBlockForPlayer end UPDATEFLAG_HAS_WORLDEFFECTID wrong flags %u for object GUID %s", flags, GetGUID().ToString().c_str());
+        TC_LOG_ERROR("misc", "BuildCreateUpdateBlockForPlayer end UPDATEFLAG_HAS_WORLDEFFECTID wrong flags %u for object GUID %s", flags, GetGUID().ToString().c_str());
         return;
     }
     if ((flags & UPDATEFLAG_ANIMKITS) != 0 && !ToWorldObject()->GetAIAnimKitId() && !ToWorldObject()->GetMovementAnimKitId() && !ToWorldObject()->GetMeleeAnimKitId())
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "BuildCreateUpdateBlockForPlayer end UPDATEFLAG_ANIMKITS wrong flags %u for object GUID %s", flags, GetGUID().ToString().c_str());
+        TC_LOG_ERROR("misc", "BuildCreateUpdateBlockForPlayer end UPDATEFLAG_ANIMKITS wrong flags %u for object GUID %s", flags, GetGUID().ToString().c_str());
         return;
     }
 
@@ -1121,7 +1121,7 @@ void Object::SetByteValue(uint16 index, uint8 offset, uint8 value)
 
     if (offset > 3)
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Object::SetByteValue: wrong offset %u", offset);
+        TC_LOG_ERROR("misc", "Object::SetByteValue: wrong offset %u", offset);
         return;
     }
 
@@ -1143,7 +1143,7 @@ void Object::SetUInt16Value(uint16 index, uint8 offset, uint16 value, bool updat
 
     if (offset > 1)
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Object::SetUInt16Value: wrong offset %u", offset);
+        TC_LOG_ERROR("misc", "Object::SetUInt16Value: wrong offset %u", offset);
         return;
     }
 
@@ -1307,7 +1307,7 @@ void Object::SetByteFlag(uint16 index, uint8 offset, uint8 newFlag)
 
     if (offset > 3)
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Object::SetByteFlag: wrong offset %u", offset);
+        TC_LOG_ERROR("misc", "Object::SetByteFlag: wrong offset %u", offset);
         return;
     }
 
@@ -1328,7 +1328,7 @@ void Object::RemoveByteFlag(uint16 index, uint8 offset, uint8 oldFlag)
 
     if (offset > 3)
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Object::RemoveByteFlag: wrong offset %u", offset);
+        TC_LOG_ERROR("misc", "Object::RemoveByteFlag: wrong offset %u", offset);
         return;
     }
 
@@ -1556,7 +1556,7 @@ ObjectGuid const& Object::GetGuidValue(uint16 index) const
 
 bool Object::PrintIndexError(uint32 index, bool set) const
 {
-    TC_LOG_ERROR(LOG_FILTER_GENERAL, "Attempt %s non-existed value field: %u (count: %u) for object typeid: %u type mask: %u", set ? "set value to" : "get value from", index, m_valuesCount, GetTypeId(), m_objectType);
+    TC_LOG_ERROR("misc", "Attempt %s non-existed value field: %u (count: %u) for object typeid: %u type mask: %u", set ? "set value to" : "get value from", index, m_valuesCount, GetTypeId(), m_objectType);
 
     // ASSERT must fail after function call
     return false;
@@ -2955,7 +2955,7 @@ void WorldObject::SetMap(Map* map)
     ASSERT(inWorldOrIsCorpse);
     if (m_currMap)
     {
-        TC_LOG_FATAL(LOG_FILTER_GENERAL, "WorldObject::SetMap: obj %u new map %u %u, old map %u %u", (uint32)GetTypeId(), map->GetId(), map->GetInstanceId(), m_currMap->GetId(), m_currMap->GetInstanceId());
+        TC_LOG_FATAL("misc", "WorldObject::SetMap: obj %u new map %u %u, old map %u %u", (uint32)GetTypeId(), map->GetId(), map->GetInstanceId(), m_currMap->GetId(), m_currMap->GetInstanceId());
         ASSERT(false);
     } */
 
@@ -2993,7 +2993,7 @@ void WorldObject::AddObjectToRemoveList()
     Map* map = FindMap();
     if (!map)
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Object (TypeId: %u Entry: %u GUID: %u) at attempt add to move list not have valid map (Id: %u).", GetTypeId(), GetEntry(), GetGUIDLow(), GetMapId());
+        TC_LOG_ERROR("misc", "Object (TypeId: %u Entry: %u GUID: %u) at attempt add to move list not have valid map (Id: %u).", GetTypeId(), GetEntry(), GetGUIDLow(), GetMapId());
         return;
     }
 
@@ -3088,7 +3088,7 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
     GameObjectTemplate const* goinfo = sObjectMgr->GetGameObjectTemplate(entry);
     if (!goinfo)
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "Gameobject template %u not found in database!", entry);
+        TC_LOG_ERROR("sql.sql", "Gameobject template %u not found in database!", entry);
         return nullptr;
     }
     Map* map = GetMap();
@@ -3397,7 +3397,7 @@ void WorldObject::MovePosition(Position &pos, float dist, float angle)
     // Prevent invalid coordinates here, position is unchanged
     if (!Trinity::IsValidMapCoord(destx, desty))
     {
-        // TC_LOG_FATAL(LOG_FILTER_GENERAL, "WorldObject::MovePosition invalid coordinates X: %f and Y: %f were passed!", destx, desty);
+        // TC_LOG_FATAL("misc", "WorldObject::MovePosition invalid coordinates X: %f and Y: %f were passed!", destx, desty);
         return;
     }
 
@@ -3449,7 +3449,7 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
     // Prevent invalid coordinates here, position is unchanged
     if (!Trinity::IsValidMapCoord(destx, desty))
     {
-        // TC_LOG_FATAL(LOG_FILTER_GENERAL, "WorldObject::MovePositionToFirstCollision invalid coordinates X: %f and Y: %f were passed!", destx, desty);
+        // TC_LOG_FATAL("misc", "WorldObject::MovePositionToFirstCollision invalid coordinates X: %f and Y: %f were passed!", destx, desty);
         return;
     }
 
@@ -3546,14 +3546,14 @@ void WorldObject::MovePositionToTransportCollision(Position &pos, float dist, fl
     Transport* transport = GetTransport();
     if (!transport)
     {
-        // TC_LOG_FATAL(LOG_FILTER_GENERAL, "WorldObject::MovePositionToTransportCollision invalid transport");
+        // TC_LOG_FATAL("misc", "WorldObject::MovePositionToTransportCollision invalid transport");
         return;
     }
 
     GameObjectModel* _model = transport->m_model;
     if (!_model)
     {
-        // TC_LOG_FATAL(LOG_FILTER_GENERAL, "WorldObject::MovePositionToTransportCollision invalid transport GameObjectModel");
+        // TC_LOG_FATAL("misc", "WorldObject::MovePositionToTransportCollision invalid transport GameObjectModel");
         return;
     }
 
@@ -3567,7 +3567,7 @@ void WorldObject::MovePositionToTransportCollision(Position &pos, float dist, fl
     // Prevent invalid coordinates here, position is unchanged
     if (!Trinity::IsValidMapCoord(destx, desty))
     {
-        // TC_LOG_FATAL(LOG_FILTER_GENERAL, "WorldObject::MovePositionToTransportCollision invalid coordinates X: %f and Y: %f were passed!", destx, desty);
+        // TC_LOG_FATAL("misc", "WorldObject::MovePositionToTransportCollision invalid coordinates X: %f and Y: %f were passed!", destx, desty);
         return;
     }
 
@@ -3594,7 +3594,7 @@ void WorldObject::MovePositionToTransportCollision(Position &pos, float dist, fl
 
     if (destz == VMAP_INVALID_HEIGHT_VALUE)
     {
-        TC_LOG_FATAL(LOG_FILTER_GENERAL, "WorldObject::MovePositionToTransportCollision invalid destz: %f", destz);
+        TC_LOG_FATAL("misc", "WorldObject::MovePositionToTransportCollision invalid destz: %f", destz);
         return;
     }
 
@@ -3672,7 +3672,7 @@ void WorldObject::MovePositionToCollisionBetween(Position &pos, float distMin, f
     // Prevent invalid coordinates here, position is unchanged
     if (!Trinity::IsValidMapCoord(destx, desty))
     {
-        // TC_LOG_FATAL(LOG_FILTER_GENERAL, "WorldObject::MovePositionToCollisionBetween invalid coordinates X: %f and Y: %f were passed!", destx, desty);
+        // TC_LOG_FATAL("misc", "WorldObject::MovePositionToCollisionBetween invalid coordinates X: %f and Y: %f were passed!", destx, desty);
         return;
     }
 

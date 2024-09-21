@@ -210,7 +210,7 @@ bool ChargeMovementGenerator::Update(Unit &unit, const uint32&)
 
 void ChargeMovementGenerator::Initialize(Unit &unit)
 {
-    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "ChargeMovementGenerator Initialize (%f %f %f)", i_x, i_y, i_z);
+    //TC_LOG_DEBUG("spells", "ChargeMovementGenerator Initialize (%f %f %f)", i_x, i_y, i_z);
 
     if (!unit.IsStopped())
         unit.StopMoving();
@@ -224,7 +224,7 @@ void ChargeMovementGenerator::Finalize(Unit &unit)
     if (!unit.IsCreature() && !unit.IsPlayer())
         return;
 
-    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "ChargeMovementGenerator Finalize (%f %f %f) spellId %i", i_x, i_y, i_z, triggerspellId);
+    //TC_LOG_DEBUG("spells", "ChargeMovementGenerator Finalize (%f %f %f) spellId %i", i_x, i_y, i_z, triggerspellId);
 
     unit.ClearUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE | UNIT_STATE_CHARGING);
 

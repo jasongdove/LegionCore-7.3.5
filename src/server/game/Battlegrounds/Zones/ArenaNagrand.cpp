@@ -55,7 +55,7 @@ bool ArenaNagrandArena::SetupBattleground()
         !AddObject(BG_NA_OBJECT_BUFF_1, BG_NA_OBJECT_TYPE_BUFF_1, -2090.78f, 6629.46f, 12.84f, 0.53f, 0, 0, 0.6626201f, -0.7489557f, 120) ||
         !AddObject(BG_NA_OBJECT_BUFF_2, BG_NA_OBJECT_TYPE_BUFF_2, -1995.612f, 6679.230f, 13.068f, 3.522f, 0, 0, 0.03489945f, -0.9993908f, 120))
     {
-        TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundNA: Failed to spawn some object!");
+        TC_LOG_ERROR("sql.sql", "BatteGroundNA: Failed to spawn some object!");
         return false;
     }
 

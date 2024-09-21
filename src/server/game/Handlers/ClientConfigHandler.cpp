@@ -41,7 +41,7 @@ void WorldSession::HandleRequestAccountData(WorldPackets::ClientConfig::RequestA
         data.CompressedData.resize(destSize);
         if (compress(data.CompressedData.contents(), &destSize, reinterpret_cast<uint8 const*>(adata->Data.c_str()), data.Size) != Z_OK)
         {
-            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "RAD: Failed to compress account data");
+            TC_LOG_ERROR("network", "RAD: Failed to compress account data");
             return;
         }
 
@@ -64,7 +64,7 @@ void WorldSession::HandleUpdateAccountData(WorldPackets::ClientConfig::UserClien
 
     if (packet.Size > 0xFFFF)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "UAD: Account data packet too big, size %u", packet.Size);
+        TC_LOG_ERROR("network", "UAD: Account data packet too big, size %u", packet.Size);
         return;
     }
 
@@ -74,7 +74,7 @@ void WorldSession::HandleUpdateAccountData(WorldPackets::ClientConfig::UserClien
     uLongf realSize = packet.Size;
     if (uncompress(dest.contents(), &realSize, packet.CompressedData.contents(), packet.CompressedData.size()) != Z_OK)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "UAD: Failed to decompress account data");
+        TC_LOG_ERROR("network", "UAD: Failed to decompress account data");
         return;
     }
 

@@ -24,10 +24,10 @@
 
 struct BattlePayDisplayInfoLocale
 {
-    StringVector Name1;
-    StringVector Name2;
-    StringVector Name3;
-    StringVector Name4;
+    std::vector<std::string> Name1;
+    std::vector<std::string> Name2;
+    std::vector<std::string> Name3;
+    std::vector<std::string> Name4;
 };
 
 class BattlePayDataStoreMgr

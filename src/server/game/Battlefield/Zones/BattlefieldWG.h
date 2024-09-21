@@ -102,8 +102,8 @@ enum WGQuestCredit
 
 enum Wintergrasp_Sounds
 {
-    OutdoorPvP_WG_SOUND_WORKSHOP_Horde          = 6205, // время убивать орда
-    OutdoorPvP_WG_SOUND_WORKSHOP_ALLIANCE       = 6298, // к оружию альянс
+    OutdoorPvP_WG_SOUND_WORKSHOP_Horde          = 6205, // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+    OutdoorPvP_WG_SOUND_WORKSHOP_ALLIANCE       = 6298, // пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 };
 
 enum WintergraspData
@@ -1274,7 +1274,7 @@ struct BfWGGameObjectBuilding
                 if (m_WG->GetRelic())
                     m_WG->GetRelic()->RemoveFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE);
                 else
-                    TC_LOG_ERROR(LOG_FILTER_GENERAL, "BattlefieldWG: Relic not found.");
+                    TC_LOG_ERROR("misc", "BattlefieldWG: Relic not found.");
                 break;
         }
 

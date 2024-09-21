@@ -1134,13 +1134,18 @@ public:
 
         PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_BY_IP);
         stmt->setString(0, ip);
+        PreparedQueryResult result = LoginDatabase.Query(stmt);
+
+        if (!result)
+        {
+            handler->PSendSysMessage(LANG_NO_PLAYERS_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
 
         uint32 accountId = handler->GetSession()->GetAccountId();
-        LoginDatabase.CallBackQuery(stmt, [accountId, limit](PreparedQueryResult result) -> void
-        {
-            if (WorldSessionPtr sess = sWorld->FindSession(accountId))
-                sess->LookupPlayerSearchCommand(result, limit);
-        });
+        if (WorldSessionPtr sess = sWorld->FindSession(accountId))
+            sess->LookupPlayerSearchCommand(result, limit);
 
         return true;
     }
@@ -1157,13 +1162,18 @@ public:
         // the account name and email address are the same since the switch to bnet accounts
         PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_LIST_BY_NAME);
         stmt->setString(0, email);
+        PreparedQueryResult result = LoginDatabase.Query(stmt);
+
+        if (!result)
+        {
+            handler->PSendSysMessage(LANG_NO_PLAYERS_FOUND);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
 
         uint32 accountId = handler->GetSession()->GetAccountId();
-        LoginDatabase.CallBackQuery(stmt, [accountId, limit](PreparedQueryResult result) -> void
-        {
-            if (WorldSessionPtr sess = sWorld->FindSession(accountId))
-                sess->LookupPlayerSearchCommand(result, limit);
-        });
+        if (WorldSessionPtr sess = sWorld->FindSession(accountId))
+            sess->LookupPlayerSearchCommand(result, limit);
 
         return true;
     }   

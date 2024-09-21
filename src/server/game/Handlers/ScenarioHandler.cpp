@@ -21,7 +21,7 @@
 
 void WorldSession::HandleQueryScenarioPOI(WorldPackets::Scenario::QueryScenarioPOI& packet)
 {
-    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "HandleQueryScenarioPOI MissingScenarioPOITreeIDs %u", packet.MissingScenarioPOITreeIDs.size());
+    TC_LOG_DEBUG("spells", "HandleQueryScenarioPOI MissingScenarioPOITreeIDs %u", packet.MissingScenarioPOITreeIDs.size());
 
     WorldPackets::Scenario::ScenarioPOIs poIs;
     WorldPackets::Scenario::ScenarioPOIs::POIData& infos = poIs.PoiInfos[packet.MissingScenarioPOITreeIDs.size()];

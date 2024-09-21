@@ -30,7 +30,7 @@ void CharacterDatabaseCleaner::CleanDatabase()
     if (!sWorld->getBoolConfig(CONFIG_CLEAN_CHARACTER_DB))
         return;
 
-    TC_LOG_INFO(LOG_FILTER_GENERAL, "Cleaning character database...");
+    TC_LOG_INFO("misc", "Cleaning character database...");
 
     uint32 oldMSTime = getMSTime();
 
@@ -64,7 +64,7 @@ void CharacterDatabaseCleaner::CleanDatabase()
 
     sWorld->SetCleaningFlags(flags);
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Cleaned character database in %u ms", GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Cleaned character database in %u ms", GetMSTimeDiffToNow(oldMSTime));
 
 }
 
@@ -73,7 +73,7 @@ void CharacterDatabaseCleaner::CheckUnique(const char* column, const char* table
     QueryResult result = CharacterDatabase.PQuery("SELECT DISTINCT %s FROM %s", column, table);
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_GENERAL, "Table %s is empty.", table);
+        TC_LOG_INFO("misc", "Table %s is empty.", table);
         return;
     }
 
@@ -166,13 +166,13 @@ uint8 CheckSlot(PlayerPetSlotList &list, uint8 slot, uint32 id)
     {
         if ((*itr) == id)
         {
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "Warning! CheckSlot. Pet Id:%u with Slot: %u already on slot %u", id, slot, index);
+            TC_LOG_ERROR("misc", "Warning! CheckSlot. Pet Id:%u with Slot: %u already on slot %u", id, slot, index);
             return 1;
         }
 
         if (slot == index && (*itr) > 0 && (*itr) != id)
         {
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "Warning! CheckSlot. Pet Id:%u with Slot: %u has another pet %u", id, slot, *itr);
+            TC_LOG_ERROR("misc", "Warning! CheckSlot. Pet Id:%u with Slot: %u has another pet %u", id, slot, *itr);
             return 2;
         }
     }
@@ -184,7 +184,7 @@ void CharacterDatabaseCleaner::CleanPetSlots()
     //QueryResult result = CharacterDatabase.PQuery("SELECT DISTINCT owner FROM character_pet");
     //if (!result)
     //{
-    //    TC_LOG_INFO(LOG_FILTER_GENERAL, "Table character_pet is empty.");
+    //    TC_LOG_INFO("misc", "Table character_pet is empty.");
     //    return;
     //}
     //
@@ -197,7 +197,7 @@ void CharacterDatabaseCleaner::CleanPetSlots()
     //    QueryResult r2 = CharacterDatabase.PQuery("SELECT id, slot FROM character_pet WHERE owner = %u", ownerID);
     //    if (!r2)
     //    {
-    //        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Warning! Problem with table character_pet at cleanup");
+    //        TC_LOG_ERROR("misc", "Warning! Problem with table character_pet at cleanup");
     //        continue;
     //    }
 

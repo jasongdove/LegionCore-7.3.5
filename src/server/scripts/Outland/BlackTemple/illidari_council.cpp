@@ -142,7 +142,7 @@ public:
                 Council[1] = instance->GetGuidData(DATA_VERASDARKSHADOW);
                 Council[2] = instance->GetGuidData(DATA_LADYMALANDE);
                 Council[3] = instance->GetGuidData(DATA_HIGHNETHERMANCERZEREVOR);
-            } else TC_LOG_ERROR(LOG_FILTER_TSCR, ERROR_INST_DATA);
+            } else TC_LOG_ERROR("scripts", ERROR_INST_DATA);
         }
 
         void EnterCombat(Unit* /*who*/) {}
@@ -389,7 +389,7 @@ struct boss_illidari_councilAI : public ScriptedAI
         }
         else
         {
-            TC_LOG_ERROR(LOG_FILTER_TSCR, ERROR_INST_DATA);
+            TC_LOG_ERROR("scripts", ERROR_INST_DATA);
             EnterEvadeMode();
             return;
         }
@@ -437,7 +437,7 @@ struct boss_illidari_councilAI : public ScriptedAI
     {
         if (!instance)
         {
-            TC_LOG_ERROR(LOG_FILTER_TSCR, ERROR_INST_DATA);
+            TC_LOG_ERROR("scripts", ERROR_INST_DATA);
             return;
         }
 

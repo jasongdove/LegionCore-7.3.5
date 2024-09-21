@@ -39,22 +39,22 @@ bool AuctionBotConfig::Initialize()
 
     if (!GetConfig(CONFIG_AHBOT_BUYER_ENABLED) && !GetConfig(CONFIG_AHBOT_SELLER_ENABLED))
     {
-        TC_LOG_INFO(LOG_FILTER_AUCTIONHOUSE, "AHBOT is Disabled.");
+        TC_LOG_INFO("auctionHouse", "AHBOT is Disabled.");
         return false;
     }
 
     if (GetConfig(CONFIG_AHBOT_ALLIANCE_ITEM_AMOUNT_RATIO) == 0 && GetConfig(CONFIG_AHBOT_HORDE_ITEM_AMOUNT_RATIO) == 0 && GetConfig(CONFIG_AHBOT_NEUTRAL_ITEM_AMOUNT_RATIO) == 0 &&
         !GetConfig(CONFIG_AHBOT_BUYER_ALLIANCE_ENABLED) && !GetConfig(CONFIG_AHBOT_BUYER_HORDE_ENABLED) && !GetConfig(CONFIG_AHBOT_BUYER_NEUTRAL_ENABLED))
     {
-        TC_LOG_INFO(LOG_FILTER_AUCTIONHOUSE, "All feature of AuctionHouseBot are disabled!");
+        TC_LOG_INFO("auctionHouse", "All feature of AuctionHouseBot are disabled!");
         return false;
     }
 
     if (GetConfig(CONFIG_AHBOT_ALLIANCE_ITEM_AMOUNT_RATIO) == 0 && GetConfig(CONFIG_AHBOT_HORDE_ITEM_AMOUNT_RATIO) == 0 && GetConfig(CONFIG_AHBOT_NEUTRAL_ITEM_AMOUNT_RATIO) == 0)
-        TC_LOG_INFO(LOG_FILTER_AUCTIONHOUSE, "AuctionHouseBot SELLER is disabled!");
+        TC_LOG_INFO("auctionHouse", "AuctionHouseBot SELLER is disabled!");
 
     if (!GetConfig(CONFIG_AHBOT_BUYER_ALLIANCE_ENABLED) && !GetConfig(CONFIG_AHBOT_BUYER_HORDE_ENABLED) && !GetConfig(CONFIG_AHBOT_BUYER_NEUTRAL_ENABLED))
-        TC_LOG_INFO(LOG_FILTER_AUCTIONHOUSE, "AuctionHouseBot BUYER is disabled!");
+        TC_LOG_INFO("auctionHouse", "AuctionHouseBot BUYER is disabled!");
 
     _itemsPerCycleBoost = GetConfig(CONFIG_AHBOT_ITEMS_PER_CYCLE_BOOST);
     _itemsPerCycleNormal = GetConfig(CONFIG_AHBOT_ITEMS_PER_CYCLE_NORMAL);
@@ -78,10 +78,10 @@ bool AuctionBotConfig::Initialize()
                 } while (result->NextRow());
             }
 
-            TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "AuctionHouseBot found %u characters", count);
+            TC_LOG_DEBUG("auctionHouse", "AuctionHouseBot found %u characters", count);
         }
         else
-            TC_LOG_WARN(LOG_FILTER_AUCTIONHOUSE, "AuctionHouseBot Account ID %u has no associated characters.", ahBotAccId);
+            TC_LOG_WARN("auctionHouse", "AuctionHouseBot Account ID %u has no associated characters.", ahBotAccId);
     }
 
     return true;
@@ -93,7 +93,7 @@ void AuctionBotConfig::SetConfig(AuctionBotConfigUInt32Values index, char const*
 
     if (int32(GetConfig(index)) < 0)
     {
-        TC_LOG_ERROR(LOG_FILTER_AUCTIONHOUSE, "AHBot: %s (%i) can't be negative. Using %u instead.", fieldname, int32(GetConfig(index)), defvalue);
+        TC_LOG_ERROR("auctionHouse", "AHBot: %s (%i) can't be negative. Using %u instead.", fieldname, int32(GetConfig(index)), defvalue);
         SetConfig(index, defvalue);
     }
 }
@@ -104,7 +104,7 @@ void AuctionBotConfig::SetConfigMax(AuctionBotConfigUInt32Values index, char con
 
     if (GetConfig(index) > maxvalue)
     {
-        TC_LOG_ERROR(LOG_FILTER_AUCTIONHOUSE, "AHBot: %s (%u) must be in range 0...%u. Using %u instead.", fieldname, GetConfig(index), maxvalue, maxvalue);
+        TC_LOG_ERROR("auctionHouse", "AHBot: %s (%u) must be in range 0...%u. Using %u instead.", fieldname, GetConfig(index), maxvalue, maxvalue);
         SetConfig(index, maxvalue);
     }
 }
@@ -115,13 +115,13 @@ void AuctionBotConfig::SetConfigMinMax(AuctionBotConfigUInt32Values index, char 
 
     if (GetConfig(index) > maxvalue)
     {
-        TC_LOG_ERROR(LOG_FILTER_AUCTIONHOUSE, "AHBot: %s (%u) must be in range %u...%u. Using %u instead.", fieldname, GetConfig(index), minvalue, maxvalue, maxvalue);
+        TC_LOG_ERROR("auctionHouse", "AHBot: %s (%u) must be in range %u...%u. Using %u instead.", fieldname, GetConfig(index), minvalue, maxvalue, maxvalue);
         SetConfig(index, maxvalue);
     }
 
     if (GetConfig(index) < minvalue)
     {
-        TC_LOG_ERROR(LOG_FILTER_AUCTIONHOUSE, "AHBot: %s (%u) must be in range %u...%u. Using %u instead.", fieldname, GetConfig(index), minvalue, maxvalue, minvalue);
+        TC_LOG_ERROR("auctionHouse", "AHBot: %s (%u) must be in range %u...%u. Using %u instead.", fieldname, GetConfig(index), minvalue, maxvalue, minvalue);
         SetConfig(index, minvalue);
     }
 }
@@ -411,7 +411,7 @@ AuctionHouseBot::~AuctionHouseBot()
 
 void AuctionHouseBot::InitializeAgents()
 {
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Loading market data...");
+    TC_LOG_DEBUG("auctionHouse", "Loading market data...");
     QueryResult marketDataResult = CharacterDatabase.PQuery("SELECT `Id`, `MinBuyout` FROM `ahbot_market_data`");
     if (marketDataResult)
     {
@@ -428,7 +428,7 @@ void AuctionHouseBot::InitializeAgents()
             _marketData.emplace(entry, minBuyout);
         } while (marketDataResult->NextRow());
     }
-    TC_LOG_DEBUG(LOG_FILTER_AUCTIONHOUSE, "Market data has %u items...", _marketData.size());
+    TC_LOG_DEBUG("auctionHouse", "Market data has %u items...", _marketData.size());
 
     if (sAuctionBotConfig->GetConfig(CONFIG_AHBOT_SELLER_ENABLED))
     {

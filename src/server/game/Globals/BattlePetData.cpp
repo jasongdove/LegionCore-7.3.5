@@ -54,7 +54,7 @@ void BattlePetDataStoreMgr::LoadBattlePetTemplate()
     auto result = WorldDatabase.Query("SELECT Specie, breadsMask, minquality, NpcID, minlevel, maxlevel FROM battlepet_info");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 battlepet template. DB table `battlepet_info` is empty.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 battlepet template. DB table `battlepet_info` is empty.");
         return;
     }
 
@@ -89,7 +89,7 @@ void BattlePetDataStoreMgr::LoadBattlePetTemplate()
 
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u battlepet template in %u ms.", _battlePetTemplateStore.size(), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u battlepet template in %u ms.", _battlePetTemplateStore.size(), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void BattlePetDataStoreMgr::LoadBattlePetNpcTeamMember()
@@ -101,7 +101,7 @@ void BattlePetDataStoreMgr::LoadBattlePetNpcTeamMember()
     auto result = WorldDatabase.Query("SELECT NpcID, Specie, Ability1, Ability2, Ability3, maxlevel, minlevel, minquality, breadsMask FROM battlepet_npc_team_member");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 battlepet npc team member. DB table `battlepet_npc_team_member` is empty.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 battlepet npc team member. DB table `battlepet_npc_team_member` is empty.");
         return;
     }
 
@@ -129,7 +129,7 @@ void BattlePetDataStoreMgr::LoadBattlePetNpcTeamMember()
         _battlePetNpcTeamMembers[fields[0].GetUInt32()].push_back(npcTeamMember);
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u battlepet npc team member in %u ms.", static_cast<uint32>(_battlePetNpcTeamMembers.size()), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u battlepet npc team member in %u ms.", static_cast<uint32>(_battlePetNpcTeamMembers.size()), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void BattlePetDataStoreMgr::ComputeBattlePetSpawns()
@@ -139,7 +139,7 @@ void BattlePetDataStoreMgr::ComputeBattlePetSpawns()
     auto result = WorldDatabase.Query("SELECT CritterEntry, BattlePetEntry FROM battlepet_spawn_relation a");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> ComputeBattlePetSpawns No battlepet relation");
+        TC_LOG_INFO("server.loading", ">> ComputeBattlePetSpawns No battlepet relation");
         return;
     }
 
@@ -154,7 +154,7 @@ void BattlePetDataStoreMgr::ComputeBattlePetSpawns()
 
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> ComputeBattlePetSpawns No data");
+        TC_LOG_INFO("server.loading", ">> ComputeBattlePetSpawns No data");
         return;
     }
 
@@ -254,7 +254,7 @@ void BattlePetDataStoreMgr::ComputeBattlePetSpawns()
 
     outPools.close();
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> ComputeBattlePetSpawns %u ms.", GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> ComputeBattlePetSpawns %u ms.", GetMSTimeDiffToNow(oldMSTime));
 }
 
 BattlePetTemplate const* BattlePetDataStoreMgr::GetBattlePetTemplate(uint32 species) const

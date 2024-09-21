@@ -20,6 +20,7 @@
 
 #include "Packet.h"
 #include "Object.h"
+#include "Optional.h"
 
 namespace Movement
 {

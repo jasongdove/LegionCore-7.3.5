@@ -38,7 +38,7 @@ bool WorldSession::processChatmessageFurtherAfterSecurityChecks(std::string& msg
 
         if (sWorld->getIntConfig(CONFIG_CHAT_STRICT_LINK_CHECKING_SEVERITY) && !ChatHandler(this).isValidChatMessage(msg.c_str()))
         {
-            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Player %s (GUID: %u) sent a chatmessage with an invalid link: %s", GetPlayer()->GetName(), GetPlayer()->GetGUIDLow(), msg.c_str());
+            TC_LOG_ERROR("network", "Player %s (GUID: %u) sent a chatmessage with an invalid link: %s", GetPlayer()->GetName(), GetPlayer()->GetGUIDLow(), msg.c_str());
             if (sWorld->getIntConfig(CONFIG_CHAT_STRICT_LINK_CHECKING_KICK))
                 KickPlayer();
             else
@@ -73,7 +73,7 @@ inline bool ValidateMessage(Player const* player, std::string& msg)
     {
         if (isNasty(c))
         {
-            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Player %s %s sent a message containing invalid character %u - blocked", player->GetName(), player->GetGUID().ToString().c_str(), uint32(c));
+            TC_LOG_ERROR("network", "Player %s %s sent a message containing invalid character %u - blocked", player->GetName(), player->GetGUID().ToString().c_str(), uint32(c));
             return false;
         }
     }
@@ -214,7 +214,7 @@ void WorldSession::HandleChatMessageOpcode(WorldPackets::Chat::ChatMessage& pack
             type = CHAT_MSG_INSTANCE_CHAT;
             break;
         default:
-            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "HandleMessagechatOpcode : Unknown chat opcode (%u)", packet.GetOpcode());
+            TC_LOG_ERROR("network", "HandleMessagechatOpcode : Unknown chat opcode (%u)", packet.GetOpcode());
             return;
     }
 
@@ -240,13 +240,13 @@ void WorldSession::HandleChatMessage(ChatMsg type, uint32 lang, std::string msg,
 {
     if (type >= MAX_CHAT_MSG_TYPE)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "CHAT: Wrong message type received: %u", type);
+        TC_LOG_ERROR("network", "CHAT: Wrong message type received: %u", type);
         return;
     }
 
     Player* sender = GetPlayer();
 
-    //TC_LOG_DEBUG(LOG_FILTER_GENERAL, "CHAT: packet received. type %u, lang %u", type, lang);
+    //TC_LOG_DEBUG("misc", "CHAT: packet received. type %u, lang %u", type, lang);
 
     if (!sender->CanSpeak() && type != CHAT_MSG_DND)
     {
@@ -616,7 +616,7 @@ void WorldSession::HandleChatMessage(ChatMsg type, uint32 lang, std::string msg,
             break;
         }
         default:
-            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "CHAT: unknown message type %u, lang: %u", type, lang);
+            TC_LOG_ERROR("network", "CHAT: unknown message type %u, lang: %u", type, lang);
             break;
     }
 }
@@ -643,7 +643,7 @@ void WorldSession::HandleChatAddonMessageOpcode(WorldPackets::Chat::ChatAddonMes
             type = CHAT_MSG_RAID;
             break;
         default:
-            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "HandleAddonMessagechatOpcode: Unknown addon chat opcode (%u)", packet.GetOpcode());
+            TC_LOG_ERROR("network", "HandleAddonMessagechatOpcode: Unknown addon chat opcode (%u)", packet.GetOpcode());
             return;
     }
 
@@ -732,7 +732,7 @@ void WorldSession::HandleChatAddonMessage(ChatMsg type, std::string const& prefi
         }
         default:
         {
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "HandleAddonMessagechatOpcode: unknown addon message type %u", type);
+            TC_LOG_ERROR("misc", "HandleAddonMessagechatOpcode: unknown addon message type %u", type);
             break;
         }
     }
@@ -837,9 +837,7 @@ void WorldSession::SendChatRestrictedNotice(ChatRestrictionType restriction)
 
 void WorldSession::HandleChatRegisterAddonPrefixes(WorldPackets::Chat::ChatRegisterAddonPrefixes& packet)
 {
-    for (std::string& prefix : packet.Prefixes)
-        _registeredAddonPrefixes.insert(prefix);
-
+    _registeredAddonPrefixes.insert(_registeredAddonPrefixes.end(), packet.Prefixes.begin(), packet.Prefixes.end());
     if (_registeredAddonPrefixes.size() > WorldPackets::Chat::ChatRegisterAddonPrefixes::MAX_PREFIXES)
     {
         _filterAddonMessages = false;

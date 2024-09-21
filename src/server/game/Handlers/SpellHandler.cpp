@@ -214,14 +214,14 @@ void WorldSession::HandleCastSpellOpcode(WorldPackets::Spells::CastSpell& cast)
     Unit* mover = _player->m_mover;
     if (mover != _player && mover->IsPlayer())
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "WORLD: mover != _player id %u", cast.Cast.SpellID);
+        TC_LOG_ERROR("network", "WORLD: mover != _player id %u", cast.Cast.SpellID);
         return;
     }
 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(cast.Cast.SpellID);
     if (!spellInfo)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "WORLD: unknown spell id %u", cast.Cast.SpellID);
+        TC_LOG_ERROR("network", "WORLD: unknown spell id %u", cast.Cast.SpellID);
         return;
     }
 
@@ -311,7 +311,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPackets::Spells::CastSpell& cast)
                 else
                 {
                     //cheater? kick? ban?
-                    TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "WORLD: cheater? kick? ban? TYPEID_PLAYER spell id %u", cast.Cast.SpellID);
+                    TC_LOG_ERROR("network", "WORLD: cheater? kick? ban? TYPEID_PLAYER spell id %u", cast.Cast.SpellID);
                     return;
                 }
             }
@@ -322,7 +322,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPackets::Spells::CastSpell& cast)
         // spell passive and not casted by client
         if (spellInfo->IsPassive())
         {
-            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "WORLD: spell passive and not casted by client id %u", cast.Cast.SpellID);
+            TC_LOG_ERROR("network", "WORLD: spell passive and not casted by client id %u", cast.Cast.SpellID);
             return;
         }
         // not have spell in spellbook or spell passive and not casted by client
@@ -334,7 +334,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPackets::Spells::CastSpell& cast)
                 else
                 {
                     //cheater? kick? ban?
-                    TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "WORLD: not have spell in spellbook id %u", cast.Cast.SpellID);
+                    TC_LOG_ERROR("network", "WORLD: not have spell in spellbook id %u", cast.Cast.SpellID);
                     return;
                 }
             }
@@ -352,7 +352,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPackets::Spells::CastSpell& cast)
     // can't use our own spells when we're in possession of another unit,
     if (_player->isPossessing())
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "WORLD: can't use our own spells when we're in possession id %u", cast.Cast.SpellID);
+        TC_LOG_ERROR("network", "WORLD: can't use our own spells when we're in possession id %u", cast.Cast.SpellID);
         return;
     }
 
@@ -462,20 +462,20 @@ void WorldSession::HandlePetCancelAura(WorldPackets::PetPackets::PetCancelAura& 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(packet.SpellID);
     if (!spellInfo)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "WORLD: unknown PET spell id %u", packet.SpellID);
+        TC_LOG_ERROR("network", "WORLD: unknown PET spell id %u", packet.SpellID);
         return;
     }
 
     Creature* pet = ObjectAccessor::GetCreatureOrPetOrVehicle(*_player, packet.PetGUID);
     if (!pet)
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "HandlePetCancelAura: Attempt to cancel an aura for non-existant pet %u by player '%s'", uint32(packet.PetGUID.GetGUIDLow()), GetPlayer()->GetName());
+        TC_LOG_ERROR("network", "HandlePetCancelAura: Attempt to cancel an aura for non-existant pet %u by player '%s'", uint32(packet.PetGUID.GetGUIDLow()), GetPlayer()->GetName());
         return;
     }
 
     if (pet != GetPlayer()->GetGuardianPet() && pet != GetPlayer()->GetCharm())
     {
-        TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "HandlePetCancelAura: Pet %u is not a pet of player '%s'", uint32(packet.PetGUID.GetGUIDLow()), GetPlayer()->GetName());
+        TC_LOG_ERROR("network", "HandlePetCancelAura: Pet %u is not a pet of player '%s'", uint32(packet.PetGUID.GetGUIDLow()), GetPlayer()->GetName());
         return;
     }
 
@@ -736,7 +736,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPackets::Spells::SetActionBu
     uint32 action = packet.Action;
     auto type = uint8(packet.Type >> 24);
 
-    TC_LOG_INFO(LOG_FILTER_NETWORKIO, "BUTTON: %u ACTION: %u TYPE: %u", packet.Index, action, type);
+    TC_LOG_INFO("network", "BUTTON: %u ACTION: %u TYPE: %u", packet.Index, action, type);
 
     if (!packet.Action && !type)
         player->removeActionButton(packet.Index);
@@ -746,28 +746,28 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPackets::Spells::SetActionBu
         {
             case ACTION_BUTTON_MACRO:
             case ACTION_BUTTON_CMACRO:
-                TC_LOG_INFO(LOG_FILTER_NETWORKIO, "MISC: Added Macro %u into button %u", action, packet.Index);
+                TC_LOG_INFO("network", "MISC: Added Macro %u into button %u", action, packet.Index);
                 break;
             case ACTION_BUTTON_EQSET:
-                TC_LOG_INFO(LOG_FILTER_NETWORKIO, "MISC: Added EquipmentSetInfo %u into button %u", action, packet.Index);
+                TC_LOG_INFO("network", "MISC: Added EquipmentSetInfo %u into button %u", action, packet.Index);
                 break;
             case ACTION_BUTTON_SPELL:
-                TC_LOG_INFO(LOG_FILTER_NETWORKIO, "MISC: Added Spell %u into button %u", action, packet.Index);
+                TC_LOG_INFO("network", "MISC: Added Spell %u into button %u", action, packet.Index);
                 break;
             case ACTION_BUTTON_SUB_BUTTON:
-                TC_LOG_INFO(LOG_FILTER_NETWORKIO, "MISC: Added sub buttons %u into button %u", action, packet.Index);
+                TC_LOG_INFO("network", "MISC: Added sub buttons %u into button %u", action, packet.Index);
                 break;
             case ACTION_BUTTON_ITEM:
-                TC_LOG_INFO(LOG_FILTER_NETWORKIO, "MISC: Added Item %u into button %u", action, packet.Index);
+                TC_LOG_INFO("network", "MISC: Added Item %u into button %u", action, packet.Index);
                 break;
             case ACTION_BUTTON_PET:
-                TC_LOG_INFO(LOG_FILTER_NETWORKIO, "MISC: Added Pet Spell %u into button %u", action, packet.Index);
+                TC_LOG_INFO("network", "MISC: Added Pet Spell %u into button %u", action, packet.Index);
                 break;
             case ACTION_BUTTON_MOUNT:
-                TC_LOG_INFO(LOG_FILTER_NETWORKIO, "MISC: Added mount or favorite mount into button %u", action, packet.Index);
+                TC_LOG_INFO("network", "MISC: Added mount or favorite mount into button %u", action, packet.Index);
                 break;
             default:
-                TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "MISC: Unknown action button type %u for action %u into button %u for player %s (GUID: %u)", type, action, packet.Index, _player->GetName(), _player->GetGUIDLow());
+                TC_LOG_ERROR("network", "MISC: Unknown action button type %u for action %u into button %u for player %s (GUID: %u)", type, action, packet.Index, _player->GetName(), _player->GetGUIDLow());
                 break;
         }
 

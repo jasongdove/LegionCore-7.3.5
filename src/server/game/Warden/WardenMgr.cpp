@@ -59,7 +59,7 @@ void WardenMgr::LoadWardenChecks()
 
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 Warden checks. DB table `warden_checks` is empty!");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 Warden checks. DB table `warden_checks` is empty!");
         return;
     }
 
@@ -102,7 +102,7 @@ void WardenMgr::LoadWardenChecks()
         ++count;
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u warden checks.", count);
+    TC_LOG_INFO("server.loading", ">> Loaded %u warden checks.", count);
 }
 
 void WardenMgr::LoadWardenOverrides()
@@ -112,7 +112,7 @@ void WardenMgr::LoadWardenOverrides()
 
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 Warden action overrides. DB table `warden_overrides` is empty!");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 Warden action overrides. DB table `warden_overrides` is empty!");
         return;
     }
 
@@ -131,10 +131,10 @@ void WardenMgr::LoadWardenOverrides()
 
         // Check if action value is in range (0-4, see WardenActions enum)
         if (action >= MAX_WARDEN_ACTIONS)
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Warden check override action out of range (ID: %u, action: %u)", checkId, action);
+            TC_LOG_ERROR("sql.sql", "Warden check override action out of range (ID: %u, action: %u)", checkId, action);
         // Check if check actually exists before accessing the CheckStore vector
         else if (checkId > checkStore.size())
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Warden check action override for non-existing check (ID: %u, action: %u), skipped", checkId, action);
+            TC_LOG_ERROR("sql.sql", "Warden check action override for non-existing check (ID: %u, action: %u), skipped", checkId, action);
         else
         {
             checkStore[checkId]->Enabled = enabled;
@@ -151,7 +151,7 @@ void WardenMgr::LoadWardenOverrides()
         }
     } while (result->NextRow());
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u warden action overrides.", count);
+    TC_LOG_INFO("server.loading", ">> Loaded %u warden action overrides.", count);
 }
 
 void WardenMgr::LoadWardenModules(std::string os)
@@ -216,7 +216,7 @@ void WardenMgr::LoadWardenModules(std::string os)
     FindClose(hFil);
 
 #endif
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u %s warden modules.", count, os.c_str());
+    TC_LOG_INFO("server.loading", ">> Loaded %u %s warden modules.", count, os.c_str());
 }
 
 bool WardenMgr::LoadModule(const char * fileName, std::string os)

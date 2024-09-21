@@ -42,7 +42,7 @@ WardenWin::WardenWin(WorldSession* session) : Warden(session)
 
 void WardenWin::InitializeModule()
 {
-    TC_LOG_DEBUG(LOG_FILTER_WARDEN, "WARDEN: Initialize module(0x03)");
+    TC_LOG_DEBUG("warden", "WARDEN: Initialize module(0x03)");
 
     ByteBuffer buff;
     //InitializeMPQCheckFunc(buff);
@@ -135,7 +135,7 @@ void WardenWin::HandleHashResult(ByteBuffer &buff)
         return;
     }
 
-    TC_LOG_DEBUG(LOG_FILTER_WARDEN, "WARDEN: Request hash reply - succeeded");
+    TC_LOG_DEBUG("warden", "WARDEN: Request hash reply - succeeded");
 
     ARC4::rc4_init(&_clientRC4State, _currentModule->ClientKeySeed, 16);
     ARC4::rc4_init(&_serverRC4State, _currentModule->ServerKeySeed, 16);
@@ -431,7 +431,7 @@ void WardenWin::AddCheckData(uint16 id, ByteBuffer &buff, ByteBuffer &stringBuff
 
 void WardenWin::RequestBaseData()
 {
-    TC_LOG_DEBUG(LOG_FILTER_WARDEN, "WARDEN: Request static data");
+    TC_LOG_DEBUG("warden", "WARDEN: Request static data");
 
     uint8 xorByte = _currentModule->ClientKeySeed[0];
 
@@ -558,7 +558,7 @@ void WardenWin::SendExtendedData()
 
 void WardenWin::HandleData(ByteBuffer &buff)
 {
-    TC_LOG_DEBUG(LOG_FILTER_WARDEN, "WARDEN: Handle common data");
+    TC_LOG_DEBUG("warden", "WARDEN: Handle common data");
 
     _lastPacketRecvTime = getMSTime();
 
@@ -656,10 +656,10 @@ void WardenWin::HandleData(ByteBuffer &buff)
     uint32 ticksNow = getMSTime();
     uint32 ourTicks = newClientTicks + (ticksNow - _serverTicks);
 
-    TC_LOG_DEBUG(LOG_FILTER_WARDEN, "ServerTicks %u", ticksNow);         // Now
-    TC_LOG_DEBUG(LOG_FILTER_WARDEN, "RequestTicks %u", _serverTicks);    // At request
-    TC_LOG_DEBUG(LOG_FILTER_WARDEN, "Ticks %u", newClientTicks);         // At response
-    TC_LOG_DEBUG(LOG_FILTER_WARDEN, "Ticks diff %u", ourTicks - newClientTicks);*/
+    TC_LOG_DEBUG("warden", "ServerTicks %u", ticksNow);         // Now
+    TC_LOG_DEBUG("warden", "RequestTicks %u", _serverTicks);    // At request
+    TC_LOG_DEBUG("warden", "Ticks %u", newClientTicks);         // At response
+    TC_LOG_DEBUG("warden", "Ticks diff %u", ourTicks - newClientTicks);*/
 
     // read "header"
     uint8 headerRes;

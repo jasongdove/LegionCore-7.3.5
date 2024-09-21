@@ -2043,13 +2043,13 @@ SpellCastResult SpellInfo::CheckShapeshift(uint32 form) const
         shapeInfo = sSpellShapeshiftFormStore.LookupEntry(form);
         if (!shapeInfo)
         {
-            TC_LOG_ERROR(LOG_FILTER_SPELLS_AURAS, "GetErrorAtShapeshiftedCast: unknown shapeshift %u", form);
+            TC_LOG_ERROR("spells", "GetErrorAtShapeshiftedCast: unknown shapeshift %u", form);
             return SPELL_CAST_OK;
         }
         actAsShifted = !(shapeInfo->Flags & SHAPESHIFT_FORM_IS_NOT_A_SHAPESHIFT); // shapeshift acts as normal form for spells
     }
 
-    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "SpellInfo::CheckShapeshift Id %i form %u stanceMask %i Shapeshift.ShapeshiftExclude %u Shapeshift.ShapeshiftMask %u actAsShifted %u flags1 %u", Id, form, stanceMask, Shapeshift.ShapeshiftExclude, Shapeshift.ShapeshiftMask, actAsShifted, shapeInfo->flags1);
+    //TC_LOG_DEBUG("spells", "SpellInfo::CheckShapeshift Id %i form %u stanceMask %i Shapeshift.ShapeshiftExclude %u Shapeshift.ShapeshiftMask %u actAsShifted %u flags1 %u", Id, form, stanceMask, Shapeshift.ShapeshiftExclude, Shapeshift.ShapeshiftMask, actAsShifted, shapeInfo->flags1);
 
     if (actAsShifted)
     {
@@ -2083,12 +2083,12 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
     // normal case
     if (CastingReq.RequiredAreasID > 0)
     {
-        TC_LOG_TRACE(LOG_FILTER_SPELLS_AURAS, "CheckLocation: area group (%u) start match check", CastingReq.RequiredAreasID);
+        TC_LOG_TRACE("spells", "CheckLocation: area group (%u) start match check", CastingReq.RequiredAreasID);
         bool found = false;
         std::vector<uint32> areaGroupMembers = sDB2Manager.GetAreasForGroup(CastingReq.RequiredAreasID);
         for (uint32 areaId : areaGroupMembers)
         {
-            TC_LOG_TRACE(LOG_FILTER_SPELLS_AURAS, "CheckLocation: area group (%u) - trying to match areaId (%u) with zone_id/area_id (%u/%u)", CastingReq.RequiredAreasID, areaId, zone_id, area_id);
+            TC_LOG_TRACE("spells", "CheckLocation: area group (%u) - trying to match areaId (%u) with zone_id/area_id (%u/%u)", CastingReq.RequiredAreasID, areaId, zone_id, area_id);
             if (areaId == zone_id || areaId == area_id)
             {
                 found = true;
@@ -2145,7 +2145,7 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
         }
         if (!foundNoCheck)
         {
-            TC_LOG_TRACE(LOG_FILTER_SPELLS_AURAS, "CheckLocation: Spell (%u) cast failed due to spellAreaMapBounds", Id);
+            TC_LOG_TRACE("spells", "CheckLocation: Spell (%u) cast failed due to spellAreaMapBounds", Id);
             return SPELL_FAILED_INCORRECT_AREA;
         }
     }
@@ -2465,18 +2465,18 @@ SpellCastResult SpellInfo::CheckTarget(Unit const* caster, WorldObject const* ta
 SpellCastResult SpellInfo::CheckExplicitTarget(Unit const* caster, WorldObject const* target, Item const* itemTarget) const
 {
     uint32 neededTargets = GetExplicitTargetMask();
-    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "SpellInfo::CheckExplicitTarget neededTargets %i target %i Id %i", neededTargets, target ? target->GetGUID() : 0, Id);
+    //TC_LOG_DEBUG("spells", "SpellInfo::CheckExplicitTarget neededTargets %i target %i Id %i", neededTargets, target ? target->GetGUID() : 0, Id);
     if (!target)
     {
         if (neededTargets & (TARGET_FLAG_UNIT_MASK | TARGET_FLAG_GAMEOBJECT_MASK | TARGET_FLAG_CORPSE_MASK) && !(neededTargets & TARGET_FLAG_DEST_LOCATION))
             if (!(neededTargets & TARGET_FLAG_GAMEOBJECT_ITEM) || !itemTarget)
                 return SPELL_FAILED_BAD_TARGETS;
 
-        //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "SpellInfo::CheckExplicitTarget Id %i non bad target", Id);
+        //TC_LOG_DEBUG("spells", "SpellInfo::CheckExplicitTarget Id %i non bad target", Id);
         return SPELL_CAST_OK;
     }
 
-    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "SpellInfo::CheckExplicitTarget Id %i", Id);
+    //TC_LOG_DEBUG("spells", "SpellInfo::CheckExplicitTarget Id %i", Id);
     if (Unit const* unitTarget = target->ToUnit())
     {
         if (neededTargets & (TARGET_FLAG_UNIT_ENEMY | TARGET_FLAG_UNIT_ALLY | TARGET_FLAG_UNIT_RAID | TARGET_FLAG_UNIT_PARTY | TARGET_FLAG_UNIT_MINIPET | TARGET_FLAG_UNIT_PASSENGER))
@@ -2617,7 +2617,7 @@ uint32 SpellInfo::GetMechanicMask(uint32 miscVal) const
             break;
     }
 
-    //TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "SpellInfo::GetMechanicMask Id %u miscVal %u mechanic_immunity_list %u", Id, miscVal, mechanic_immunity_list);
+    //TC_LOG_DEBUG("spells", "SpellInfo::GetMechanicMask Id %u miscVal %u mechanic_immunity_list %u", Id, miscVal, mechanic_immunity_list);
     return mechanic_immunity_list;
 }
 
@@ -2811,7 +2811,7 @@ void SpellInfo::CalcPowerCost(Unit const* caster, SpellSchoolMask schoolMask, Sp
             auto PowerType = Powers(power->PowerType > 127 ? power->PowerType - 256 : power->PowerType);
             // Base powerCost
             int32 powerCost = power->ManaCost;
-            // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "CalcPowerCost Id %u powerCost %i PowerCostPct %f ManaCostAdditional %u", Id, powerCost, power->PowerCostPct, power->ManaCostAdditional);
+            // TC_LOG_DEBUG("spells", "CalcPowerCost Id %u powerCost %i PowerCostPct %f ManaCostAdditional %u", Id, powerCost, power->PowerCostPct, power->ManaCostAdditional);
 
             // PCT cost from total amount
             if (power->PowerCostPct)
@@ -2827,7 +2827,7 @@ void SpellInfo::CalcPowerCost(Unit const* caster, SpellSchoolMask schoolMask, Sp
                         break;
                     default:
                         powerCost += int32(CalculatePct(caster->GetCreatePowers(Powers(PowerType)), power->PowerCostPct));
-                        // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "CalcPowerCost: Power type '%i' in spell %d, powerCost %i, GetCreatePowers %i", PowerType, Id, powerCost, caster->GetCreatePowers(PowerType));
+                        // TC_LOG_DEBUG("spells", "CalcPowerCost: Power type '%i' in spell %d, powerCost %i, GetCreatePowers %i", PowerType, Id, powerCost, caster->GetCreatePowers(PowerType));
                         //return powerCost;
                 }
             }
@@ -2849,7 +2849,7 @@ void SpellInfo::CalcPowerCost(Unit const* caster, SpellSchoolMask schoolMask, Sp
                 return false;
             });
 
-            // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "CalcPowerCost Id %u powerCost %i", Id, powerCost);
+            // TC_LOG_DEBUG("spells", "CalcPowerCost Id %u powerCost %i", Id, powerCost);
 
             if (power->OptionalCost)
             {
@@ -2878,7 +2878,7 @@ void SpellInfo::CalcPowerCost(Unit const* caster, SpellSchoolMask schoolMask, Sp
                     modOwner->ApplySpellMod(Id, SPELLMOD_SPELL_COST2, powerCost);
             }
 
-            // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "CalcPowerCost Id %u powerCost %i", Id, powerCost);
+            // TC_LOG_DEBUG("spells", "CalcPowerCost Id %u powerCost %i", Id, powerCost);
 
             if (!caster->IsControlledByPlayer() && G3D::fuzzyEq(power->PowerCostPct, 0.0f) && SpellLevel)
             {
@@ -2900,7 +2900,7 @@ void SpellInfo::CalcPowerCost(Unit const* caster, SpellSchoolMask schoolMask, Sp
                 return false;
             }));
 
-            // TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "CalcPowerCost Id %u powerCost %i PowerType %i", Id, powerCost, PowerType);
+            // TC_LOG_DEBUG("spells", "CalcPowerCost Id %u powerCost %i PowerType %i", Id, powerCost, PowerType);
 
             if (power->ManaCost >= 0 && powerCost < 0)
                 powerCost = 0;
@@ -3636,7 +3636,7 @@ SpellPowerEntry const* SpellInfo::GetPowerInfo(uint8 powerIndex) const
 {
     if (powerIndex >= MAX_POWERS_FOR_SPELL)
     {
-        TC_LOG_ERROR(LOG_FILTER_SPELLS_AURAS, "Invalid power index: %u, for spell: %u.", powerIndex, Id);
+        TC_LOG_ERROR("spells", "Invalid power index: %u, for spell: %u.", powerIndex, Id);
         powerIndex = 0;
     }
 

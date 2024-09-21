@@ -50,6 +50,7 @@
 #include "OutdoorPvPMgr.h"
 #include "PacketUtilities.h"
 #include "Player.h"
+#include "QueryHolder.h"
 #include "RealmList.h"
 #include "ScriptMgr.h"
 #include "SocialMgr.h"
@@ -183,19 +184,19 @@ void WorldSession::SendPacket(WorldPacket const* packet, bool forced /*= false*/
     uint32 opcode = packet->GetOpcode();
     if (opcode == NULL_OPCODE)
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Prevented sending of NULL_OPCODE to %s", GetPlayerName(false).c_str());
+        TC_LOG_ERROR("misc", "Prevented sending of NULL_OPCODE to %s", GetPlayerName(false).c_str());
         return;
     }
     if (opcode == MAX_OPCODE)
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Prevented sending of wrong opcode to %s", GetPlayerName(false).c_str());
+        TC_LOG_ERROR("misc", "Prevented sending of wrong opcode to %s", GetPlayerName(false).c_str());
         return;
     }
 
     ServerOpcodeHandler const* handler = opcodeTable[static_cast<OpcodeServer>(opcode)];
     if (!handler)
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Prevented sending of opcode %u with non existing handler to %s", opcode, GetPlayerName().c_str());
+        TC_LOG_ERROR("misc", "Prevented sending of opcode %u with non existing handler to %s", opcode, GetPlayerName().c_str());
         return;
     }
 
@@ -204,7 +205,7 @@ void WorldSession::SendPacket(WorldPacket const* packet, bool forced /*= false*/
     {
         if (packet->GetConnection() != CONNECTION_TYPE_INSTANCE && IsInstanceOnlyOpcode(opcode))
         {
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "Prevented sending of instance only opcode %u with connection type %u to %s", opcode, packet->GetConnection(), GetPlayerName().c_str());
+            TC_LOG_ERROR("misc", "Prevented sending of instance only opcode %u with connection type %u to %s", opcode, packet->GetConnection(), GetPlayerName().c_str());
             return;
         }
 
@@ -213,13 +214,13 @@ void WorldSession::SendPacket(WorldPacket const* packet, bool forced /*= false*/
 
     if (!m_Socket[conIdx])
     {
-        TC_LOG_DEBUG(LOG_FILTER_GENERAL, "Prevented sending of %s to non existent socket %u to %s", GetOpcodeNameForLogging(static_cast<OpcodeServer>(opcode)).c_str(), conIdx, GetPlayerName().c_str());
+        TC_LOG_DEBUG("misc", "Prevented sending of %s to non existent socket %u to %s", GetOpcodeNameForLogging(static_cast<OpcodeServer>(opcode)).c_str(), conIdx, GetPlayerName().c_str());
         return;
     }
 
     if (!forced && handler->Status == STATUS_UNHANDLED)
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "Prevented sending disabled opcode %s to %s", GetOpcodeNameForLogging(static_cast<OpcodeServer>(opcode)).c_str(), GetPlayerName().c_str());
+        TC_LOG_ERROR("misc", "Prevented sending disabled opcode %s to %s", GetOpcodeNameForLogging(static_cast<OpcodeServer>(opcode)).c_str(), GetPlayerName().c_str());
         return;
     }
 
@@ -244,7 +245,7 @@ void WorldSession::QueuePacket(WorldPacket* new_packet)
 void WorldSession::LogUnexpectedOpcode(WorldPacket* packet, const char* status, const char *reason)
 {
     #ifdef WIN32
-    TC_LOG_ERROR(LOG_FILTER_OPCODES, "Received unexpected opcode %s Status: %s Reason: %s from %s",
+    TC_LOG_ERROR("network.opcode", "Received unexpected opcode %s Status: %s Reason: %s from %s",
         GetOpcodeNameForLogging(static_cast<OpcodeClient>(packet->GetOpcode())).c_str(), status, reason, GetPlayerName(false).c_str());
     #endif
 }
@@ -252,11 +253,11 @@ void WorldSession::LogUnexpectedOpcode(WorldPacket* packet, const char* status, 
 /// Logging helper for unexpected opcodes
 void WorldSession::LogUnprocessedTail(WorldPacket const* packet)
 {
-    if (!sLog->ShouldLog(LOG_FILTER_NETWORKIO, LOG_LEVEL_TRACE) || packet->rpos() >= packet->wpos())
+    if (!sLog->ShouldLog("network", LOG_LEVEL_TRACE) || packet->rpos() >= packet->wpos())
         return;
 
     #ifdef WIN32
-    TC_LOG_ERROR(LOG_FILTER_OPCODES, "Unprocessed tail data (read stop at %u from %u) Opcode %s from %s",
+    TC_LOG_ERROR("network.opcode", "Unprocessed tail data (read stop at %u from %u) Opcode %s from %s",
         uint32(packet->rpos()), uint32(packet->wpos()), GetOpcodeNameForLogging(static_cast<OpcodeClient>(packet->GetOpcode())).c_str(), GetPlayerName(false).c_str());
     packet->print_storage();
     #endif
@@ -329,7 +330,7 @@ bool WorldSession::Update(uint32 diff, Map* map)
                             requeuePackets.push_back(packet);
                             deletePacket = false;
                             #ifdef WIN32
-                            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "Re-enqueueing packet with opcode %s with with status STATUS_LOGGEDIN. Player is currently not in world yet.", GetOpcodeNameForLogging(opcode).c_str());
+                            TC_LOG_ERROR("network", "Re-enqueueing packet with opcode %s with with status STATUS_LOGGEDIN. Player is currently not in world yet.", GetOpcodeNameForLogging(opcode).c_str());
                             #endif
                         }
                     }
@@ -368,24 +369,24 @@ bool WorldSession::Update(uint32 diff, Map* map)
                     break;
                 case STATUS_NEVER:
                     #ifdef WIN32
-                    TC_LOG_ERROR(LOG_FILTER_OPCODES, "Received not allowed opcode %s from %s", GetOpcodeNameForLogging(opcode).c_str(), GetPlayerName(false).c_str());
+                    TC_LOG_ERROR("network.opcode", "Received not allowed opcode %s from %s", GetOpcodeNameForLogging(opcode).c_str(), GetPlayerName(false).c_str());
                     #endif
                     break;
                 case STATUS_UNHANDLED:
                     #ifdef WIN32
-                    TC_LOG_ERROR(LOG_FILTER_OPCODES, "Received not handled opcode %s from %s", GetOpcodeNameForLogging(opcode).c_str(), GetPlayerName(false).c_str());
+                    TC_LOG_ERROR("network.opcode", "Received not handled opcode %s from %s", GetOpcodeNameForLogging(opcode).c_str(), GetPlayerName(false).c_str());
                     #endif
                     break;
             }
         }
         catch (WorldPackets::PacketArrayMaxCapacityException const& pamce)
         {
-            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "PacketArrayMaxCapacityException: %s while parsing %s from %s.",
+            TC_LOG_ERROR("network", "PacketArrayMaxCapacityException: %s while parsing %s from %s.",
                 pamce.what(), GetOpcodeNameForLogging(opcode).c_str(), GetPlayerName(false).c_str());
         }
         catch (ByteBufferException const&)
         {
-            TC_LOG_ERROR(LOG_FILTER_NETWORKIO, "WorldSession::Update ByteBufferException occured while parsing a packet (opcode: %u) from client %s, accountid=%i. Skipped packet.",
+            TC_LOG_ERROR("network", "WorldSession::Update ByteBufferException occured while parsing a packet (opcode: %u) from client %s, accountid=%i. Skipped packet.",
                 packet->GetOpcode(), GetRemoteAddress().c_str(), GetAccountId());
             packet->hexlike();
         }
@@ -715,7 +716,7 @@ void WorldSession::LogoutPlayer(bool Save)
         // calls to GetMap in this case may cause crashes
         volatile uint32 guidDebug = _player->GetGUIDLow();
         _player->CleanupsBeforeDelete();
-        TC_LOG_INFO(LOG_FILTER_CHARACTER, "Account: %d (IP: %s) Logout Character:[%s] (GUID: %u) Level: %d", GetAccountId(), GetRemoteAddress().c_str(), _player->GetName(), _player->GetGUIDLow(), _player->getLevel());
+        TC_LOG_INFO("entities.player.character", "Account: %d (IP: %s) Logout Character:[%s] (GUID: %u) Level: %d", GetAccountId(), GetRemoteAddress().c_str(), _player->GetName(), _player->GetGUIDLow(), _player->getLevel());
 
         //! Send the 'logout complete' packet to the client
         //! Client will respond by sending 3x CMSG_CANCEL_TRADE, which we currently dont handle
@@ -802,19 +803,19 @@ const char* WorldSession::GetTrinityString(int32 entry) const
 
 void WorldSession::Handle_NULL(WorldPackets::Null& null)
 {
-    TC_LOG_ERROR(LOG_FILTER_OPCODES, "Received unhandled opcode %s from %s",
+    TC_LOG_ERROR("network.opcode", "Received unhandled opcode %s from %s",
         GetOpcodeNameForLogging(null.GetOpcode()).c_str(), GetPlayerName(false).c_str());
 }
 
 void WorldSession::Handle_EarlyProccess(WorldPacket& recvPacket)
 {
-    TC_LOG_ERROR(LOG_FILTER_OPCODES, "Received opcode %s that must be processed in WorldSocket::OnRead from %s",
+    TC_LOG_ERROR("network.opcode", "Received opcode %s that must be processed in WorldSocket::OnRead from %s",
         GetOpcodeNameForLogging(static_cast<OpcodeClient>(recvPacket.GetOpcode())).c_str(), GetPlayerName(false).c_str());
 }
 
 void WorldSession::SendConnectToInstance(WorldPackets::Auth::ConnectToSerial serial)
 {
-    TC_LOG_INFO(LOG_FILTER_OPCODES, "WorldSession::SendConnectToInstance");
+    TC_LOG_INFO("network.opcode", "WorldSession::SendConnectToInstance");
 
     auto instanceAddress = realm.GetAddressForClient(boost::asio::ip::address::from_string(GetRemoteAddress()));
 
@@ -856,14 +857,14 @@ void WorldSession::LoadAccountData(PreparedQueryResult const& result, uint32 mas
         uint32 type = fields[0].GetUInt8();
         if (type >= NUM_ACCOUNT_DATA_TYPES)
         {
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "Table `%s` have invalid account data type (%u), ignore.",
+            TC_LOG_ERROR("misc", "Table `%s` have invalid account data type (%u), ignore.",
                 mask == GLOBAL_CACHE_MASK ? "account_data" : "character_account_data", type);
             continue;
         }
 
         if ((mask & (1 << type)) == 0)
         {
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "Table `%s` have non appropriate for table  account data type (%u), ignore.",
+            TC_LOG_ERROR("misc", "Table `%s` have non appropriate for table  account data type (%u), ignore.",
                 mask == GLOBAL_CACHE_MASK ? "account_data" : "character_account_data", type);
             continue;
         }

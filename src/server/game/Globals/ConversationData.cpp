@@ -43,7 +43,7 @@ void ConversationDataStoreMgr::LoadConversations()
         "FROM conversation ORDER BY `map` ASC, `guid` ASC");
     if (!result)
     {
-        TC_LOG_ERROR(LOG_FILTER_SERVER_LOADING, "ConversationDataStoreMgr::LoadConversations() >> Loaded 0 conversation. DB table `conversation` is empty.");
+        TC_LOG_ERROR("server.loading", "ConversationDataStoreMgr::LoadConversations() >> Loaded 0 conversation. DB table `conversation` is empty.");
         return;
     }
 
@@ -76,7 +76,7 @@ void ConversationDataStoreMgr::LoadConversations()
 
         if (!hasData || !isActor && !isCreature)
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "ConversationDataStoreMgr::LoadConversations() >> Table `conversation` has conversation (GUID: " UI64FMTD ") with non existing conversation data %u, skipped.", guid, entry);
+            TC_LOG_ERROR("sql.sql", "ConversationDataStoreMgr::LoadConversations() >> Table `conversation` has conversation (GUID: " UI64FMTD ") with non existing conversation data %u, skipped.", guid, entry);
             continue;
         }
 
@@ -119,7 +119,7 @@ void ConversationDataStoreMgr::LoadConversations()
                     lastCreature->second->spawnMask |= data.spawnMask;
                     WorldDatabase.PExecute("UPDATE conversation SET phaseMask = %u, spawnMask = " UI64FMTD " WHERE guid = %u", lastCreature->second->phaseMask, lastCreature->second->spawnMask, lastCreature->second->guid);
                     WorldDatabase.PExecute("DELETE FROM conversation WHERE guid = %u", guid);
-                    TC_LOG_ERROR(LOG_FILTER_SQL, "ConversationDataStoreMgr::LoadConversations() >> Table `conversation` have clone npc %u witch stay too close (dist: %f). original npc guid %u. npc with guid %u will be deleted.", entry, distsq1, lastCreature->second->guid, guid);
+                    TC_LOG_ERROR("sql.sql", "ConversationDataStoreMgr::LoadConversations() >> Table `conversation` have clone npc %u witch stay too close (dist: %f). original npc guid %u. npc with guid %u will be deleted.", entry, distsq1, lastCreature->second->guid, guid);
                     continue;
                 }
             }
@@ -132,20 +132,20 @@ void ConversationDataStoreMgr::LoadConversations()
 
         if (!sMapStore.LookupEntry(data.mapid))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadConversations >> Table `conversation` have conversation (GUID: " UI64FMTD ") that spawned at not existed map (Id: %u), skipped.", guid, data.mapid);
+            TC_LOG_ERROR("sql.sql", "LoadConversations >> Table `conversation` have conversation (GUID: " UI64FMTD ") that spawned at not existed map (Id: %u), skipped.", guid, data.mapid);
             continue;
         }
 
         if (data.spawnMask & ~spawnMasks[data.mapid])
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadConversations >> Table `conversation` have conversation (GUID: " UI64FMTD ") that have wrong spawn mask " UI64FMTD " including not supported difficulty modes for map (Id: %u) spawnMasks[data.mapid]: %u.", guid, data.spawnMask, data.mapid, spawnMasks[data.mapid]);
+            TC_LOG_ERROR("sql.sql", "LoadConversations >> Table `conversation` have conversation (GUID: " UI64FMTD ") that have wrong spawn mask " UI64FMTD " including not supported difficulty modes for map (Id: %u) spawnMasks[data.mapid]: %u.", guid, data.spawnMask, data.mapid, spawnMasks[data.mapid]);
             WorldDatabase.PExecute("UPDATE conversation SET spawnMask = " UI64FMTD " WHERE guid = %u", spawnMasks[data.mapid], guid);
             data.spawnMask = spawnMasks[data.mapid];
         }
 
         if (data.phaseMask == 0)
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "LoadConversations >> Table `conversation` have conversation (GUID: " UI64FMTD " Entry: %u) with `phaseMask`=0 (not visible for anyone), set to 1.", guid, data.id);
+            TC_LOG_ERROR("sql.sql", "LoadConversations >> Table `conversation` have conversation (GUID: " UI64FMTD " Entry: %u) with `phaseMask`=0 (not visible for anyone), set to 1.", guid, data.id);
             data.phaseMask = 1;
         }
 
@@ -168,7 +168,7 @@ void ConversationDataStoreMgr::LoadConversations()
         ++count;
 
     } while (result->NextRow());
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "ConversationDataStoreMgr::LoadConversations() >> Loaded %u conversation in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", "ConversationDataStoreMgr::LoadConversations() >> Loaded %u conversation in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void ConversationDataStoreMgr::LoadConversationData()
@@ -198,10 +198,10 @@ void ConversationDataStoreMgr::LoadConversationData()
             ++counter;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "ConversationDataStoreMgr::LoadConversationData() >> Loaded %u conversation data.", counter);
+        TC_LOG_INFO("server.loading", "ConversationDataStoreMgr::LoadConversationData() >> Loaded %u conversation data.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "ConversationDataStoreMgr::LoadConversationData() >> Loaded 0 conversation data. DB table `conversation_data` is empty.");
+        TC_LOG_INFO("server.loading", "ConversationDataStoreMgr::LoadConversationData() >> Loaded 0 conversation data. DB table `conversation_data` is empty.");
 
     //                                      0      1         2               3          4       5         6
     result = WorldDatabase.Query("SELECT `entry`, `id`, `creatureId`, `creatureGuid`, `unk1`, `unk2`, `duration` FROM `conversation_creature` ORDER BY id");
@@ -225,10 +225,10 @@ void ConversationDataStoreMgr::LoadConversationData()
             ++counter;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "ConversationDataStoreMgr::LoadConversationData() >> Loaded %u conversation creature data.", counter);
+        TC_LOG_INFO("server.loading", "ConversationDataStoreMgr::LoadConversationData() >> Loaded %u conversation creature data.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "ConversationDataStoreMgr::LoadConversationData() >> Loaded 0 conversation creature data. DB table `conversation_creature` is empty.");
+        TC_LOG_INFO("server.loading", "ConversationDataStoreMgr::LoadConversationData() >> Loaded 0 conversation creature data. DB table `conversation_creature` is empty.");
 
 
     //                                      0      1        2           3             4         5       6       7         8
@@ -255,10 +255,10 @@ void ConversationDataStoreMgr::LoadConversationData()
             ++counter;
         } while (result->NextRow());
 
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "ConversationDataStoreMgr::LoadConversationData() >> Loaded %u conversation actor data.", counter);
+        TC_LOG_INFO("server.loading", "ConversationDataStoreMgr::LoadConversationData() >> Loaded %u conversation actor data.", counter);
     }
     else
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "ConversationDataStoreMgr::LoadConversationData() >> Loaded 0 conversation actor data. DB table `conversation_actor` is empty.");
+        TC_LOG_INFO("server.loading", "ConversationDataStoreMgr::LoadConversationData() >> Loaded 0 conversation actor data. DB table `conversation_actor` is empty.");
 }
 
 ConversationSpawnData const* ConversationDataStoreMgr::GetConversationData(ObjectGuid::LowType const& guid) const

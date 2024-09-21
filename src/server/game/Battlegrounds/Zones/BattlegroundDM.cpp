@@ -31,7 +31,7 @@ bool BattlegroundDeathMatch::SetupBattleground()
     {
         if (!AddObject(i, DM_Buffs[urand(0, 2)], dm_buf_pos[i].GetPositionX(), dm_buf_pos[i].GetPositionY(), dm_buf_pos[i].GetPositionZ(), dm_buf_pos[i].GetOrientation(), 0, 0, 0.7313537f, -0.6819983f, BUFF_RESPAWN_TIME))
         {
-            TC_LOG_ERROR(LOG_FILTER_SQL, "BatteGroundWS: Failed to spawn some object Battleground not created!");
+            TC_LOG_ERROR("sql.sql", "BatteGroundWS: Failed to spawn some object Battleground not created!");
             return false;
         }
     }

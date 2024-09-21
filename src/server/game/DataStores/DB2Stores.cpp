@@ -834,7 +834,7 @@ namespace
     std::unordered_map<uint32, bool> _isChildItem;
 }
 
-typedef StringVector DB2StoreProblemList;
+typedef std::vector<std::string> DB2StoreProblemList;
 
 std::mutex loadMutex{};
 
@@ -901,7 +901,7 @@ void LoadDB2(uint32& availableDb2Locales, DB2StoreProblemList& errlist, StorageM
             errlist.push_back(stream.str());
             loadMutex.unlock();
             fclose(f);
-            TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, "%s", stream.str().c_str());
+            TC_LOG_INFO("server.loading", "%s", stream.str().c_str());
         }
         else
         {
@@ -1594,7 +1594,7 @@ void DB2Manager::LoadStores(std::string const& dataPath, uint32 defaultLocale)
     // error checks
     if (bad_db2_files.size() == _stores.size())
     {
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "\nIncorrect DataDir value in worldserver.conf or ALL required *.db2 files (" SZFMTD ") not found by path: %sdbc/%s/", _stores.size(), dataPath.c_str(), localeNames[defaultLocale]);
+        TC_LOG_ERROR("misc", "\nIncorrect DataDir value in worldserver.conf or ALL required *.db2 files (" SZFMTD ") not found by path: %sdbc/%s/", _stores.size(), dataPath.c_str(), localeNames[defaultLocale]);
         exit(1);
     }
     if (!bad_db2_files.empty())
@@ -1603,13 +1603,13 @@ void DB2Manager::LoadStores(std::string const& dataPath, uint32 defaultLocale)
         for (auto const& bad_db2_file : bad_db2_files)
             str += bad_db2_file + "\n";
 
-        TC_LOG_ERROR(LOG_FILTER_GENERAL, "\nSome required *.db2 files (%u from " SZFMTD ") not found or not compatible:\n%s", bad_db2_files.size(), _stores.size(), str.c_str());
+        TC_LOG_ERROR("misc", "\nSome required *.db2 files (%u from " SZFMTD ") not found or not compatible:\n%s", bad_db2_files.size(), _stores.size(), str.c_str());
         exit(1);
     }
 
     InitDB2CustomStores();
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Initialized " SZFMTD " DB2 data stores in %u ms", _stores.size(), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Initialized " SZFMTD " DB2 data stores in %u ms", _stores.size(), GetMSTimeDiffToNow(oldMSTime));
 }
 
 void DB2Manager::InitDB2CustomStores()
@@ -1887,7 +1887,7 @@ void DB2Manager::InitDB2CustomStores()
                 data.points.push_back(ResearchPOIPoint(poi->X, poi->Y));
 
         if (data.points.empty())
-            TC_LOG_DEBUG(LOG_FILTER_SERVER_LOADING, "Research siteID %u QuestPoiBlobId %u MapID %u has 0 points points in DB2!", rs->ID, rs->QuestPoiBlobID, rs->MapID);
+            TC_LOG_DEBUG("server.loading", "Research siteID %u QuestPoiBlobId %u MapID %u has 0 points points in DB2!", rs->ID, rs->QuestPoiBlobID, rs->MapID);
     }
 
     for (ResearchProjectEntry const* rp : sResearchProjectStore)
@@ -2435,7 +2435,7 @@ void DB2Manager::LoadHotfixData()
     auto result = HotfixDatabase.Query("SELECT Id, TableHash, RecordId, Deleted FROM hotfix_data ORDER BY Id");
     if (!result)
     {
-        TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 hotfix info entries.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 hotfix info entries.");
         return;
     }
 
@@ -2452,7 +2452,7 @@ void DB2Manager::LoadHotfixData()
         auto deleted = fields[3].GetBool();
         if (_stores.find(tableHash) == _stores.end())
         {
-            TC_LOG_INFO(LOG_FILTER_SQL, "Table `hotfix_data` references unknown DB2 store by hash 0x%X in hotfix id %d", tableHash, id);
+            TC_LOG_INFO("sql.sql", "Table `hotfix_data` references unknown DB2 store by hash 0x%X in hotfix id %d", tableHash, id);
             continue;
         }
 
@@ -2467,7 +2467,7 @@ void DB2Manager::LoadHotfixData()
             if (auto store = Trinity::Containers::MapGetValuePtr(_stores, deletedRecord.first.first))
                 store->EraseRecord(deletedRecord.first.second);
 
-    TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded %u hotfix records in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u hotfix records in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void DB2Manager::InsertNewHotfix(uint32 tableHash, uint32 recordId)
@@ -2783,7 +2783,7 @@ DB2Manager::LanguageWordsContainer const* DB2Manager::GetLanguageWordMap(uint32 
     return Trinity::Containers::MapGetValuePtr(_languageWordsMap, langID);
 }
 
-StringVector const* DB2Manager::GetLanguageWordsBySize(uint32 langID, uint32 size)
+std::vector<std::string> const* DB2Manager::GetLanguageWordsBySize(uint32 langID, uint32 size)
 {
     if (auto wordMap = GetLanguageWordMap(langID))
         return Trinity::Containers::MapGetValuePtr(*wordMap, size);

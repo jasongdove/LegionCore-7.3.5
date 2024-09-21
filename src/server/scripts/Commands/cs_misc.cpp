@@ -26,6 +26,7 @@
 #include "Guild.h"
 #include "GuildMgr.h"
 #include "InstanceSaveMgr.h"
+#include "IpAddress.h"
 #include "MovementGenerator.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
@@ -35,7 +36,6 @@
 #include "SpellAuraEffects.h"
 #include "SpellAuras.h"
 #include "TargetedMovementGenerator.h"
-#include "WeatherMgr.h"
 #include "WordFilterMgr.h"
 #include <fstream>
 #include <boost/locale/encoding_utf.hpp>
@@ -1540,7 +1540,7 @@ public:
         if (!playerTarget)
             playerTarget = player;
 
-        TC_LOG_DEBUG(LOG_FILTER_GENERAL, handler->GetTrinityString(LANG_ADDITEM), itemId, count);
+        TC_LOG_DEBUG("misc", handler->GetTrinityString(LANG_ADDITEM), itemId, count);
 
         ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
         if (!itemTemplate)
@@ -1698,7 +1698,7 @@ public:
         if (!playerTarget)
             playerTarget = player;
 
-        TC_LOG_DEBUG(LOG_FILTER_GENERAL, handler->GetTrinityString(LANG_ADDITEMSET), itemSetId);
+        TC_LOG_DEBUG("misc", handler->GetTrinityString(LANG_ADDITEMSET), itemSetId);
 
         bool found = false;
         ItemTemplateContainer const* its = sObjectMgr->GetItemTemplateStore();
@@ -1962,7 +1962,7 @@ public:
                 lastIp = fields[3].GetString();
                 // lastLogin = fields[4].GetString();
 
-                uint32 ip = inet_addr(lastIp.c_str());
+                uint32 ip = Trinity::Net::address_to_uint(Trinity::Net::make_address_v4(lastIp));
 #if TRINITY_ENDIAN == BIGENDIAN
                 EndianConvertReverse(ip);
 #endif
@@ -2907,7 +2907,7 @@ public:
 
         if (!pet->InitStatsForLevel(creatureTarget->getLevel()))
         {
-            TC_LOG_ERROR(LOG_FILTER_GENERAL, "InitStatsForLevel() in EffectTameCreature failed! Pet deleted.");
+            TC_LOG_ERROR("misc", "InitStatsForLevel() in EffectTameCreature failed! Pet deleted.");
             handler->PSendSysMessage("Error 2");
             delete pet;
             return false;
@@ -3663,7 +3663,7 @@ public:
                             hasSecondary = true;
                     }
 
-                    TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "ItemSpecStats SpecID %u hasPrimary %u, hasSecondary %u ItemSpecPrimaryStat %i PrimaryStat %i", itemSpec->SpecID, hasPrimary, hasSecondary, itemSpecStats.ItemSpecPrimaryStat, itemSpec->PrimaryStat);
+                    TC_LOG_DEBUG("spells", "ItemSpecStats SpecID %u hasPrimary %u, hasSecondary %u ItemSpecPrimaryStat %i PrimaryStat %i", itemSpec->SpecID, hasPrimary, hasSecondary, itemSpecStats.ItemSpecPrimaryStat, itemSpec->PrimaryStat);
 
                     if (!hasPrimary || !hasSecondary)
                         continue;
@@ -3786,7 +3786,7 @@ public:
 
         Player* player = handler->GetSession()->GetPlayer();
 
-        TC_LOG_DEBUG(LOG_FILTER_GENERAL, handler->GetTrinityString(LANG_ADDITEM), itemId, count);
+        TC_LOG_DEBUG("misc", handler->GetTrinityString(LANG_ADDITEM), itemId, count);
 
         ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
         if (!itemTemplate)

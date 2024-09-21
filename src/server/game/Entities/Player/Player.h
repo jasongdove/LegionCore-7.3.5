@@ -46,6 +46,7 @@
 #include "../../Vignette/VignetteMgr.h"
 #include "EquipementSet.h"
 #include "LogsSystem.h"
+#include <queue>
 
 class SpectatorAddonMsg;
 struct Mail;

@@ -2780,13 +2780,12 @@ AuctionHouseBot.Buyer.Recheck.Interval = 20
 ###################################################################################################
 
 ###################################################################################################
-#
-#  Logging system options.
+# LOGGING SYSTEM SETTINGS
 #
 #  Appender config values: Given a appender "name"
 #    Appender.name
-#        Description: Defines 'where to log'
-#        Format:      Type,LogLevel,Flags,optional1,optional2
+#        Description: Defines 'where to log'.
+#        Format:      Type,LogLevel,Flags,optional1,optional2,optional3
 #
 #                     Type
 #                         0 - (None)
@@ -2808,9 +2807,9 @@ AuctionHouseBot.Buyer.Recheck.Interval = 20
 #                         1 - Prefix Timestamp to the text
 #                         2 - Prefix Log Level to the text
 #                         4 - Prefix Log Filter type to the text
-#                         8 - Append timestamp to the log file name. Format: YYYY-MM-DD_HH-MM-SS 
+#                         8 - Append timestamp to the log file name. Format: YYYY-MM-DD_HH-MM-SS
 #                             (Only used with Type = 2)
-#                        16 - Make a backup of existing file before overwrite 
+#                        16 - Make a backup of existing file before overwrite
 #                             (Only used with Mode = w)
 #
 #                     Colors (read as optional1 if Type = Console)
@@ -2830,7 +2829,7 @@ AuctionHouseBot.Buyer.Recheck.Interval = 20
 #                        12 - LMAGENTA
 #                        13 - LCYAN
 #                        14 - WHITE
-#                         Example: "1 1 9 10 3 8"
+#                         Example: "13 11 9 5 3 1"
 #
 #                     File: Name of the file (read as optional1 if Type = File)
 #                         Allows to use one "%s" to create dynamic files
@@ -2839,82 +2838,23 @@ AuctionHouseBot.Buyer.Recheck.Interval = 20
 #                          a - (Append)
 #                          w - (Overwrite)
 #
+#                     MaxFileSize: Maximum file size of the log file before creating a new log file
+#                     (read as optional3 if Type = File)
+#                         Size is measured in bytes expressed in a 64-bit unsigned integer.
+#                         Maximum value is 4294967295 (4 gb). Leave blank for no limit.
+#                         NOTE: Does not work with dynamic filenames.
+#                         Example:  536870912 (512 mb)
+#
 
-Appender.Console  =1,1,2,1 1 9 10 3 8
-Appender.World    =2,1,2,World.log,w
-Appender.Pdump    =2,1,0,Pdump.log,w
-Appender.Errors   =2,5,0,Errors.log,w
-Appender.DBErrors =2,5,0,DBErrors.log,w
-
-#    Appenders
-#        Description: List of Appenders to read from config
-#                     (Using spaces as separator).
-#        Default:     "Console World Errors DBErrors"
-
-Appenders=Console World Pdump Errors DBErrors
+Appender.Console=1,3,0
+Appender.Server=2,2,0,Server.log,w
+Appender.GM=2,2,15,gm/gm_%s.log
+Appender.DBErrors=2,2,0,DBErrors.log
 
 #  Logger config values: Given a logger "name"
 #    Logger.name
 #        Description: Defines 'What to log'
-#        Format:      Type,LogLevel,AppenderList
-#                     Type
-#                         0 - Default. Each type that has no config will
-#                             rely on this one. Core will create this logger
-#                             (disabled) if it's not configured
-#                         1 - Units that doesn't fit in other categories
-#                         2 - Pets
-#                         3 - Vehicles
-#                         4 - C++ AI, instance scripts, etc.
-#                         5 - DB AI, such as SAI, EAI, CreatureAI
-#                         6 - DB map scripts
-#                         7 - Network input/output,
-#                             such as packet handlers and netcode logs
-#                         8 - Spellsystem and aurasystem
-#                         9 - Achievement system
-#                        10 - Condition system
-#                        11 - Pool system
-#                        12 - Auction house
-#                        13 - Arena's and battlegrounds
-#                        14 - Outdoor PVP
-#                        15 - Chat system
-#                        16 - LFG system
-#                        17 - Maps, instances (not scripts),
-#                             grids, cells, visibility, etc.
-#                        18 - Player that doesn't fit in other categories.
-#                        19 - Player loading from DB
-#                             (Player::_LoadXXX functions)
-#                        20 - Items
-#                        21 - Player skills (do not confuse with spells)
-#                        22 - Player chat logs
-#                        23 - loot
-#                        24 - guilds
-#                        25 - transports
-#                        26 - SQL DB
-#                        27 - GM Commands
-#                        28 - Remote Access Commands
-#                        29 - Warden
-#                        31 - Worldserver
-#                        32 - Game Events
-#                        33 - Calendar
-#                        34 - Character (Exclusive to log login, logout, create, rename)
-#                        35 - Arenas
-#                        36 - SQL Driver
-#                        37 - SQL Dev
-#                        38 - Player Dump
-#                        39 - Battlefield
-#                        40 - Server Loading
-#                        41 - Opcodes (just id and name sent / received)
-#                        48 - Proc
-#                        50 - Donate
-#                        51 - Battlepet
-#                        52 - Protobuf
-#                        53 - Areatrigger
-#                        54 - Gold
-#                        55 - World_quest
-#                        56 - Challenge
-#                        58 - Path_generator
-#                        59 - Mmaps
-#                        60 - Vmaps
+#        Format:      LogLevel,AppenderList
 #
 #                     LogLevel
 #                         0 - (Disabled)
@@ -2929,65 +2869,80 @@ Appenders=Console World Pdump Errors DBErrors
 #                     (Using spaces as separator).
 #
 
-Logger.GENERAL             = 0,0,Console World Errors
-Logger.UNITS               = 1,0,Console World Errors
-Logger.PETS                = 2,0,Console World Errors
-Logger.VEHICLES            = 3,0,Console World Errors
-Logger.TSCR                = 4,0,Console World Errors
-Logger.DATABASE_AI         = 5,0,Console World Errors
-Logger.MAPSCRIPTS          = 6,0,Console World Errors
-Logger.NETWORKIO           = 7,0,Console World Errors
-Logger.SPELLS_AURAS        = 8,0,Console World Errors
-Logger.ACHIEVEMENTSYS      = 9,0,Console World Errors
-Logger.CONDITIONSYS        = 10,0,Console World Errors
-Logger.POOLSYS             = 11,0,Console World Errors
-Logger.AUCTIONHOUSE        = 12,0,Console World Errors
-Logger.BATTLEGROUND        = 13,0,Console World Errors
-Logger.OUTDOORPVP          = 14,0,Console World Errors
-Logger.CHATSYS             = 15,0,Console World Errors
-Logger.LFG                 = 16,0,Console World Errors
-Logger.MAPS                = 17,0,Console World Errors
-Logger.PLAYER              = 18,0,Console World Errors
-Logger.PLAYER_LOADING      = 19,0,Console World Errors
-Logger.PLAYER_ITEMS        = 20,0,Console World Errors
-Logger.PLAYER_SKILLS       = 21,0,Console World Errors
-Logger.PLAYER_CHATLOG      = 22,0,Console World Errors
-Logger.LOOT                = 23,0,Console World Errors
-Logger.GUILD               = 24,0,Console World Errors
-Logger.TRANSPORTS          = 25,0,Console World Errors
-Logger.SQL                 = 26,5,Console World DBErrors
-Logger.GMCOMMAND           = 27,0,Console World Errors
-Logger.REMOTECOMMAND       = 28,0,Console World Errors
-Logger.WARDEN              = 29,0,Console World Errors
-Logger.WORLDSERVER         = 31,3,Console World Errors
-Logger.GAMEEVENTS          = 32,0,Console World Errors
-Logger.CALENDAR            = 33,0,Console World Errors
-Logger.CHARACTER           = 34,0,Console World Errors
-Logger.SQL_DRIVER          = 36,5,Console World Errors
-Logger.SQL_DEV             = 37,5,Console World Errors
-Logger.PLAYER_DUMP         = 38,3,Pdump
-Logger.BATTLEFIELD         = 39,0,Console World Errors
-Logger.SERVER_LOADING      = 40,3,Console World Errors
-Logger.OPCODES             = 41,0,Console World Errors
-Logger.PROC                = 48,0,Console World Errors
-Logger.DONATE              = 50,0,Console World Errors
-Logger.BATTLEPET           = 51,0,Console World Errors
-Logger.PROTOBUF            = 52,0,Console World Errors
-Logger.AREATRIGGER         = 53,0,Console World Errors
-Logger.GOLD                = 54,0,Console World Errors
-Logger.WORLD_QUEST         = 55,0,Console World Errors
-Logger.CHALLENGE           = 56,0,Console World Errors
-Logger.PATH_GENERATOR      = 58,0,Console World Errors
-Logger.MMAPS               = 59,0,Console World Errors
-Logger.VMAPS               = 60,0,Console World Errors
+Logger.root=5,Console Server
+Logger.server=3,Console Server
+Logger.commands.gm=3,Console GM
+Logger.scripts.hotswap=3,Console Server
+Logger.sql.sql=5,Console DBErrors
+Logger.sql.updates=3,Console Server
+Logger.mmaps=3,Server
+
+#Logger.addon=3,Console Server
+#Logger.ahbot=3,Console Server
+#Logger.auctionHouse=3,Console Server
+#Logger.bg.arena=3,Console Server
+#Logger.bg.battlefield=3,Console Server
+#Logger.bg.battleground=3,Console Server
+#Logger.bg.reportpvpafk=3,Console Server
+#Logger.chat.log=3,Console Server
+#Logger.calendar=3,Console Server
+#Logger.chat.system=3,Console Server
+#Logger.cheat=3,Console Server
+#Logger.commands.ra=3,Console Server
+#Logger.condition=3,Console Server
+#Logger.criteria=3,Console Server
+#Logger.criteria.achievement=3,Console Server
+#Logger.entities.areatrigger=3,Console Server
+#Logger.entities.pet=3,Console Server
+#Logger.entities.player.character=3,Console Server
+#Logger.entities.player.dump=3,Console Server
+#Logger.entities.player=3,Console Server
+#Logger.entities.player.items=3,Console Server
+#Logger.entities.player.loading=3,Console Server
+#Logger.entities.player.skills=3,Console Server
+#Logger.entities.transport=3,Console Server
+#Logger.entities.unit=3,Console Server
+#Logger.entities.vehicle=3,Console Server
+#Logger.gameevent=3,Console Server
+#Logger.guild=3,Console Server
+#Logger.lfg=3,Console Server
+#Logger.loot=3,Console Server
+#Logger.maps.script=3,Console Server
+#Logger.maps=3,Console Server
+#Logger.misc=3,Console Server
+#Logger.network=3,Console Server
+#Logger.network.opcode=3,Console Server
+#Logger.network.soap=3,Console Server
+#Logger.outdoorpvp=3,Console Server
+#Logger.phase=3,Console Server
+#Logger.pool=3,Console Server
+#Logger.rbac=3,Console Server
+#Logger.scenes=3,Console Server
+#Logger.scripts=3,Console Server
+#Logger.scripts.ai=3,Console Server
+#Logger.server.bnetserver=3,Console Server
+#Logger.spells=3,Console Server
+#Logger.spells.periodic=3,Console Server
+#Logger.sql.dev=3,Console Server
+#Logger.sql.driver=3,Console Server
+#Logger.warden=3,Console Server
 
 #
-#    Loggers
-#        Description: List of Loggers to read from config
-#                     (Using spaces as separator).
-#        Default:     "GENERAL UNITS PETS VEHICLES TSCR DATABASE_AI MAPSCRIPTS NETWORKIO SPELLS_AURAS ACHIEVEMENTSYS CONDITIONSYS POOLSYS AUCTIONHOUSE BATTLEGROUND OUTDOORPVP CHATSYS LFG MAPS PLAYER PLAYER_LOADING PLAYER_ITEMS PLAYER_SKILLS PLAYER_CHATLOG LOOT GUILD TRANSPORTS SQL GMCOMMAND REMOTECOMMAND WARDEN WORLDSERVER GAMEEVENTS CALENDAR CHARACTER SQL_DRIVER SQL_DEV PLAYER_DUMP BATTLEFIELD SERVER_LOADING OPCODES PROC DONATE BATTLEPET PROTOBUF AREATRIGGER GOLD WORLD_QUEST CHALLENGE PATH_GENERATOR MMAPS VMAPS"
+#    Log.Async.Enable
+#        Description: Enables asyncronous message logging.
+#        Default:     0 - (Disabled)
+#                     1 - (Enabled)
 
-Loggers=GENERAL UNITS PETS VEHICLES TSCR DATABASE_AI MAPSCRIPTS NETWORKIO SPELLS_AURAS ACHIEVEMENTSYS CONDITIONSYS POOLSYS AUCTIONHOUSE BATTLEGROUND OUTDOORPVP CHATSYS LFG MAPS PLAYER PLAYER_LOADING PLAYER_ITEMS PLAYER_SKILLS PLAYER_CHATLOG LOOT GUILD TRANSPORTS SQL GMCOMMAND REMOTECOMMAND WARDEN WORLDSERVER GAMEEVENTS CALENDAR CHARACTER SQL_DRIVER SQL_DEV PLAYER_DUMP BATTLEFIELD SERVER_LOADING OPCODES PROC DONATE BATTLEPET PROTOBUF AREATRIGGER GOLD WORLD_QUEST CHALLENGE PATH_GENERATOR MMAPS VMAPS
+Log.Async.Enable = 0
+
+#
+#    Allow.IP.Based.Action.Logging
+#        Description: Logs actions, e.g. account login and logout to name a few, based on IP of
+#                     current session.
+#        Default:     0 - (Disabled)
+#                     1 - (Enabled)
+
+Allow.IP.Based.Action.Logging = 0
 
 #
 #    QuestPOI.DisableErrors

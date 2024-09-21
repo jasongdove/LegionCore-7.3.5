@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,21 +15,23 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "AppenderConsole.h"
+#include "LogMessage.h"
+#include "Util.h"
 #include <sstream>
-#if PLATFORM == TC_PLATFORM_WINDOWS
-#include <windows.h>
+
+#if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
+  #include <Windows.h>
 #endif
 
-#include "AppenderConsole.h"
-#include "Config.h"
-#include "Util.h"
-
-
-AppenderConsole::AppenderConsole(uint8 id, std::string const& name, LogLevel level, AppenderFlags flags) :
-    Appender(id, name, APPENDER_CONSOLE, level, flags), _colored(false)
+AppenderConsole::AppenderConsole(uint8 id, std::string const& name, LogLevel level, AppenderFlags flags, std::vector<char const*> extraArgs)
+    : Appender(id, name, level, flags), _colored(false)
 {
-    for (auto & _color : _colors)
-        _color = ColorTypes(MaxColors);
+    for (uint8 i = 0; i < NUM_ENABLED_LOG_LEVELS; ++i)
+        _colors[i] = ColorTypes(MaxColors);
+
+    if (!extraArgs.empty())
+        InitColors(extraArgs[0]);
 }
 
 void AppenderConsole::InitColors(std::string const& str)
@@ -44,14 +46,14 @@ void AppenderConsole::InitColors(std::string const& str)
 
     std::istringstream ss(str);
 
-    for (auto& i : color)
+    for (uint8 i = 0; i < NUM_ENABLED_LOG_LEVELS; ++i)
     {
-        ss >> i;
+        ss >> color[i];
 
         if (!ss)
             return;
 
-        if (i < 0 || i >= MaxColors)
+        if (color[i] < 0 || color[i] >= MaxColors)
             return;
     }
 
@@ -63,7 +65,7 @@ void AppenderConsole::InitColors(std::string const& str)
 
 void AppenderConsole::SetColor(bool stdout_stream, ColorTypes color)
 {
-#if PLATFORM == TC_PLATFORM_WINDOWS
+#if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
     static WORD WinColorFG[MaxColors] =
     {
         0,                                                  // BLACK
@@ -94,6 +96,7 @@ void AppenderConsole::SetColor(bool stdout_stream, ColorTypes color)
 #else
     enum ANSITextAttr
     {
+        TA_NORMAL                                = 0,
         TA_BOLD                                  = 1,
         TA_BLINK                                 = 5,
         TA_REVERSE                               = 7
@@ -143,18 +146,18 @@ void AppenderConsole::SetColor(bool stdout_stream, ColorTypes color)
         FG_WHITE                                           // LWHITE
     };
 
-    fprintf((stdout_stream ? stdout : stderr), "\x1b[%d%sm", UnixColorFG[color], (color >= YELLOW && color < MaxColors ? ";1" : ""));
-#endif
+    fprintf((stdout_stream? stdout : stderr), "\x1b[%d%sm", UnixColorFG[color], (color >= YELLOW && color < MaxColors ? ";1" : ""));
+    #endif
 }
 
 void AppenderConsole::ResetColor(bool stdout_stream)
 {
-#if PLATFORM == TC_PLATFORM_WINDOWS
-    auto hConsole = GetStdHandle(stdout_stream ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
+    #if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
+    HANDLE hConsole = GetStdHandle(stdout_stream ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
     SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
-#else
+    #else
     fprintf((stdout_stream ? stdout : stderr), "\x1b[0m");
-#endif
+    #endif
 }
 
 void AppenderConsole::_write(LogMessage const* message)
@@ -168,29 +171,29 @@ void AppenderConsole::_write(LogMessage const* message)
         {
             case LOG_LEVEL_TRACE:
                index = 5;
-             break;
+               break;
             case LOG_LEVEL_DEBUG:
                index = 4;
-              break;
+               break;
             case LOG_LEVEL_INFO:
-              index = 3;
-              break;
-           case LOG_LEVEL_WARN:
+               index = 3;
+               break;
+            case LOG_LEVEL_WARN:
                index = 2;
                break;
-           case LOG_LEVEL_FATAL:
+            case LOG_LEVEL_FATAL:
                index = 0;
                break;
             case LOG_LEVEL_ERROR: // No break on purpose
             default:
-                index = 1;
-                break;
+               index = 1;
+               break;
         }
 
         SetColor(stdout_stream, _colors[index]);
-        utf8printf(stdout_stream ? stdout : stderr, "%s%s", message->prefix.c_str(), message->text.c_str());
+        utf8printf(stdout_stream ? stdout : stderr, "%s%s\n", message->prefix.c_str(), message->text.c_str());
         ResetColor(stdout_stream);
     }
     else
-        utf8printf(stdout_stream ? stdout : stderr, "%s%s", message->prefix.c_str(), message->text.c_str());
+        utf8printf(stdout_stream ? stdout : stderr, "%s%s\n", message->prefix.c_str(), message->text.c_str());
 }

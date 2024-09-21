@@ -70,7 +70,7 @@ void WorldSession::HandleAddFriend(WorldPackets::Social::AddFriend& packet)
                     if (!player->GetSocial()->AddToSocialList(friendGuid, SOCIAL_FLAG_FRIEND))
                     {
                         friendResult = FRIEND_LIST_FULL;
-                        TC_LOG_DEBUG(LOG_FILTER_NETWORKIO, "WORLD: %s's friend list is full.", player->GetName());
+                        TC_LOG_DEBUG("network", "WORLD: %s's friend list is full.", player->GetName());
                     }
                 }
                 player->GetSocial()->SetFriendNote(friendGuid, packet.Notes);

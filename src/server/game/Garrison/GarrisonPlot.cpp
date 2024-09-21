@@ -108,7 +108,7 @@ GameObject* Plot::CreateGameObject(Map* map, GarrisonFactionIndex faction, Garri
 
     if (!sObjectMgr->GetGameObjectTemplate(entry))
     {
-        TC_LOG_ERROR(LOG_FILTER_PLAYER, "Garrison attempted to spawn gameobject whose template doesn't exist (%u)", entry);
+        TC_LOG_ERROR("entities.player", "Garrison attempted to spawn gameobject whose template doesn't exist (%u)", entry);
         return nullptr;
     }
 
