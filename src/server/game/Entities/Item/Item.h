@@ -433,19 +433,19 @@ class Item : public Object
         bool IsBoundAccountWide() const;
         bool IsBindedNotWith(Player const* player) const;
         bool IsBoundByEnchant() const;
-        virtual void SaveToDB(SQLTransaction& trans);
+        virtual void SaveToDB(CharacterDatabaseTransaction& trans);
         virtual bool LoadFromDB(ObjectGuid::LowType const& guid, ObjectGuid const& owner_guid, Field* fields, uint32 entry, uint8 oLevel = 0);
         void LoadArtifactData(Player* owner, std::vector<ItemDynamicFieldArtifactPowers>& powers);  // must be called after LoadFromDB to have gems (relics) initialized
 
         void AddBonuses(uint32 bonusListID);
         void ApplyItemChildEquipment(Player* owner, bool apply);
 
-        static void DeleteFromDB(SQLTransaction& trans, ObjectGuid::LowType itemGuid);
-        virtual void DeleteFromDB(SQLTransaction& trans);
-        static void DeleteFromInventoryDB(SQLTransaction& trans, ObjectGuid::LowType itemGuid);
-        void DeleteFromInventoryDB(SQLTransaction& trans);
+        static void DeleteFromDB(CharacterDatabaseTransaction& trans, ObjectGuid::LowType itemGuid);
+        virtual void DeleteFromDB(CharacterDatabaseTransaction& trans);
+        static void DeleteFromInventoryDB(CharacterDatabaseTransaction& trans, ObjectGuid::LowType itemGuid);
+        void DeleteFromInventoryDB(CharacterDatabaseTransaction& trans);
         void SaveRefundDataToDB();
-        void DeleteRefundDataFromDB(SQLTransaction* trans);
+        void DeleteRefundDataFromDB(CharacterDatabaseTransaction* trans);
 
         Bag* ToBag();
 
@@ -583,7 +583,7 @@ class Item : public Object
         void SetFixedLevel(uint8 level);
 
         // Item Refund system
-        void SetNotRefundable(Player* owner, bool changestate = true, SQLTransaction* trans = nullptr);
+        void SetNotRefundable(Player* owner, bool changestate = true, CharacterDatabaseTransaction* trans = nullptr);
         void SetRefundRecipient(ObjectGuid const& pGuidLow);
         void SetPaidMoney(uint64 money);
         void SetPaidExtendedCost(uint32 iece);

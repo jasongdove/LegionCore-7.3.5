@@ -1,43 +1,16 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_GC_DHP_SMR_H
 #define CDSLIB_GC_DHP_SMR_H
 
 #include <exception>
 #include <cds/gc/details/hp_common.h>
-#include <cds/details/lib.h>
 #include <cds/threading/model.h>
 #include <cds/intrusive/free_list_selector.h>
 #include <cds/details/throw_exception.h>
-#include <cds/details/static_functor.h>
 #include <cds/details/marked_ptr.h>
 #include <cds/user_setup/cache_line.h>
 
@@ -61,11 +34,7 @@ namespace cds { namespace gc {
         //@cond
         struct guard_block: public cds::intrusive::FreeListImpl::node
         {
-            atomics::atomic<guard_block*>  next_block_;  // next block in the thread list
-
-            guard_block()
-                : next_block_( nullptr )
-            {}
+            guard_block*  next_block_ = nullptr;  // next block in the thread list
 
             guard* first()
             {
@@ -82,7 +51,7 @@ namespace cds { namespace gc {
         public:
             static hp_allocator& instance();
 
-            guard_block* alloc();
+            CDS_EXPORT_API guard_block* alloc();
             void free( guard_block* block )
             {
                 free_list_.put( block );
@@ -94,7 +63,7 @@ namespace cds { namespace gc {
                 : block_allocated_(0)
 #endif
             {}
-            ~hp_allocator();
+            CDS_EXPORT_API ~hp_allocator();
 
         private:
             cds::intrusive::FreeListImpl    free_list_; ///< list of free \p guard_block
@@ -107,11 +76,11 @@ namespace cds { namespace gc {
 
         //@cond
         /// Per-thread hazard pointer storage
-        class thread_hp_storage 
+        class thread_hp_storage
         {
             friend class smr;
         public:
-            thread_hp_storage( guard* arr, size_t nSize ) CDS_NOEXCEPT
+            thread_hp_storage( guard* arr, size_t nSize ) noexcept
                 : free_head_( arr )
                 , array_( arr )
                 , initial_capacity_( nSize )
@@ -148,7 +117,7 @@ namespace cds { namespace gc {
                 return g;
             }
 
-            void free( guard* g ) CDS_NOEXCEPT
+            void free( guard* g ) noexcept
             {
                 if ( g ) {
                     g->clear();
@@ -172,7 +141,7 @@ namespace cds { namespace gc {
             }
 
             template <size_t Capacity>
-            void free( guard_array<Capacity>& arr ) CDS_NOEXCEPT
+            void free( guard_array<Capacity>& arr ) noexcept
             {
                 guard* gList = free_head_;
                 for ( size_t i = 0; i < Capacity; ++i ) {
@@ -196,7 +165,7 @@ namespace cds { namespace gc {
                 // free all extended blocks
                 hp_allocator& a = hp_allocator::instance();
                 for ( guard_block* p = extended_list_.load( atomics::memory_order_relaxed ); p; ) {
-                    guard_block* next = p->next_block_.load( atomics::memory_order_relaxed );
+                    guard_block* next = p->next_block_;
                     a.free( p );
                     p = next;
                 }
@@ -221,7 +190,7 @@ namespace cds { namespace gc {
                 assert( free_head_ == nullptr );
 
                 guard_block* block = hp_allocator::instance().alloc();
-                block->next_block_.store( extended_list_.load( atomics::memory_order_relaxed ), atomics::memory_order_release );
+                block->next_block_ = extended_list_.load( atomics::memory_order_relaxed );
                 extended_list_.store( block, atomics::memory_order_release );
                 free_head_ = block->first();
                 CDS_HPSTAT( ++extend_call_count_ );
@@ -271,7 +240,7 @@ namespace cds { namespace gc {
         public:
             static retired_allocator& instance();
 
-            retired_block* alloc();
+            CDS_EXPORT_API retired_block* alloc();
             void free( retired_block* block )
             {
                 block->next_ = nullptr;
@@ -284,7 +253,7 @@ namespace cds { namespace gc {
                 : block_allocated_(0)
 #endif
             {}
-            ~retired_allocator();
+            CDS_EXPORT_API ~retired_allocator();
 
         private:
             cds::intrusive::FreeListImpl    free_list_; ///< list of free \p guard_block
@@ -301,7 +270,7 @@ namespace cds { namespace gc {
         {
             friend class smr;
         public:
-            retired_array() CDS_NOEXCEPT
+            retired_array() noexcept
                 : current_block_( nullptr )
                 , current_cell_( nullptr )
                 , list_head_( nullptr )
@@ -322,17 +291,17 @@ namespace cds { namespace gc {
                 fini();
             }
 
-            bool push( retired_ptr const& p ) CDS_NOEXCEPT
+            bool push( retired_ptr const& p ) noexcept
             {
                 assert( current_block_ != nullptr );
                 assert( current_block_->first() <= current_cell_ );
-                assert( current_cell_ < current_block_->last() );
+                assert( current_cell_ < current_block_->last());
                 //assert( &p != current_cell_ );
 
                 *current_cell_ = p;
                 CDS_HPSTAT( ++retire_call_count_ );
 
-                if ( ++current_cell_ == current_block_->last() ) {
+                if ( ++current_cell_ == current_block_->last()) {
                     // goto next block if exists
                     if ( current_block_->next_ ) {
                         current_block_ = current_block_->next_;
@@ -348,8 +317,8 @@ namespace cds { namespace gc {
                 return true;
             }
 
-            bool repush( retired_ptr* p ) CDS_NOEXCEPT
-            {                
+            bool repush( retired_ptr* p ) noexcept
+            {
                 bool ret = push( *p );
                 CDS_HPSTAT( --retire_call_count_ );
                 assert( ret );
@@ -393,12 +362,12 @@ namespace cds { namespace gc {
             {
                 assert( list_head_ != nullptr );
                 assert( current_block_ == list_tail_ );
-                assert( current_cell_ == current_block_->last() );
+                assert( current_cell_ == current_block_->last());
 
                 retired_block* block = retired_allocator::instance().alloc();
                 assert( block->next_ == nullptr );
 
-                list_tail_ = list_tail_->next_ = block;
+                current_block_ = list_tail_ = list_tail_->next_ = block;
                 current_cell_ = block->first();
                 ++block_count_;
                 CDS_HPSTAT( ++extend_call_count_ );
@@ -456,10 +425,10 @@ namespace cds { namespace gc {
                     free_count =
                     scan_count =
                     help_scan_count =
-                    thread_rec_count = 
-                    hp_block_count = 
-                    retired_block_count = 
-                    hp_extend_count = 
+                    thread_rec_count =
+                    hp_block_count =
+                    retired_block_count =
+                    hp_extend_count =
                     retired_extend_count = 0;
             }
         };
@@ -517,7 +486,7 @@ namespace cds { namespace gc {
                 assert( instance_ != nullptr );
 #       else
                 if ( !instance_ )
-                    CDS_THROW_EXCEPTION( not_initialized() );
+                    CDS_THROW_EXCEPTION( not_initialized());
 #       endif
                 return *instance_;
             }
@@ -536,7 +505,7 @@ namespace cds { namespace gc {
                 <tt> nHazardPtrCount * nMaxThreadCount </tt>
                 Default is <tt>2 * nHazardPtrCount * nMaxThreadCount</tt>
             */
-            static void construct(
+            static CDS_EXPORT_API void construct(
                 size_t nInitialHazardPtrCount = 16  ///< Initial number of hazard pointer per thread
             );
 
@@ -555,7 +524,7 @@ namespace cds { namespace gc {
                 can be useful when you have no control over the thread termination, for example,
                 when \p libcds is injected into existing external thread.
             */
-            static void destruct(
+            static CDS_EXPORT_API void destruct(
                 bool bDetachAll = false     ///< Detach all threads
             );
 
@@ -568,7 +537,7 @@ namespace cds { namespace gc {
             }
 
             /// Checks if global SMR object is constructed and may be used
-            static bool isUsed() CDS_NOEXCEPT
+            static bool isUsed() noexcept
             {
                 return instance_ != nullptr;
             }
@@ -582,23 +551,23 @@ namespace cds { namespace gc {
                 creating SMR object.
                 By default, a standard \p new and \p delete operators are used for this.
             */
-            static void set_memory_allocator(
+            static CDS_EXPORT_API void set_memory_allocator(
                 void* ( *alloc_func )( size_t size ),
                 void( *free_func )( void * p )
             );
 
             /// Returns thread-local data for the current thread
-            static thread_data* tls();
+            static CDS_EXPORT_API thread_data* tls();
 
-            static void attach_thread();
-            static void detach_thread();
+            static CDS_EXPORT_API void attach_thread();
+            static CDS_EXPORT_API void detach_thread();
 
             /// Get internal statistics
-            void statistics( stat& st );
+            CDS_EXPORT_API void statistics( stat& st );
 
         public: // for internal use only
             /// The main garbage collecting function
-            void scan( thread_data* pRec );
+            CDS_EXPORT_API void scan( thread_data* pRec );
 
             /// Helper scan routine
             /**
@@ -609,7 +578,7 @@ namespace cds { namespace gc {
 
                 The function is called internally by \p scan().
             */
-            void help_scan( thread_data* pThis );
+            CDS_EXPORT_API void help_scan( thread_data* pThis );
 
             hp_allocator& get_hp_allocator()
             {
@@ -622,26 +591,26 @@ namespace cds { namespace gc {
             }
 
         private:
-            explicit smr(
+            CDS_EXPORT_API explicit smr(
                 size_t nInitialHazardPtrCount
             );
 
-            ~smr();
+            CDS_EXPORT_API ~smr();
 
-            void detach_all_thread();
+            CDS_EXPORT_API void detach_all_thread();
 
         private:
-            thread_record* create_thread_data();
-            static void destroy_thread_data( thread_record* pRec );
+            CDS_EXPORT_API thread_record* create_thread_data();
+            static CDS_EXPORT_API void destroy_thread_data( thread_record* pRec );
 
             /// Allocates Hazard Pointer SMR thread private data
-            thread_record* alloc_thread_data();
+            CDS_EXPORT_API thread_record* alloc_thread_data();
 
             /// Free HP SMR thread-private data
-            void free_thread_data( thread_record* pRec );
+            CDS_EXPORT_API void free_thread_data( thread_record* pRec, bool callHelpScan );
 
         private:
-            static smr* instance_;
+            static CDS_EXPORT_API smr* instance_;
 
             atomics::atomic< thread_record*>    thread_list_;   ///< Head of thread list
             size_t const        initial_hazard_count_;  ///< initial number of hazard pointers per thread
@@ -684,6 +653,15 @@ namespace cds { namespace gc {
             - [2004] Andrei Alexandrescy, Maged Michael "Lock-free Data Structures with Hazard Pointers"
 
         %DHP is an adaptive variant of classic \p cds::gc::HP, see @ref cds_garbage_collectors_comparison "Compare HP implementation"
+
+        @note Internally, %DHP depends on free-list implementation. There are
+        DCAS-based free-list \p cds::intrusive::TaggedFreeList and more complicated CAS-based free-list
+        \p cds::intrusive::FreeList. For x86 architecture and GCC/clang, libcds selects appropriate free-list
+        based on \p -mcx16 compiler flag. You may manually disable DCAS support specifying
+        \p -DCDS_DISABLE_128BIT_ATOMIC for 64bit build or \p -DCDS_DISABLE_64BIT_ATOMIC for 32bit build
+        in compiler command line. All your projects and libcds MUST be compiled with the same flags -
+        either with DCAS support or without it.
+        For MS VC++ compiler DCAS is not supported.
 
         See \ref cds_how_to_use "How to use" section for details how to apply SMR.
     */
@@ -728,17 +706,17 @@ namespace cds { namespace gc {
         {
         public:
             /// Default ctor allocates a guard (hazard pointer) from thread-private storage
-            Guard() CDS_NOEXCEPT
-                : guard_( dhp::smr::tls()->hazards_.alloc() )
+            Guard() noexcept
+                : guard_( dhp::smr::tls()->hazards_.alloc())
             {}
 
             /// Initilalizes an unlinked guard i.e. the guard contains no hazard pointer. Used for move semantics support
-            explicit Guard( std::nullptr_t ) CDS_NOEXCEPT
+            explicit Guard( std::nullptr_t ) noexcept
                 : guard_( nullptr )
             {}
 
             /// Move ctor - \p src guard becomes unlinked (transfer internal guard ownership)
-            Guard( Guard&& src ) CDS_NOEXCEPT
+            Guard( Guard&& src ) noexcept
                 : guard_( src.guard_ )
             {
                 src.guard_ = nullptr;
@@ -748,7 +726,7 @@ namespace cds { namespace gc {
             /**
                 @warning \p src will become in unlinked state if \p this was unlinked on entry.
             */
-            Guard& operator=( Guard&& src ) CDS_NOEXCEPT
+            Guard& operator=( Guard&& src ) noexcept
             {
                 std::swap( guard_, src.guard_ );
                 return *this;
@@ -798,15 +776,7 @@ namespace cds { namespace gc {
             template <typename T>
             T protect( atomics::atomic<T> const& toGuard )
             {
-                assert( guard_ != nullptr );
-
-                T pCur = toGuard.load(atomics::memory_order_acquire);
-                T pRet;
-                do {
-                    pRet = assign( pCur );
-                    pCur = toGuard.load(atomics::memory_order_acquire);
-                } while ( pRet != pCur );
-                return pCur;
+                return protect(toGuard, [](T p) { return p; });
             }
 
             /// Protects a converted pointer of type <tt> atomic<T*> </tt>
@@ -831,7 +801,7 @@ namespace cds { namespace gc {
             {
                 assert( guard_ != nullptr );
 
-                T pCur = toGuard.load(atomics::memory_order_acquire);
+                T pCur = toGuard.load(atomics::memory_order_relaxed);
                 T pRet;
                 do {
                     pRet = pCur;
@@ -947,7 +917,7 @@ namespace cds { namespace gc {
             };
 
             /// Array capacity
-            static CDS_CONSTEXPR const size_t c_nCapacity = Count;
+            static constexpr const size_t c_nCapacity = Count;
 
         public:
             /// Default ctor allocates \p Count hazard pointers
@@ -984,14 +954,7 @@ namespace cds { namespace gc {
             template <typename T>
             T protect( size_t nIndex, atomics::atomic<T> const& toGuard )
             {
-                assert( nIndex < capacity() );
-
-                T pRet;
-                do {
-                    pRet = assign( nIndex, toGuard.load(atomics::memory_order_acquire));
-                } while ( pRet != toGuard.load(atomics::memory_order_relaxed));
-
-                return pRet;
+                return protect(nIndex, toGuard, [](T p) { return p; });
             }
 
             /// Protects a pointer of type \p atomic<T*>
@@ -1014,12 +977,12 @@ namespace cds { namespace gc {
             template <typename T, class Func>
             T protect( size_t nIndex, atomics::atomic<T> const& toGuard, Func f )
             {
-                assert( nIndex < capacity() );
+                assert( nIndex < capacity());
 
                 T pRet;
                 do {
-                    assign( nIndex, f( pRet = toGuard.load(atomics::memory_order_acquire)));
-                } while ( pRet != toGuard.load(atomics::memory_order_relaxed));
+                    assign( nIndex, f( pRet = toGuard.load(atomics::memory_order_relaxed)));
+                } while ( pRet != toGuard.load(atomics::memory_order_acquire));
 
                 return pRet;
             }
@@ -1031,7 +994,7 @@ namespace cds { namespace gc {
             template <typename T>
             T * assign( size_t nIndex, T * p )
             {
-                assert( nIndex < capacity() );
+                assert( nIndex < capacity());
 
                 guards_.set( nIndex, p );
                 dhp::smr::tls()->sync();
@@ -1072,26 +1035,26 @@ namespace cds { namespace gc {
             template <typename T>
             T * get( size_t nIndex ) const
             {
-                assert( nIndex < capacity() );
+                assert( nIndex < capacity());
                 return guards_[nIndex]->template get_as<T>();
             }
 
             /// Get native guarded pointer stored
             guarded_pointer get_native( size_t nIndex ) const
             {
-                assert( nIndex < capacity() );
+                assert( nIndex < capacity());
                 return guards_[nIndex]->get();
             }
 
             //@cond
-            dhp::guard* release( size_t nIndex ) CDS_NOEXCEPT
+            dhp::guard* release( size_t nIndex ) noexcept
             {
                 return guards_.release( nIndex );
             }
             //@endcond
 
             /// Capacity of the guard array
-            static CDS_CONSTEXPR size_t capacity()
+            static constexpr size_t capacity()
             {
                 return Count;
             }
@@ -1165,28 +1128,28 @@ namespace cds { namespace gc {
 
         public:
             /// Creates empty guarded pointer
-            guarded_ptr() CDS_NOEXCEPT
+            guarded_ptr() noexcept
                 : guard_( nullptr )
             {}
 
             //@cond
-            explicit guarded_ptr( dhp::guard* g ) CDS_NOEXCEPT
+            explicit guarded_ptr( dhp::guard* g ) noexcept
                 : guard_( g )
             {}
 
             /// Initializes guarded pointer with \p p
-            explicit guarded_ptr( guarded_type * p ) CDS_NOEXCEPT
+            explicit guarded_ptr( guarded_type * p ) noexcept
                 : guard_( nullptr )
             {
                 reset( p );
             }
-            explicit guarded_ptr( std::nullptr_t ) CDS_NOEXCEPT
+            explicit guarded_ptr( std::nullptr_t ) noexcept
                 : guard_( nullptr )
             {}
             //@endcond
 
             /// Move ctor
-            guarded_ptr( guarded_ptr&& gp ) CDS_NOEXCEPT
+            guarded_ptr( guarded_ptr&& gp ) noexcept
                 : guard_( gp.guard_ )
             {
                 gp.guard_ = nullptr;
@@ -1194,14 +1157,14 @@ namespace cds { namespace gc {
 
             /// Move ctor
             template <typename GT, typename VT, typename C>
-            guarded_ptr( guarded_ptr<GT, VT, C>&& gp ) CDS_NOEXCEPT
+            guarded_ptr( guarded_ptr<GT, VT, C>&& gp ) noexcept
                 : guard_( gp.guard_ )
             {
                 gp.guard_ = nullptr;
             }
 
             /// Ctor from \p Guard
-            explicit guarded_ptr( Guard&& g ) CDS_NOEXCEPT
+            explicit guarded_ptr( Guard&& g ) noexcept
                 : guard_( g.release())
             {}
 
@@ -1212,20 +1175,20 @@ namespace cds { namespace gc {
             /**
                 \ref release is called if guarded pointer is not \ref empty
             */
-            ~guarded_ptr() CDS_NOEXCEPT
+            ~guarded_ptr() noexcept
             {
                 release();
             }
 
             /// Move-assignment operator
-            guarded_ptr& operator=( guarded_ptr&& gp ) CDS_NOEXCEPT
+            guarded_ptr& operator=( guarded_ptr&& gp ) noexcept
             {
                 std::swap( guard_, gp.guard_ );
                 return *this;
             }
 
             /// Move-assignment from \p Guard
-            guarded_ptr& operator=( Guard&& g ) CDS_NOEXCEPT
+            guarded_ptr& operator=( Guard&& g ) noexcept
             {
                 std::swap( guard_, g.guard_ref());
                 return *this;
@@ -1235,34 +1198,34 @@ namespace cds { namespace gc {
             guarded_ptr& operator=(guarded_ptr const& gp) = delete;
 
             /// Returns a pointer to guarded value
-            value_type * operator ->() const CDS_NOEXCEPT
+            value_type * operator ->() const noexcept
             {
                 assert( !empty());
-                return value_cast()( guard_->get_as<guarded_type>() );
+                return value_cast()( guard_->get_as<guarded_type>());
             }
 
             /// Returns a reference to guarded value
-            value_type& operator *() CDS_NOEXCEPT
+            value_type& operator *() noexcept
             {
                 assert( !empty());
-                return *value_cast()( guard_->get_as<guarded_type>() );
+                return *value_cast()( guard_->get_as<guarded_type>());
             }
 
             /// Returns const reference to guarded value
-            value_type const& operator *() const CDS_NOEXCEPT
+            value_type const& operator *() const noexcept
             {
                 assert( !empty());
                 return *value_cast()(reinterpret_cast<guarded_type *>(guard_->get()));
             }
 
             /// Checks if the guarded pointer is \p nullptr
-            bool empty() const CDS_NOEXCEPT
+            bool empty() const noexcept
             {
                 return guard_ == nullptr || guard_->get( atomics::memory_order_relaxed ) == nullptr;
             }
 
             /// \p bool operator returns <tt>!empty()</tt>
-            explicit operator bool() const CDS_NOEXCEPT
+            explicit operator bool() const noexcept
             {
                 return !empty();
             }
@@ -1272,14 +1235,14 @@ namespace cds { namespace gc {
                 If the guarded pointer has been released, the pointer can be disposed (freed) at any time.
                 Dereferncing the guarded pointer after \p release() is dangerous.
             */
-            void release() CDS_NOEXCEPT
+            void release() noexcept
             {
                 free_guard();
             }
 
             //@cond
             // For internal use only!!!
-            void reset(guarded_type * p) CDS_NOEXCEPT
+            void reset(guarded_type * p) noexcept
             {
                 alloc_guard();
                 assert( guard_ );
@@ -1347,7 +1310,7 @@ namespace cds { namespace gc {
             The function always returns \p true since the guard count is unlimited for
             \p %gc::DHP garbage collector.
         */
-        static CDS_CONSTEXPR bool check_available_guards(
+        static constexpr bool check_available_guards(
 #ifdef CDS_DOXYGEN_INVOKED
             size_t nCountNeeded,
 #else
@@ -1384,7 +1347,7 @@ namespace cds { namespace gc {
         static void retire( T * p, void (* func)(void *))
         {
             dhp::thread_data* rec = dhp::smr::tls();
-            if ( !rec->retired_.push( dhp::retired_ptr( p, func ) ) )
+            if ( !rec->retired_.push( dhp::retired_ptr( p, func )))
                 dhp::smr::instance().scan( rec );
         }
 
@@ -1440,7 +1403,7 @@ namespace cds { namespace gc {
         template <class Disposer, typename T>
         static void retire( T* p )
         {
-            if ( !dhp::smr::tls()->retired_.push( dhp::retired_ptr( p, cds::details::static_functor<Disposer, T>::call )))
+            if ( !dhp::smr::tls()->retired_.push( dhp::retired_ptr( p, +[]( void* p ) { Disposer()( static_cast<T*>( p )); })))
                 scan();
         }
 
@@ -1456,7 +1419,7 @@ namespace cds { namespace gc {
         */
         static void scan()
         {
-            dhp::smr::instance().scan( dhp::smr::tls() );
+            dhp::smr::instance().scan( dhp::smr::tls());
         }
 
         /// Synonym for \p scan()
@@ -1520,7 +1483,7 @@ namespace cds { namespace gc {
             }
             \endcode
         */
-        static stat const& postmortem_statistics();
+        CDS_EXPORT_API static stat const& postmortem_statistics();
     };
 
 }} // namespace cds::gc

@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_INTRUSIVE_ELLEN_BINTREE_RCU_H
 #define CDSLIB_INTRUSIVE_ELLEN_BINTREE_RCU_H
@@ -510,7 +485,7 @@ namespace cds { namespace intrusive {
 
         typedef typename gc::scoped_lock    rcu_lock;   ///< RCU scoped lock
 
-        static CDS_CONSTEXPR const bool c_bExtractLockExternal = false; ///< Group of \p extract_xxx functions do not require external locking
+        static constexpr const bool c_bExtractLockExternal = false; ///< Group of \p extract_xxx functions do not require external locking
 
     protected:
         //@cond
@@ -599,7 +574,7 @@ namespace cds { namespace intrusive {
         }
         static void free_update_desc_void( void* pDesc )
         {
-            free_update_desc( reinterpret_cast<update_desc*>( pDesc ) );
+            free_update_desc( reinterpret_cast<update_desc*>( pDesc ));
         }
 
         class retired_list
@@ -1404,7 +1379,7 @@ namespace cds { namespace intrusive {
 
             update_ptr cur( pOp, update_desc::IFlag );
             pOp->iInfo.pParent->m_pUpdate.compare_exchange_strong( cur, pOp->iInfo.pParent->null_update_desc(),
-                      memory_model::memory_order_acquire, atomics::memory_order_relaxed );
+                      memory_model::memory_order_release, atomics::memory_order_relaxed );
         }
 
         bool check_delete_precondition( search_result& res )
@@ -1423,7 +1398,7 @@ namespace cds { namespace intrusive {
             update_ptr pUpdate( pOp->dInfo.pUpdateParent );
             update_ptr pMark( pOp, update_desc::Mark );
             if ( pOp->dInfo.pParent->m_pUpdate.compare_exchange_strong( pUpdate, pMark,
-                    memory_model::memory_order_release, atomics::memory_order_relaxed ))
+                    memory_model::memory_order_acquire, atomics::memory_order_relaxed ))
             {
                 help_marked( pOp );
                 retire_node( pOp->dInfo.pParent, rl );
@@ -1447,7 +1422,7 @@ namespace cds { namespace intrusive {
                 // Undo grandparent dInfo
                 update_ptr pDel( pOp, update_desc::DFlag );
                 if ( pOp->dInfo.pGrandParent->m_pUpdate.compare_exchange_strong( pDel, pOp->dInfo.pGrandParent->null_update_desc(),
-                    memory_model::memory_order_acquire, atomics::memory_order_relaxed ))
+                    memory_model::memory_order_release, atomics::memory_order_relaxed ))
                 {
                     retire_update_desc( pOp, rl, false );
                 }
@@ -1473,7 +1448,7 @@ namespace cds { namespace intrusive {
 
             update_ptr upd( pOp, update_desc::DFlag );
             pOp->dInfo.pGrandParent->m_pUpdate.compare_exchange_strong( upd, pOp->dInfo.pGrandParent->null_update_desc(),
-                memory_model::memory_order_acquire, atomics::memory_order_relaxed );
+                memory_model::memory_order_release, atomics::memory_order_relaxed );
         }
 
         template <typename KeyValue, typename Compare>
@@ -1660,7 +1635,7 @@ namespace cds { namespace intrusive {
 
                             update_ptr updGP( res.updGrandParent.ptr());
                             if ( res.pGrandParent->m_pUpdate.compare_exchange_strong( updGP, update_ptr( pOp, update_desc::DFlag ),
-                                memory_model::memory_order_release, atomics::memory_order_acquire ))
+                                memory_model::memory_order_acq_rel, atomics::memory_order_acquire ))
                             {
                                 if ( help_delete( pOp, updRetire )) {
                                     // res.pLeaf is not deleted yet since RCU is blocked
@@ -1738,7 +1713,7 @@ namespace cds { namespace intrusive {
 
                             update_ptr updGP( res.updGrandParent.ptr());
                             if ( res.pGrandParent->m_pUpdate.compare_exchange_strong( updGP, update_ptr( pOp, update_desc::DFlag ),
-                                memory_model::memory_order_release, atomics::memory_order_acquire ))
+                                memory_model::memory_order_acq_rel, atomics::memory_order_acquire ))
                             {
                                 if ( help_delete( pOp, updRetire )) {
                                     pResult = node_traits::to_value_ptr( res.pLeaf );
@@ -1803,7 +1778,7 @@ namespace cds { namespace intrusive {
 
                             update_ptr updGP( res.updGrandParent.ptr());
                             if ( res.pGrandParent->m_pUpdate.compare_exchange_strong( updGP, update_ptr( pOp, update_desc::DFlag ),
-                                memory_model::memory_order_release, atomics::memory_order_acquire ))
+                                memory_model::memory_order_acq_rel, atomics::memory_order_acquire ))
                             {
                                 if ( help_delete( pOp, updRetire )) {
                                     pResult = node_traits::to_value_ptr( res.pLeaf );
@@ -1867,7 +1842,7 @@ namespace cds { namespace intrusive {
 
                             update_ptr updGP( res.updGrandParent.ptr());
                             if ( res.pGrandParent->m_pUpdate.compare_exchange_strong( updGP, update_ptr( pOp, update_desc::DFlag ),
-                                memory_model::memory_order_release, atomics::memory_order_acquire ))
+                                memory_model::memory_order_acq_rel, atomics::memory_order_acquire ))
                             {
                                 if ( help_delete( pOp, updRetire )) {
                                     pResult = node_traits::to_value_ptr( res.pLeaf );
@@ -1991,7 +1966,7 @@ namespace cds { namespace intrusive {
 
                 update_ptr updCur( res.updParent.ptr());
                 if ( res.pParent->m_pUpdate.compare_exchange_strong( updCur, update_ptr( pOp, update_desc::IFlag ),
-                    memory_model::memory_order_release, atomics::memory_order_acquire ))
+                    memory_model::memory_order_acq_rel, atomics::memory_order_acquire ))
                 {
                     // do insert
                     help_insert( pOp );

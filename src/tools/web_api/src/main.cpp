@@ -711,7 +711,7 @@ void handleVoteCallback(const VoteWebsiteData& voteWebsite, const std::string& i
         return;
     }
 
-    PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_OR_UPD_TOKEN);
+    LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_OR_UPD_TOKEN);
     stmt->setUInt32(0, sar.aId);
     stmt->setUInt8(1, voteWebsite.voteTokenType);
     stmt->setInt64(2, voteWebsite.voteTokensGiven);
@@ -1003,7 +1003,7 @@ int main(int argc, char* argv[])
 
             if (createdAccountId)
             {
-                PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_REFERER);
+                LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_REFERER);
                 stmt->setUInt32(0, refererId);
                 stmt->setUInt32(1, createdAccountId);
                 LoginDatabase.DirectExecute(stmt);
@@ -1367,7 +1367,7 @@ int main(int argc, char* argv[])
 			return;
         }
 
-        PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_GET_ACCOUNT_ID_FOR_ACCOUNT_CONVERT);
+        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_GET_ACCOUNT_ID_FOR_ACCOUNT_CONVERT);
         stmt->setString(0, sdu.currentUsername);
         stmt->setString(1, sdu.currentUsername);
         PreparedQueryResult result = LoginDatabase.Query(stmt);
@@ -1697,7 +1697,7 @@ int main(int argc, char* argv[])
         bool foundEmail = AccountMgr::GetId(sdu.newEmail);
 
         // but we should still check if the account needs to be upgraded
-        PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_GET_ACCOUNT_ID_FOR_ACCOUNT_CONVERT);
+        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_GET_ACCOUNT_ID_FOR_ACCOUNT_CONVERT);
         stmt->setString(0, sdu.currentUsername);
         stmt->setString(1, sdu.currentUsername);
         PreparedQueryResult result = LoginDatabase.Query(stmt);

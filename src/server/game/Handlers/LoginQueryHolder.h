@@ -3,7 +3,7 @@
 #include "DatabaseEnv.h"
 #include "QueryHolder.h"
 
-class LoginQueryHolder : public SQLQueryHolder
+class LoginQueryHolder : public CharacterDatabaseQueryHolder
 {
     uint32 m_accountId;
     ObjectGuid m_guid;

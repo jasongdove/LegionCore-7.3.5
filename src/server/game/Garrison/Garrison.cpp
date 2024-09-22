@@ -167,7 +167,7 @@ bool Garrison::LoadFromDB(PreparedQueryResult const& garrison, PreparedQueryResu
         //! important not allow add sitelevel to _siteLevel if exist.
         if (type == GARRISON_TYPE_GARRISON && _siteLevel[type])
         {
-            PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_BY_SITE);
+            CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_BY_SITE);
             stmt->setUInt64(0, _owner->GetGUIDLow());
             stmt->setUInt32(1, _siteLevel[type]->GarrLevel > siteLevel->GarrLevel ? siteLevel->ID : _siteLevel[type]->ID);
             CharacterDatabase.Execute(stmt);
@@ -311,7 +311,7 @@ bool Garrison::LoadFromDB(PreparedQueryResult const& garrison, PreparedQueryResu
             // time is over
             if (!StartTime && offerDuration && (offerTime + offerDuration <= time(nullptr)))
             {
-                PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_MISSIONS_DB_ID);
+                CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_MISSIONS_DB_ID);
                 stmt->setUInt64(0, dbId);
                 CharacterDatabase.Execute(stmt);
                 continue;
@@ -486,11 +486,11 @@ bool Garrison::LoadFromDB(PreparedQueryResult const& garrison, PreparedQueryResu
     return true;
 }
 
-void Garrison::SaveToDB(SQLTransaction const& trans)
+void Garrison::SaveToDB(CharacterDatabaseTransaction const& trans)
 {
     bool canSaveBuild = false;
 
-    PreparedStatement* stmt = nullptr;
+    CharacterDatabasePreparedStatement* stmt = nullptr;
     for (auto v : _siteLevel)
     {
         if (!v)
@@ -686,9 +686,9 @@ void Garrison::SaveToDB(SQLTransaction const& trans)
     }
 }
 
-void Garrison::DeleteFromDB(ObjectGuid::LowType ownerGuid, SQLTransaction const& trans)
+void Garrison::DeleteFromDB(ObjectGuid::LowType ownerGuid, CharacterDatabaseTransaction const& trans)
 {
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON);
     stmt->setUInt64(0, ownerGuid);
     trans->Append(stmt);
 
@@ -744,7 +744,7 @@ bool Garrison::Create(uint32 garrSiteId, bool skip_teleport /* = false*/)
 
 void Garrison::Delete()
 {
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     DeleteFromDB(_owner->GetGUIDLow(), trans);
     CharacterDatabase.CommitTransaction(trans);
 
@@ -909,7 +909,7 @@ void Garrison::Upgrade()
         _owner->AchieveCriteriaCredit(_owner->GetTeam() == ALLIANCE ? 38529 : 38531);
 
     // Save us
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHARACTER_GARRISON);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHARACTER_GARRISON);
     stmt->setUInt32(0, newSiteLevel->ID);
     stmt->setUInt64(1, _owner->GetGUIDLow());
     stmt->setUInt32(2, oldSite->ID);
@@ -1123,7 +1123,7 @@ void Garrison::UnlearnBlueprint(uint32 garrBuildingId)
         unlearnBlueprintResult.Result = GARRISON_ERROR_REQUIRES_BLUEPRINT;
     else
     {
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_BLUEPRINTS_BY_BUILD);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_BLUEPRINTS_BY_BUILD);
         stmt->setUInt64(0, _owner->GetGUIDLow());
         stmt->setUInt32(1, garrBuildingId);
         CharacterDatabase.Execute(stmt);
@@ -1188,7 +1188,7 @@ void Garrison::Swap(uint32 plot1, uint32 plot2)
         PlaceBuilding(plot1, BuildingId2, true, true);
     }
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     SaveToDB(trans);
     CharacterDatabase.CommitTransaction(trans);
 }
@@ -1765,7 +1765,7 @@ void Garrison::ReTrainFollower(SpellInfo const* spellInfo, uint32 followerID)
     if (!followerEntry)
         return;
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_FOLLOWER_ABILITIES);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_FOLLOWER_ABILITIES);
     stmt->setUInt64(0, follower->PacketInfo.DbID);
     CharacterDatabase.Execute(stmt);
 
@@ -1832,7 +1832,7 @@ void Garrison::RemoveMissionByGuid(uint64 DbID)
             if (itr->second.PacketInfo.DbID == DbID)
             {
                 _missionIds[i].erase(itr->second.PacketInfo.RecID);
-                PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_MISSIONS_DB_ID);
+                CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_MISSIONS_DB_ID);
                 stmt->setUInt64(0, DbID);
                 CharacterDatabase.Execute(stmt);
 
@@ -2619,7 +2619,7 @@ void Garrison::UpdateResTakenTime()
 {
     _lastResTaken = time(nullptr);
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     SaveToDB(trans);
     CharacterDatabase.CommitTransaction(trans);
 }
@@ -3259,7 +3259,7 @@ void Garrison::FreeShipmentChest(uint32 idx)
     {
         if (itr->finished)
         {
-            PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_SHIPMENTS_DBID);
+            CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_SHIPMENTS_DBID);
             stmt->setUInt64(0, itr->ShipmentID);
             CharacterDatabase.Execute(stmt);
 

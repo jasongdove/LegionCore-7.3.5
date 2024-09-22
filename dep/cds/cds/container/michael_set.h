@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_CONTAINER_MICHAEL_SET_H
 #define CDSLIB_CONTAINER_MICHAEL_SET_H
@@ -183,7 +158,7 @@ namespace cds { namespace container {
         typedef typename traits::item_counter item_counter; ///< Item counter type
         typedef typename traits::allocator    allocator;    ///< Bucket table allocator
 
-        static CDS_CONSTEXPR const size_t c_nHazardPtrCount = ordered_list::c_nHazardPtrCount; ///< Count of hazard pointer required
+        static constexpr const size_t c_nHazardPtrCount = ordered_list::c_nHazardPtrCount; ///< Count of hazard pointer required
 
         // GC and OrderedList::gc must be the same
         static_assert( std::is_same<gc, typename ordered_list::gc>::value, "GC and OrderedList::gc must be the same");
@@ -197,7 +172,7 @@ namespace cds { namespace container {
         >::type internal_bucket_type;
 
         /// Bucket table allocator
-        typedef typename allocator::template rebind< internal_bucket_type >::other bucket_table_allocator;
+        typedef typename std::allocator_traits<allocator>::template rebind_alloc< internal_bucket_type > bucket_table_allocator;
 
         typedef typename bucket_stat::stat stat;
         //@endcond
@@ -584,7 +559,7 @@ namespace cds { namespace container {
         erase_at( Iterator const& iter )
 #endif
         {
-            assert( iter != end() );
+            assert( iter != end());
             assert( iter.bucket() != nullptr );
 
             if ( iter.bucket()->erase_at( iter.underlying_iterator())) {
@@ -943,15 +918,15 @@ namespace cds { namespace container {
         }
 
         template <typename Stat>
-        typename std::enable_if< Stat::empty >::type construct_bucket( internal_bucket_type* bucket )
+        typename std::enable_if< Stat::empty >::type construct_bucket( internal_bucket_type* b )
         {
-            new (bucket) internal_bucket_type;
+            new (b) internal_bucket_type;
         }
 
         template <typename Stat>
-        typename std::enable_if< !Stat::empty >::type construct_bucket( internal_bucket_type* bucket )
+        typename std::enable_if< !Stat::empty >::type construct_bucket( internal_bucket_type* b )
         {
-            new (bucket) internal_bucket_type( m_Stat );
+            new (b) internal_bucket_type( m_Stat );
         }
 
         template <typename List, typename... Args>

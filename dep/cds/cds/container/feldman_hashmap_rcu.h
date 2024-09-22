@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_CONTAINER_FELDMAN_HASHMAP_RCU_H
 #define CDSLIB_CONTAINER_FELDMAN_HASHMAP_RCU_H
@@ -113,7 +88,7 @@ namespace cds { namespace container {
         typedef typename traits::stat           stat;           ///< Internal statistics type
         typedef typename traits::rcu_check_deadlock rcu_check_deadlock; ///< Deadlock checking policy
         typedef typename gc::scoped_lock       rcu_lock;        ///< RCU scoped lock
-        static CDS_CONSTEXPR const bool c_bExtractLockExternal = false; ///< Group of \p extract_xxx functions does not require external locking
+        static constexpr const bool c_bExtractLockExternal = false; ///< Group of \p extract_xxx functions does not require external locking
 
         /// Level statistics
         typedef feldman_hashmap::level_statistics level_statistics;
@@ -145,21 +120,21 @@ namespace cds { namespace container {
             typedef typename base_class::iterator_base iterator_base;
 
         protected:
-            static CDS_CONSTEXPR bool const c_bConstantIterator = IsConst;
+            static constexpr bool const c_bConstantIterator = IsConst;
 
         public:
             typedef typename std::conditional< IsConst, value_type const*, value_type*>::type value_ptr; ///< Value pointer
             typedef typename std::conditional< IsConst, value_type const&, value_type&>::type value_ref; ///< Value reference
 
         public:
-            bidirectional_iterator() CDS_NOEXCEPT
+            bidirectional_iterator() noexcept
             {}
 
-            bidirectional_iterator( bidirectional_iterator const& rhs ) CDS_NOEXCEPT
+            bidirectional_iterator( bidirectional_iterator const& rhs ) noexcept
                 : iterator_base( rhs )
             {}
 
-            bidirectional_iterator& operator=(bidirectional_iterator const& rhs) CDS_NOEXCEPT
+            bidirectional_iterator& operator=(bidirectional_iterator const& rhs) noexcept
             {
                 iterator_base::operator=( rhs );
                 return *this;
@@ -177,13 +152,13 @@ namespace cds { namespace container {
                 return *this;
             }
 
-            value_ptr operator ->() const CDS_NOEXCEPT
+            value_ptr operator ->() const noexcept
             {
                 node_type * p = iterator_base::pointer();
                 return p ? &p->m_Value : nullptr;
             }
 
-            value_ref operator *() const CDS_NOEXCEPT
+            value_ref operator *() const noexcept
             {
                 node_type * p = iterator_base::pointer();
                 assert( p );
@@ -196,13 +171,13 @@ namespace cds { namespace container {
             }
 
             template <bool IsConst2>
-            bool operator ==(bidirectional_iterator<IsConst2> const& rhs) const CDS_NOEXCEPT
+            bool operator ==(bidirectional_iterator<IsConst2> const& rhs) const noexcept
             {
                 return iterator_base::operator==( rhs );
             }
 
             template <bool IsConst2>
-            bool operator !=(bidirectional_iterator<IsConst2> const& rhs) const CDS_NOEXCEPT
+            bool operator !=(bidirectional_iterator<IsConst2> const& rhs) const noexcept
             {
                 return !( *this == rhs );
             }
@@ -229,15 +204,15 @@ namespace cds { namespace container {
             typedef typename std::conditional< IsConst, value_type const&, value_type&>::type value_ref; ///< Value reference
 
         public:
-            reverse_bidirectional_iterator() CDS_NOEXCEPT
+            reverse_bidirectional_iterator() noexcept
                 : iterator_base()
             {}
 
-            reverse_bidirectional_iterator( reverse_bidirectional_iterator const& rhs ) CDS_NOEXCEPT
+            reverse_bidirectional_iterator( reverse_bidirectional_iterator const& rhs ) noexcept
                 : iterator_base( rhs )
             {}
 
-            reverse_bidirectional_iterator& operator=( reverse_bidirectional_iterator const& rhs) CDS_NOEXCEPT
+            reverse_bidirectional_iterator& operator=( reverse_bidirectional_iterator const& rhs) noexcept
             {
                 iterator_base::operator=( rhs );
                 return *this;
@@ -255,13 +230,13 @@ namespace cds { namespace container {
                 return *this;
             }
 
-            value_ptr operator ->() const CDS_NOEXCEPT
+            value_ptr operator ->() const noexcept
             {
                 node_type * p = iterator_base::pointer();
                 return p ? &p->m_Value : nullptr;
             }
 
-            value_ref operator *() const CDS_NOEXCEPT
+            value_ref operator *() const noexcept
             {
                 node_type * p = iterator_base::pointer();
                 assert( p );

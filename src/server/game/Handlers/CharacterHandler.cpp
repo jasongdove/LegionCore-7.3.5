@@ -145,7 +145,7 @@ void WorldSession::HandleCharEnumOpcode(WorldPackets::Character::EnumCharacters&
 void WorldSession::SendCharacterEnum(bool deleted /*= false*/)
 {
     // remove expired bans
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_EXPIRED_BANS);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_EXPIRED_BANS);
     CharacterDatabase.Execute(stmt);
 
     /// get all the data necessary for loading all characters (along with their pets) on the account
@@ -301,7 +301,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CreateChar& c
     }
 
     std::shared_ptr<WorldPackets::Character::CharacterCreateInfo> createInfo = charCreate.CreateInfo;
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_NAME);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_NAME);
     stmt->setString(0, charCreate.CreateInfo->Name);
 
     _queryProcessor.AddQuery(CharacterDatabase.AsyncQuery(stmt)
@@ -313,7 +313,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CreateChar& c
             return;
         }
 
-        PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_SUM_REALM_CHARACTERS);
+        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_SUM_REALM_CHARACTERS);
         stmt->setUInt32(0, GetAccountId());
         queryCallback.SetNextQuery(LoginDatabase.AsyncQuery(stmt));
     })
@@ -329,7 +329,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CreateChar& c
             return;
         }
 
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_SUM_CHARS);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_SUM_CHARS);
         stmt->setUInt32(0, GetAccountId());
         queryCallback.SetNextQuery(CharacterDatabase.AsyncQuery(stmt));
     })
@@ -404,9 +404,9 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CreateChar& c
             newChar.SaveToDB(true);
             createInfo->CharCount += 1;
 
-            SQLTransaction trans = LoginDatabase.BeginTransaction();
+            LoginDatabaseTransaction trans = LoginDatabase.BeginTransaction();
 
-            PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_DEL_REALM_CHARACTERS_BY_REALM);
+            LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_DEL_REALM_CHARACTERS_BY_REALM);
             stmt->setUInt32(0, GetAccountId());
             stmt->setUInt32(1, realm.Id.Realm);
             trans->Append(stmt);
@@ -859,13 +859,13 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
 
         player->UpdateVisibilityForPlayer();
 
-        auto stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHAR_ONLINE);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHAR_ONLINE);
         stmt->setUInt32(0, player->GetGUIDLow());
         CharacterDatabase.Execute(stmt);
 
-        stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_ACCOUNT_ONLINE);
-        stmt->setUInt32(0, GetAccountId());
-        LoginDatabase.Execute(stmt);
+        LoginDatabasePreparedStatement* stmt2 = LoginDatabase.GetPreparedStatement(LOGIN_UPD_ACCOUNT_ONLINE);
+        stmt2->setUInt32(0, GetAccountId());
+        LoginDatabase.Execute(stmt2);
 
         player->SetInGameTime(getMSTime());
 
@@ -1062,7 +1062,7 @@ void WorldSession::HandleCharacterRenameRequest(WorldPackets::Character::Charact
     ObjectGuid guid = packet.RenameInfo->Guid;
 
     // Update name and at_login flag in the db
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_NAME);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_NAME);
 
     stmt->setString(0, packet.RenameInfo->NewName);
     stmt->setUInt16(1, AT_LOGIN_RENAME);
@@ -1130,8 +1130,8 @@ void WorldSession::HandleSetPlayerDeclinedNames(WorldPackets::Character::SetPlay
     for (auto& i : packet.DeclinedNames.name)
         CharacterDatabase.EscapeString(i);
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_DECLINED_NAME);
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_DECLINED_NAME);
     stmt->setUInt64(0, packet.Player.GetCounter());
     trans->Append(stmt);
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHAR_DECLINED_NAME);
@@ -1313,12 +1313,12 @@ void WorldSession::HandleCharCustomizeCallback(std::shared_ptr<WorldPackets::Cha
     ObjectGuid::LowType lowGuid = customizeInfo->CharGUID.GetCounter();
     Player::Customize(lowGuid, customizeInfo.get());
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_NAME);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_NAME);
     stmt->setUInt64(0, lowGuid);
     if (result = CharacterDatabase.Query(stmt))
         TC_LOG_INFO("entities.player.character", "Account: %d (IP: %s), Character[%s] (guid:%u) Customized to: %s", GetAccountId(), GetRemoteAddress().c_str(), result->Fetch()[0].GetString().c_str(), lowGuid, customizeInfo->CharName.c_str());
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHAR_NAME_AT_LOGIN);
     stmt->setString(0, customizeInfo->CharName);
     stmt->setUInt16(1, atLoginFlag);
@@ -1465,7 +1465,7 @@ void WorldSession::HandleCharRaceOrFactionChange(WorldPackets::Character::CharRa
 
     CharacterDatabase.EscapeString(info->Name);
     Player::Customize(lowGuid, info);
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     if ((info->Name) != oldName)
         used_loginFlag |= AT_LOGIN_RENAME;
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_FACTION_OR_RACE);

@@ -214,8 +214,8 @@ public:
     explicit Garrison(Player* owner);
 
     bool LoadFromDB(PreparedQueryResult const& garrison, PreparedQueryResult const& blueprints, PreparedQueryResult const& buildings, PreparedQueryResult const& followers, PreparedQueryResult const& abilities, PreparedQueryResult const& missions, PreparedQueryResult const& shipments, PreparedQueryResult const& talents);
-    void SaveToDB(SQLTransaction const& trans);
-    static void DeleteFromDB(ObjectGuid::LowType ownerGuid, SQLTransaction const& trans);
+    void SaveToDB(CharacterDatabaseTransaction const& trans);
+    static void DeleteFromDB(ObjectGuid::LowType ownerGuid, CharacterDatabaseTransaction const& trans);
 
     bool Create(uint32 garrSiteId, bool skip_teleport = false);
     void Delete();

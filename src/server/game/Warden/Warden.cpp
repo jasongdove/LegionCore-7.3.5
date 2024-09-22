@@ -34,7 +34,7 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 
-Warden::Warden(WorldSession* session) : _session(session), _state(WARDEN_NOT_INITIALIZED), _currentSessionFlagged(false), _checkSequenceIndex(0)
+Warden::Warden(WorldSession* session) : _session(session), _inputCrypto(16), _outputCrypto(16), _state(WARDEN_NOT_INITIALIZED), _currentSessionFlagged(false), _checkSequenceIndex(0)
 {
     _lastUpdateTime = getMSTime();
     _currentModule = nullptr;
@@ -66,9 +66,6 @@ bool Warden::Create(BigNumber *k)
     SessionKeyGenerator<SHA1Hash> WK(k->AsByteArray().get(), k->GetNumBytes());
     WK.Generate(tempClientKeySeed, 16);
     WK.Generate(tempServerKeySeed, 16);
-
-    ARC4::rc4_init(&_clientRC4State, tempClientKeySeed, 16);
-    ARC4::rc4_init(&_serverRC4State, tempServerKeySeed, 16);
 
     //sLog->outWarden("Module Key: %s", ByteArrayToHexStr(_currentModule->Key, 16).c_str());
     //sLog->outWarden("Module ID: %s", ByteArrayToHexStr(_currentModule->ID, 32).c_str());
@@ -329,12 +326,12 @@ void Warden::DoAction(uint32 id, const uint32 diff)
 
 void Warden::DecryptData(uint8* buffer, uint32 length)
 {
-    ARC4::rc4_process(&_clientRC4State, buffer, length);
+    _inputCrypto.UpdateData(length, buffer);
 }
 
 void Warden::EncryptData(uint8* buffer, uint32 length)
 {
-    ARC4::rc4_process(&_serverRC4State, buffer, length);
+    _outputCrypto.UpdateData(length, buffer);
 }
 
 bool Warden::IsValidCheckSum(uint32 checksum, const uint8* data, const uint16 length)
@@ -488,7 +485,7 @@ uint32 Warden::CalcBanTime()
     uint32 accountId = _session->GetAccountId();
     uint32 banTime = 72 * HOUR;
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_WARDEN_BAN_ATTEMPTS);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_WARDEN_BAN_ATTEMPTS);
     stmt->setUInt32(0, accountId);
     PreparedQueryResult result = CharacterDatabase.Query(stmt);
 
@@ -527,7 +524,7 @@ uint32 Warden::GetBanTime()
     uint32 accountId = _session->GetAccountId();
     uint32 banTime = 72 * HOUR;
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_WARDEN_BAN_ATTEMPTS);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_WARDEN_BAN_ATTEMPTS);
     stmt->setUInt32(0, accountId);
     PreparedQueryResult result = CharacterDatabase.Query(stmt);
 

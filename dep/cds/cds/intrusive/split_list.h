@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_INTRUSIVE_SPLIT_LIST_H
 #define CDSLIB_INTRUSIVE_SPLIT_LIST_H
@@ -281,7 +256,7 @@ namespace cds { namespace intrusive {
         typedef typename ordered_list::guarded_ptr guarded_ptr;  ///< Guarded pointer
 
         /// Count of hazard pointer required
-        static CDS_CONSTEXPR const size_t c_nHazardPtrCount = ordered_list::c_nHazardPtrCount + 4; // +4 - for iterators
+        static constexpr const size_t c_nHazardPtrCount = ordered_list::c_nHazardPtrCount + 4; // +4 - for iterators
 
     protected:
         //@cond
@@ -862,7 +837,7 @@ namespace cds { namespace intrusive {
         erase_at( Iterator const& iter )
 #endif
         {
-            assert( iter != end() );
+            assert( iter != end());
 
             if ( m_List.erase_at( iter.underlying_iterator())) {
                 --m_ItemCounter;
@@ -1170,7 +1145,7 @@ namespace cds { namespace intrusive {
                 p->m_nHash = nHash;
                 CDS_TSAN_ANNOTATE_IGNORE_WRITES_END;
 #       ifdef CDS_DEBUG
-                cds_assert( !p->m_busy.load( atomics::memory_order_acquire ) );
+                cds_assert( !p->m_busy.load( atomics::memory_order_acquire ));
                 p->m_busy.store( true, atomics::memory_order_release );
 #       endif
             }
@@ -1180,7 +1155,7 @@ namespace cds { namespace intrusive {
         void free_aux_node( aux_node_type * p )
         {
 #       ifdef CDS_DEBUG
-            cds_assert( p->m_busy.load( atomics::memory_order_acquire ) );
+            cds_assert( p->m_busy.load( atomics::memory_order_acquire ));
             p->m_busy.store( false, atomics::memory_order_release );
 #       endif
 
@@ -1325,7 +1300,7 @@ namespace cds { namespace intrusive {
 
             return m_Stat.onFind(
                 m_List.find_at( pHead, sv, cmp,
-                    [&f]( value_type& item, split_list::details::search_value_type<Q>& val ) { f( item, val.val ); } )
+                    [&f]( value_type& item, split_list::details::search_value_type<Q>& v ) { f( item, v.val ); } )
             );
         }
 

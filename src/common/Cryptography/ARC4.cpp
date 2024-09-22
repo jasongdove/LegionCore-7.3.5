@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+* This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -17,67 +16,52 @@
  */
 
 #include "ARC4.h"
+#include "Errors.h"
 
-ARC4::ARC4(uint32 len) : m_ctx(EVP_CIPHER_CTX_new())
+ARC4::ARC4(uint32 len) : _ctx(EVP_CIPHER_CTX_new())
 {
-    EVP_CIPHER_CTX_init(m_ctx);
-    EVP_EncryptInit_ex(m_ctx, EVP_rc4(), nullptr, nullptr, nullptr);
-    EVP_CIPHER_CTX_set_key_length(m_ctx, len);
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+    _cipher = EVP_CIPHER_fetch(nullptr, "RC4", nullptr);
+#else
+    EVP_CIPHER const *_cipher = EVP_rc4();
+#endif
+
+    EVP_CIPHER_CTX_init(_ctx);
+    EVP_EncryptInit_ex(_ctx, _cipher, nullptr, nullptr, nullptr);
+    EVP_CIPHER_CTX_set_key_length(_ctx, len);
 }
 
-ARC4::ARC4(uint8* seed, uint32 len) : m_ctx(EVP_CIPHER_CTX_new())
+ARC4::ARC4(uint8* seed, uint32 len) : _ctx(EVP_CIPHER_CTX_new())
 {
-    EVP_CIPHER_CTX_init(m_ctx);
-    EVP_EncryptInit_ex(m_ctx, EVP_rc4(), nullptr, nullptr, nullptr);
-    EVP_CIPHER_CTX_set_key_length(m_ctx, len);
-    EVP_EncryptInit_ex(m_ctx, nullptr, nullptr, seed, nullptr);
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+    _cipher = EVP_CIPHER_fetch(nullptr, "RC4", nullptr);
+#else
+    EVP_CIPHER const *_cipher = EVP_rc4();
+#endif
+
+    EVP_CIPHER_CTX_init(_ctx);
+    EVP_EncryptInit_ex(_ctx, _cipher, nullptr, nullptr, nullptr);
+    EVP_CIPHER_CTX_set_key_length(_ctx, len);
+    EVP_EncryptInit_ex(_ctx, nullptr, nullptr, seed, nullptr);
 }
 
 ARC4::~ARC4()
 {
-    EVP_CIPHER_CTX_free(m_ctx);
+    EVP_CIPHER_CTX_free(_ctx);
+
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+    EVP_CIPHER_free(_cipher);
+#endif
 }
 
 void ARC4::Init(uint8* seed)
 {
-    EVP_EncryptInit_ex(m_ctx, nullptr, nullptr, seed, nullptr);
+    EVP_EncryptInit_ex(_ctx, nullptr, nullptr, seed, nullptr);
 }
 
 void ARC4::UpdateData(int len, uint8* data)
 {
     int outlen = 0;
-    EVP_EncryptUpdate(m_ctx, data, &outlen, data, len);
-    EVP_EncryptFinal_ex(m_ctx, data, &outlen);
-}
-
-void ARC4::rc4_init(RC4_Context * ctx, const uint8 * seed, int seedlen)
-{
-    for (int i = 0; i < 256; ++i)
-        ctx->S[i] = i;
-
-    ctx->x = 0;
-    ctx->y = 0;
-
-    int j = 0;
-
-    for (int i = 0; i < 256; ++i)
-    {
-        j = (j + ctx->S[i] + seed[i % seedlen]) % 256;
-        std::swap(ctx->S[i], ctx->S[j]);
-    }
-}
-
-void ARC4::rc4_process(RC4_Context * ctx, uint8 * data, int datalen)
-{
-    int i = 0;
-    int j = 0;
-
-    for (i = 0; i < datalen; ++i)
-    {
-        ctx->x = (ctx->x + 1) % 256;
-        ctx->y = (ctx->y + ctx->S[ctx->x]) % 256;
-        std::swap(ctx->S[ctx->x], ctx->S[ctx->y]);
-        j = (ctx->S[ctx->x] + ctx->S[ctx->y]) % 256;
-        data[i] ^= ctx->S[j];
-    }
+    EVP_EncryptUpdate(_ctx, data, &outlen, data, len);
+    EVP_EncryptFinal_ex(_ctx, data, &outlen);
 }

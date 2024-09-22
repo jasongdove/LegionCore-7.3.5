@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_CONTAINER_FCSTACK_H
 #define CDSLIB_CONTAINER_FCSTACK_H
@@ -78,7 +53,7 @@ namespace cds { namespace container {
         struct traits: public cds::algo::flat_combining::traits
         {
             typedef empty_stat      stat;   ///< Internal statistics
-            static CDS_CONSTEXPR const bool enable_elimination = false; ///< Enable \ref cds_elimination_description "elimination"
+            static constexpr const bool enable_elimination = false; ///< Enable \ref cds_elimination_description "elimination"
         };
 
         /// Metafunction converting option list to traits
@@ -131,7 +106,7 @@ namespace cds { namespace container {
         typedef Traits      traits;         ///< Stack traits
 
         typedef typename traits::stat  stat;   ///< Internal statistics type
-        static CDS_CONSTEXPR const bool c_bEliminationEnabled = traits::enable_elimination; ///< \p true if elimination is enabled
+        static constexpr const bool c_bEliminationEnabled = traits::enable_elimination; ///< \p true if elimination is enabled
 
     protected:
         //@cond
@@ -186,7 +161,7 @@ namespace cds { namespace container {
             auto pRec = m_FlatCombining.acquire_record();
             pRec->pValPush = &val;
 
-            if ( c_bEliminationEnabled )
+            constexpr_if ( c_bEliminationEnabled )
                 m_FlatCombining.batch_combine( op_push, pRec, *this );
             else
                 m_FlatCombining.combine( op_push, pRec, *this );
@@ -206,7 +181,7 @@ namespace cds { namespace container {
             auto pRec = m_FlatCombining.acquire_record();
             pRec->pValPush = &val;
 
-            if ( c_bEliminationEnabled )
+            constexpr_if ( c_bEliminationEnabled )
                 m_FlatCombining.batch_combine( op_push_move, pRec, *this );
             else
                 m_FlatCombining.combine( op_push_move, pRec, *this );
@@ -227,7 +202,7 @@ namespace cds { namespace container {
             auto pRec = m_FlatCombining.acquire_record();
             pRec->pValPop = &val;
 
-            if ( c_bEliminationEnabled )
+            constexpr_if ( c_bEliminationEnabled )
                 m_FlatCombining.batch_combine( op_pop, pRec, *this );
             else
                 m_FlatCombining.combine( op_pop, pRec, *this );
@@ -244,7 +219,7 @@ namespace cds { namespace container {
         {
             auto pRec = m_FlatCombining.acquire_record();
 
-            if ( c_bEliminationEnabled )
+            constexpr_if ( c_bEliminationEnabled )
                 m_FlatCombining.batch_combine( op_clear, pRec, *this );
             else
                 m_FlatCombining.combine( op_clear, pRec, *this );
@@ -253,11 +228,43 @@ namespace cds { namespace container {
             m_FlatCombining.release_record( pRec );
         }
 
+        /// Exclusive access to underlying stack object
+        /**
+            The functor \p f can do any operation with underlying \p stack_type in exclusive mode.
+            For example, you can iterate over the stack.
+            \p Func signature is:
+            \code
+                void f( stack_type& stack );
+            \endcode
+        */
+        template <typename Func>
+        void apply( Func f )
+        {
+            auto& stack = m_Stack;
+            m_FlatCombining.invoke_exclusive( [&stack, &f]() { f( stack ); } );
+        }
+
+        /// Exclusive access to underlying stack object
+        /**
+            The functor \p f can do any operation with underlying \p stack_type in exclusive mode.
+            For example, you can iterate over the stack.
+            \p Func signature is:
+            \code
+                void f( stack_type const& stack );
+            \endcode
+        */
+        template <typename Func>
+        void apply( Func f ) const
+        {
+            auto const& stack = m_Stack;
+            m_FlatCombining.invoke_exclusive( [&stack, &f]() { f( stack ); } );
+        }
+
         /// Returns the number of elements in the stack.
         /**
             Note that <tt>size() == 0</tt> is not mean that the stack is empty because
             combining record can be in process.
-            To check emptiness use \ref empty function.
+            To check emptiness use \ref empty() function.
         */
         size_t size() const
         {
@@ -272,7 +279,7 @@ namespace cds { namespace container {
         {
             auto pRec = m_FlatCombining.acquire_record();
 
-            if ( c_bEliminationEnabled )
+            constexpr_if ( c_bEliminationEnabled )
                 m_FlatCombining.batch_combine( op_empty, pRec, *this );
             else
                 m_FlatCombining.combine( op_empty, pRec, *this );

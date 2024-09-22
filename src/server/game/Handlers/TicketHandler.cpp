@@ -35,7 +35,7 @@ void WorldSession::HandleComplaint(WorldPackets::Ticket::Complaint& packet)
     if (sWordFilterMgr->AddComplaintForUser(packet.Offender.PlayerGuid, GetPlayer()->GetGUID(), complaintId, packet.Chat.MessageLog))
     {
         uint8 index = 0;
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHARACTER_COMPLAINTS);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHARACTER_COMPLAINTS);
         stmt->setUInt64(index++, complaintId);
         stmt->setUInt64(index++, GetPlayer()->GetGUIDLow());
         stmt->setUInt32(index++, GetAccountId());

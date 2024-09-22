@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_URCU_RAW_PTR_H
 #define CDSLIB_URCU_RAW_PTR_H
@@ -137,7 +112,7 @@ namespace cds { namespace urcu {
         /**
             This operator may be called only inside RCU-lock.
         */
-        raw_ptr& operator=( raw_ptr&& p ) CDS_NOEXCEPT
+        raw_ptr& operator=( raw_ptr&& p ) noexcept
         {
             assert( rcu::is_locked());
             m_ptr = p.m_ptr;
@@ -150,7 +125,7 @@ namespace cds { namespace urcu {
         raw_ptr& operator=( raw_ptr const& ) = delete;
 
         /// Returns a pointer to stored value
-        value_type * operator ->() const CDS_NOEXCEPT
+        value_type * operator ->() const noexcept
         {
             return m_ptr;
         }
@@ -170,13 +145,13 @@ namespace cds { namespace urcu {
         }
 
         /// Checks if the \p %raw_ptr is \p nullptr
-        bool empty() const CDS_NOEXCEPT
+        bool empty() const noexcept
         {
             return m_ptr == nullptr;
         }
 
         /// Checks if the \p %raw_ptr is not empty
-        explicit operator bool() const CDS_NOEXCEPT
+        explicit operator bool() const noexcept
         {
             return !empty();
         }
@@ -241,7 +216,7 @@ namespace cds { namespace urcu {
 
             In general, move assignment is intented for internal use.
         */
-        raw_ptr_adaptor& operator=( raw_ptr_adaptor&& p ) CDS_NOEXCEPT
+        raw_ptr_adaptor& operator=( raw_ptr_adaptor&& p ) noexcept
         {
             intrusive_raw_ptr::operator =(std::move(p));
             return *this;
@@ -251,7 +226,7 @@ namespace cds { namespace urcu {
         raw_ptr_adaptor& operator=( raw_ptr_adaptor const& ) = delete;
 
         // Returns a pointer to stored value
-        value_type * operator ->() const CDS_NOEXCEPT
+        value_type * operator ->() const noexcept
         {
             return converter_type()( intrusive_raw_ptr::operator->());
         }
@@ -269,13 +244,13 @@ namespace cds { namespace urcu {
         }
 
         // Checks if the \p %raw_ptr is \p nullptr
-        bool empty() const CDS_NOEXCEPT
+        bool empty() const noexcept
         {
             return intrusive_raw_ptr::empty();
         }
 
         // Checks if the \p %raw_ptr is not empty
-        explicit operator bool() const CDS_NOEXCEPT
+        explicit operator bool() const noexcept
         {
             return !empty();
         }

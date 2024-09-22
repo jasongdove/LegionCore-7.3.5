@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_CXX11_ATOMIC_H
 #define CDSLIB_CXX11_ATOMIC_H
@@ -113,7 +88,7 @@ namespace cds {
 
         public:
             // Initializes event counter with zero
-            event_counter() CDS_NOEXCEPT
+            event_counter() noexcept
                 : m_counter(size_t(0))
             {}
 
@@ -123,7 +98,7 @@ namespace cds {
             */
             value_type operator =(
                 value_type n    ///< new value of the counter
-            ) CDS_NOEXCEPT
+            ) noexcept
             {
                 m_counter.exchange( n, atomics::memory_order_relaxed );
                 return n;
@@ -135,7 +110,7 @@ namespace cds {
             */
             size_t operator +=(
                 size_t n    ///< addendum
-            ) CDS_NOEXCEPT
+            ) noexcept
             {
                 return m_counter.fetch_add( n, atomics::memory_order_relaxed ) + n;
             }
@@ -146,47 +121,47 @@ namespace cds {
             */
             size_t operator -=(
                 size_t n    ///< subtrahend
-            ) CDS_NOEXCEPT
+            ) noexcept
             {
                 return m_counter.fetch_sub( n, atomics::memory_order_relaxed ) - n;
             }
 
             /// Get current value of the counter
-            operator size_t () const CDS_NOEXCEPT
+            operator size_t () const noexcept
             {
                 return m_counter.load( atomics::memory_order_relaxed );
             }
 
             /// Preincrement
-            size_t operator ++() CDS_NOEXCEPT
+            size_t operator ++() noexcept
             {
                 return m_counter.fetch_add( 1, atomics::memory_order_relaxed ) + 1;
             }
             /// Postincrement
-            size_t operator ++(int) CDS_NOEXCEPT
+            size_t operator ++(int) noexcept
             {
                 return m_counter.fetch_add( 1, atomics::memory_order_relaxed );
             }
 
             /// Predecrement
-            size_t operator --() CDS_NOEXCEPT
+            size_t operator --() noexcept
             {
                 return m_counter.fetch_sub( 1, atomics::memory_order_relaxed ) - 1;
             }
             /// Postdecrement
-            size_t operator --(int) CDS_NOEXCEPT
+            size_t operator --(int) noexcept
             {
                 return m_counter.fetch_sub( 1, atomics::memory_order_relaxed );
             }
 
             /// Get current value of the counter
-            size_t get() const CDS_NOEXCEPT
+            size_t get() const noexcept
             {
                 return m_counter.load( atomics::memory_order_relaxed );
             }
 
             /// Resets the counter to 0
-            void reset() CDS_NOEXCEPT
+            void reset() noexcept
             {
                 m_counter.store( 0, atomics::memory_order_release );
             }

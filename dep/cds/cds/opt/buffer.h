@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_OPT_BUFFER_H
 #define CDSLIB_OPT_BUFFER_H
@@ -36,6 +11,7 @@
 #include <cds/user_setup/allocator.h>
 #include <cds/details/allocator.h>
 #include <cds/algo/int_algo.h>
+#include <memory>
 
 namespace cds { namespace opt {
 
@@ -94,8 +70,8 @@ namespace cds { namespace opt {
         {
         public:
             typedef T   value_type;   ///< value type
-            static CDS_CONSTEXPR const size_t c_nCapacity = Capacity;    ///< Capacity
-            static CDS_CONSTEXPR const bool c_bExp2 = Exp2; ///< \p Exp2 flag
+            static constexpr const size_t c_nCapacity = Capacity;    ///< Capacity
+            static constexpr const bool c_bExp2 = Exp2; ///< \p Exp2 flag
 
             /// Rebind buffer for other template parameters
             template <typename Q, size_t Capacity2 = c_nCapacity, bool Exp22 = c_bExp2>
@@ -120,7 +96,7 @@ namespace cds { namespace opt {
             //@endcond
         public:
             /// Construct static buffer
-            uninitialized_static_buffer() CDS_NOEXCEPT
+            uninitialized_static_buffer() noexcept
             {}
 
             /// Construct buffer of given capacity
@@ -128,7 +104,7 @@ namespace cds { namespace opt {
                 This ctor ignores \p nCapacity argument. The capacity of static buffer
                 is defined by template argument \p Capacity
             */
-            uninitialized_static_buffer( size_t nCapacity ) CDS_NOEXCEPT
+            uninitialized_static_buffer( size_t nCapacity ) noexcept
             {
                 CDS_UNUSED( nCapacity );
             }
@@ -151,7 +127,7 @@ namespace cds { namespace opt {
             }
 
             /// Returns buffer capacity
-            CDS_CONSTEXPR size_t capacity() const CDS_NOEXCEPT
+            constexpr size_t capacity() const noexcept
             {
                 return c_nCapacity;
             }
@@ -163,29 +139,40 @@ namespace cds { namespace opt {
             }
 
             /// Returns pointer to buffer array
-            value_type * buffer() CDS_NOEXCEPT
+            value_type * buffer() noexcept
             {
                 return &( m_buffer[0].v );
             }
 
             /// Returns pointer to buffer array
-            value_type * buffer() const CDS_NOEXCEPT
+            value_type * buffer() const noexcept
             {
                 return &( m_buffer[0].v );
             }
 
             /// Returns <tt> idx % capacity() </tt>
             /**
-            If the buffer size is a power of two, binary arithmethics is used
-            instead of modulo arithmetics
+                If the buffer size is a power of two, binary arithmethics is used
+                instead of modulo arithmetics
             */
             size_t mod( size_t idx )
             {
-                static_if( c_bExp2 )
+                constexpr_if ( c_bExp2 )
                     return idx & ( capacity() - 1 );
                 else
                     return idx % capacity();
             }
+
+            //@cond
+            template <typename I>
+            typename std::enable_if< sizeof(I) != sizeof(size_t), size_t >::type mod( I idx )
+            {
+                constexpr_if ( c_bExp2 )
+                    return static_cast<size_t>( idx & static_cast<I>( capacity() - 1 ));
+                else
+                    return static_cast<size_t>( idx % capacity());
+            }
+            //@endcond
         };
 
         /// Static initialized buffer
@@ -207,8 +194,8 @@ namespace cds { namespace opt {
         {
         public:
             typedef T   value_type;   ///< value type
-            static CDS_CONSTEXPR const size_t c_nCapacity = Capacity;    ///< Capacity
-            static CDS_CONSTEXPR const bool c_bExp2 = Exp2; ///< \p Exp2 flag
+            static constexpr const size_t c_nCapacity = Capacity;    ///< Capacity
+            static constexpr const bool c_bExp2 = Exp2; ///< \p Exp2 flag
 
             /// Rebind buffer for other template parameters
             template <typename Q, size_t Capacity2 = c_nCapacity, bool Exp22 = c_bExp2>
@@ -225,7 +212,7 @@ namespace cds { namespace opt {
             //@endcond
         public:
             /// Construct static buffer
-            initialized_static_buffer() CDS_NOEXCEPT
+            initialized_static_buffer() noexcept
             {}
 
             /// Construct buffer of given capacity
@@ -233,7 +220,7 @@ namespace cds { namespace opt {
                 This ctor ignores \p nCapacity argument. The capacity of static buffer
                 is defined by template argument \p Capacity
             */
-            initialized_static_buffer( size_t nCapacity ) CDS_NOEXCEPT
+            initialized_static_buffer( size_t nCapacity ) noexcept
             {
                 CDS_UNUSED( nCapacity );
             }
@@ -256,7 +243,7 @@ namespace cds { namespace opt {
             }
 
             /// Returns buffer capacity
-            CDS_CONSTEXPR size_t capacity() const CDS_NOEXCEPT
+            constexpr size_t capacity() const noexcept
             {
                 return c_nCapacity;
             }
@@ -268,13 +255,13 @@ namespace cds { namespace opt {
             }
 
             /// Returns pointer to buffer array
-            value_type * buffer() CDS_NOEXCEPT
+            value_type * buffer() noexcept
             {
                 return m_buffer;
             }
 
             /// Returns pointer to buffer array
-            value_type * buffer() const CDS_NOEXCEPT
+            value_type * buffer() const noexcept
             {
                 return m_buffer;
             }
@@ -286,11 +273,22 @@ namespace cds { namespace opt {
             */
             size_t mod( size_t idx )
             {
-                static_if( c_bExp2 )
+                constexpr_if ( c_bExp2 )
                     return idx & ( capacity() - 1 );
                 else
                     return idx % capacity();
             }
+
+            //@cond
+            template <typename I>
+            typename std::enable_if< sizeof( I ) != sizeof( size_t ), size_t >::type mod( I idx )
+            {
+                constexpr_if ( c_bExp2 )
+                    return static_cast<size_t>( idx & static_cast<I>( capacity() - 1 ));
+                else
+                    return static_cast<size_t>( idx % capacity());
+            }
+            //@endcond
         };
 
         /// Dynamically allocated uninitialized buffer
@@ -314,7 +312,7 @@ namespace cds { namespace opt {
         public:
             typedef T     value_type;   ///< Value type
             typedef Alloc allocator;    ///< Allocator type;
-            static CDS_CONSTEXPR const bool c_bExp2 = Exp2; ///< \p Exp2 flag
+            static constexpr const bool c_bExp2 = Exp2; ///< \p Exp2 flag
 
             /// Rebind buffer for other template parameters
             template <typename Q, typename Alloc2= allocator, bool Exp22 = c_bExp2>
@@ -323,7 +321,7 @@ namespace cds { namespace opt {
             };
 
             //@cond
-            typedef typename allocator::template rebind<value_type>::other allocator_type;
+            typedef typename std::allocator_traits<allocator>::template rebind_alloc<value_type> allocator_type;
             //@endcond
 
         private:
@@ -371,7 +369,7 @@ namespace cds { namespace opt {
             }
 
             /// Returns buffer capacity
-            size_t capacity() const CDS_NOEXCEPT
+            size_t capacity() const noexcept
             {
                 return m_nCapacity;
             }
@@ -383,13 +381,13 @@ namespace cds { namespace opt {
             }
 
             /// Returns pointer to buffer array
-            value_type * buffer() CDS_NOEXCEPT
+            value_type * buffer() noexcept
             {
                 return m_buffer;
             }
 
             /// Returns pointer to buffer array
-            value_type * buffer() const CDS_NOEXCEPT
+            value_type * buffer() const noexcept
             {
                 return m_buffer;
             }
@@ -401,11 +399,22 @@ namespace cds { namespace opt {
             */
             size_t mod( size_t idx )
             {
-                static_if ( c_bExp2 )
+                constexpr_if ( c_bExp2 )
                     return idx & ( capacity() - 1 );
                 else
                     return idx % capacity();
             }
+
+            //@cond
+            template <typename I>
+            typename std::enable_if< sizeof( I ) != sizeof( size_t ), size_t >::type mod( I idx )
+            {
+                constexpr_if ( c_bExp2 )
+                    return static_cast<size_t>( idx & static_cast<I>( capacity() - 1 ));
+                else
+                    return static_cast<size_t>( idx % capacity());
+            }
+            //@endcond
         };
 
 
@@ -429,7 +438,7 @@ namespace cds { namespace opt {
         public:
             typedef T     value_type;   ///< Value type
             typedef Alloc allocator;    ///< Allocator type
-            static CDS_CONSTEXPR const bool c_bExp2 = Exp2; ///< \p Exp2 flag
+            static constexpr const bool c_bExp2 = Exp2; ///< \p Exp2 flag
 
             /// Rebind buffer for other template parameters
             template <typename Q, typename Alloc2= allocator, bool Exp22 = c_bExp2>
@@ -488,7 +497,7 @@ namespace cds { namespace opt {
             }
 
             /// Returns buffer capacity
-            size_t capacity() const CDS_NOEXCEPT
+            size_t capacity() const noexcept
             {
                 return m_nCapacity;
             }
@@ -500,13 +509,13 @@ namespace cds { namespace opt {
             }
 
             /// Returns pointer to buffer array
-            value_type * buffer() CDS_NOEXCEPT
+            value_type * buffer() noexcept
             {
                 return m_buffer;
             }
 
             /// Returns pointer to buffer array
-            value_type * buffer() const CDS_NOEXCEPT
+            value_type * buffer() const noexcept
             {
                 return m_buffer;
             }
@@ -518,11 +527,22 @@ namespace cds { namespace opt {
             */
             size_t mod( size_t idx )
             {
-                static_if( c_bExp2 )
+                constexpr_if ( c_bExp2 )
                     return idx & ( capacity() - 1 );
                 else
                     return idx % capacity();
             }
+
+            //@cond
+            template <typename I>
+            typename std::enable_if< sizeof( I ) != sizeof( size_t ), size_t >::type mod( I idx )
+            {
+                constexpr_if ( c_bExp2 )
+                    return static_cast<size_t>( idx & static_cast<I>( capacity() - 1 ));
+                else
+                    return static_cast<size_t>( idx % capacity());
+            }
+            //@endcond
         };
 
     }   // namespace v

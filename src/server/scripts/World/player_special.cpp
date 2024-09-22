@@ -68,7 +68,7 @@ public:
                             continue;
                         }
 
-                        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_ITEM_INFO);
+                        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_ITEM_INFO);
                         stmt->setUInt64(0, ArtIt.first.GetGUIDLow());
 
                         if (PreparedQueryResult artifactsResult = CharacterDatabase.Query(stmt))
@@ -88,7 +88,7 @@ public:
                             {
                                 item->FSetState(ITEM_REMOVED);
 
-                                SQLTransaction temp = SQLTransaction(NULL);
+                                CharacterDatabaseTransaction temp = CharacterDatabaseTransaction(NULL);
                                 item->SaveToDB(temp);                               // it also deletes item object !
                             }
                         }
@@ -121,7 +121,7 @@ public:
 
             MailSender sender(MAIL_NORMAL, player->GetGUIDLow(), MAIL_STATIONERY_GM);
             
-            SQLTransaction trans = CharacterDatabase.BeginTransaction();
+            CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
             MailDraft("Nightmarish Hitching Post", "Thank you for your purchase!").AddItem(pItem).SendMailTo(trans, MailReceiver(player, player->GetGUIDLow()), sender);
 
             CharacterDatabase.CommitTransaction(trans);
@@ -509,7 +509,7 @@ public:
         
         if (penaltyTime > 0)
         {
-            PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_MUTE_TIME);
+            LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_MUTE_TIME);
 
             uint32 notSpeakTime = penaltyTime;
 
@@ -941,7 +941,7 @@ public:
 
         MailSender sender(MAIL_NORMAL, player->GetGUIDLow(), MAIL_STATIONERY_GM);
 
-        SQLTransaction trans = CharacterDatabase.BeginTransaction();
+        CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
         MailDraft(sObjectMgr->GetTrinityString(20091, LocaleConstant(1)), sObjectMgr->GetTrinityString(20091, LocaleConstant(0))).AddMoney(111100).SendMailTo(trans, MailReceiver(player, player->GetGUIDLow()), sender);
 
         CharacterDatabase.CommitTransaction(trans);

@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_INTRUSIVE_STRIPED_SET_H
 #define CDSLIB_INTRUSIVE_STRIPED_SET_H
@@ -326,10 +301,10 @@ namespace cds { namespace intrusive {
         typedef cds::details::Allocator< bucket_type, allocator_type > bucket_allocator;  ///< bucket allocator type based on allocator_type
 
     protected:
-        bucket_type *   m_Buckets       ;   ///< Bucket table
-        size_t          m_nBucketMask   ;   ///< Bucket table size - 1. m_nBucketMask + 1 should be power of two.
-        item_counter    m_ItemCounter   ;   ///< Item counter
-        hash            m_Hash          ;   ///< Hash functor
+        bucket_type *           m_Buckets;      ///< Bucket table
+        atomics::atomic<size_t> m_nBucketMask;  ///< Bucket table size - 1. m_nBucketMask + 1 should be power of two.
+        item_counter            m_ItemCounter;  ///< Item counter
+        hash                    m_Hash;         ///< Hash functor
 
         mutex_policy    m_MutexPolicy   ;   ///< Mutex policy
         resizing_policy m_ResizingPolicy;   ///< Resizing policy
@@ -354,7 +329,7 @@ namespace cds { namespace intrusive {
         void alloc_bucket_table( size_t nSize )
         {
             assert( cds::beans::is_power2( nSize ));
-            m_nBucketMask = nSize - 1;
+            m_nBucketMask.store( nSize - 1, atomics::memory_order_release );
             m_Buckets = bucket_allocator().NewArray( nSize );
         }
 
@@ -369,9 +344,9 @@ namespace cds { namespace intrusive {
             return m_Hash( v );
         }
 
-        bucket_type * bucket( size_t nHash ) const CDS_NOEXCEPT
+        bucket_type * bucket( size_t nHash ) const noexcept
         {
-            return m_Buckets + (nHash & m_nBucketMask);
+            return m_Buckets + (nHash & m_nBucketMask.load( atomics::memory_order_relaxed ));
         }
 
         template <typename Q, typename Func>
@@ -421,12 +396,11 @@ namespace cds { namespace intrusive {
 
         void resize()
         {
-            size_t nOldCapacity = bucket_count();
-            size_t volatile& refBucketMask = m_nBucketMask;
+            size_t nOldCapacity = bucket_count( atomics::memory_order_acquire );
 
             scoped_resize_lock al( m_MutexPolicy );
             if ( al.success()) {
-                if ( nOldCapacity != refBucketMask + 1 ) {
+                if ( nOldCapacity != bucket_count( atomics::memory_order_acquire )) {
                     // someone resized already
                     return;
                 }
@@ -441,21 +415,21 @@ namespace cds { namespace intrusive {
         /// Default ctor. The initial capacity is 16.
         StripedSet()
             : m_Buckets( nullptr )
-        , m_nBucketMask( c_nMinimalCapacity - 1 )
-        , m_MutexPolicy( c_nMinimalCapacity )
+            , m_nBucketMask( c_nMinimalCapacity - 1 )
+            , m_MutexPolicy( c_nMinimalCapacity )
         {
-            alloc_bucket_table( m_nBucketMask + 1 );
+            alloc_bucket_table( bucket_count());
         }
 
         /// Ctor with initial capacity specified
         StripedSet(
             size_t nCapacity    ///< Initial size of bucket table and lock array. Must be power of two, the minimum is 16.
         )
-        : m_Buckets( nullptr )
-        , m_nBucketMask( calc_init_capacity(nCapacity) - 1 )
-        , m_MutexPolicy( m_nBucketMask + 1 )
+            : m_Buckets( nullptr )
+            , m_nBucketMask( calc_init_capacity(nCapacity) - 1 )
+            , m_MutexPolicy( bucket_count())
         {
-            alloc_bucket_table( m_nBucketMask + 1 );
+            alloc_bucket_table( bucket_count());
         }
 
         /// Ctor with resizing policy (copy semantics)
@@ -468,10 +442,10 @@ namespace cds { namespace intrusive {
         )
         : m_Buckets( nullptr )
         , m_nBucketMask( ( nCapacity ? calc_init_capacity(nCapacity) : c_nMinimalCapacity ) - 1 )
-        , m_MutexPolicy( m_nBucketMask + 1 )
+        , m_MutexPolicy( bucket_count())
         , m_ResizingPolicy( resizingPolicy )
         {
-            alloc_bucket_table( m_nBucketMask + 1 );
+            alloc_bucket_table( bucket_count());
         }
 
         /// Ctor with resizing policy (move semantics)
@@ -485,16 +459,16 @@ namespace cds { namespace intrusive {
         )
         : m_Buckets( nullptr )
         , m_nBucketMask( ( nCapacity ? calc_init_capacity(nCapacity) : c_nMinimalCapacity ) - 1 )
-        , m_MutexPolicy( m_nBucketMask + 1 )
+        , m_MutexPolicy( bucket_count())
         , m_ResizingPolicy( std::forward<resizing_policy>( resizingPolicy ))
         {
-            alloc_bucket_table( m_nBucketMask + 1 );
+            alloc_bucket_table( bucket_count());
         }
 
         /// Destructor destroys internal data
         ~StripedSet()
         {
-            free_bucket_table( m_Buckets, m_nBucketMask + 1 );
+            free_bucket_table( m_Buckets, bucket_count());
         }
 
     public:
@@ -878,8 +852,14 @@ namespace cds { namespace intrusive {
         */
         size_t bucket_count() const
         {
-            return m_nBucketMask + 1;
+            return m_nBucketMask.load( atomics::memory_order_relaxed ) + 1;
         }
+        //@cond
+        size_t bucket_count( atomics::memory_order load_mo ) const
+        {
+            return m_nBucketMask.load( load_mo ) + 1;
+        }
+        //@endcond
 
         /// Returns lock array size
         size_t lock_count() const

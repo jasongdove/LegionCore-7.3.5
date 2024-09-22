@@ -95,8 +95,8 @@ struct AuctionEntry
     uint64 GetAuctionCut() const;
     uint64 GetAuctionOutBid() const;
     void BuildAuctionInfo(std::vector<WorldPackets::AuctionHouse::AuctionItem>& items, bool listAuctionItems, Item* sourceItem = nullptr) const;
-    void DeleteFromDB(SQLTransaction& trans) const;
-    void SaveToDB(SQLTransaction& trans) const;
+    void DeleteFromDB(CharacterDatabaseTransaction& trans) const;
+    void SaveToDB(CharacterDatabaseTransaction& trans) const;
     bool LoadFromDB(Field* fields);
     bool LoadFromFieldList(Field* fields);
     std::string BuildAuctionMailSubject(MailAuctionAnswers response) const;
@@ -183,12 +183,12 @@ class AuctionHouseMgr
         Item* GetAItem(ObjectGuid::LowType const& id);
 
         //auction messages
-        void SendAuctionWonMail(AuctionEntry* auction, SQLTransaction& trans);
-        void SendAuctionSalePendingMail(AuctionEntry* auction, SQLTransaction& trans);
-        void SendAuctionSuccessfulMail(AuctionEntry* auction, SQLTransaction& trans);
-        void SendAuctionExpiredMail(AuctionEntry* auction, SQLTransaction& trans);
-        void SendAuctionOutbiddedMail(AuctionEntry* auction, uint64 const& newPrice, Player* newBidder, SQLTransaction& trans);
-        void SendAuctionCancelledToBidderMail(AuctionEntry* auction, SQLTransaction& trans, Item* item);
+        void SendAuctionWonMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans);
+        void SendAuctionSalePendingMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans);
+        void SendAuctionSuccessfulMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans);
+        void SendAuctionExpiredMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans);
+        void SendAuctionOutbiddedMail(AuctionEntry* auction, uint64 const& newPrice, Player* newBidder, CharacterDatabaseTransaction& trans);
+        void SendAuctionCancelledToBidderMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans, Item* item);
 
         static uint32 GetAuctionDeposit(AuctionHouseEntry const* entry, uint32 time, Item* pItem, uint32 count);
         static AuctionHouseEntry const* GetAuctionHouseEntry(uint32 factionTemplateId, uint32* houseId);

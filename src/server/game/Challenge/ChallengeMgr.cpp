@@ -112,9 +112,9 @@ bool ChallengeMgr::CheckBestMemberMapId(ObjectGuid const& guid, ChallengeData* c
 
 void ChallengeMgr::SaveChallengeToDB(ChallengeData const* challengeData)
 {
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHALLENGE);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHALLENGE);
     stmt->setUInt32(0, challengeData->ID);
     stmt->setUInt64(1, challengeData->GuildID);
     stmt->setUInt16(2, challengeData->MapID);
@@ -366,7 +366,7 @@ OploteLoot* ChallengeMgr::GetOploteLoot(ObjectGuid const& guid)
 
 void ChallengeMgr::SaveOploteLootToDB()
 {
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
 
     for (auto const& v : _oploteWeekLoot)
     {
@@ -389,7 +389,7 @@ void ChallengeMgr::SaveOploteLootToDB()
 
 void ChallengeMgr::DeleteOploteLoot(ObjectGuid const& guid)
 {
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHALLENGE_OPLOTE_LOOT_BY_GUID);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHALLENGE_OPLOTE_LOOT_BY_GUID);
     stmt->setUInt32(0, guid.GetCounter());
     CharacterDatabase.Execute(stmt);
 

@@ -1763,7 +1763,7 @@ class Player : public Unit, public GridObject<Player>
         /***                 ARCHAEOLOGY SYSTEM                ***/
         /*********************************************************/
 
-        void _SaveArchaeology(SQLTransaction& trans);
+        void _SaveArchaeology(CharacterDatabaseTransaction& trans);
         void _LoadArchaeology(PreparedQueryResult result);
         void _LoadArchaeologyFinds(PreparedQueryResult result);
         bool HasResearchSite(uint32 id) const
@@ -2039,7 +2039,7 @@ class Player : public Unit, public GridObject<Player>
         /***                   LOAD SYSTEM                     ***/
         /*********************************************************/
 
-        bool LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder);
+        bool LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder);
         bool isBeingLoaded() const override { return GetSession()->PlayerLoading();}
 
         void Initialize(ObjectGuid::LowType guid);
@@ -2059,8 +2059,8 @@ class Player : public Unit, public GridObject<Player>
         /*********************************************************/
 
         void SaveToDB(bool create = false);
-        void SaveInventoryAndGoldToDB(SQLTransaction& trans);                    // fast save function for item/money cheating preventing
-        void SaveGoldToDB(SQLTransaction& trans);
+        void SaveInventoryAndGoldToDB(CharacterDatabaseTransaction& trans);                    // fast save function for item/money cheating preventing
+        void SaveGoldToDB(CharacterDatabaseTransaction& trans);
 
         static void SetUInt32ValueInArray(Tokenizer& data, uint16 index, uint32 value);
         static void Customize(ObjectGuid::LowType guid, WorldPackets::Character::CharCustomizeInfo* info);
@@ -2303,7 +2303,7 @@ class Player : public Unit, public GridObject<Player>
         void RemoveArenaSpellCooldowns(bool removeActivePetCooldowns = false);
         void RemoveAllSpellCooldown();
         void _LoadSpellCooldowns(PreparedQueryResult result);
-        void _SaveSpellCooldowns(SQLTransaction& trans);
+        void _SaveSpellCooldowns(CharacterDatabaseTransaction& trans);
 
         bool HasChargesForSpell(SpellInfo const* spellInfo) const;
         uint8 GetMaxSpellCategoryCharges(SpellCategoryEntry const* categoryEntry) const;
@@ -3364,34 +3364,34 @@ class Player : public Unit, public GridObject<Player>
         /***                   SAVE SYSTEM                     ***/
         /*********************************************************/
 
-        void _SaveActions(SQLTransaction& trans);
-        void _SaveAuras(SQLTransaction& trans);
-        void _SaveInventory(SQLTransaction& trans);
-        void _SaveVoidStorage(SQLTransaction& trans);
-        void _SaveMail(SQLTransaction& trans);
-        void _SaveQuestStatus(SQLTransaction& trans);
-        void _SaveDailyQuestStatus(SQLTransaction& trans);
-        void _SaveWeeklyQuestStatus(SQLTransaction& trans);
-        void _SaveSeasonalQuestStatus(SQLTransaction& trans);
-        void _SaveAdventureQuest(SQLTransaction& trans);
-        void _SaveSkills(SQLTransaction& trans);
-        void _SaveSpells(SQLTransaction& trans);
-        void _SaveEquipmentSets(SQLTransaction& trans);
-        void _SaveBGData(SQLTransaction& trans);
-        void _SaveGlyphs(SQLTransaction& trans);
-        void _SaveTalents(SQLTransaction& trans);
-        void _SaveCurrency(SQLTransaction& trans);
-        void _SaveBrackets(SQLTransaction& trans);
-        void _SaveCUFProfiles(SQLTransaction& trans);
+        void _SaveActions(CharacterDatabaseTransaction& trans);
+        void _SaveAuras(CharacterDatabaseTransaction& trans);
+        void _SaveInventory(CharacterDatabaseTransaction& trans);
+        void _SaveVoidStorage(CharacterDatabaseTransaction& trans);
+        void _SaveMail(CharacterDatabaseTransaction& trans);
+        void _SaveQuestStatus(CharacterDatabaseTransaction& trans);
+        void _SaveDailyQuestStatus(CharacterDatabaseTransaction& trans);
+        void _SaveWeeklyQuestStatus(CharacterDatabaseTransaction& trans);
+        void _SaveSeasonalQuestStatus(CharacterDatabaseTransaction& trans);
+        void _SaveAdventureQuest(CharacterDatabaseTransaction& trans);
+        void _SaveSkills(CharacterDatabaseTransaction& trans);
+        void _SaveSpells(CharacterDatabaseTransaction& trans);
+        void _SaveEquipmentSets(CharacterDatabaseTransaction& trans);
+        void _SaveBGData(CharacterDatabaseTransaction& trans);
+        void _SaveGlyphs(CharacterDatabaseTransaction& trans);
+        void _SaveTalents(CharacterDatabaseTransaction& trans);
+        void _SaveCurrency(CharacterDatabaseTransaction& trans);
+        void _SaveBrackets(CharacterDatabaseTransaction& trans);
+        void _SaveCUFProfiles(CharacterDatabaseTransaction& trans);
         void _SaveHonor();
-        void _SaveLootCooldown(SQLTransaction& trans);
-        void _SaveWorldQuestStatus(SQLTransaction& trans);
-        void _SaveChallengeKey(SQLTransaction& trans);
-        void _SaveDeathMatchStats(SQLTransaction& trans);
-        void _SaveChatLogos(SQLTransaction& trans);
-        void _SaveArmyTrainingInfo(SQLTransaction& trans);
-        void _SaveAccountProgress(SQLTransaction& trans);
-        void _SaveLfgCooldown(SQLTransaction& trans);
+        void _SaveLootCooldown(CharacterDatabaseTransaction& trans);
+        void _SaveWorldQuestStatus(CharacterDatabaseTransaction& trans);
+        void _SaveChallengeKey(CharacterDatabaseTransaction& trans);
+        void _SaveDeathMatchStats(CharacterDatabaseTransaction& trans);
+        void _SaveChatLogos(CharacterDatabaseTransaction& trans);
+        void _SaveArmyTrainingInfo(CharacterDatabaseTransaction& trans);
+        void _SaveAccountProgress(CharacterDatabaseTransaction& trans);
+        void _SaveLfgCooldown(CharacterDatabaseTransaction& trans);
 
         /*********************************************************/
         /***              ENVIRONMENTAL SYSTEM                 ***/
@@ -3525,7 +3525,7 @@ class Player : public Unit, public GridObject<Player>
         void ApplyWargameItemModifications();
 
         uint32 GetBattlePetTrapLevel();
-        void SaveBattlePets(SQLTransaction& trans);
+        void SaveBattlePets(CharacterDatabaseTransaction& trans);
         void UnsummonCurrentBattlePetIfAny(bool p_Unvolontary);
         void PetBattleCountBattleSpecies();
         uint8 GetBattlePetCountForSpecies(uint32 speciesID);
@@ -3574,7 +3574,7 @@ class Player : public Unit, public GridObject<Player>
         KillCreatureMap m_killMap;
         KillCreatureList m_killList;
         void _LoadKillCreature(PreparedQueryResult result);
-        void _SaveKillCreature(SQLTransaction& trans);
+        void _SaveKillCreature(CharacterDatabaseTransaction& trans);
         void AddKillCreature(uint32 entry, uint32 count, bool encounter);
         uint32 GetKillCreature(uint32 entry) const;
         float GetKillCreaturePoints(uint32 entry) const;
@@ -3638,7 +3638,7 @@ class Player : public Unit, public GridObject<Player>
         InventoryResult CanStoreItem_InBag(uint8 bag, ItemPosCountVec& dest, ItemTemplate const* pProto, uint32& count, bool merge, bool non_specialized, Item* pSrcItem, uint8 skip_bag, uint8 skip_slot) const;
         InventoryResult CanStoreItem_InInventorySlots(uint8 slot_begin, uint8 slot_end, ItemPosCountVec& dest, ItemTemplate const* pProto, uint32& count, bool merge, Item* pSrcItem, uint8 skip_bag, uint8 skip_slot) const;
         Item* _StoreItem(uint16 pos, Item* pItem, uint32 count, bool clone, bool update);
-        Item* _LoadItem(SQLTransaction& trans, uint32 zoneId, uint32 timeDiff, Field* fields);
+        Item* _LoadItem(CharacterDatabaseTransaction& trans, uint32 zoneId, uint32 timeDiff, Field* fields);
 
         GuidSet m_refundableItems;
         void SendRefundInfo(Item* item);

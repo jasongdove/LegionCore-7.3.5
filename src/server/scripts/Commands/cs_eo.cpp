@@ -138,7 +138,7 @@ public:
 
         Player* player = handler->GetSession()->GetPlayer();
 
-        PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_EVENTOBJECT_NEAREST);
+        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_EVENTOBJECT_NEAREST);
         stmt->setFloat(0, player->GetPositionX());
         stmt->setFloat(1, player->GetPositionY());
         stmt->setFloat(2, player->GetPositionZ());

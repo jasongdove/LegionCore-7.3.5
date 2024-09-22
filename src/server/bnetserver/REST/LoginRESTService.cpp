@@ -255,7 +255,7 @@ int32 LoginRESTService::HandlePost(soap* soapClient)
     Utf8ToUpperOnlyLatin(login);
     Utf8ToUpperOnlyLatin(password);
     
-    PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_BNET_ACCOUNT_INFO);
+    LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_BNET_ACCOUNT_INFO);
     stmt->setString(0, login);
     stmt->setString(1, CalculateShaPassHash(login, password));
     PreparedQueryResult result = LoginDatabase.Query(stmt);

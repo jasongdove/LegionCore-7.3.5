@@ -416,7 +416,7 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
     bool incHighest = true;
     if (guid != 0 && guid < sObjectMgr->GetGenerator<HighGuid::Player>()->GetNextAfterMaxUsed())
     {
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_GUID);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_GUID);
         stmt->setUInt32(0, guid);
         PreparedQueryResult result = CharacterDatabase.Query(stmt);
         if (result)
@@ -432,7 +432,7 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
 
     if (sCharacterDataStore->CheckPlayerName(name, sWorld->GetDefaultDbcLocale(), true) == CHAR_NAME_SUCCESS)
     {
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_NAME);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_NAME);
         stmt->setString(0, name);
         PreparedQueryResult result = CharacterDatabase.Query(stmt);
 
@@ -463,7 +463,7 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
     uint8 playerClass = 0;
     uint8 level = 0;
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     while (!feof(fin))
     {
         if (!fgets(buf, 32000, fin))
@@ -531,7 +531,7 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
                     // check if the original name already exists
                     name = GetNth(line, 3);
 
-                    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_NAME);
+                    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_NAME);
                     stmt->setString(0, name);
                     PreparedQueryResult result = CharacterDatabase.Query(stmt);
 
@@ -722,7 +722,7 @@ DumpReturn PlayerDumpReader::LoadDump(uint32 account, std::string& dump, std::st
     bool incHighest = true;
     if (guid != 0 && guid < sObjectMgr->GetGenerator<HighGuid::Player>()->GetNextAfterMaxUsed())
     {
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_GUID);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_GUID);
         stmt->setUInt32(0, guid);
         PreparedQueryResult result = CharacterDatabase.Query(stmt);
         if (result)
@@ -738,7 +738,7 @@ DumpReturn PlayerDumpReader::LoadDump(uint32 account, std::string& dump, std::st
 
     if (sCharacterDataStore->CheckPlayerName(name, sWorld->GetDefaultDbcLocale(), true) == CHAR_NAME_SUCCESS)
     {
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_NAME);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_NAME);
         stmt->setString(0, name);
         PreparedQueryResult result = CharacterDatabase.Query(stmt);
         if (result)
@@ -768,8 +768,8 @@ DumpReturn PlayerDumpReader::LoadDump(uint32 account, std::string& dump, std::st
     uint8 level = 0;
     uint64 money = 0;
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
-    SQLTransaction loginTrans = LoginDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
+    LoginDatabaseTransaction loginTrans = LoginDatabase.BeginTransaction();
 
     dump += "INSERT INTO";
     std::string insertString(";INSERT INTO");
@@ -844,7 +844,7 @@ DumpReturn PlayerDumpReader::LoadDump(uint32 account, std::string& dump, std::st
                     // check if the original name already exists
                     name = GetNth(line, 3);
 
-                    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_NAME);
+                    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHECK_NAME);
                     stmt->setString(0, name);
                     PreparedQueryResult result = CharacterDatabase.Query(stmt);
 

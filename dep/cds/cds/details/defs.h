@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_DEFS_H
 #define CDSLIB_DEFS_H
@@ -62,7 +37,7 @@
    Supported compilers:
       - GCC 4.8+
       - Clang 3.6+
-      - MS Visual C++ 2013 Update 4 and above
+      - MS Visual C++ 2015 and above
       - Intel C++ Compiler 15
 
    For each lock-free data structure the \p CDS library presents several implementation based on published papers. For
@@ -163,11 +138,20 @@
    \par How to build
 
    The <b>cds</b> is mostly header-only library. Only small part of library related to GC core functionality
-   should be compiled.
+   should be compiled. <b>cds</b> depends on C++ standard library only.
 
-   External dependenies: the tests depends on:
+   Test suite depends on:
    - \p boost.thread (thread-loal storage support), boost.system
    - \p google-test
+
+   Some parts of libcds may depend on DCAS (double-width compare-and-swap) atomic primitive if
+   the target architecture supports it. For x86, cmake build script enables -mcx16 compiler flag that
+   switches DCAS support on. You may manually disable DCAS support with the following  command line flags
+   in GCC/clang (for MS VC++ compiler DCAS is not supported):
+   - \p -DCDS_DISABLE_128BIT_ATOMIC - for 64bit build
+   - \p -DCDS_DISABLE_64BIT_ATOMIC - for 32bit build
+
+   @warning All your projects AND libcds MUST be compiled with the same flags - either with DCAS support or without it.
 
    \par Windows build
 
@@ -177,13 +161,16 @@
     - <a href="http://www.boost.org/">boost library</a> 1.51 and above. You should create environment variable
         \p BOOST_PATH containing full path to \p boost root directory (for example, <tt>C:\\libs\\boost_1_57_0</tt>).
 
-   Open solution file <tt>cds\projects\vc14\cds.sln</tt> with Microsoft VisualStudio 2015.
+   Open solution file <tt>cds\projects\vc141\cds.sln</tt> with Microsoft VisualStudio 2017.
    The solution contains \p cds project and a lot of test projects. Just build the library using solution.
 
    <b>Warning</b>: the solution depends on \p BOOST_PATH environment variable that specifies full path
    to \p boost library root directory. The test projects search \p boost libraries in:
    - for 32bit: <tt>\$(BOOST_PATH)/stage/lib</tt>, <tt>\$(BOOST_PATH)/stage32/lib</tt>, and <tt>\$(BOOST_PATH)/bin</tt>.
    - for 64bit: <tt>\$(BOOST_PATH)/stage64/lib</tt> and <tt>\$(BOOST_PATH)/bin</tt>.
+
+   If you use static libcds, you should compile your projects with <tt>CDS_BUILD_STATIC_LIB</tt> preprocessor 
+   definition.
 
    All tests are based on googletest framework. The following environment variables specify
    where to find gtest include and library directories:
@@ -197,10 +184,6 @@
    For Unix-like systems GCC and Clang compilers are supported.
    Use GCC 4.8+ compiler or Clang 3.6+ to build <b>cds</b> library with CMake.
    See accompanying file <tt>/build/cmake/readme.md</tt> for more info.
-
-   @note Important for GCC compiler: all your projects that use \p libcds must be compiled with <b>-fno-strict-aliasing</b>
-   compiler flag.
-
 */
 
 
@@ -343,10 +326,12 @@ namespace cds {}
 #   define CDS_VERIFY( _expr )       assert( _expr )
 #   define CDS_VERIFY_FALSE( _expr ) assert( !( _expr ))
 #   define CDS_DEBUG_ONLY( _expr )        _expr
+#   define CDS_VERIFY_EQ( _expr, val )   assert( (_expr) == (val) )
 #else
 #   define CDS_VERIFY( _expr )    _expr
 #   define CDS_VERIFY_FALSE( _expr ) _expr
 #   define CDS_DEBUG_ONLY( _expr )
+#   define CDS_VERIFY_EQ( _expr, val )   _expr
 #endif
 
 #ifdef CDS_STRICT
@@ -366,15 +351,6 @@ namespace cds {}
 
 // Compiler-specific defines
 #include <cds/compiler/defs.h>
-
-#define CDS_NOEXCEPT            CDS_NOEXCEPT_SUPPORT
-#define CDS_NOEXCEPT_( expr )   CDS_NOEXCEPT_SUPPORT_( expr )
-
-#ifdef CDS_CXX11_INLINE_NAMESPACE_SUPPORT
-#   define CDS_CXX11_INLINE_NAMESPACE   inline
-#else
-#   define CDS_CXX11_INLINE_NAMESPACE
-#endif
 
 /*************************************************************************
  Common things

@@ -129,7 +129,7 @@ bool Bag::Create(ObjectGuid::LowType const& guidlow, uint32 itemid, Player const
     return true;
 }
 
-void Bag::SaveToDB(SQLTransaction& trans)
+void Bag::SaveToDB(CharacterDatabaseTransaction& trans)
 {
     Item::SaveToDB(trans);
 }
@@ -152,7 +152,7 @@ bool Bag::LoadFromDB(ObjectGuid::LowType const& guid, ObjectGuid const& owner_gu
     return true;
 }
 
-void Bag::DeleteFromDB(SQLTransaction& trans)
+void Bag::DeleteFromDB(CharacterDatabaseTransaction& trans)
 {
     for (uint8 i = 0; i < MAX_BAG_SIZE; ++i)
         if (m_bagslot[i])

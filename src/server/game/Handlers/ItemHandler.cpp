@@ -752,9 +752,9 @@ void WorldSession::HandleWrapItem(WorldPackets::Item::WrapItem& packet)
         return;
     }
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHAR_GIFT);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHAR_GIFT);
     stmt->setUInt64(0, item->GetOwnerGUID().GetCounter());
     stmt->setUInt64(1, item->GetGUIDLow());
     stmt->setUInt32(2, item->GetEntry());
@@ -1115,7 +1115,7 @@ void WorldSession::HandleOpenItem(WorldPackets::Spells::OpenItem& packet)
 
     if (item->HasFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_WRAPPED))
     {
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_GIFT_BY_ITEM);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_GIFT_BY_ITEM);
 
         stmt->setUInt64(0, item->GetGUIDLow());
 

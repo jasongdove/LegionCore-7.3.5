@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2014 TrinityCore <http://www.trinitycore.org/>
+ * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,10 +15,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OPENSSL_CRYPTO_H
-#define OPENSSL_CRYPTO_H
+#ifndef TRINITY_OPENSSL_CRYPTO_H
+#define TRINITY_OPENSSL_CRYPTO_H
 
 #include "Define.h"
+#include <boost/filesystem/path.hpp>
 
 /**
 * A group of functions which setup openssl crypto module to work properly in multithreaded enviroment
@@ -27,9 +28,9 @@
 namespace OpenSSLCrypto
 {
     /// Needs to be called before threads using openssl are spawned
-    void threadsSetup();
+    TC_COMMON_API void threadsSetup(boost::filesystem::path const& providerModulePath);
     /// Needs to be called after threads using openssl are despawned
-    void threadsCleanup();
+    TC_COMMON_API void threadsCleanup();
 }
 
 #endif

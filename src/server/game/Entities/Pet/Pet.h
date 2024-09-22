@@ -105,11 +105,11 @@ class Pet : public Guardian
         bool IsPetAura(Aura const* aura);
 
         void _LoadSpellCooldowns();
-        void _SaveSpellCooldowns(SQLTransaction& trans);
+        void _SaveSpellCooldowns(CharacterDatabaseTransaction& trans);
         void _LoadAuras(uint32 timediff);
-        void _SaveAuras(SQLTransaction& trans);
+        void _SaveAuras(CharacterDatabaseTransaction& trans);
         void _LoadSpells();
-        void _SaveSpells(SQLTransaction& trans);
+        void _SaveSpells(CharacterDatabaseTransaction& trans);
 
         void CleanupActionBar();
 

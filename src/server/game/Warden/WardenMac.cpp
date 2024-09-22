@@ -67,8 +67,8 @@ void WardenMac::HandleHashResultSpecial(ByteBuffer &buff)
     uint8 baseClientKeySeed_Wn64[16] = { 0x32, 0x1C, 0xD0, 0xDC, 0x61, 0x56, 0x80, 0x08, 0x77, 0x54, 0xF9, 0xAA, 0x2B, 0xCE, 0x7C, 0x37 };
     uint8 baseServerKeySeed_Wn64[16] = { 0xDD, 0xA2, 0x7D, 0x02, 0x1F, 0x11, 0x7F, 0xD3, 0x99, 0x93, 0x2A, 0xB0, 0x2F, 0xC8, 0xDB, 0x4E };
 
-    ARC4::rc4_init(&_clientRC4State, baseClientKeySeed_Wn64, 16);
-    ARC4::rc4_init(&_serverRC4State, baseServerKeySeed_Wn64, 16);
+    _inputCrypto.Init(baseClientKeySeed_Wn64);
+    _outputCrypto.Init(baseServerKeySeed_Wn64);
 
     // we must send windows module and wait for CMSG_MODULE_FAILED, on real Windows module loaded and executed
     RequestModule();

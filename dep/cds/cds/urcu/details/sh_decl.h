@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_URCU_DETAILS_SH_DECL_H
 #define CDSLIB_URCU_DETAILS_SH_DECL_H
@@ -34,8 +9,6 @@
 #include <cds/urcu/details/base.h>
 
 #ifdef CDS_URCU_SIGNAL_HANDLING_ENABLED
-#include <cds/details/static_functor.h>
-#include <cds/details/lib.h>
 #include <cds/user_setup/cache_line.h>
 
 #include <signal.h>
@@ -64,10 +37,10 @@ namespace cds { namespace urcu { namespace details {
     template <typename RCUtag>
     struct sh_singleton_instance
     {
-        static singleton_vtbl *     s_pRCU;
+        static CDS_EXPORT_API singleton_vtbl *     s_pRCU;
     };
 #if CDS_COMPILER != CDS_COMPILER_MSVC
-    template<> singleton_vtbl * sh_singleton_instance< signal_buffered_tag >::s_pRCU;
+    template<> CDS_EXPORT_API singleton_vtbl * sh_singleton_instance< signal_buffered_tag >::s_pRCU;
 #endif
 
     template <typename SigRCUtag>
@@ -95,7 +68,7 @@ namespace cds { namespace urcu { namespace details {
         template <typename Disposer, typename T>
         static void retire( T * p )
         {
-            retire( p, cds::details::static_functor<Disposer, T>::call );
+            retire( p, +[]( void* p ) { Disposer()( static_cast<T*>( p )); });
         }
 
         /// Retire pointer \p by the disposer \p pFunc

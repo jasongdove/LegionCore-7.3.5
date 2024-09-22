@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_GC_DETAILS_HP_COMMON_H
 #define CDSLIB_GC_DETAILS_HP_COMMON_H
@@ -85,7 +60,7 @@ namespace cds { namespace gc { namespace hp { namespace common {
         template <typename T>
         T* get_as() const noexcept
         {
-            return reinterpret_cast<T*>( get() );
+            return reinterpret_cast<T*>( get());
         }
 
         template <typename T>
@@ -130,7 +105,7 @@ namespace cds { namespace gc { namespace hp { namespace common {
 
         guard* operator[]( size_t idx ) const noexcept
         {
-            assert( idx < capacity() );
+            assert( idx < capacity());
             return arr_[idx];
         }
 
@@ -145,7 +120,7 @@ namespace cds { namespace gc { namespace hp { namespace common {
 
         void clear( size_t idx ) noexcept
         {
-            assert( idx < capacity() );
+            assert( idx < capacity());
             assert( arr_[idx] != nullptr );
 
             arr_[idx]->clear();
@@ -153,7 +128,7 @@ namespace cds { namespace gc { namespace hp { namespace common {
 
         guard* release( size_t idx ) noexcept
         {
-            assert( idx < capacity() );
+            assert( idx < capacity());
 
             guard* g = arr_[idx];
             arr_[idx] = nullptr;
@@ -162,7 +137,7 @@ namespace cds { namespace gc { namespace hp { namespace common {
 
         void reset( size_t idx, guard* g ) noexcept
         {
-            assert( idx < capacity() );
+            assert( idx < capacity());
             assert( arr_[idx] == nullptr );
 
             arr_[idx] = g;

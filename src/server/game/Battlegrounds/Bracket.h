@@ -43,7 +43,7 @@ public:
     uint16 getMMV() const { return m_mmv; }
     int16 getLastMMRChange() const{ return m_mmr_lastChage; }
 
-    void SaveStats(SQLTransaction* trans = nullptr);
+    void SaveStats(CharacterDatabaseTransaction* trans = nullptr);
 
     uint16 FinishGame(bool win, uint16 opponents_mmv, bool winnerNone = false);
     uint32 GetBracketInfo(BracketInfoType i) const { return values[i]; }

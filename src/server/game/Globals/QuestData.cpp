@@ -2792,8 +2792,8 @@ bool QuestDataStoreMgr::CheckItemForAlliance(ItemTemplate const* proto)
 
 void QuestDataStoreMgr::SaveWorldQuest()
 {
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
-    PreparedStatement* stmt = nullptr;
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabasePreparedStatement* stmt = nullptr;
 
     TC_LOG_DEBUG("worldquest", "SaveWorldQuest() _worldQuest size %u", _worldQuest.size());
 
@@ -2846,7 +2846,7 @@ void QuestDataStoreMgr::ResetWorldQuest()
     needWait = true;
     TC_LOG_DEBUG("worldquest", "ResetWorldQuest()");
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     std::ostringstream ss;
     ss << "DELETE FROM world_quest WHERE ResetTime <= UNIX_TIMESTAMP() + " << MINUTE * 5;
     trans->Append(ss.str().c_str());
@@ -2914,7 +2914,7 @@ void QuestDataStoreMgr::ClearWorldQuest()
 
     for (WorldQuestMap::iterator itr = _worldQuest.begin(); itr != _worldQuest.end(); ++itr)
     {
-        SQLTransaction trans = CharacterDatabase.BeginTransaction();
+        CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
         for (std::map<uint32 /*QuestID*/, WorldQuest>::iterator iter = itr->second.begin(); iter != itr->second.end();)
         {
             WorldQuest* worldQuest = &iter->second;
@@ -3006,7 +3006,7 @@ void QuestDataStoreMgr::ResetWorldQuest(uint32 QuestID)
     needWait = true;
     TC_LOG_DEBUG("worldquest", "ResetWorldQuest %u", QuestID);
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     std::ostringstream ss;
     ss << "DELETE FROM world_quest WHERE QuestID =  " << QuestID;
     trans->Append(ss.str().c_str());

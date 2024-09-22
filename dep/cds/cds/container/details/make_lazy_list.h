@@ -1,37 +1,13 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_CONTAINER_DETAILS_MAKE_LAZY_LIST_H
 #define CDSLIB_CONTAINER_DETAILS_MAKE_LAZY_LIST_H
 
 #include <cds/details/binary_functor_wrapper.h>
+#include <memory>
 
 namespace cds { namespace container {
 
@@ -62,7 +38,9 @@ namespace cds { namespace container {
                 {}
             };
 
-            typedef typename original_type_traits::allocator::template rebind<node_type>::other  allocator_type;
+            typedef typename std::allocator_traits<
+                typename original_type_traits::allocator
+            >::template rebind_alloc<node_type> allocator_type;
             typedef cds::details::Allocator< node_type, allocator_type >                cxx_allocator;
 
             struct node_deallocator
@@ -86,24 +64,20 @@ namespace cds { namespace container {
             };
 
             template <typename Less>
-            struct less_wrapper {
-                typedef cds::details::compare_wrapper< node_type, cds::opt::details::make_comparator_from_less<Less>, value_accessor > type;
-            };
+            using less_wrapper = cds::details::compare_wrapper< node_type, cds::opt::details::make_comparator_from_less<Less>, value_accessor >;
 
             template <typename Equal>
-            struct equal_to_wrapper {
-                typedef cds::details::predicate_wrapper< node_type, Equal, value_accessor > type;
-            };
+            using equal_to_wrapper = cds::details::predicate_wrapper< node_type, Equal, value_accessor >;
 
             struct intrusive_traits: public original_type_traits
             {
                 typedef intrusive::lazy_list::base_hook< opt::gc<gc>, cds::opt::lock_type< typename original_type_traits::lock_type >>  hook;
                 typedef node_deallocator disposer;
-                static CDS_CONSTEXPR const opt::link_check_type link_checker = cds::intrusive::lazy_list::traits::link_checker;
+                static constexpr const opt::link_check_type link_checker = cds::intrusive::lazy_list::traits::link_checker;
 
                 typedef typename std::conditional< std::is_same< typename original_type_traits::equal_to, cds::opt::none >::value,
                     cds::opt::none,
-                    typename equal_to_wrapper< typename original_type_traits::equal_to >::type
+                    equal_to_wrapper< typename original_type_traits::equal_to >
                 >::type equal_to;
 
                 typedef typename std::conditional<

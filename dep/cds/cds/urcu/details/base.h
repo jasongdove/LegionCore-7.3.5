@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_URCU_DETAILS_BASE_H
 #define CDSLIB_URCU_DETAILS_BASE_H
@@ -305,17 +280,13 @@ namespace cds {
             //@cond
             template <typename ThreadData>
             struct thread_list_record {
-                atomics::atomic<ThreadData*>  m_pNext;   ///< Next item in thread list
-                atomics::atomic<OS::ThreadId> m_idOwner; ///< Owner thread id; 0 - the record is free (not owned)
+                ThreadData*  next_ = nullptr;   ///< Next item in thread list
+                atomics::atomic<OS::ThreadId> thread_id_{ cds::OS::c_NullThreadId }; ///< Owner thread id; 0 - the record is free (not owned)
 
-                thread_list_record()
-                    : m_pNext( nullptr )
-                    , m_idOwner( cds::OS::c_NullThreadId )
-                {}
+                thread_list_record() = default;
 
                 explicit thread_list_record( OS::ThreadId owner )
-                    : m_pNext( nullptr )
-                    , m_idOwner( owner )
+                    : thread_id_( owner )
                 {}
 
                 ~thread_list_record()
@@ -350,9 +321,9 @@ namespace cds {
                     cds::OS::ThreadId const curThreadId  = cds::OS::get_current_thread_id();
 
                     // First, try to reuse a retired (non-active) HP record
-                    for ( pRec = m_pHead.load( atomics::memory_order_acquire ); pRec; pRec = pRec->m_list.m_pNext.load( atomics::memory_order_relaxed )) {
+                    for ( pRec = m_pHead.load( atomics::memory_order_acquire ); pRec; pRec = pRec->m_list.next_ ) {
                         cds::OS::ThreadId thId = nullThreadId;
-                        if ( !pRec->m_list.m_idOwner.compare_exchange_strong( thId, curThreadId, atomics::memory_order_seq_cst, atomics::memory_order_relaxed ))
+                        if ( !pRec->m_list.thread_id_.compare_exchange_strong( thId, curThreadId, atomics::memory_order_acquire, atomics::memory_order_relaxed ))
                             continue;
                         return pRec;
                     }
@@ -365,9 +336,9 @@ namespace cds {
                     do {
                         // Compiler barriers: assignment MUST BE inside the loop
                         CDS_COMPILER_RW_BARRIER;
-                        pRec->m_list.m_pNext.store( pOldHead, atomics::memory_order_relaxed );
+                        pRec->m_list.next_ = pOldHead;
                         CDS_COMPILER_RW_BARRIER;
-                    } while ( !m_pHead.compare_exchange_weak( pOldHead, pRec, atomics::memory_order_acq_rel, atomics::memory_order_acquire ));
+                    } while ( !m_pHead.compare_exchange_weak( pOldHead, pRec, atomics::memory_order_release, atomics::memory_order_acquire ));
 
                     return pRec;
                 }
@@ -375,7 +346,7 @@ namespace cds {
                 void retire( thread_record * pRec )
                 {
                     assert( pRec != nullptr );
-                    pRec->m_list.m_idOwner.store( cds::OS::c_NullThreadId, atomics::memory_order_release );
+                    pRec->m_list.thread_id_.store( cds::OS::c_NullThreadId, atomics::memory_order_release );
                 }
 
                 void detach_all()
@@ -384,8 +355,8 @@ namespace cds {
                     cds::OS::ThreadId const nullThreadId = cds::OS::c_NullThreadId;
 
                     for ( thread_record * pRec = m_pHead.load( atomics::memory_order_acquire ); pRec; pRec = pNext ) {
-                        pNext = pRec->m_list.m_pNext.load( atomics::memory_order_relaxed );
-                        if ( pRec->m_list.m_idOwner.load( atomics::memory_order_relaxed ) != nullThreadId ) {
+                        pNext = pRec->m_list.next_;
+                        if ( pRec->m_list.thread_id_.load( atomics::memory_order_acquire ) != nullThreadId ) {
                             retire( pRec );
                         }
                     }
@@ -405,10 +376,10 @@ namespace cds {
 
                     thread_record * p = m_pHead.exchange( nullptr, atomics::memory_order_acquire );
                     while ( p ) {
-                        thread_record * pNext = p->m_list.m_pNext.load( atomics::memory_order_relaxed );
+                        thread_record * pNext = p->m_list.next_;
 
-                        assert( p->m_list.m_idOwner.load( atomics::memory_order_relaxed ) == nullThreadId
-                            || p->m_list.m_idOwner.load( atomics::memory_order_relaxed ) == mainThreadId
+                        assert( p->m_list.thread_id_.load( atomics::memory_order_relaxed ) == nullThreadId
+                            || p->m_list.thread_id_.load( atomics::memory_order_relaxed ) == mainThreadId
                             );
 
                         al.Delete( p );

@@ -276,10 +276,10 @@ public:
 
     void Load(Field* fields);
     void CloneFrom(std::shared_ptr<BattlePet> & p_BattlePet);
-    void Save(SQLTransaction& trans);
+    void Save(CharacterDatabaseTransaction& trans);
 
     ObjectGuid::LowType AddToPlayer(Player* player);
-    void AddToPlayer(Player* player, SQLTransaction& trans);
+    void AddToPlayer(Player* player, CharacterDatabaseTransaction& trans);
     void Remove(Player* player);
     void UpdateAbilities();
     void UpdateStats();

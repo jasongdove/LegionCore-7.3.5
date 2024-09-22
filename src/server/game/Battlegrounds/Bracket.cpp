@@ -105,10 +105,10 @@ int GetMatchmakerRatingMod(int ownRating, int opponentRating, bool won )
     return static_cast<int>(RoundingFloatValue(mod));
 }
 
-void Bracket::SaveStats(SQLTransaction* trans)
+void Bracket::SaveStats(CharacterDatabaseTransaction* trans)
 {
     int32 index = 0;
-    PreparedStatement* stmt;
+    CharacterDatabasePreparedStatement* stmt;
 
     switch (m_state)
     {

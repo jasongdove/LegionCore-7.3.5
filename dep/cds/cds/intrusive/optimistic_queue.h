@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_INTRUSIVE_OPTIMISTIC_QUEUE_H
 #define CDSLIB_INTRUSIVE_OPTIMISTIC_QUEUE_H
@@ -60,7 +35,7 @@ namespace cds { namespace intrusive {
             atomic_node_ptr m_pNext ;   ///< Pointer to next node
             atomic_node_ptr m_pPrev ;   ///< Pointer to previous node
 
-            node() CDS_NOEXCEPT
+            node() noexcept
             {
                 m_pNext.store( nullptr, atomics::memory_order_relaxed );
                 m_pPrev.store( nullptr, atomics::memory_order_release );
@@ -293,7 +268,7 @@ namespace cds { namespace intrusive {
             typedef optimistic_queue::empty_stat    stat;
 
             /// Link checking, see \p cds::opt::link_checker
-            static CDS_CONSTEXPR const opt::link_check_type link_checker = opt::debug_check_link;
+            static constexpr const opt::link_check_type link_checker = opt::debug_check_link;
 
             /// Padding for internal critical atomic data. Default is \p opt::cache_line_padding
             enum { padding = opt::cache_line_padding };
@@ -447,7 +422,7 @@ namespace cds { namespace intrusive {
             typedef OptimisticQueue< GC2, T2, Traits2 > other   ;   ///< Rebinding result
         };
 
-        static CDS_CONSTEXPR const size_t c_nHazardPtrCount = 5; ///< Count of hazard pointer required for the algorithm
+        static constexpr const size_t c_nHazardPtrCount = 5; ///< Count of hazard pointer required for the algorithm
 
     protected:
         //@cond

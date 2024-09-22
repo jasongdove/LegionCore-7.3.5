@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_CONTAINER_WEAK_RINGBUFFER_H
 #define CDSLIB_CONTAINER_WEAK_RINGBUFFER_H
@@ -127,12 +102,12 @@ namespace cds { namespace container {
         Ring buffer is a bounded queue. Additionally, \p %WeakRingBuffer supports batch operations -
         you can push/pop an array of elements.
 
-        There are a specialization \ref cds_nonintrusive_WeakRingBuffer_void "WeakRingBuffer<void, Traits>" 
-        that is not a queue but a "memory pool" between producer and consumer threads. 
+        There are a specialization \ref cds_nonintrusive_WeakRingBuffer_void "WeakRingBuffer<void, Traits>"
+        that is not a queue but a "memory pool" between producer and consumer threads.
         \p WeakRingBuffer<void> supports variable-sized data.
 
         @warning: \p %WeakRingBuffer is developed for 64-bit architecture.
-        On 32-bit platform an integer overflow of internal counters is possible.
+        32-bit platform must provide support for 64-bit atomics.
     */
     template <typename T, typename Traits = weak_ringbuffer::traits>
     class WeakRingBuffer: public cds::bounded_container
@@ -157,6 +132,7 @@ namespace cds { namespace container {
     private:
         //@cond
         typedef typename traits::buffer::template rebind< value_type >::other buffer;
+        typedef uint64_t    counter_type;
         //@endcond
 
     public:
@@ -181,8 +157,8 @@ namespace cds { namespace container {
         ~WeakRingBuffer()
         {
             value_cleaner cleaner;
-            size_t back = back_.load( memory_model::memory_order_relaxed );
-            for ( size_t front = front_.load( memory_model::memory_order_relaxed ); front != back; ++front )
+            counter_type back = back_.load( memory_model::memory_order_relaxed );
+            for ( counter_type front = front_.load( memory_model::memory_order_relaxed ); front != back; ++front )
                 cleaner( buffer_[ buffer_.mod( front ) ] );
         }
 
@@ -200,7 +176,7 @@ namespace cds { namespace container {
             \code
             cds::container::WeakRingBuffer<std::string> ringbuf;
             char const* arr[10];
-            ringbuf.push( arr, 10, 
+            ringbuf.push( arr, 10,
                 []( std::string& element, char const* src ) {
                     new( &element ) std::string( src );
                 });
@@ -220,15 +196,15 @@ namespace cds { namespace container {
         template <typename Q, typename CopyFunc>
         bool push( Q* arr, size_t count, CopyFunc copy )
         {
-            assert( count < capacity() );
-            size_t back = back_.load( memory_model::memory_order_relaxed );
+            assert( count < capacity());
+            counter_type back = back_.load( memory_model::memory_order_relaxed );
 
-            assert( back - pfront_ <= capacity() );
+            assert( static_cast<size_t>( back - pfront_ ) <= capacity());
 
-            if ( pfront_ + capacity() - back < count ) {
+            if ( static_cast<size_t>( pfront_ + capacity() - back ) < count ) {
                 pfront_ = front_.load( memory_model::memory_order_acquire );
 
-                if ( pfront_ + capacity() - back < count ) {
+                if ( static_cast<size_t>( pfront_ + capacity() - back ) < count ) {
                     // not enough space
                     return false;
                 }
@@ -273,9 +249,9 @@ namespace cds { namespace container {
         typename std::enable_if< std::is_constructible<value_type, Args...>::value, bool>::type
         emplace( Args&&... args )
         {
-            size_t back = back_.load( memory_model::memory_order_relaxed );
+            counter_type back = back_.load( memory_model::memory_order_relaxed );
 
-            assert( back - pfront_ <= capacity() );
+            assert( static_cast<size_t>( back - pfront_ ) <= capacity());
 
             if ( pfront_ + capacity() - back < 1 ) {
                 pfront_ = front_.load( memory_model::memory_order_acquire );
@@ -306,9 +282,9 @@ namespace cds { namespace container {
         template <typename Func>
         bool enqueue_with( Func f )
         {
-            size_t back = back_.load( memory_model::memory_order_relaxed );
+            counter_type back = back_.load( memory_model::memory_order_relaxed );
 
-            assert( back - pfront_ <= capacity() );
+            assert( static_cast<size_t>( back - pfront_ ) <= capacity());
 
             if ( pfront_ + capacity() - back < 1 ) {
                 pfront_ = front_.load( memory_model::memory_order_acquire );
@@ -376,14 +352,14 @@ namespace cds { namespace container {
         template <typename Q, typename CopyFunc>
         bool pop( Q* arr, size_t count, CopyFunc copy )
         {
-            assert( count < capacity() );
+            assert( count < capacity());
 
-            size_t front = front_.load( memory_model::memory_order_relaxed );
-            assert( cback_ - front < capacity() );
+            counter_type front = front_.load( memory_model::memory_order_relaxed );
+            assert( static_cast<size_t>( cback_ - front ) < capacity());
 
-            if ( cback_ - front < count ) {
+            if ( static_cast<size_t>( cback_ - front ) < count ) {
                 cback_ = back_.load( memory_model::memory_order_acquire );
-                if ( cback_ - front < count )
+                if ( static_cast<size_t>( cback_ - front ) < count )
                     return false;
             }
 
@@ -456,8 +432,8 @@ namespace cds { namespace container {
         template <typename Func>
         bool dequeue_with( Func f )
         {
-            size_t front = front_.load( memory_model::memory_order_relaxed );
-            assert( cback_ - front < capacity() );
+            counter_type front = front_.load( memory_model::memory_order_relaxed );
+            assert( static_cast<size_t>( cback_ - front ) < capacity());
 
             if ( cback_ - front < 1 ) {
                 cback_ = back_.load( memory_model::memory_order_acquire );
@@ -489,8 +465,8 @@ namespace cds { namespace container {
         */
         value_type* front()
         {
-            size_t front = front_.load( memory_model::memory_order_relaxed );
-            assert( cback_ - front < capacity() );
+            counter_type front = front_.load( memory_model::memory_order_relaxed );
+            assert( static_cast<size_t>( cback_ - front ) < capacity());
 
             if ( cback_ - front < 1 ) {
                 cback_ = back_.load( memory_model::memory_order_acquire );
@@ -508,8 +484,8 @@ namespace cds { namespace container {
         */
         bool pop_front()
         {
-            size_t front = front_.load( memory_model::memory_order_relaxed );
-            assert( cback_ - front <= capacity() );
+            counter_type front = front_.load( memory_model::memory_order_relaxed );
+            assert( static_cast<size_t>( cback_ - front ) <= capacity());
 
             if ( cback_ - front < 1 ) {
                 cback_ = back_.load( memory_model::memory_order_acquire );
@@ -528,7 +504,7 @@ namespace cds { namespace container {
         void clear()
         {
             value_type v;
-            while ( pop( v ) );
+            while ( pop( v ));
         }
 
         /// Checks if the ring-buffer is empty
@@ -546,7 +522,7 @@ namespace cds { namespace container {
         /// Returns the current size of ring buffer
         size_t size() const
         {
-            return back_.load( memory_model::memory_order_relaxed ) - front_.load( memory_model::memory_order_relaxed );
+            return static_cast<size_t>( back_.load( memory_model::memory_order_relaxed ) - front_.load( memory_model::memory_order_relaxed ));
         }
 
         /// Returns capacity of the ring buffer
@@ -557,14 +533,14 @@ namespace cds { namespace container {
 
     private:
         //@cond
-        atomics::atomic<size_t>     front_;
-        typename opt::details::apply_padding< atomics::atomic<size_t>, traits::padding >::padding_type pad1_;
-        atomics::atomic<size_t>     back_;
-        typename opt::details::apply_padding< atomics::atomic<size_t>, traits::padding >::padding_type pad2_;
-        size_t                      pfront_;
-        typename opt::details::apply_padding< size_t, traits::padding >::padding_type pad3_;
-        size_t                      cback_;
-        typename opt::details::apply_padding< size_t, traits::padding >::padding_type pad4_;
+        atomics::atomic<counter_type>   front_;
+        typename opt::details::apply_padding< atomics::atomic<counter_type>, traits::padding >::padding_type pad1_;
+        atomics::atomic<counter_type>   back_;
+        typename opt::details::apply_padding< atomics::atomic<counter_type>, traits::padding >::padding_type pad2_;
+        counter_type                    pfront_;
+        typename opt::details::apply_padding< counter_type, traits::padding >::padding_type pad3_;
+        counter_type                    cback_;
+        typename opt::details::apply_padding< counter_type, traits::padding >::padding_type pad4_;
 
         buffer                      buffer_;
         //@endcond
@@ -576,7 +552,7 @@ namespace cds { namespace container {
         @anchor cds_nonintrusive_WeakRingBuffer_void
 
         This SPSC ring-buffer is intended for data of variable size. The producer
-        allocates a buffer from ring, fill it with data and pushes them back to ring.
+        allocates a buffer from ring, you fill it with data and pushes them back to ring.
         The consumer thread reads data from front-end and then pops them:
         \code
         // allocates 1M ring buffer
@@ -629,7 +605,7 @@ namespace cds { namespace container {
         \endcode
 
         @warning: \p %WeakRingBuffer is developed for 64-bit architecture.
-        On 32-bit platform an integer overflow of internal counters is possible.
+        32-bit platform must provide support for 64-bit atomics.
     */
 #ifdef CDS_DOXYGEN_INVOKED
     template <typename Traits = weak_ringbuffer::traits>
@@ -645,6 +621,7 @@ namespace cds { namespace container {
     private:
         //@cond
         typedef typename traits::buffer::template rebind< uint8_t >::other buffer;
+        typedef uint64_t    counter_type;
         //@endcond
 
     public:
@@ -665,6 +642,43 @@ namespace cds { namespace container {
         }
 
         /// [producer] Reserve \p size bytes
+        /**
+            The function returns a pointer to reserved buffer of \p size bytes.
+            If no enough space in the ring buffer the function returns \p nullptr.
+
+            After successful \p %back() you should fill the buffer provided and call \p push_back():
+            \code
+            // allocates 1M ring buffer
+            WeakRingBuffer<void>    theRing( 1024 * 1024 );
+
+            void producer_thread()
+            {
+                // Get data of size N bytes
+                size_t size;1
+                void*  data;
+
+                while ( true ) {
+                    // Get external data
+                    std::tie( data, size ) = get_data();
+
+                    if ( data == nullptr )
+                        break;
+
+                    // Allocates a buffer from the ring
+                    void* buf = theRing.back( size );
+                    if ( !buf ) {
+                        std::cout << "The ring is full" << std::endl;
+                        break;
+                    }
+
+                    memcpy( buf, data, size );
+
+                    // Push data into the ring
+                    theRing.push_back();
+                }
+            }
+            \endcode
+        */
         void* back( size_t size )
         {
             assert( size > 0 );
@@ -672,16 +686,16 @@ namespace cds { namespace container {
             // Any data is rounded to 8-byte boundary
             size_t real_size = calc_real_size( size );
 
-            // check if we can reserve read_size bytes
-            assert( real_size < capacity() );
-            size_t back = back_.load( memory_model::memory_order_relaxed );
+            // check if we can reserve real_size bytes
+            assert( real_size < capacity());
+            counter_type back = back_.load( memory_model::memory_order_relaxed );
 
-            assert( back - pfront_ <= capacity() );
+            assert( static_cast<size_t>( back - pfront_ ) <= capacity());
 
-            if ( pfront_ + capacity() - back < real_size ) {
+            if ( static_cast<size_t>( pfront_ + capacity() - back ) < real_size ) {
                 pfront_ = front_.load( memory_model::memory_order_acquire );
 
-                if ( pfront_ + capacity() - back < real_size ) {
+                if ( static_cast<size_t>( pfront_ + capacity() - back ) < real_size ) {
                     // not enough space
                     return nullptr;
                 }
@@ -690,11 +704,11 @@ namespace cds { namespace container {
             uint8_t* reserved = buffer_.buffer() + buffer_.mod( back );
 
             // Check if the buffer free space is enough for storing real_size bytes
-            size_t tail_size = capacity() - buffer_.mod( back );
+            size_t tail_size = capacity() - static_cast<size_t>( buffer_.mod( back ));
             if ( tail_size < real_size ) {
                 // make unused tail
-                assert( tail_size >= sizeof( size_t ) );
-                assert( !is_tail( tail_size ) );
+                assert( tail_size >= sizeof( size_t ));
+                assert( !is_tail( tail_size ));
 
                 *reinterpret_cast<size_t*>( reserved ) = make_tail( tail_size - sizeof(size_t));
                 back += tail_size;
@@ -702,10 +716,10 @@ namespace cds { namespace container {
                 // We must be in beginning of buffer
                 assert( buffer_.mod( back ) == 0 );
 
-                if ( pfront_ + capacity() - back < real_size ) {
+                if ( static_cast<size_t>( pfront_ + capacity() - back ) < real_size ) {
                     pfront_ = front_.load( memory_model::memory_order_acquire );
 
-                    if ( pfront_ + capacity() - back < real_size ) {
+                    if ( static_cast<size_t>( pfront_ + capacity() - back ) < real_size ) {
                         // not enough space
                         return nullptr;
                     }
@@ -718,22 +732,61 @@ namespace cds { namespace container {
             // reserve and store size
             *reinterpret_cast<size_t*>( reserved ) = size;
 
-            return reinterpret_cast<void*>( reserved + sizeof( size_t ) );
+            return reinterpret_cast<void*>( reserved + sizeof( size_t ));
         }
 
         /// [producer] Push reserved bytes into ring
+        /**
+            The function pushes reserved buffer into the ring. Afte this call,
+            the buffer becomes visible by a consumer:
+            \code
+            // allocates 1M ring buffer
+            WeakRingBuffer<void>    theRing( 1024 * 1024 );
+
+            void producer_thread()
+            {
+                // Get data of size N bytes
+                size_t size;1
+                void*  data;
+
+                while ( true ) {
+                    // Get external data
+                    std::tie( data, size ) = get_data();
+
+                    if ( data == nullptr )
+                        break;
+
+                    // Allocates a buffer from the ring
+                    void* buf = theRing.back( size );
+                    if ( !buf ) {
+                        std::cout << "The ring is full" << std::endl;
+                        break;
+                    }
+
+                    memcpy( buf, data, size );
+
+                    // Push data into the ring
+                    theRing.push_back();
+                }
+            }
+            \endcode
+        */
         void push_back()
         {
-            size_t back = back_.load( memory_model::memory_order_relaxed );
+            counter_type back = back_.load( memory_model::memory_order_relaxed );
             uint8_t* reserved = buffer_.buffer() + buffer_.mod( back );
 
-            size_t real_size = calc_real_size( *reinterpret_cast<size_t*>( reserved ) );
-            assert( real_size < capacity() );
+            size_t real_size = calc_real_size( *reinterpret_cast<size_t*>( reserved ));
+            assert( real_size < capacity());
 
             back_.store( back + real_size, memory_model::memory_order_release );
         }
 
         /// [producer] Push \p data of \p size bytes into ring
+        /**
+            This function invokes \p back( size ), \p memcpy( buf, data, size )
+            and \p push_back() in one call.
+        */
         bool push_back( void const* data, size_t size )
         {
             void* buf = back( size );
@@ -746,40 +799,50 @@ namespace cds { namespace container {
         }
 
         /// [consumer] Get top data from the ring
+        /**
+            If the ring is empty, the function returns \p nullptr in \p std:pair::first.
+        */
         std::pair<void*, size_t> front()
         {
-            size_t front = front_.load( memory_model::memory_order_relaxed );
-            assert( cback_ - front < capacity() );
+            counter_type front = front_.load( memory_model::memory_order_relaxed );
+            assert( static_cast<size_t>( cback_ - front ) < capacity());
 
             if ( cback_ - front < sizeof( size_t )) {
                 cback_ = back_.load( memory_model::memory_order_acquire );
-                if ( cback_ - front < sizeof( size_t ) )
+                if ( cback_ - front < sizeof( size_t ))
                     return std::make_pair( nullptr, 0u );
             }
 
             uint8_t * buf = buffer_.buffer() + buffer_.mod( front );
 
             // check alignment
-            assert( ( reinterpret_cast<uintptr_t>( buf ) & ( sizeof( uintptr_t ) - 1 ) ) == 0 );
+            assert( ( reinterpret_cast<uintptr_t>( buf ) & ( sizeof( uintptr_t ) - 1 )) == 0 );
 
             size_t size = *reinterpret_cast<size_t*>( buf );
-            if ( is_tail( size ) ) {
+            if ( is_tail( size )) {
                 // unused tail, skip
-                CDS_VERIFY( pop_front() );
+                CDS_VERIFY( pop_front());
 
                 front = front_.load( memory_model::memory_order_relaxed );
+
+                if ( cback_ - front < sizeof( size_t )) {
+                    cback_ = back_.load( memory_model::memory_order_acquire );
+                    if ( cback_ - front < sizeof( size_t ))
+                        return std::make_pair( nullptr, 0u );
+                }
+
                 buf = buffer_.buffer() + buffer_.mod( front );
                 size = *reinterpret_cast<size_t*>( buf );
 
-                assert( !is_tail( size ) );
-                assert( buf == buffer_.buffer() );
+                assert( !is_tail( size ));
+                assert( buf == buffer_.buffer());
             }
 
 #ifdef _DEBUG
             size_t real_size = calc_real_size( size );
-            if ( cback_ - front < real_size ) {
+            if ( static_cast<size_t>( cback_ - front ) < real_size ) {
                 cback_ = back_.load( memory_model::memory_order_acquire );
-                assert( cback_ - front >= real_size );
+                assert( static_cast<size_t>( cback_ - front ) >= real_size );
             }
 #endif
 
@@ -787,41 +850,65 @@ namespace cds { namespace container {
         }
 
         /// [consumer] Pops top data
+        /**
+            Typical consumer workloop:
+            \code
+            // allocates 1M ring buffer
+            WeakRingBuffer<void>    theRing( 1024 * 1024 );
+
+            void consumer_thread()
+            {
+                while ( true ) {
+                    auto buf = theRing.front();
+
+                    if ( buf.first == nullptr ) {
+                        std::cout << "The ring is empty" << std::endl;
+                        break;
+                    }
+
+                    // Process data
+                    process_data( buf.first, buf.second );
+
+                    // Free buffer
+                    theRing.pop_front();
+                }
+            }
+            \endcode
+        */
         bool pop_front()
         {
-            size_t front = front_.load( memory_model::memory_order_relaxed );
-            assert( cback_ - front <= capacity() );
+            counter_type front = front_.load( memory_model::memory_order_relaxed );
+            assert( static_cast<size_t>( cback_ - front ) <= capacity());
 
-            if ( cback_ - front < sizeof(size_t) ) {
+            if ( cback_ - front < sizeof(size_t)) {
                 cback_ = back_.load( memory_model::memory_order_acquire );
-                if ( cback_ - front < sizeof( size_t ) )
+                if ( cback_ - front < sizeof( size_t ))
                     return false;
             }
 
             uint8_t * buf = buffer_.buffer() + buffer_.mod( front );
 
             // check alignment
-            assert( ( reinterpret_cast<uintptr_t>( buf ) & ( sizeof( uintptr_t ) - 1 ) ) == 0 );
+            assert( ( reinterpret_cast<uintptr_t>( buf ) & ( sizeof( uintptr_t ) - 1 )) == 0 );
 
             size_t size = *reinterpret_cast<size_t*>( buf );
             size_t real_size = calc_real_size( untail( size ));
 
 #ifdef _DEBUG
-            if ( cback_ - front < real_size ) {
+            if ( static_cast<size_t>( cback_ - front ) < real_size ) {
                 cback_ = back_.load( memory_model::memory_order_acquire );
-                assert( cback_ - front >= real_size );
+                assert( static_cast<size_t>( cback_ - front ) >= real_size );
             }
 #endif
 
             front_.store( front + real_size, memory_model::memory_order_release );
             return true;
-
         }
 
         /// [consumer] Clears the ring buffer
         void clear()
         {
-            for ( auto el = front(); el.first; el = front() )
+            for ( auto el = front(); el.first; el = front())
                 pop_front();
         }
 
@@ -840,7 +927,7 @@ namespace cds { namespace container {
         /// Returns the current size of ring buffer
         size_t size() const
         {
-            return back_.load( memory_model::memory_order_relaxed ) - front_.load( memory_model::memory_order_relaxed );
+            return static_cast<size_t>( back_.load( memory_model::memory_order_relaxed ) - front_.load( memory_model::memory_order_relaxed ));
         }
 
         /// Returns capacity of the ring buffer
@@ -856,7 +943,7 @@ namespace cds { namespace container {
             size_t real_size =  (( size + sizeof( uintptr_t ) - 1 ) & ~( sizeof( uintptr_t ) - 1 )) + sizeof( size_t );
 
             assert( real_size > size );
-            assert( real_size - size >= sizeof( size_t ) );
+            assert( real_size - size >= sizeof( size_t ));
 
             return real_size;
         }
@@ -873,20 +960,20 @@ namespace cds { namespace container {
 
         static size_t untail( size_t size )
         {
-            return size & (( size_t( 1 ) << ( sizeof( size_t ) * 8 - 1 ) ) - 1);
+            return size & (( size_t( 1 ) << ( sizeof( size_t ) * 8 - 1 )) - 1);
         }
         //@endcond
 
     private:
         //@cond
-        atomics::atomic<size_t>     front_;
-        typename opt::details::apply_padding< atomics::atomic<size_t>, traits::padding >::padding_type pad1_;
-        atomics::atomic<size_t>     back_;
-        typename opt::details::apply_padding< atomics::atomic<size_t>, traits::padding >::padding_type pad2_;
-        size_t                      pfront_;
-        typename opt::details::apply_padding< size_t, traits::padding >::padding_type pad3_;
-        size_t                      cback_;
-        typename opt::details::apply_padding< size_t, traits::padding >::padding_type pad4_;
+        atomics::atomic<counter_type>     front_;
+        typename opt::details::apply_padding< atomics::atomic<counter_type>, traits::padding >::padding_type pad1_;
+        atomics::atomic<counter_type>     back_;
+        typename opt::details::apply_padding< atomics::atomic<counter_type>, traits::padding >::padding_type pad2_;
+        counter_type                      pfront_;
+        typename opt::details::apply_padding< counter_type, traits::padding >::padding_type pad3_;
+        counter_type                      cback_;
+        typename opt::details::apply_padding< counter_type, traits::padding >::padding_type pad4_;
 
         buffer                      buffer_;
         //@endcond

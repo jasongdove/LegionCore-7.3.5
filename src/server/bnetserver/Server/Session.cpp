@@ -70,7 +70,7 @@ void Battlenet::Session::Start()
     // Verify that this IP is not in the ip_banned table
     LoginDatabase.Execute(LoginDatabase.GetPreparedStatement(LOGIN_DEL_EXPIRED_IP_BANS));
 
-    PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_IP_INFO);
+    LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_IP_INFO);
     stmt->setString(0, ip_address);
     PreparedQueryResult result = LoginDatabase.Query(stmt);
 
@@ -259,7 +259,7 @@ uint32 Battlenet::Session::HandleVerifyWebCredentials(authentication::v1::Verify
     
     if (_accountInfo->Pid > 0)
     {
-        PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_IP_ACCESS);
+        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_IP_ACCESS);
         stmt->setUInt32(0, _accountInfo->Pid);
 
         PreparedQueryResult checkip = LoginDatabase.Query(stmt);
@@ -461,7 +461,7 @@ uint32 Battlenet::Session::GetRealmListTicket(std::unordered_map<std::string, Va
     if (!_build)
         return ERROR_WOW_SERVICES_DENIED_REALM_LIST_TICKET;
 
-    PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_LAST_LOGIN_INFO);
+    LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_LAST_LOGIN_INFO);
     stmt->setString(0, GetRemoteIpAddress().to_string());
     stmt->setUInt8(1, GetLocaleByName(_locale));
     stmt->setString(2, _os);

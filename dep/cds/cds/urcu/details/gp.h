@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_URCU_DETAILS_GP_H
 #define CDSLIB_URCU_DETAILS_GP_H
@@ -88,7 +63,7 @@ namespace cds { namespace urcu { namespace details {
         assert( (tmp & rcu_class::c_nNestMask) > 0 );
 
 #if CDS_COMPILER == CDS_COMPILER_CLANG && CDS_COMPILER_VERSION < 30800
-        // CLang 3.6-3.7: some tests of intrusive::FeldmanHashSet based on general-purpose RCU 
+        // CLang 3.6-3.7: some tests of intrusive::FeldmanHashSet based on general-purpose RCU
         // are failed even in single-threaded mode (unit tests) without magic compiler barrier below
         CDS_COMPILER_RW_BARRIER;
 #endif
@@ -121,8 +96,8 @@ namespace cds { namespace urcu { namespace details {
         OS::ThreadId const nullThreadId = OS::c_NullThreadId;
         m_nGlobalControl.fetch_xor( general_purpose_rcu::c_nControlBit, atomics::memory_order_seq_cst );
 
-        for ( thread_record * pRec = m_ThreadList.head( atomics::memory_order_acquire ); pRec; pRec = pRec->m_list.m_pNext ) {
-            while ( pRec->m_list.m_idOwner.load( atomics::memory_order_acquire ) != nullThreadId && check_grace_period( pRec )) {
+        for ( thread_record * pRec = m_ThreadList.head( atomics::memory_order_acquire ); pRec; pRec = pRec->m_list.next_ ) {
+            while ( pRec->m_list.thread_id_.load( atomics::memory_order_acquire ) != nullThreadId && check_grace_period( pRec )) {
                 bkoff();
                 CDS_COMPILER_RW_BARRIER;
             }

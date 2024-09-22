@@ -743,7 +743,7 @@ bool Player::IsCompletedProject(uint32 id, bool onlyRare)
     return false;
 }
 
-void Player::_SaveArchaeology(SQLTransaction& trans)
+void Player::_SaveArchaeology(CharacterDatabaseTransaction& trans)
 {
     if (!sWorld->getBoolConfig(CONFIG_ARCHAEOLOGY_ENABLED))
         return;
@@ -755,7 +755,7 @@ void Player::_SaveArchaeology(SQLTransaction& trans)
         return;
 
     uint8 index = 0;
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_REP_PLAYER_ARCHAEOLOGY);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_REP_PLAYER_ARCHAEOLOGY);
     stmt->setInt64(index++, GetGUIDLow());
     std::stringstream ss;
     for (ResearchSiteSet::const_iterator itr = _researchSites.begin(); itr != _researchSites.end(); ++itr)

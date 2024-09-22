@@ -120,7 +120,7 @@ public:
         }
 
         // Assign ticket
-        SQLTransaction trans = SQLTransaction(NULL);
+        CharacterDatabaseTransaction trans = CharacterDatabaseTransaction(NULL);
         ticket->SetAssignedTo(targetGuid, AccountMgr::IsAdminAccount(targetGmLevel));
         ticket->SaveToDB(trans);
         sTicketMgr->UpdateLastChange();
@@ -205,7 +205,7 @@ public:
             return true;
         }
 
-        SQLTransaction trans = SQLTransaction(NULL);
+        CharacterDatabaseTransaction trans = CharacterDatabaseTransaction(NULL);
         ticket->SetComment(comment);
         ticket->SaveToDB(trans);
         sTicketMgr->UpdateLastChange();
@@ -238,7 +238,7 @@ public:
 
         ticket->SetCompleted(true);
 
-        SQLTransaction trans = CharacterDatabase.BeginTransaction();
+        CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
         ticket->SaveToDB(trans);
         CharacterDatabase.CommitTransaction(trans);
 
@@ -391,7 +391,7 @@ public:
             return true;
         }
 
-        SQLTransaction trans = SQLTransaction(NULL);
+        CharacterDatabaseTransaction trans = CharacterDatabaseTransaction(NULL);
         ticket->SetUnassigned();
         ticket->SaveToDB(trans);
         sTicketMgr->UpdateLastChange();
@@ -416,7 +416,7 @@ public:
             return true;
         }
 
-        SQLTransaction trans = SQLTransaction(NULL);
+        CharacterDatabaseTransaction trans = CharacterDatabaseTransaction(NULL);
         ticket->SetViewed();
         ticket->SaveToDB(trans);
 
@@ -455,7 +455,7 @@ public:
             return true;
         }
 
-        SQLTransaction trans = SQLTransaction(NULL);
+        CharacterDatabaseTransaction trans = CharacterDatabaseTransaction(NULL);
         ticket->SetViewed();
         ticket->SaveToDB(trans);
 
@@ -491,7 +491,7 @@ public:
             return true;
         }
 
-        SQLTransaction trans = SQLTransaction(NULL);
+        CharacterDatabaseTransaction trans = CharacterDatabaseTransaction(NULL);
         ticket->AppendResponse(response);
         if (newLine)
             ticket->AppendResponse("\n");

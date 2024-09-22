@@ -538,7 +538,7 @@ void WorldSession::HandleAcceptTrade(WorldPackets::Trade::AcceptTrade& acceptTra
         trader->m_trade = nullptr;
 
         // desynchronized with the other saves here (SaveInventoryAndGoldToDB() not have own transaction guards)
-        SQLTransaction trans = CharacterDatabase.BeginTransaction();
+        CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
         player->SaveInventoryAndGoldToDB(trans);
         trader->SaveInventoryAndGoldToDB(trans);
         CharacterDatabase.CommitTransaction(trans);

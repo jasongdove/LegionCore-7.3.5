@@ -99,7 +99,7 @@ public:
     explicit CollectionMgr(Player* owner);
 
     // General
-    void SaveToDB(SQLTransaction& trans);
+    void SaveToDB(CharacterDatabaseTransaction& trans);
     bool LoadFromDB(PreparedQueryResult toys, PreparedQueryResult heirlooms, PreparedQueryResult transmogs, PreparedQueryResult mounts, PreparedQueryResult favoriteAppearances);
 
     void Clear();

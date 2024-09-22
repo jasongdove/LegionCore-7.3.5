@@ -84,13 +84,13 @@ public:
     time_t GetExpirationTime() const;
     bool IsCompleted() const;
 
-    void DeleteFromDB(SQLTransaction& trans) const;
-    void SaveToDB(SQLTransaction& trans) const;
+    void DeleteFromDB(CharacterDatabaseTransaction& trans) const;
+    void SaveToDB(CharacterDatabaseTransaction& trans) const;
     bool LoadFromDB(Field* fields);
 
     uint64 GetMinIncrement() const;
     bool ValidateBid(uint64 bid) const;
-    void PlaceBid(uint64 bid, Player* player, SQLTransaction& trans);
+    void PlaceBid(uint64 bid, Player* player, CharacterDatabaseTransaction& trans);
 
     std::string BuildAuctionMailSubject(BMAHMailAuctionAnswers response) const;
     std::string BuildAuctionMailBody();
@@ -137,8 +137,8 @@ public:
     void AddAuction(BlackMarketEntry* auction);
     void AddTemplate(BlackMarketTemplate* templ);
 
-    void SendAuctionWonMail(BlackMarketEntry* entry, SQLTransaction& trans);
-    void SendAuctionOutbidMail(BlackMarketEntry* entry, SQLTransaction& trans);
+    void SendAuctionWonMail(BlackMarketEntry* entry, CharacterDatabaseTransaction& trans);
+    void SendAuctionOutbidMail(BlackMarketEntry* entry, CharacterDatabaseTransaction& trans);
 
 private:
     BlackMarketEntryMap mAuctions;

@@ -147,7 +147,7 @@ void WorldSession::HandleVoidStorageTransfer(WorldPackets::VoidStorage::VoidStor
     voidStorageTransferChanges.RemovedItems.reserve(VOID_STORAGE_MAX_DEPOSIT);
 
     uint8 depositCount = 0;
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     for (size_t i = 0; i < packet.Deposits.size(); ++i)
     {
         Item* item = player->GetItemByGuid(packet.Deposits[i]);

@@ -256,7 +256,7 @@ void WorldSession::HandleAuctionSellItem(WorldPackets::AuctionHouse::AuctionSell
 
             _player->MoveItemFromInventory(item, true);
 
-            SQLTransaction trans = CharacterDatabase.BeginTransaction();
+            CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
             item->DeleteFromInventoryDB(trans);
             item->SaveToDB(trans);
             AH->SaveToDB(trans);
@@ -300,7 +300,7 @@ void WorldSession::HandleAuctionSellItem(WorldPackets::AuctionHouse::AuctionSell
         sAuctionMgr->AddAItem(newItem);
         auctionHouse->AddAuction(AH);
 
-        SQLTransaction trans = CharacterDatabase.BeginTransaction();
+        CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
 
         for (auto const& v : packet.Items)
         {
@@ -392,7 +392,7 @@ void WorldSession::HandleAuctionPlaceBid(WorldPackets::AuctionHouse::AuctionPlac
         return;
     }
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
 
     if (packet.BidAmount < auction->buyout || auction->buyout == 0)
     {
@@ -414,7 +414,7 @@ void WorldSession::HandleAuctionPlaceBid(WorldPackets::AuctionHouse::AuctionPlac
         auction->bid = packet.BidAmount;
         player->UpdateAchievementCriteria(CRITERIA_TYPE_HIGHEST_AUCTION_BID, packet.BidAmount);
 
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_AUCTION_BID);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_AUCTION_BID);
         stmt->setUInt32(0, auction->bidder);
         stmt->setUInt32(1, auction->bid);
         stmt->setUInt32(2, auction->Id);
@@ -471,7 +471,7 @@ void WorldSession::HandleAuctionRemoveItem(WorldPackets::AuctionHouse::AuctionRe
     AuctionHouseObject* auctionHouse = sAuctionMgr->GetAuctionsMap(creature->getFaction());
     AuctionEntry* auction = auctionHouse->GetAuction(packet.AuctionItemID);
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     if (auction && auction->owner == player->GetGUIDLow())
     {
         Item* pItem = sAuctionMgr->GetAItem(auction->itemGUIDLow);

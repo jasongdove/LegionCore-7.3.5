@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_INTRUSIVE_DETAILS_SPLIT_LIST_BASE_H
 #define CDSLIB_INTRUSIVE_DETAILS_SPLIT_LIST_BASE_H
@@ -39,6 +14,8 @@
 #include <cds/algo/bitop.h>
 #include <cds/opt/hash.h>
 #include <cds/intrusive/free_list_selector.h>
+#include <cds/details/size_t_cast.h>
+#include <memory>
 
 namespace cds { namespace intrusive {
 
@@ -416,7 +393,7 @@ namespace cds { namespace intrusive {
             const size_t   m_nCapacity;   ///< Bucket table capacity
             table_entry *  m_Table;       ///< Bucket table
 
-            typedef typename allocator::template rebind< aux_node_type >::other aux_node_allocator;
+            typedef typename std::allocator_traits<allocator>::template rebind_alloc< aux_node_type > aux_node_allocator;
 
             aux_node_type*          m_auxNode;           ///< Array of pre-allocated auxiliary nodes
             atomics::atomic<size_t> m_nAuxNodeAllocated; ///< how many auxiliary node allocated
@@ -491,8 +468,8 @@ namespace cds { namespace intrusive {
                 if ( m_nAuxNodeAllocated.load( memory_model::memory_order_relaxed ) < capacity()) {
                     // alloc next free node from m_auxNode
                     size_t const idx = m_nAuxNodeAllocated.fetch_add( 1, memory_model::memory_order_relaxed );
-                    if ( idx < capacity() ) {
-                        CDS_TSAN_ANNOTATE_NEW_MEMORY( &m_auxNode[idx], sizeof( aux_node_type ) );
+                    if ( idx < capacity()) {
+                        CDS_TSAN_ANNOTATE_NEW_MEMORY( &m_auxNode[idx], sizeof( aux_node_type ));
                         return new( &m_auxNode[idx] ) aux_node_type();
                     }
                 }
@@ -624,7 +601,7 @@ namespace cds { namespace intrusive {
             typedef cds::details::Allocator< table_entry, allocator > segment_allocator;
 
             // Aux node segment allocator
-            typedef typename allocator::template rebind<char>::other raw_allocator;
+            typedef typename std::allocator_traits< allocator >::template rebind_alloc<char> raw_allocator;
 
             //@endcond
 
@@ -709,7 +686,7 @@ namespace cds { namespace intrusive {
                     if ( aux_segment->aux_node_count.load( memory_model::memory_order_acquire ) < m_metrics.nSegmentSize ) {
                         size_t idx = aux_segment->aux_node_count.fetch_add( 1, memory_model::memory_order_relaxed );
                         if ( idx < m_metrics.nSegmentSize ) {
-                            CDS_TSAN_ANNOTATE_NEW_MEMORY( aux_segment->segment() + idx, sizeof( aux_node_type ) );
+                            CDS_TSAN_ANNOTATE_NEW_MEMORY( aux_segment->segment() + idx, sizeof( aux_node_type ));
                             return new( aux_segment->segment() + idx ) aux_node_type();
                         }
                     }
@@ -726,9 +703,9 @@ namespace cds { namespace intrusive {
                     new_aux_segment->next_segment = aux_segment;
                     new_aux_segment->aux_node_count.fetch_add( 1, memory_model::memory_order_relaxed );
 
-                    if ( m_auxNodeList.compare_exchange_strong( aux_segment, new_aux_segment, memory_model::memory_order_release, atomics::memory_order_acquire ) ) {
-                        CDS_TSAN_ANNOTATE_NEW_MEMORY( new_aux_segment->segment(), sizeof( aux_node_type ) );
-                        return new( new_aux_segment->segment() ) aux_node_type();
+                    if ( m_auxNodeList.compare_exchange_strong( aux_segment, new_aux_segment, memory_model::memory_order_release, atomics::memory_order_acquire )) {
+                        CDS_TSAN_ANNOTATE_NEW_MEMORY( new_aux_segment->segment(), sizeof( aux_node_type ));
+                        return new( new_aux_segment->segment()) aux_node_type();
                     }
 
                     free_aux_segment( new_aux_segment );
@@ -809,7 +786,7 @@ namespace cds { namespace intrusive {
             aux_node_segment* allocate_aux_segment()
             {
                 char* p = raw_allocator().allocate( sizeof( aux_node_segment ) + sizeof( aux_node_type ) * m_metrics.nSegmentSize );
-                CDS_TSAN_ANNOTATE_NEW_MEMORY( p, sizeof( aux_node_segment ) );
+                CDS_TSAN_ANNOTATE_NEW_MEMORY( p, sizeof( aux_node_segment ));
                 return new(p) aux_node_segment();
             }
 
@@ -1302,13 +1279,13 @@ namespace cds { namespace intrusive {
         template <typename BitReversalAlgo>
         static inline size_t regular_hash( size_t nHash )
         {
-            return BitReversalAlgo()( nHash ) | size_t(1);
+            return static_cast<size_t>( BitReversalAlgo()( cds::details::size_t_cast( nHash ))) | size_t(1);
         }
 
         template <typename BitReversalAlgo>
         static inline size_t dummy_hash( size_t nHash )
         {
-            return BitReversalAlgo()( nHash ) & ~size_t(1);
+            return static_cast<size_t>( BitReversalAlgo()( cds::details::size_t_cast( nHash ))) & ~size_t(1);
         }
         //@endcond
 

@@ -44,7 +44,7 @@ public:
 
             if (!toBeMailedCurrentEquipment.empty())
             {
-                SQLTransaction trans = CharacterDatabase.BeginTransaction();
+                CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
                 MailDraft draft("Inventory Full: Old Equipment.",
                     "To equip your new level boost gear, your old gear had to be unequiped. You did not have enough free bag space, the items that could not be added to your bag you can find in this mail.");
 
@@ -68,7 +68,7 @@ public:
 
             if (!toBeMailedNewItems.empty())
             {
-                SQLTransaction trans = CharacterDatabase.BeginTransaction();
+                CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
                 MailDraft draft("Inventory Full: Level Boost Items.",
                     "You did not have enough free bag space to add all your complementary level boost items to your bags, those that did not fit you can find in this mail.");
 
@@ -143,10 +143,10 @@ public:
             return;
 
         // check that this account has not already counted towards the total referral count
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_NUM_ACCOUNT_CHARS_REACHED_LEVEL);
-        stmt->setUInt32(0, player->GetSession()->GetAccountId());
-        stmt->setUInt8(1, sWorld->getIntConfig(CONFIG_REFERRAL_TRACKER_LEVEL_THRESHOLD));
-        PreparedQueryResult result = CharacterDatabase.Query(stmt);
+        CharacterDatabasePreparedStatement* cstmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_NUM_ACCOUNT_CHARS_REACHED_LEVEL);
+        cstmt->setUInt32(0, player->GetSession()->GetAccountId());
+        cstmt->setUInt8(1, sWorld->getIntConfig(CONFIG_REFERRAL_TRACKER_LEVEL_THRESHOLD));
+        PreparedQueryResult result = CharacterDatabase.Query(cstmt);
 
         uint64 charsReachedThreshold = result ? (*result)[0].GetUInt64() : 0;
         if (charsReachedThreshold >= 1)
@@ -154,7 +154,7 @@ public:
 
         uint32 referer = player->GetSession()->GetReferer();
 
-        stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_TOKEN);
+        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_TOKEN);
         stmt->setUInt32(0, referer);
         stmt->setUInt8(1, trackerToken);
         result = LoginDatabase.Query(stmt);

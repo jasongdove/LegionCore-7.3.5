@@ -269,10 +269,10 @@ void WorldSession::HandlePetRename(WorldPackets::PetPackets::PetRename& packet)
         }
     }
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     if (declinedname && sWorld->getBoolConfig(CONFIG_DECLINED_NAMES_USED))
     {
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_PET_DECLINEDNAME);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_PET_DECLINEDNAME);
         stmt->setUInt32(0, pet->GetCharmInfo()->GetPetNumber());
         trans->Append(stmt);
 
@@ -286,7 +286,7 @@ void WorldSession::HandlePetRename(WorldPackets::PetPackets::PetRename& packet)
         trans->Append(stmt);
     }
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHAR_PET_NAME);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHAR_PET_NAME);
     stmt->setString(0, packet.RenameData.NewName);
     stmt->setUInt64(1, _player->GetGUID().GetGUIDLow());
     stmt->setUInt32(2, pet->GetCharmInfo()->GetPetNumber());
@@ -495,7 +495,7 @@ void WorldSession::HanleSetPetSlot(WorldPackets::PetPackets::SetPetSlot& packet)
     if (pet && curentSlot == packet.NewSlot)
         _player->RemovePet(pet);
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PET_BY_ID);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PET_BY_ID);
     stmt->setUInt64(0, _player->GetGUIDLow());
     stmt->setUInt32(1, packet.PetIndex);
 

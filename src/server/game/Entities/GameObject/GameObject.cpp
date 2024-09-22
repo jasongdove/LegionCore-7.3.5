@@ -930,11 +930,11 @@ void GameObject::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
     data.MaxVisible = m_goInfo ? m_goInfo->MaxVisible : false;
 
     // Update in DB
-    SQLTransaction trans = WorldDatabase.BeginTransaction();
+    WorldDatabaseTransaction trans = WorldDatabase.BeginTransaction();
 
     uint8 index = 0;
 
-    PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_GAMEOBJECT);
+    WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_GAMEOBJECT);
     stmt->setUInt64(0, m_DBTableGuid);
     trans->Append(stmt);
 

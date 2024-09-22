@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_CONTAINER_IMPL_LAZY_LIST_H
 #define CDSLIB_CONTAINER_IMPL_LAZY_LIST_H
@@ -142,7 +117,7 @@ namespace cds { namespace container {
         typedef typename base_class::memory_model memory_model;   ///< Memory ordering. See cds::opt::memory_model option
         typedef typename base_class::stat         stat;           ///< Internal statistics
 
-        static CDS_CONSTEXPR const size_t c_nHazardPtrCount = base_class::c_nHazardPtrCount; ///< Count of hazard pointer required for the algorithm
+        static constexpr const size_t c_nHazardPtrCount = base_class::c_nHazardPtrCount; ///< Count of hazard pointer required for the algorithm
 
         //@cond
         // Rebind traits (split-list support)
@@ -460,7 +435,7 @@ namespace cds { namespace container {
         bool erase_with( Q const& key, Less pred )
         {
             CDS_UNUSED( pred );
-            return erase_at( head(), key, typename maker::template less_wrapper<Less>::type(), [](value_type const&){} );
+            return erase_at( head(), key, typename maker::template less_wrapper<Less>(), [](value_type const&){} );
         }
 
         /// Deletes \p key from the list
@@ -501,7 +476,7 @@ namespace cds { namespace container {
         bool erase_with( Q const& key, Less pred, Func f )
         {
             CDS_UNUSED( pred );
-            return erase_at( head(), key, typename maker::template less_wrapper<Less>::type(), f );
+            return erase_at( head(), key, typename maker::template less_wrapper<Less>(), f );
         }
 
         /// Extracts the item from the list with specified \p key
@@ -548,7 +523,7 @@ namespace cds { namespace container {
         guarded_ptr extract_with( Q const& key, Less pred )
         {
             CDS_UNUSED( pred );
-            return extract_at( head(), key, typename maker::template less_wrapper<Less>::type());
+            return extract_at( head(), key, typename maker::template less_wrapper<Less>());
         }
 
         /// Checks whether the list contains \p key
@@ -580,7 +555,7 @@ namespace cds { namespace container {
         bool contains( Q const& key, Less pred )
         {
             CDS_UNUSED( pred );
-            return find_at( head(), key, typename maker::template less_wrapper<Less>::type());
+            return find_at( head(), key, typename maker::template less_wrapper<Less>());
         }
         //@cond
         template <typename Q, typename Less>
@@ -635,14 +610,14 @@ namespace cds { namespace container {
         bool find_with( Q& key, Less pred, Func f )
         {
             CDS_UNUSED( pred );
-            return find_at( head(), key, typename maker::template less_wrapper<Less>::type(), f );
+            return find_at( head(), key, typename maker::template less_wrapper<Less>(), f );
         }
         //@cond
         template <typename Q, typename Less, typename Func>
         bool find_with( Q const& key, Less pred, Func f )
         {
             CDS_UNUSED( pred );
-            return find_at( head(), key, typename maker::template less_wrapper<Less>::type(), f );
+            return find_at( head(), key, typename maker::template less_wrapper<Less>(), f );
         }
         //@endcond
 
@@ -691,7 +666,7 @@ namespace cds { namespace container {
         guarded_ptr get_with( Q const& key, Less pred )
         {
             CDS_UNUSED( pred );
-            return get_at( head(), key, typename maker::template less_wrapper<Less>::type());
+            return get_at( head(), key, typename maker::template less_wrapper<Less>());
         }
 
         /// Checks whether the list is empty
@@ -851,7 +826,7 @@ namespace cds { namespace container {
         template <typename Q, typename Compare, typename Func>
         bool find_at( head_type& refHead, Q& val, Compare cmp, Func f )
         {
-            return base_class::find_at( &refHead, val, cmp, [&f](node_type& node, Q& val){ f( node_to_value(node), val ); });
+            return base_class::find_at( &refHead, val, cmp, [&f](node_type& node, Q& v){ f( node_to_value(node), v ); });
         }
 
         template <typename Q, typename Compare>

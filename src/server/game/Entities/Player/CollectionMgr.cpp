@@ -38,9 +38,9 @@ CollectionMgr::CollectionMgr(Player* owner): _owner(owner)
 {
 }
 
-void CollectionMgr::SaveToDB(SQLTransaction& trans)
+void CollectionMgr::SaveToDB(CharacterDatabaseTransaction& trans)
 {
-    PreparedStatement* stmt = nullptr;
+    CharacterDatabasePreparedStatement* stmt = nullptr;
     uint8 index = 0;
 
     for (auto& i : _toys)

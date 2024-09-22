@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_ALGO_SPLIT_BITSTRING_H
 #define CDSLIB_ALGO_SPLIT_BITSTRING_H
@@ -62,16 +37,16 @@ namespace cds { namespace algo {
     public:
         typedef BitString bitstring;    ///< Bit-string type
         typedef UInt      uint_type;    ///< Result type of \p cut() function
-        static CDS_CONSTEXPR size_t const c_bitstring_size = BitStringSize ? BitStringSize : sizeof( BitString ); ///< size of \p BitString in bytes
+        static constexpr size_t const c_bitstring_size = BitStringSize ? BitStringSize : sizeof( BitString ); ///< size of \p BitString in bytes
 
         //@cond
-        static CDS_CONSTEXPR unsigned const c_nBitPerByte = 8;
+        static constexpr unsigned const c_nBitPerByte = 8;
         //@endcond
 
     public:
         /// Initializises the splitter with reference to \p h and zero start bit offset
         explicit split_bitstring( bitstring const& h )
-            : cur_( reinterpret_cast<uint8_t const*>( &h ) )
+            : cur_( reinterpret_cast<uint8_t const*>( &h ))
             , offset_( 0 )
             , first_( cur_ )
             , last_( cur_ + c_bitstring_size )
@@ -81,7 +56,7 @@ namespace cds { namespace algo {
         split_bitstring( bitstring const& h, size_t nBitOffset )
             : cur_( reinterpret_cast<uint8_t const*>( &h ) + nBitOffset / c_nBitPerByte )
             , offset_( nBitOffset % c_nBitPerByte  )
-            , first_( reinterpret_cast<uint8_t const*>( &h ) )
+            , first_( reinterpret_cast<uint8_t const*>( &h ))
             , last_( first_ + c_bitstring_size )
         {}
 
@@ -104,7 +79,7 @@ namespace cds { namespace algo {
         */
         uint_type cut( unsigned count )
         {
-            assert( !eos() );
+            assert( !eos());
 
             uint_type result = 0;
 #       if defined( CDS_ARCH_LITTLE_ENDIAN )
@@ -163,7 +138,7 @@ namespace cds { namespace algo {
         }
 
         /// Resets the splitter
-        void reset() CDS_NOEXCEPT
+        void reset() noexcept
         {
             cur_ = first_;
             offset_ = 0;
@@ -188,7 +163,7 @@ namespace cds { namespace algo {
         }
 
         /// Returns \p true for any argument
-        static CDS_CONSTEXPR bool is_correct( unsigned /*count*/ )
+        static constexpr bool is_correct( unsigned /*count*/ )
         {
             return true;
         }
@@ -209,16 +184,16 @@ namespace cds { namespace algo {
     public:
         typedef BitString bitstring;    ///< Bit-string type
         typedef UInt      uint_type;    ///< Result type of \p cut() function
-        static CDS_CONSTEXPR size_t const c_bitstring_size = BitStringSize ? BitStringSize : sizeof( BitString ); ///< size of \p BitString in bytes
+        static constexpr size_t const c_bitstring_size = BitStringSize ? BitStringSize : sizeof( BitString ); ///< size of \p BitString in bytes
 
         //@cond
-        static CDS_CONSTEXPR unsigned const c_nBitPerByte = 8;
+        static constexpr unsigned const c_nBitPerByte = 8;
         //@endcond
 
     public:
         /// Initializises the splitter with reference to \p h and zero start bit offset
         explicit byte_splitter( bitstring const& h )
-            : cur_( reinterpret_cast<uint8_t const*>( &h ) )
+            : cur_( reinterpret_cast<uint8_t const*>( &h ))
             , first_( cur_ )
             , last_( cur_ + c_bitstring_size )
         {}
@@ -226,7 +201,7 @@ namespace cds { namespace algo {
         /// Initializises the splitter with reference to \p h and start bit offset \p nBitOffset
         byte_splitter( bitstring const& h, size_t nBitOffset )
             : cur_( reinterpret_cast<uint8_t const*>( &h ) + nBitOffset / c_nBitPerByte )
-            , first_( reinterpret_cast<uint8_t const*>( &h ) )
+            , first_( reinterpret_cast<uint8_t const*>( &h ))
             , last_( first_ + c_bitstring_size )
         {
             assert( is_correct( static_cast<unsigned>( nBitOffset )));
@@ -252,8 +227,8 @@ namespace cds { namespace algo {
         */
         uint_type cut( unsigned count )
         {
-            assert( !eos() );
-            assert( is_correct( count ) );
+            assert( !eos());
+            assert( is_correct( count ));
 
             uint_type result = 0;
 
@@ -290,7 +265,7 @@ namespace cds { namespace algo {
         }
 
         /// Resets the splitter
-        void reset() CDS_NOEXCEPT
+        void reset() noexcept
         {
             cur_ = first_;
         }
@@ -314,7 +289,7 @@ namespace cds { namespace algo {
         }
 
         /// Checks if \p count is multiple of 8
-        static CDS_CONSTEXPR bool is_correct( unsigned count )
+        static constexpr bool is_correct( unsigned count )
         {
             return count % 8 == 0;
         }
@@ -342,7 +317,7 @@ namespace cds { namespace algo {
         typedef Int       uint_type;    ///< Result type of \p cut() function
 
         //@cond
-        static CDS_CONSTEXPR unsigned const c_nBitPerByte = 8;
+        static constexpr unsigned const c_nBitPerByte = 8;
         //@endcond
 
     public:
@@ -379,7 +354,7 @@ namespace cds { namespace algo {
         */
         int_type cut( unsigned count )
         {
-            assert( !eos() );
+            assert( !eos());
             assert( is_correct( count ));
 
             int_type result = ( number_ >> shift_ ) & (( 1 << count ) - 1 );
@@ -396,17 +371,17 @@ namespace cds { namespace algo {
         */
         int_type safe_cut( unsigned count )
         {
-            if ( eos() )
+            if ( eos())
                 return 0;
 
-            unsigned rest = static_cast<unsigned>( rest_count() );
+            unsigned rest = static_cast<unsigned>( rest_count());
             if ( rest < count )
                 count = rest;
             return count ? cut( count ) : 0;
         }
 
         /// Resets the splitter
-        void reset() CDS_NOEXCEPT
+        void reset() noexcept
         {
             shift_ = 0;
         }
@@ -430,7 +405,7 @@ namespace cds { namespace algo {
         }
 
         /// Checks if \p count is multiple of 8
-        static CDS_CONSTEXPR bool is_correct( unsigned count )
+        static constexpr bool is_correct( unsigned count )
         {
             return count < sizeof( int_type ) * c_nBitPerByte;
         }

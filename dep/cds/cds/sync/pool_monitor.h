@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_SYNC_POOL_MONITOR_H
 #define CDSLIB_SYNC_POOL_MONITOR_H
@@ -107,7 +82,7 @@ namespace cds { namespace sync {
         Template arguments:
         - \p LockPool - the @ref cds_memory_pool "pool type". The pool must maintain
             the objects of type \p std::mutex or similar. The access to the pool is not synchronized.
-        - \p BackOff - back-off strategy for spinning, default is \p cds::backoff::yield
+        - \p BackOff - back-off strategy for spinning, default is \p cds::backoff::Default
         - \p Stat - enable (\p true) or disable (\p false, the default) monitor's internal statistics.
 
         <b>How to use</b>
@@ -116,7 +91,7 @@ namespace cds { namespace sync {
         typedef cds::sync::pool_monitor< pool_type > sync_monitor;
         \endcode
     */
-    template <class LockPool, typename BackOff = cds::backoff::yield, bool Stat = false >
+    template <class LockPool, typename BackOff = cds::backoff::Default, bool Stat = false >
     class pool_monitor
     {
     public:
@@ -137,12 +112,12 @@ namespace cds { namespace sync {
         >::type internal_stat;
 
         /// Pool's default capacity
-        static CDS_CONSTEXPR size_t const c_nDefaultCapacity = 256;
+        static constexpr size_t const c_nDefaultCapacity = 256;
 
     private:
         //@cond
-        static CDS_CONSTEXPR refspin_type const c_nSpinBit = 1;
-        static CDS_CONSTEXPR refspin_type const c_nRefIncrement = 2;
+        static constexpr refspin_type const c_nSpinBit = 1;
+        static constexpr refspin_type const c_nRefIncrement = 2;
         mutable pool_type      m_Pool;
         mutable internal_stat  m_Stat;
         //@endcond
@@ -157,9 +132,10 @@ namespace cds { namespace sync {
 
             //@cond
             node_injection()
-                : m_RefSpin( 0 )
-                , m_pLock( nullptr )
-            {}
+                : m_pLock( nullptr )
+            {
+                m_RefSpin.store( 0, atomics::memory_order_release );
+            }
 
             ~node_injection()
             {
@@ -169,7 +145,7 @@ namespace cds { namespace sync {
 
             bool check_free() const
             {
-                return m_pLock == nullptr && m_RefSpin.load( atomics::memory_order_acquire ) == 0;
+                return m_pLock == nullptr && m_RefSpin.load( atomics::memory_order_relaxed ) == 0;
             }
             //@endcond
         };
@@ -195,7 +171,7 @@ namespace cds { namespace sync {
             // try lock spin and increment reference counter
             refspin_type cur = p.m_SyncMonitorInjection.m_RefSpin.load( atomics::memory_order_relaxed ) & ~c_nSpinBit;
             if ( !p.m_SyncMonitorInjection.m_RefSpin.compare_exchange_weak( cur, cur + c_nRefIncrement + c_nSpinBit,
-                atomics::memory_order_acquire, atomics::memory_order_relaxed ))
+                atomics::memory_order_acq_rel, atomics::memory_order_acquire ))
             {
                 back_off bkoff;
                 do {
@@ -203,7 +179,7 @@ namespace cds { namespace sync {
                     bkoff();
                     cur &= ~c_nSpinBit;
                 } while ( !p.m_SyncMonitorInjection.m_RefSpin.compare_exchange_weak( cur, cur + c_nRefIncrement + c_nSpinBit,
-                    atomics::memory_order_acquire, atomics::memory_order_relaxed ));
+                    atomics::memory_order_acq_rel, atomics::memory_order_acquire ));
             }
 
             // spin locked
@@ -237,7 +213,7 @@ namespace cds { namespace sync {
             // try lock spin
             refspin_type cur = p.m_SyncMonitorInjection.m_RefSpin.load( atomics::memory_order_relaxed ) & ~c_nSpinBit;
             if ( !p.m_SyncMonitorInjection.m_RefSpin.compare_exchange_weak( cur, cur | c_nSpinBit,
-                atomics::memory_order_acquire, atomics::memory_order_relaxed ))
+                atomics::memory_order_acquire, atomics::memory_order_acquire ))
             {
                 back_off bkoff;
                 do {
@@ -245,7 +221,7 @@ namespace cds { namespace sync {
                     bkoff();
                     cur &= ~c_nSpinBit;
                 } while ( !p.m_SyncMonitorInjection.m_RefSpin.compare_exchange_weak( cur, cur | c_nSpinBit,
-                    atomics::memory_order_acquire, atomics::memory_order_relaxed ));
+                    atomics::memory_order_acquire, atomics::memory_order_acquire ));
             }
 
             // spin locked now

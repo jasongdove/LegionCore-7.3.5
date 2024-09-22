@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_INTRUSIVE_FCQUEUE_H
 #define CDSLIB_INTRUSIVE_FCQUEUE_H
@@ -75,7 +50,7 @@ namespace cds { namespace intrusive {
         {
             typedef cds::intrusive::opt::v::empty_disposer  disposer ; ///< Disposer to erase removed elements. Used only in \p FCQueue::clear() function
             typedef empty_stat      stat;   ///< Internal statistics
-            static CDS_CONSTEXPR const bool enable_elimination = false; ///< Enable \ref cds_elimination_description "elimination"
+            static constexpr const bool enable_elimination = false; ///< Enable \ref cds_elimination_description "elimination"
         };
 
         /// Metafunction converting option list to traits
@@ -131,7 +106,7 @@ namespace cds { namespace intrusive {
 
         typedef typename traits::disposer   disposer;   ///< The disposer functor. The disposer is used only in \ref clear() function
         typedef typename traits::stat       stat;   ///< Internal statistics type
-        static CDS_CONSTEXPR const bool c_bEliminationEnabled = traits::enable_elimination; ///< \p true if elimination is enabled
+        static constexpr const bool c_bEliminationEnabled = traits::enable_elimination; ///< \p true if elimination is enabled
 
     protected:
         //@cond
@@ -182,7 +157,7 @@ namespace cds { namespace intrusive {
             auto pRec = m_FlatCombining.acquire_record();
             pRec->pVal = &val;
 
-            if ( c_bEliminationEnabled )
+            constexpr_if ( c_bEliminationEnabled )
                 m_FlatCombining.batch_combine( op_enq, pRec, *this );
             else
                 m_FlatCombining.combine( op_enq, pRec, *this );
@@ -208,7 +183,7 @@ namespace cds { namespace intrusive {
             auto pRec = m_FlatCombining.acquire_record();
             pRec->pVal = nullptr;
 
-            if ( c_bEliminationEnabled )
+            constexpr_if ( c_bEliminationEnabled )
                 m_FlatCombining.batch_combine( op_deq, pRec, *this );
             else
                 m_FlatCombining.combine( op_deq, pRec, *this );
@@ -235,13 +210,45 @@ namespace cds { namespace intrusive {
         {
             auto pRec = m_FlatCombining.acquire_record();
 
-            if ( c_bEliminationEnabled )
+            constexpr_if ( c_bEliminationEnabled )
                 m_FlatCombining.batch_combine( bDispose ? op_clear_and_dispose : op_clear, pRec, *this );
             else
                 m_FlatCombining.combine( bDispose ? op_clear_and_dispose : op_clear, pRec, *this );
 
             assert( pRec->is_done());
             m_FlatCombining.release_record( pRec );
+        }
+
+        /// Exclusive access to underlying queue object
+        /**
+            The functor \p f can do any operation with underlying \p container_type in exclusive mode.
+            For example, you can iterate over the queue.
+            \p Func signature is:
+            \code
+                void f( container_type& queue );
+            \endcode
+        */
+        template <typename Func>
+        void apply( Func f )
+        {
+            auto& queue = m_Queue;
+            m_FlatCombining.invoke_exclusive( [&queue, &f]() { f( queue ); } );
+        }
+
+        /// Exclusive access to underlying queue object
+        /**
+            The functor \p f can do any operation with underlying \p container_type in exclusive mode.
+            For example, you can iterate over the queue.
+            \p Func signature is:
+            \code
+                void f( container_type const& queue );
+            \endcode
+        */
+        template <typename Func>
+        void apply( Func f ) const
+        {
+            auto const& queue = m_Queue;
+            m_FlatCombining.invoke_exclusive( [&queue, &f]() { f( queue ); } );
         }
 
         /// Returns the number of elements in the queue.

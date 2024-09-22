@@ -373,7 +373,7 @@ void WorldStateMgr::SaveToDB()
 {
     m_nextSave = sWorld->getIntConfig(CONFIG_INTERVAL_SAVE);
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
 
     for (auto iter = _worldState.begin(); iter != _worldState.end(); ++iter)
         if (!iter->second.HasFlag(WorldStatesData::Flags::Saved))

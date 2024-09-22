@@ -1696,7 +1696,7 @@ bool ObjectMgr::SetCreatureLinkedRespawn(ObjectGuid::LowType const& guidLow, Obj
     if (!linkedGuidLow) // we're removing the linking
     {
         _linkedRespawnStore.erase(guid);
-        PreparedStatement *stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_CRELINKED_RESPAWN);
+        WorldDatabasePreparedStatement *stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_CRELINKED_RESPAWN);
         stmt->setUInt64(0, guidLow);
         WorldDatabase.Execute(stmt);
         return true;
@@ -1720,7 +1720,7 @@ bool ObjectMgr::SetCreatureLinkedRespawn(ObjectGuid::LowType const& guidLow, Obj
     ObjectGuid linkedGuid = ObjectGuid::Create<HighGuid::Creature>(slave->mapid, slave->id, linkedGuidLow);
 
     _linkedRespawnStore[guid] = linkedGuid;
-    PreparedStatement *stmt = WorldDatabase.GetPreparedStatement(WORLD_REP_CREATURE_LINKED_RESPAWN);
+    WorldDatabasePreparedStatement *stmt = WorldDatabase.GetPreparedStatement(WORLD_REP_CREATURE_LINKED_RESPAWN);
     stmt->setUInt64(0, guidLow);
     stmt->setUInt64(1, linkedGuidLow);
     WorldDatabase.Execute(stmt);
@@ -4099,11 +4099,11 @@ void ObjectMgr::ReturnOrDeleteOldMails(bool serverUp)
     // Delete all old mails without item and without body immediately, if starting server
     if (!serverUp)
     {
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_EMPTY_EXPIRED_MAIL);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_EMPTY_EXPIRED_MAIL);
         stmt->setUInt64(0, basetime);
         CharacterDatabase.Execute(stmt);
     }
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_EXPIRED_MAIL);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_EXPIRED_MAIL);
     stmt->setUInt64(0, basetime);
     PreparedQueryResult result = CharacterDatabase.Query(stmt);
     if (!result)
@@ -4392,8 +4392,8 @@ void ObjectMgr::LoadGraveyardZones()
                 Trinity::NormalizeMapCoord(y);
 
                 uint64 dbGuid = sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate();
-                SQLTransaction trans = WorldDatabase.BeginTransaction();
-                PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_CREATURE);
+                WorldDatabaseTransaction trans = WorldDatabase.BeginTransaction();
+                WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_CREATURE);
                 stmt->setUInt64(0, dbGuid);
                 trans->Append(stmt);
 
@@ -4621,7 +4621,7 @@ bool ObjectMgr::AddGraveYardLink(uint32 id, uint32 zoneId, uint32 team, bool per
     // add link to DB
     if (persist)
     {
-        PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_INS_GRAVEYARD_ZONE);
+        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_INS_GRAVEYARD_ZONE);
 
         stmt->setUInt32(0, id);
         stmt->setUInt32(1, zoneId);
@@ -4674,7 +4674,7 @@ void ObjectMgr::RemoveGraveYardLink(uint32 id, uint32 zoneId, uint32 team, bool 
     // remove link from DB
     if (persist)
     {
-        PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_GRAVEYARD_ZONE);
+        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_GRAVEYARD_ZONE);
 
         stmt->setUInt32(0, id);
         stmt->setUInt32(1, zoneId);
@@ -6166,7 +6166,7 @@ SkillRangeType GetSkillRangeType(SkillRaceClassInfoEntry const* rcEntry)
 
 void ObjectMgr::AddQuestObjectiveBuggedState(QuestObjective const& obj, bool working)
 {
-    PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_QUEST_OBJECTIVE_BUGGED_STATE);
+    WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_QUEST_OBJECTIVE_BUGGED_STATE);
     stmt->setBool(0, !working);
     stmt->setUInt32(1, obj.ID);
     WorldDatabase.Execute(stmt);
@@ -6271,7 +6271,7 @@ bool ObjectMgr::AddGameTele(GameTele& tele)
 
     _gameTeleStore[new_id] = tele;
 
-    PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_INS_GAME_TELE);
+    WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_INS_GAME_TELE);
 
     stmt->setUInt32(0, new_id);
     stmt->setFloat(1, tele.position_x);
@@ -6300,7 +6300,7 @@ bool ObjectMgr::DeleteGameTele(std::string const& name)
     {
         if (itr->second.wnameLow == wname)
         {
-            PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_GAME_TELE);
+            WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_GAME_TELE);
 
             stmt->setString(0, itr->second.name);
 
@@ -6518,7 +6518,7 @@ void ObjectMgr::LoadTrainerSpell()
 int ObjectMgr::LoadReferenceVendor(int32 vendor, int32 item, uint8 type, std::set<uint32> *skip_vendors)
 {
     // find all items from the reference vendor
-    PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_NPC_VENDOR_REF);
+    WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_NPC_VENDOR_REF);
     stmt->setUInt32(0, uint32(item));
     stmt->setUInt8(1, type);
     PreparedQueryResult result = WorldDatabase.Query(stmt);
@@ -6960,7 +6960,7 @@ void ObjectMgr::AddVendorItem(uint32 entry, uint32 item, int32 maxcount, uint32 
 
     if (persist)
     {
-        PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_INS_NPC_VENDOR);
+        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_INS_NPC_VENDOR);
 
         stmt->setUInt32(0, entry);
         stmt->setUInt32(1, item);
@@ -6984,7 +6984,7 @@ bool ObjectMgr::RemoveVendorItem(uint32 entry, uint32 item, uint8 type, bool per
 
     if (persist)
     {
-        PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_NPC_VENDOR);
+        WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_NPC_VENDOR);
 
         stmt->setUInt32(0, entry);
         stmt->setUInt32(1, item);
@@ -7629,7 +7629,7 @@ void ObjectMgr::RestructCreatureGUID()
         Field *fields = result->Fetch();
         uint32 oldGUID = fields[0].GetUInt32();
 
-        SQLTransaction worldTrans = WorldDatabase.BeginTransaction();
+        WorldDatabaseTransaction worldTrans = WorldDatabase.BeginTransaction();
 
         worldTrans->PAppend("INSERT INTO creaturerestruct1 SELECT * FROM creaturerestruct WHERE guid = %u;", oldGUID);
         worldTrans->PAppend("INSERT INTO creature_addonrestruct1 SELECT * FROM creature_addonrestruct WHERE guid = %u;", oldGUID);
@@ -7731,7 +7731,7 @@ void ObjectMgr::RestructGameObjectGUID()
         Field *fields = result->Fetch();
         uint32 oldGUID = fields[0].GetUInt32();
 
-        SQLTransaction worldTrans = WorldDatabase.BeginTransaction();
+        WorldDatabaseTransaction worldTrans = WorldDatabase.BeginTransaction();
 
         worldTrans->PAppend("INSERT INTO gameobjectRestruct1 SELECT * FROM gameobjectRestruct WHERE guid = %u;", oldGUID);
         worldTrans->PAppend("INSERT INTO game_event_gameobjectRestruct1 SELECT * FROM game_event_gameobjectRestruct WHERE guid = %u;", oldGUID);

@@ -129,7 +129,7 @@ void RealmList::UpdateRealms(boost::system::error_code const& error)
 
     // 0   1     2        3             4                5     6     7     8         9                     10          11         12      13
     //"id, name, address, localAddress, localSubnetMask, port, icon, flag, timezone, allowedSecurityLevel, population, gamebuild, Region, Battlegroup
-    PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_REALMLIST);
+    LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_REALMLIST);
     PreparedQueryResult result = LoginDatabase.Query(stmt);
 
     std::map<Battlenet::RealmHandle, std::string> existingRealms;

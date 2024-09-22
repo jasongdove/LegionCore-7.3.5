@@ -55,11 +55,11 @@ class Bag : public Item
 
         // DB operations
         // overwrite virtual Item::SaveToDB
-        void SaveToDB(SQLTransaction& trans) override;
+        void SaveToDB(CharacterDatabaseTransaction& trans) override;
         // overwrite virtual Item::LoadFromDB
         bool LoadFromDB(ObjectGuid::LowType const& guid, ObjectGuid const& owner_guid, Field* fields, uint32 entry, uint8 oLevel = 0) override;
         // overwrite virtual Item::DeleteFromDB
-        void DeleteFromDB(SQLTransaction& trans) override;
+        void DeleteFromDB(CharacterDatabaseTransaction& trans) override;
 
         void BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target) const override;
 

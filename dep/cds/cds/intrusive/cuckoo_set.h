@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_INTRUSIVE_CUCKOO_SET_H
 #define CDSLIB_INTRUSIVE_CUCKOO_SET_H
@@ -147,11 +122,11 @@ namespace cds { namespace intrusive {
 
             node *  m_pNext;
 
-            CDS_CONSTEXPR node() CDS_NOEXCEPT
+            constexpr node() noexcept
                 : m_pNext( nullptr )
             {}
 
-            void store_hash( size_t * )
+            void store_hash( size_t const* )
             {}
 
             size_t * get_hash() const
@@ -179,15 +154,15 @@ namespace cds { namespace intrusive {
             node *  m_pNext;
             size_t  m_arrHash[ hash_array_size ];
 
-            node() CDS_NOEXCEPT
+            node() noexcept
                 : m_pNext( nullptr )
             {
                 memset( m_arrHash, 0, sizeof(m_arrHash));
             }
 
-            void store_hash( size_t * pHashes )
+            void store_hash( size_t const* pHashes )
             {
-                memcpy( m_arrHash, pHashes, hash_array_size );
+                memcpy( m_arrHash, pHashes, sizeof( m_arrHash ));
             }
 
             size_t * get_hash() const
@@ -210,10 +185,10 @@ namespace cds { namespace intrusive {
             static unsigned int const hash_array_size = 0;
             static unsigned int const probeset_size = probeset_type::c_nCapacity;
 
-            node() CDS_NOEXCEPT
+            node() noexcept
             {}
 
-            void store_hash( size_t * )
+            void store_hash( size_t const* )
             {}
 
             size_t * get_hash() const
@@ -238,14 +213,14 @@ namespace cds { namespace intrusive {
 
             size_t  m_arrHash[ hash_array_size ];
 
-            node() CDS_NOEXCEPT
+            node() noexcept
             {
                 memset( m_arrHash, 0, sizeof(m_arrHash));
             }
 
-            void store_hash( size_t * pHashes )
+            void store_hash( size_t const* pHashes )
             {
-                memcpy( m_arrHash, pHashes, hash_array_size );
+                memcpy( m_arrHash, pHashes, sizeof( m_arrHash ));
             }
 
             size_t * get_hash() const
@@ -547,7 +522,7 @@ namespace cds { namespace intrusive {
             //@endcond
 
             /// Returns the arity of striping mutex policy
-            CDS_CONSTEXPR unsigned int arity() const CDS_NOEXCEPT
+            constexpr unsigned int arity() const noexcept
             {
                 return c_nArity;
             }
@@ -615,9 +590,9 @@ namespace cds { namespace intrusive {
 
         /// Refinable concurrent access policy
         /**
-            This is one of available opt::mutex_policy option type for CuckooSet
+            This is one of available \p opt::mutex_policy option type for \p CuckooSet
 
-            Refining is like a striping technique (see cuckoo::striping)
+            Refining is like a striping technique (see \p cuckoo::striping)
             but it allows growing the size of lock array when resizing the hash table.
             So, the sizes of hash table and lock array are equal.
 
@@ -626,7 +601,7 @@ namespace cds { namespace intrusive {
                 The default is \p std::recursive_mutex. The mutex type should be default-constructible.
             - \p Arity - unsigned int constant that specifies an arity. The arity is the count of hash functors, i.e., the
                 count of lock arrays. Default value is 2.
-            - \p BackOff - back-off strategy. Default is cds::backoff::yield
+            - \p BackOff - back-off strategy. Default is \p cds::backoff::Default
             - \p Alloc - allocator type used for lock array memory allocation. Default is \p CDS_DEFAULT_ALLOCATOR.
             - \p Stat - internal statistics type. Note that this template argument is automatically selected by \ref CuckooSet
                 class according to its \p opt::stat option.
@@ -634,7 +609,7 @@ namespace cds { namespace intrusive {
         template <
             class RecursiveLock = std::recursive_mutex,
             unsigned int Arity = 2,
-            typename BackOff = cds::backoff::yield,
+            typename BackOff = cds::backoff::Default,
             class Alloc = CDS_DEFAULT_ALLOCATOR,
             class Stat = empty_refinable_stat
         >
@@ -687,9 +662,9 @@ namespace cds { namespace intrusive {
 
             atomics::atomic< owner_t >   m_Owner     ;   ///< owner mark (thread id + boolean flag)
             atomics::atomic<size_t>      m_nCapacity ;   ///< lock array capacity
-            lock_array_ptr                  m_arrLocks[ c_nArity ]  ; ///< Lock array. The capacity of array is specified in constructor.
-            spinlock_type                   m_access    ;   ///< access to m_arrLocks
-            statistics_type                 m_Stat      ;   ///< internal statistics
+            lock_array_ptr               m_arrLocks[ c_nArity ]  ; ///< Lock array. The capacity of array is specified in constructor.
+            spinlock_type                m_access    ;   ///< access to m_arrLocks
+            statistics_type              m_Stat      ;   ///< internal statistics
             //@endcond
 
         protected:
@@ -697,7 +672,12 @@ namespace cds { namespace intrusive {
             struct lock_array_disposer {
                 void operator()( lock_array_type * pArr )
                 {
+                    // Seems, there is a false positive in std::shared_ptr deallocation in uninstrumented libc++
+                    // see, for example, https://groups.google.com/forum/#!topic/thread-sanitizer/eHu4dE_z7Cc
+                    // https://reviews.llvm.org/D21609
+                    CDS_TSAN_ANNOTATE_IGNORE_WRITES_BEGIN;
                     lock_array_allocator().Delete( pArr );
+                    CDS_TSAN_ANNOTATE_IGNORE_WRITES_END;
                 }
             };
 
@@ -710,6 +690,7 @@ namespace cds { namespace intrusive {
             {
                 owner_t me = (owner_t) cds::OS::get_current_thread_id();
                 owner_t who;
+                size_t cur_capacity;
 
                 back_off bkoff;
                 while ( true ) {
@@ -718,6 +699,7 @@ namespace cds { namespace intrusive {
                         scoped_spinlock sl(m_access);
                         for ( unsigned int i = 0; i < c_nArity; ++i )
                             pLockArr[i] = m_arrLocks[i];
+                        cur_capacity = m_nCapacity.load( atomics::memory_order_acquire );
                     }
 
                     // wait while resizing
@@ -729,10 +711,7 @@ namespace cds { namespace intrusive {
                         m_Stat.onCellWaitResizing();
                     }
 
-                    if ( pLockArr[0] != m_arrLocks[0] ) {
-                        m_Stat.onCellArrayChanged();
-                    }
-                    else {
+                    if ( cur_capacity == m_nCapacity.load( atomics::memory_order_acquire )) {
 
                         size_t const nMask = pLockArr[0]->size() - 1;
                         assert( cds::beans::is_power2( nMask + 1 ));
@@ -743,22 +722,23 @@ namespace cds { namespace intrusive {
                         }
 
                         who = m_Owner.load( atomics::memory_order_acquire );
-                        if ( ( !(who & 1) || (who >> 1) == (me & c_nOwnerMask)) && m_arrLocks[0] == pLockArr[0] ) {
+                        if ( ( !(who & 1) || (who >> 1) == (me & c_nOwnerMask)) && cur_capacity == m_nCapacity.load( atomics::memory_order_acquire )) {
                             m_Stat.onCellLock();
                             return;
                         }
 
-                        for ( unsigned int i = 0; i < c_nArity; ++i ) {
+                        for ( unsigned int i = 0; i < c_nArity; ++i )
                             parrLock[i]->unlock();
-                        }
 
                         m_Stat.onCellLockFailed();
                     }
+                    else
+                        m_Stat.onCellArrayChanged();
 
                     // clears pLockArr can lead to calling dtor for each item of pLockArr[i] that may be a heavy-weighted operation
                     // (each pLockArr[i] is a shared pointer to array of a ton of mutexes)
                     // It is better to do this before the next loop iteration where we will use spin-locked assignment to pLockArr
-                    // Destructing a lot of mutexes under spin-lock is a bad solution
+                    // However, destructing a lot of mutexes under spin-lock is a bad solution
                     for ( unsigned int i = 0; i < c_nArity; ++i )
                         pLockArr[i].reset();
                 }
@@ -812,26 +792,27 @@ namespace cds { namespace intrusive {
             void acquire_resize( lock_array_ptr * pOldLocks )
             {
                 owner_t me = (owner_t) cds::OS::get_current_thread_id();
+                size_t cur_capacity;
 
                 while ( true ) {
                     {
                         scoped_spinlock sl(m_access);
                         for ( unsigned int i = 0; i < c_nArity; ++i )
                             pOldLocks[i] = m_arrLocks[i];
+                        cur_capacity = m_nCapacity.load( atomics::memory_order_acquire );
                     }
 
                     // global lock
                     owner_t ownNull = 0;
                     if ( m_Owner.compare_exchange_strong( ownNull, (me << 1) | 1, atomics::memory_order_acq_rel, atomics::memory_order_relaxed )) {
-                        if ( pOldLocks[0] != m_arrLocks[0] ) {
-                            m_Owner.store( 0, atomics::memory_order_release );
-                            m_Stat.onResizeLockArrayChanged();
-                        }
-                        else {
+                        if ( cur_capacity == m_nCapacity.load( atomics::memory_order_acquire )) {
                             pOldLocks[0]->lock_all();
                             m_Stat.onResizeLock();
                             return;
                         }
+
+                        m_Owner.store( 0, atomics::memory_order_release );
+                        m_Stat.onResizeLockArrayChanged();
                     }
                     else
                         m_Stat.onResizeLockIter();
@@ -839,7 +820,7 @@ namespace cds { namespace intrusive {
                     // clears pOldLocks can lead to calling dtor for each item of pOldLocks[i] that may be a heavy-weighted operation
                     // (each pOldLocks[i] is a shared pointer to array of a ton of mutexes)
                     // It is better to do this before the next loop iteration where we will use spin-locked assignment to pOldLocks
-                    // Destructing a lot of mutexes under spin-lock is a bad solution
+                    // However, destructing a lot of mutexes under spin-lock is a bad solution
                     for ( unsigned int i = 0; i < c_nArity; ++i )
                         pOldLocks[i].reset();
                 }
@@ -947,10 +928,10 @@ namespace cds { namespace intrusive {
 
                 {
                     scoped_spinlock sl(m_access);
+                    m_nCapacity.store( nCapacity, atomics::memory_order_release );
                     for ( unsigned int i = 0; i < c_nArity; ++i )
                         m_arrLocks[i] = pNew[i];
                 }
-                m_nCapacity.store( nCapacity, atomics::memory_order_release );
 
                 m_Stat.onResize();
             }
@@ -966,7 +947,7 @@ namespace cds { namespace intrusive {
             }
 
             /// Returns the arity of \p refinable mutex policy
-            CDS_CONSTEXPR unsigned int arity() const CDS_NOEXCEPT
+            constexpr unsigned int arity() const noexcept
             {
                 return c_nArity;
             }
@@ -1520,7 +1501,7 @@ namespace cds { namespace intrusive {
 
             template <typename Node, unsigned int ArraySize>
             struct hash_ops {
-                static void store( Node * pNode, size_t * pHashes )
+                static void store( Node * pNode, size_t const* pHashes )
                 {
                     memcpy( pNode->m_arrHash, pHashes, sizeof(pHashes[0]) * ArraySize );
                 }
@@ -1922,9 +1903,7 @@ namespace cds { namespace intrusive {
         typedef cuckoo::details::contains< node_traits, c_isSorted > contains_action;
 
         template <typename Predicate>
-        struct predicate_wrapper {
-            typedef typename std::conditional< c_isSorted, cds::opt::details::make_comparator_from_less<Predicate>, Predicate>::type   type;
-        };
+        using predicate_wrapper = typename std::conditional< c_isSorted, cds::opt::details::make_comparator_from_less<Predicate>, Predicate>::type;
 
         typedef typename std::conditional< c_isSorted, key_comparator, key_equal_to >::type key_predicate;
         //@endcond
@@ -1937,9 +1916,9 @@ namespace cds { namespace intrusive {
     protected:
         bucket_entry *      m_BucketTable[ c_nArity ] ; ///< Bucket tables
 
-        size_t              m_nBucketMask           ;   ///< Hash bitmask; bucket table size minus 1.
-        unsigned int const  m_nProbesetSize         ;   ///< Probe set size
-        unsigned int const  m_nProbesetThreshold    ;   ///< Probe set threshold
+        atomics::atomic<size_t> m_nBucketMask           ;   ///< Hash bitmask; bucket table size minus 1.
+        unsigned int const      m_nProbesetSize         ;   ///< Probe set size
+        unsigned int const      m_nProbesetThreshold    ;   ///< Probe set threshold
 
         hash            m_Hash              ;   ///< Hash functor tuple
         mutex_policy    m_MutexPolicy       ;   ///< concurrent access policy
@@ -1969,8 +1948,8 @@ namespace cds { namespace intrusive {
 
         void copy_hash( size_t * pHashes, value_type const& v ) const
         {
-            if ( c_nNodeHashArraySize )
-                memcpy( pHashes, node_traits::to_node_ptr( v )->get_hash(), sizeof(pHashes[0]) * c_nNodeHashArraySize );
+            constexpr_if ( c_nNodeHashArraySize != 0 )
+                memcpy( pHashes, node_traits::to_node_ptr( v )->get_hash(), sizeof( pHashes[0] ) * c_nNodeHashArraySize );
             else
                 hashing( pHashes, v );
         }
@@ -1978,7 +1957,7 @@ namespace cds { namespace intrusive {
         bucket_entry& bucket( unsigned int nTable, size_t nHash )
         {
             assert( nTable < c_nArity );
-            return m_BucketTable[nTable][nHash & m_nBucketMask];
+            return m_BucketTable[nTable][nHash & m_nBucketMask.load( atomics::memory_order_relaxed ) ];
         }
 
         static void store_hash( node_type * pNode, size_t * pHashes )
@@ -1995,7 +1974,7 @@ namespace cds { namespace intrusive {
         {
             assert( cds::beans::is_power2( nSize ));
 
-            m_nBucketMask = nSize - 1;
+            m_nBucketMask.store( nSize - 1, atomics::memory_order_release );
             bucket_table_allocator alloc;
             for ( unsigned int i = 0; i < c_nArity; ++i )
                 m_BucketTable[i] = alloc.NewArray( nSize );
@@ -2011,10 +1990,10 @@ namespace cds { namespace intrusive {
         }
         void free_bucket_tables()
         {
-            free_bucket_tables( m_BucketTable, m_nBucketMask + 1 );
+            free_bucket_tables( m_BucketTable, m_nBucketMask.load( atomics::memory_order_relaxed ) + 1 );
         }
 
-        static CDS_CONSTEXPR unsigned int const c_nUndefTable = (unsigned int) -1;
+        static constexpr unsigned int const c_nUndefTable = (unsigned int) -1;
         template <typename Q, typename Predicate >
         unsigned int contains( position * arrPos, size_t * arrHash, Q const& val, Predicate pred )
         {
@@ -2149,8 +2128,8 @@ namespace cds { namespace intrusive {
         {
             m_Stat.onResizeCall();
 
-            size_t nOldCapacity = bucket_count();
-            bucket_entry *      pOldTable[ c_nArity ];
+            size_t nOldCapacity = bucket_count( atomics::memory_order_acquire );
+            bucket_entry* pOldTable[ c_nArity ];
             {
                 scoped_resize_lock guard( m_MutexPolicy );
 
@@ -2165,7 +2144,6 @@ namespace cds { namespace intrusive {
                 memcpy( pOldTable, m_BucketTable, sizeof(pOldTable));
                 allocate_bucket_tables( nCapacity );
 
-                typedef typename bucket_entry::iterator bucket_iterator;
                 hash_array arrHash;
                 position arrPos[ c_nArity ];
 
@@ -2179,7 +2157,7 @@ namespace cds { namespace intrusive {
 
                             value_type& val = *node_traits::to_value_ptr( *it );
                             copy_hash( arrHash, val );
-                            contains( arrPos, arrHash, val, key_predicate()) ; // must return c_nUndefTable
+                            CDS_VERIFY_EQ( contains( arrPos, arrHash, val, key_predicate()), c_nUndefTable );
 
                             for ( unsigned int i = 0; i < c_nArity; ++i ) {
                                 bucket_entry& refBucket = bucket( i, arrHash[i] );
@@ -2209,7 +2187,7 @@ namespace cds { namespace intrusive {
             free_bucket_tables( pOldTable, nOldCapacity );
         }
 
-        CDS_CONSTEXPR static unsigned int calc_probeset_size( unsigned int nProbesetSize ) CDS_NOEXCEPT
+        constexpr static unsigned int calc_probeset_size( unsigned int nProbesetSize ) noexcept
         {
             return std::is_same< probeset_class, cuckoo::vector_probeset_class >::value
                 ? node_type::probeset_size
@@ -2595,7 +2573,7 @@ namespace cds { namespace intrusive {
         value_type * erase_with( Q const& val, Predicate pred )
         {
             CDS_UNUSED( pred );
-            return erase_( val, typename predicate_wrapper<Predicate>::type(), [](value_type const&) {} );
+            return erase_( val, predicate_wrapper<Predicate>(), [](value_type const&) {} );
         }
 
         /// Delete the item from the set
@@ -2632,7 +2610,7 @@ namespace cds { namespace intrusive {
         value_type * erase_with( Q const& val, Predicate pred, Func f )
         {
             CDS_UNUSED( pred );
-            return erase_( val, typename predicate_wrapper<Predicate>::type(), f );
+            return erase_( val, predicate_wrapper<Predicate>(), f );
         }
 
         /// Find the key \p val
@@ -2681,14 +2659,14 @@ namespace cds { namespace intrusive {
         bool find_with( Q& val, Predicate pred, Func f )
         {
             CDS_UNUSED( pred );
-            return find_( val, typename predicate_wrapper<Predicate>::type(), f );
+            return find_( val, predicate_wrapper<Predicate>(), f );
         }
         //@cond
         template <typename Q, typename Predicate, typename Func>
         bool find_with( Q const& val, Predicate pred, Func f )
         {
             CDS_UNUSED( pred );
-            return find_( val, typename predicate_wrapper<Predicate>::type(), f );
+            return find_( val, predicate_wrapper<Predicate>(), f );
         }
         //@endcond
 
@@ -2722,7 +2700,7 @@ namespace cds { namespace intrusive {
         bool contains( Q const& key, Predicate pred )
         {
             CDS_UNUSED( pred );
-            return find_with( key, typename predicate_wrapper<Predicate>::type(), [](value_type& , Q const& ) {} );
+            return find_with( key, predicate_wrapper<Predicate>(), [](value_type& , Q const& ) {} );
         }
         //@cond
         template <typename Q, typename Predicate>
@@ -2763,7 +2741,7 @@ namespace cds { namespace intrusive {
 
             for ( unsigned int i = 0; i < c_nArity; ++i ) {
                 bucket_entry * pEntry = m_BucketTable[i];
-                bucket_entry * pEnd = pEntry + m_nBucketMask + 1;
+                bucket_entry * pEnd = pEntry + m_nBucketMask.load( atomics::memory_order_relaxed ) + 1;
                 for ( ; pEntry != pEnd ; ++pEntry ) {
                     pEntry->clear( [&oDisposer]( node_type * pNode ){ oDisposer( node_traits::to_value_ptr( pNode )) ; } );
                 }
@@ -2792,8 +2770,14 @@ namespace cds { namespace intrusive {
         */
         size_t bucket_count() const
         {
-            return m_nBucketMask + 1;
+            return m_nBucketMask.load( atomics::memory_order_relaxed ) + 1;
         }
+        //@cond
+        size_t bucket_count( atomics::memory_order load_mo ) const
+        {
+            return m_nBucketMask.load( load_mo ) + 1;
+        }
+        //@endcond
 
         /// Returns lock array size
         size_t lock_count() const

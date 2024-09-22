@@ -20,7 +20,7 @@
 #define _WARDEN_BASE_H
 
 #include <map>
-#include "ARC4.h"
+#include "Cryptography/ARC4.h"
 #include "BigNumber.h"
 #include "ByteBuffer.h"
 #include "WardenMgr.h"
@@ -203,8 +203,8 @@ class Warden
         WorldSession* _session;
         WardenModule* _currentModule;
 
-        RC4_Context _clientRC4State;
-        RC4_Context _serverRC4State;
+        ARC4 _inputCrypto;
+        ARC4 _outputCrypto;
         WardenState _state;
         uint32 _lastUpdateTime;
         uint32 _lastPacketSendTime;

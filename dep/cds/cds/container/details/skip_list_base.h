@@ -1,38 +1,14 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_CONTAINER_DETAILS_SKIP_LIST_BASE_H
 #define CDSLIB_CONTAINER_DETAILS_SKIP_LIST_BASE_H
 
 #include <cds/intrusive/details/skip_list_base.h>
 #include <cds/container/details/base.h>
+#include <memory>
 
 namespace cds { namespace container {
 
@@ -105,7 +81,7 @@ namespace cds { namespace container {
             /// Item counter
             /**
                 The type for item counting feature,
-                 by defaulr disabled (\p atomicity::empty_item_counter)
+                by default disabled (\p atomicity::empty_item_counter)
             */
             typedef atomicity::empty_item_counter     item_counter;
 
@@ -188,14 +164,15 @@ namespace cds { namespace container {
                 typedef Traits traits;
 
                 typedef typename node_type::tower_item_type node_tower_item;
-                typedef typename traits::allocator::template rebind<unsigned char>::other  tower_allocator_type;
-                typedef typename traits::allocator::template rebind<node_type>::other      node_allocator_type;
+
+                typedef typename std::allocator_traits<typename traits::allocator>::template rebind_alloc<unsigned char> tower_allocator_type;
+                typedef typename std::allocator_traits<typename traits::allocator>::template rebind_alloc<node_type>     node_allocator_type;
 
                 static size_t const c_nTowerItemSize = sizeof(node_tower_item);
                 static size_t const c_nNodePadding = sizeof(node_type) % c_nTowerItemSize;
                 static size_t const c_nNodeSize = sizeof(node_type) + (c_nNodePadding ? (c_nTowerItemSize - c_nNodePadding) : 0);
 
-                static CDS_CONSTEXPR size_t node_size( unsigned int nHeight ) CDS_NOEXCEPT
+                static constexpr size_t node_size( unsigned int nHeight ) noexcept
                 {
                     return c_nNodeSize + (nHeight - 1) * c_nTowerItemSize;
                 }
@@ -214,7 +191,7 @@ namespace cds { namespace container {
                         return pMem;
                     }
                     else
-                        pMem = reinterpret_cast<unsigned char *>( node_allocator_type().allocate( 1 ) );
+                        pMem = reinterpret_cast<unsigned char *>( node_allocator_type().allocate( 1 ));
 
                     return pMem;
                 }
@@ -254,7 +231,8 @@ namespace cds { namespace container {
                     assert( p != nullptr );
 
                     unsigned int nHeight = p->height();
-                    node_allocator_type().destroy( p );
+                    node_allocator_type a;
+                    std::allocator_traits<node_allocator_type>::destroy( a, p );
                     free_space( reinterpret_cast<unsigned char *>(p), nHeight );
                 }
             };

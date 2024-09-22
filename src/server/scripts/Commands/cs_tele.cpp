@@ -131,7 +131,7 @@ public:
                 target->TeleportTo(target->m_homebindMapId, target->m_homebindX, target->m_homebindY, target->m_homebindZ, target->GetOrientation());
             else
             {
-                PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_HOMEBIND);
+                CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_HOMEBIND);
                 stmt->setUInt64(0, target_guid.GetGUIDLow());
                 PreparedQueryResult resultDB = CharacterDatabase.Query(stmt);
 

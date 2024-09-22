@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_CONTAINER_LAZY_KVLIST_RCU_H
 #define CDSLIB_CONTAINER_LAZY_KVLIST_RCU_H
@@ -137,7 +112,7 @@ namespace cds { namespace container {
         typedef typename base_class::rcu_check_deadlock rcu_check_deadlock ; ///< RCU deadlock checking policy
 
         typedef typename gc::scoped_lock    rcu_lock ;  ///< RCU scoped lock
-        static CDS_CONSTEXPR const bool c_bExtractLockExternal = base_class::c_bExtractLockExternal; ///< Group of \p extract_xxx functions require external locking
+        static constexpr const bool c_bExtractLockExternal = base_class::c_bExtractLockExternal; ///< Group of \p extract_xxx functions require external locking
 
         //@cond
         // Rebind traits (split-list support)
@@ -538,7 +513,7 @@ namespace cds { namespace container {
         bool erase_with( K const& key, Less pred )
         {
             CDS_UNUSED( pred );
-            return erase_at( head(), key, typename maker::template less_wrapper<Less>::type());
+            return erase_at( head(), key, typename maker::template less_wrapper<Less>());
         }
 
         /// Deletes \p key from the list
@@ -574,7 +549,7 @@ namespace cds { namespace container {
         bool erase_with( K const& key, Less pred, Func f )
         {
             CDS_UNUSED( pred );
-            return erase_at( head(), key, typename maker::template less_wrapper<Less>::type(), f );
+            return erase_at( head(), key, typename maker::template less_wrapper<Less>(), f );
         }
 
         /// Extracts an item from the list
@@ -634,7 +609,7 @@ namespace cds { namespace container {
         exempt_ptr extract_with( K const& key, Less pred )
         {
             CDS_UNUSED( pred );
-            return exempt_ptr( extract_at( head(), key, typename maker::template less_wrapper<Less>::type()));
+            return exempt_ptr( extract_at( head(), key, typename maker::template less_wrapper<Less>()));
         }
 
         /// Checks whether the list contains \p key
@@ -670,7 +645,7 @@ namespace cds { namespace container {
         bool contains( Q const& key, Less pred ) const
         {
             CDS_UNUSED( pred );
-            return find_at( head(), key, typename maker::template less_wrapper<Less>::type());
+            return find_at( head(), key, typename maker::template less_wrapper<Less>());
         }
         //@cond
         template <typename Q, typename Less>
@@ -718,7 +693,7 @@ namespace cds { namespace container {
         bool find_with( Q const& key, Less pred, Func f ) const
         {
             CDS_UNUSED( pred );
-            return find_at( head(), key, typename maker::template less_wrapper<Less>::type(), f );
+            return find_at( head(), key, typename maker::template less_wrapper<Less>(), f );
         }
 
         /// Finds \p key and return the item found
@@ -767,7 +742,7 @@ namespace cds { namespace container {
         value_type * get_with( K const& key, Less pred ) const
         {
             CDS_UNUSED( pred );
-            return get_at( head(), key, typename maker::template less_wrapper<Less>::type());
+            return get_at( head(), key, typename maker::template less_wrapper<Less>());
         }
 
         /// Checks if the list is empty

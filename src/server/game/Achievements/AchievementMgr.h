@@ -355,7 +355,7 @@ class AchievementMgr
         uint32 GetSize();
         static void DeleteFromDB(ObjectGuid lowguid, uint32 accountId = 0);
         void LoadFromDB(PreparedQueryResult achievementResult, PreparedQueryResult criteriaResult, PreparedQueryResult achievementAccountResult = nullptr, PreparedQueryResult criteriaAccountResult = nullptr);
-        void SaveToDB(SQLTransaction& trans);
+        void SaveToDB(CharacterDatabaseTransaction& trans);
         void ResetAchievementCriteria(CriteriaTypes type, uint32 miscValue1 = 0, uint32 miscValue2 = 0, bool evenIfCriteriaComplete = false);
         void UpdateAchievementCriteria(AchievementCachePtr cachePtr, bool init = false);
         void UpdateAchievementCriteria(CriteriaTypes type, uint32 miscValue1 = 0, uint32 miscValue2 = 0, uint32 miscValue3 = 0,Unit* unit = nullptr, Player* referencePlayer = nullptr, bool init = false);

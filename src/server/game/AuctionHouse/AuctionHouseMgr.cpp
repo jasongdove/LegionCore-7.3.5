@@ -95,7 +95,7 @@ uint32 AuctionHouseMgr::GetAuctionDeposit(AuctionHouseEntry const* entry, uint32
 }
 
 //does not clear ram
-void AuctionHouseMgr::SendAuctionWonMail(AuctionEntry* auction, SQLTransaction& trans)
+void AuctionHouseMgr::SendAuctionWonMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans)
 {
     Item* pItem = GetAItem(auction->itemGUIDLow);
     if (!pItem)
@@ -152,7 +152,7 @@ void AuctionHouseMgr::SendAuctionWonMail(AuctionEntry* auction, SQLTransaction& 
     {
         // set owner to bidder (to prevent delete item with sender char deleting)
         // owner in `data` will set at mail receive and item extracting
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ITEM_OWNER);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ITEM_OWNER);
         stmt->setUInt64(0, auction->bidder);
         stmt->setUInt64(1, pItem->GetGUIDLow());
         trans->Append(stmt);
@@ -170,7 +170,7 @@ void AuctionHouseMgr::SendAuctionWonMail(AuctionEntry* auction, SQLTransaction& 
     }
 }
 
-void AuctionHouseMgr::SendAuctionSalePendingMail(AuctionEntry* auction, SQLTransaction& trans)
+void AuctionHouseMgr::SendAuctionSalePendingMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans)
 {
     ObjectGuid owner_guid = ObjectGuid::Create<HighGuid::Player>(auction->owner);
     Player* owner = ObjectAccessor::FindPlayer(owner_guid);
@@ -182,7 +182,7 @@ void AuctionHouseMgr::SendAuctionSalePendingMail(AuctionEntry* auction, SQLTrans
 }
 
 //call this method to send mail to auction owner, when auction is successful, it does not clear ram
-void AuctionHouseMgr::SendAuctionSuccessfulMail(AuctionEntry* auction, SQLTransaction& trans)
+void AuctionHouseMgr::SendAuctionSuccessfulMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans)
 {
     ObjectGuid owner_guid = ObjectGuid::Create<HighGuid::Player>(auction->owner);
     Player* owner = ObjectAccessor::FindPlayer(owner_guid);
@@ -207,7 +207,7 @@ void AuctionHouseMgr::SendAuctionSuccessfulMail(AuctionEntry* auction, SQLTransa
 }
 
 //does not clear ram
-void AuctionHouseMgr::SendAuctionExpiredMail(AuctionEntry* auction, SQLTransaction& trans)
+void AuctionHouseMgr::SendAuctionExpiredMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans)
 {
     //return an item in auction to its owner by mail
     Item* pItem = GetAItem(auction->itemGUIDLow);
@@ -223,7 +223,7 @@ void AuctionHouseMgr::SendAuctionExpiredMail(AuctionEntry* auction, SQLTransacti
     // owner exist
     if ((owner || owner_accId) && !sAuctionBotConfig->IsBotChar(auction->owner))
     {
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ITEM_OWNER);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ITEM_OWNER);
         stmt->setUInt64(0, auction->owner);
         stmt->setUInt64(1, pItem->GetGUIDLow());
         trans->Append(stmt);
@@ -238,7 +238,7 @@ void AuctionHouseMgr::SendAuctionExpiredMail(AuctionEntry* auction, SQLTransacti
 }
 
 //this function sends mail to old bidder
-void AuctionHouseMgr::SendAuctionOutbiddedMail(AuctionEntry* auction, uint64 const& /*newPrice*/, Player* /*newBidder*/, SQLTransaction& trans)
+void AuctionHouseMgr::SendAuctionOutbiddedMail(AuctionEntry* auction, uint64 const& /*newPrice*/, Player* /*newBidder*/, CharacterDatabaseTransaction& trans)
 {
     ObjectGuid oldBidder_guid = ObjectGuid::Create<HighGuid::Player>(auction->bidder);
     Player* oldBidder = ObjectAccessor::FindPlayer(oldBidder_guid);
@@ -259,7 +259,7 @@ void AuctionHouseMgr::SendAuctionOutbiddedMail(AuctionEntry* auction, uint64 con
 }
 
 //this function sends mail, when auction is cancelled to old bidder
-void AuctionHouseMgr::SendAuctionCancelledToBidderMail(AuctionEntry* auction, SQLTransaction& trans, Item* item)
+void AuctionHouseMgr::SendAuctionCancelledToBidderMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans, Item* item)
 {
     ObjectGuid bidder_guid = ObjectGuid::Create<HighGuid::Player>(auction->bidder);
     Player* bidder = ObjectAccessor::FindPlayer(bidder_guid);
@@ -288,7 +288,7 @@ void AuctionHouseMgr::LoadAuctionItems()
     // data needs to be at first place for Item::LoadFromDB
     //          0           1               2           3       4       5       6           7                   8           9           10      11              12          13              14              15          16
     //SELECT creatorGuid, giftCreatorGuid, count, duration, charges, flags, enchantments, randomPropertyId, durability, playedTime, text, transmogrification, upgradeId, enchantIllusion, bonusListIDs, itemguid, itemEntry
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_AUCTION_ITEMS);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_AUCTION_ITEMS);
     PreparedQueryResult result = CharacterDatabase.Query(stmt);
 
     if (!result)
@@ -335,7 +335,7 @@ void AuctionHouseMgr::LoadAuctions()
 {
     uint32 oldMSTime = getMSTime();
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_AUCTIONS);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_AUCTIONS);
     PreparedQueryResult result = CharacterDatabase.Query(stmt);
 
     if (!result)
@@ -346,7 +346,7 @@ void AuctionHouseMgr::LoadAuctions()
 
     uint32 count = 0;
 
-    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     do
     {
         Field* fields = result->Fetch();
@@ -477,7 +477,7 @@ void AuctionHouseObject::Update()
             ++itr;
     }
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_AUCTION_BY_TIME);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_AUCTION_BY_TIME);
     stmt->setUInt32(0, static_cast<uint32>(curTime) + 60);
     PreparedQueryResult result = CharacterDatabase.Query(stmt);
 
@@ -491,7 +491,7 @@ void AuctionHouseObject::Update()
         if (!auction)
             continue;
 
-        SQLTransaction trans = CharacterDatabase.BeginTransaction();
+        CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
 
         ///- Either cancel the auction if there was no bidder
         if (auction->bidder == 0)
@@ -752,16 +752,16 @@ uint64 AuctionEntry::GetAuctionOutBid() const
     return outbid ? outbid : 1;
 }
 
-void AuctionEntry::DeleteFromDB(SQLTransaction& trans) const
+void AuctionEntry::DeleteFromDB(CharacterDatabaseTransaction& trans) const
 {
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_AUCTION);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_AUCTION);
     stmt->setUInt32(0, Id);
     trans->Append(stmt);
 }
 
-void AuctionEntry::SaveToDB(SQLTransaction& trans) const
+void AuctionEntry::SaveToDB(CharacterDatabaseTransaction& trans) const
 {
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_AUCTION);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_AUCTION);
     stmt->setUInt32(0, Id);
     stmt->setUInt64(1, auctioneer);
     stmt->setUInt64(2, itemGUIDLow);

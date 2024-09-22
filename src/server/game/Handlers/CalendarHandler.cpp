@@ -131,7 +131,7 @@ void WorldSession::HandleCalendarAddEvent(WorldPackets::Calendar::CalendarAddEve
     }
     else
     {
-        SQLTransaction trans;
+        CharacterDatabaseTransaction trans;
         if (packet.EventInfo.Invites.size() > 1)
             trans = CharacterDatabase.BeginTransaction();
 
@@ -208,7 +208,7 @@ void WorldSession::HandleCalendarCopyEvent(WorldPackets::Calendar::CalendarCopyE
         sCalendarMgr->AddEvent(newEvent, CALENDAR_SENDTYPE_COPY);
 
         CalendarInviteStore invites = sCalendarMgr->GetEventInvites(packet.EventID);
-        SQLTransaction trans;
+        CharacterDatabaseTransaction trans;
         if (invites.size() > 1)
             trans = CharacterDatabase.BeginTransaction();
 

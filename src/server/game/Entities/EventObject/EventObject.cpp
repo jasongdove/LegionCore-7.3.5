@@ -213,9 +213,9 @@ void EventObject::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
     data.Pos = GetPosition();
 
     // update in DB
-    SQLTransaction trans = WorldDatabase.BeginTransaction();
+    WorldDatabaseTransaction trans = WorldDatabase.BeginTransaction();
 
-    PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_EVENTOBJECT);
+    WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_DEL_EVENTOBJECT);
     stmt->setUInt64(0, m_DBTableGuid);
     trans->Append(stmt);
 

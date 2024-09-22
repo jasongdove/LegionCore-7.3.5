@@ -316,7 +316,7 @@ bool WordFilterMgr::AddBadSentence(std::string badSentence, size_t hash, uint32 
 
     hashById[m_badSentences[hash].id] = hash;
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_REP_BAD_SENTENCES);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_REP_BAD_SENTENCES);
     stmt->setUInt32(0, m_badSentences[hash].id);
     stmt->setString(1, m_badSentences[hash].text);
     stmt->setUInt64(2, hash);
@@ -342,7 +342,7 @@ void WordFilterMgr::UpdatePenaltyForBadSentenceById(uint32 id, int32 penalty)
     size_t hash = hashById[id];
     m_badSentences[hash].penalty = penalty;
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_BAD_SENTENCES);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_BAD_SENTENCES);
     stmt->setInt32(0, penalty);
     stmt->setUInt32(1, id);
     CharacterDatabase.Execute(stmt);
@@ -525,7 +525,7 @@ bool WordFilterMgr::AddComplaintForUser(const ObjectGuid & offender, const Objec
                 sWorld->BanCharacter(name, "-1", ss.str().c_str(), "Server");
             else if (uint32 accountid = ObjectMgr::GetPlayerAccountIdByGUID(offender))
             {
-                PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_PINFO);
+                LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_PINFO);
                 stmt->setInt32(0, int32(realm.Id.Realm));
                 stmt->setUInt32(1, accountid);
                 PreparedQueryResult result = LoginDatabase.Query(stmt);

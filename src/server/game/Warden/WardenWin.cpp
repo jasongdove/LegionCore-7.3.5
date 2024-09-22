@@ -137,8 +137,8 @@ void WardenWin::HandleHashResult(ByteBuffer &buff)
 
     TC_LOG_DEBUG("warden", "WARDEN: Request hash reply - succeeded");
 
-    ARC4::rc4_init(&_clientRC4State, _currentModule->ClientKeySeed, 16);
-    ARC4::rc4_init(&_serverRC4State, _currentModule->ServerKeySeed, 16);
+    _inputCrypto.Init(_currentModule->ClientKeySeed);
+    _outputCrypto.Init(_currentModule->ServerKeySeed);
 
     SetNewState(WARDEN_MODULE_READY);
     RestartTimer(1, 1 * MINUTE * IN_MILLISECONDS);
@@ -167,8 +167,9 @@ void WardenWin::HandleHashResultSpecial(ByteBuffer &buff)
     uint8 baseClientKeySeed_Wn64[16] = { 0x32, 0x1C, 0xD0, 0xDC, 0x61, 0x56, 0x80, 0x08, 0x77, 0x54, 0xF9, 0xAA, 0x2B, 0xCE, 0x7C, 0x37 };
     uint8 baseServerKeySeed_Wn64[16] = { 0xDD, 0xA2, 0x7D, 0x02, 0x1F, 0x11, 0x7F, 0xD3, 0x99, 0x93, 0x2A, 0xB0, 0x2F, 0xC8, 0xDB, 0x4E };
 
-    ARC4::rc4_init(&_clientRC4State, _session->GetOS() == "Win" ? baseClientKeySeed_Win : baseClientKeySeed_Wn64, 16);
-    ARC4::rc4_init(&_serverRC4State, _session->GetOS() == "Win" ? baseServerKeySeed_Win : baseServerKeySeed_Wn64, 16);
+    // Change keys here
+    _inputCrypto.Init(_session->GetOS() == "Win" ? baseClientKeySeed_Win : baseClientKeySeed_Wn64);
+    _outputCrypto.Init(_session->GetOS() == "Win" ? baseServerKeySeed_Win : baseServerKeySeed_Wn64);
 
     // now request module from server
     RequestModule();

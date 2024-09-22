@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_CONTAINER_SPLIT_LIST_SET_RCU_H
 #define CDSLIB_CONTAINER_SPLIT_LIST_SET_RCU_H
@@ -284,7 +259,7 @@ namespace cds { namespace container {
 
         typedef typename base_class::rcu_lock      rcu_lock   ; ///< RCU scoped lock
         /// Group of \p extract_xxx functions require external locking if underlying ordered list requires that
-        static CDS_CONSTEXPR const bool c_bExtractLockExternal = base_class::c_bExtractLockExternal;
+        static constexpr const bool c_bExtractLockExternal = base_class::c_bExtractLockExternal;
 
     protected:
         //@cond
@@ -315,15 +290,15 @@ namespace cds { namespace container {
         template <typename Q, typename Func>
         bool find_( Q& val, Func f )
         {
-            return base_class::find( val, [&f]( node_type& item, Q& val ) { f(item.m_Value, val) ; } );
+            return base_class::find( val, [&f]( node_type& item, Q& v ) { f(item.m_Value, v) ; } );
         }
 
         template <typename Q, typename Less, typename Func>
         bool find_with_( Q& val, Less pred, Func f )
         {
             CDS_UNUSED( pred );
-            return base_class::find_with( val, typename maker::template predicate_wrapper<Less>::type(),
-                [&f]( node_type& item, Q& val ) { f(item.m_Value, val) ; } );
+            return base_class::find_with( val, typename maker::template predicate_wrapper<Less>(),
+                [&f]( node_type& item, Q& v ) { f(item.m_Value, v) ; } );
         }
 
         template <typename Q>
@@ -713,7 +688,7 @@ namespace cds { namespace container {
         bool erase_with( Q const& key, Less pred )
         {
             CDS_UNUSED( pred );
-             return base_class::erase_with( key, typename maker::template predicate_wrapper<Less>::type());
+             return base_class::erase_with( key, typename maker::template predicate_wrapper<Less>());
         }
 
         /// Deletes \p key from the set
@@ -754,7 +729,7 @@ namespace cds { namespace container {
         bool erase_with( Q const& key, Less pred, Func f )
         {
             CDS_UNUSED( pred );
-            return base_class::erase_with( key, typename maker::template predicate_wrapper<Less>::type(),
+            return base_class::erase_with( key, typename maker::template predicate_wrapper<Less>(),
                 [&f](node_type& node) { f( node.m_Value ); } );
         }
 
@@ -810,7 +785,7 @@ namespace cds { namespace container {
         exempt_ptr extract_with( Q const& key, Less pred )
         {
             CDS_UNUSED( pred );
-            return exempt_ptr( base_class::extract_with_( key, typename maker::template predicate_wrapper<Less>::type()));
+            return exempt_ptr( base_class::extract_with_( key, typename maker::template predicate_wrapper<Less>()));
         }
 
         /// Finds the key \p key
@@ -905,7 +880,7 @@ namespace cds { namespace container {
         bool contains( Q const& key, Less pred )
         {
             CDS_UNUSED( pred );
-            return base_class::contains( key, typename maker::template predicate_wrapper<Less>::type());
+            return base_class::contains( key, typename maker::template predicate_wrapper<Less>());
         }
         //@cond
         template <typename Q, typename Less>
@@ -963,7 +938,7 @@ namespace cds { namespace container {
         raw_ptr get_with( Q const& key, Less pred )
         {
             CDS_UNUSED( pred );
-            return raw_ptr_maker::make( base_class::get_with( key, typename maker::template predicate_wrapper<Less>::type()));
+            return raw_ptr_maker::make( base_class::get_with( key, typename maker::template predicate_wrapper<Less>()));
         }
 
         /// Clears the set (not atomic)

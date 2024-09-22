@@ -80,12 +80,12 @@ void BattlePet::CloneFrom(std::shared_ptr<BattlePet> & battlePet)
         Abilities[i] = battlePet->Abilities[i];
 }
 
-void BattlePet::Save(SQLTransaction& trans)
+void BattlePet::Save(CharacterDatabaseTransaction& trans)
 {
     if (!needSave || needDelete)
         return;
 
-    PreparedStatement* statement = CharacterDatabase.GetPreparedStatement(CHAR_REP_PETBATTLE);
+    CharacterDatabasePreparedStatement* statement = CharacterDatabase.GetPreparedStatement(CHAR_REP_PETBATTLE);
     statement->setUInt64(0, JournalID.GetCounter());
     statement->setInt32(1, Slot);
     statement->setString(2, Name);
@@ -113,13 +113,13 @@ void BattlePet::Save(SQLTransaction& trans)
     needSave = false;
 }
 
-void BattlePet::AddToPlayer(Player* player, SQLTransaction& trans)
+void BattlePet::AddToPlayer(Player* player, CharacterDatabaseTransaction& trans)
 {
     AccountID = player->GetSession()->GetAccountId();
     ObjectGuid::LowType guidlow = sObjectMgr->GetGenerator<HighGuid::BattlePet>()->Generate();
     JournalID = ObjectGuid::Create<HighGuid::BattlePet>(guidlow);
 
-    PreparedStatement* statement = CharacterDatabase.GetPreparedStatement(CHAR_REP_PETBATTLE);
+    CharacterDatabasePreparedStatement* statement = CharacterDatabase.GetPreparedStatement(CHAR_REP_PETBATTLE);
     statement->setUInt64(0, guidlow);
     statement->setInt32(1, Slot);
     statement->setString(2, Name);
@@ -149,7 +149,7 @@ void BattlePet::AddToPlayer(Player* player, SQLTransaction& trans)
 
 void BattlePet::Remove(Player* /*player*/)
 {
-    PreparedStatement* statement = CharacterDatabase.GetPreparedStatement(CHAR_DEL_PETBATTLE);
+    CharacterDatabasePreparedStatement* statement = CharacterDatabase.GetPreparedStatement(CHAR_DEL_PETBATTLE);
     statement->setUInt64(0, JournalID.GetCounter());
     CharacterDatabase.Execute(statement);
 
@@ -162,7 +162,7 @@ ObjectGuid::LowType BattlePet::AddToPlayer(Player* player)
     auto guidlow = sObjectMgr->GetGenerator<HighGuid::BattlePet>()->Generate();
     JournalID = ObjectGuid::Create<HighGuid::BattlePet>(guidlow);
 
-    PreparedStatement* statement = CharacterDatabase.GetPreparedStatement(CHAR_REP_PETBATTLE);
+    CharacterDatabasePreparedStatement* statement = CharacterDatabase.GetPreparedStatement(CHAR_REP_PETBATTLE);
     statement->setUInt64(0, guidlow);
     statement->setInt32(1, Slot);
     statement->setString(2, Name);

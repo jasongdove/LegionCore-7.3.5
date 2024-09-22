@@ -73,7 +73,7 @@ class ReputationMgr
         void Clear();
         uint32 GetSize();
 
-        void SaveToDB(SQLTransaction& trans);
+        void SaveToDB(CharacterDatabaseTransaction& trans);
         void LoadFromDB(PreparedQueryResult result);
 
         static ReputationRank GetReactionLevel(int32 standing);

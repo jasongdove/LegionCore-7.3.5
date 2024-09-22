@@ -158,7 +158,7 @@ InstanceSave* InstanceSaveManager::GetInstanceSave(uint32 InstanceId)
 
 void InstanceSaveManager::DeleteInstanceFromDB(uint32 instanceid)
 {
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_GROUP_INSTANCE_BY_INSTANCE);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_GROUP_INSTANCE_BY_INSTANCE);
     stmt->setUInt32(0, instanceid);
     CharacterDatabase.DirectExecute(stmt);
 
@@ -451,7 +451,7 @@ void InstanceSaveManager::_ResetInstance(uint32 mapid, uint32 instanceId)
         Map::DeleteRespawnTimesInDB(mapid, instanceId);
 }
 
-void InstanceSaveManager::ResetOrWarnAll(uint32 mapid, Difficulty difficulty, SQLTransaction& trans)
+void InstanceSaveManager::ResetOrWarnAll(uint32 mapid, Difficulty difficulty, CharacterDatabaseTransaction& trans)
 {
     // global reset for all instances of the given map
     MapEntry const* mapEntry = sMapStore.LookupEntry(mapid);
@@ -480,7 +480,7 @@ void InstanceSaveManager::ResetOrWarnAll(uint32 mapid, Difficulty difficulty, SQ
     }
 
     // delete them from the DB, even if not loaded
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_INSTANCE_BY_MAP_DIFF);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_INSTANCE_BY_MAP_DIFF);
     stmt->setUInt16(0, uint16(mapid));
     stmt->setUInt8(1, uint8(difficulty));
     stmt->setUInt32(2, time(nullptr));

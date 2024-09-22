@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_URCU_DETAILS_SH_H
 #define CDSLIB_URCU_DETAILS_SH_H
@@ -138,8 +113,8 @@ namespace cds { namespace urcu { namespace details {
         OS::ThreadId const nullThreadId = OS::c_NullThreadId;
 
         // Send "need membar" signal to all RCU threads
-        for ( thread_record * pRec = m_ThreadList.head( atomics::memory_order_acquire); pRec; pRec = pRec->m_list.m_pNext ) {
-            OS::ThreadId tid = pRec->m_list.m_idOwner.load( atomics::memory_order_acquire);
+        for ( thread_record * pRec = m_ThreadList.head( atomics::memory_order_acquire); pRec; pRec = pRec->m_list.next_ ) {
+            OS::ThreadId tid = pRec->m_list.thread_id_.load( atomics::memory_order_acquire);
             if ( tid != nullThreadId ) {
                 pRec->m_bNeedMemBar.store( true, atomics::memory_order_release );
                 raise_signal( tid );
@@ -147,11 +122,11 @@ namespace cds { namespace urcu { namespace details {
         }
 
         // Wait while all RCU threads process the signal
-        for ( thread_record * pRec = m_ThreadList.head( atomics::memory_order_acquire); pRec; pRec = pRec->m_list.m_pNext ) {
-            OS::ThreadId tid = pRec->m_list.m_idOwner.load( atomics::memory_order_acquire);
+        for ( thread_record * pRec = m_ThreadList.head( atomics::memory_order_acquire); pRec; pRec = pRec->m_list.next_ ) {
+            OS::ThreadId tid = pRec->m_list.thread_id_.load( atomics::memory_order_acquire);
             if ( tid != nullThreadId ) {
                 bkOff.reset();
-                while ( (tid = pRec->m_list.m_idOwner.load( atomics::memory_order_acquire )) != nullThreadId
+                while ( (tid = pRec->m_list.thread_id_.load( atomics::memory_order_acquire )) != nullThreadId
                      && pRec->m_bNeedMemBar.load( atomics::memory_order_acquire ))
                 {
                     // Some versions of OSes can lose signals
@@ -177,8 +152,8 @@ namespace cds { namespace urcu { namespace details {
     {
         OS::ThreadId const nullThreadId = OS::c_NullThreadId;
 
-        for ( thread_record * pRec = m_ThreadList.head( atomics::memory_order_acquire); pRec; pRec = pRec->m_list.m_pNext ) {
-            while ( pRec->m_list.m_idOwner.load( atomics::memory_order_acquire) != nullThreadId && check_grace_period( pRec ))
+        for ( thread_record * pRec = m_ThreadList.head( atomics::memory_order_acquire); pRec; pRec = pRec->m_list.next_ ) {
+            while ( pRec->m_list.thread_id_.load( atomics::memory_order_acquire) != nullThreadId && check_grace_period( pRec ))
                 bkOff();
         }
     }

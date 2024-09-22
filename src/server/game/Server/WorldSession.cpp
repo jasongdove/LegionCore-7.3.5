@@ -730,7 +730,7 @@ void WorldSession::LogoutPlayer(bool Save)
         SetPlayer(nullptr); //! Pointer already deleted during RemovePlayerFromMap
 
         //! Since each account can only have one online character at any given time, ensure all characters for active account are marked as offline
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ACCOUNT_ONLINE);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ACCOUNT_ONLINE);
         stmt->setUInt32(0, GetAccountId());
         CharacterDatabase.Execute(stmt);
     }
@@ -897,7 +897,7 @@ void WorldSession::SetAccountData(AccountDataType type, time_t tm /*= time_t(0)*
         if (!m_GUIDLow)
             return;
 
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_REP_PLAYER_ACCOUNT_DATA);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_REP_PLAYER_ACCOUNT_DATA);
         stmt->setUInt64(0, m_GUIDLow);
         stmt->setUInt8(1, type);
         stmt->setUInt32(2, uint32(tm));
@@ -958,12 +958,12 @@ void WorldSession::SendTutorialsData()
     SendPacket(packet.Write());
 }
 
-void WorldSession::SaveTutorialsData(SQLTransaction &trans)
+void WorldSession::SaveTutorialsData(CharacterDatabaseTransaction &trans)
 {
     if (!_tutorialsChanged)
         return;
 
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_HAS_TUTORIALS);
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_HAS_TUTORIALS);
     stmt->setUInt32(0, GetAccountId());
     bool hasTutorials = bool(CharacterDatabase.Query(stmt));
     // Modify data in DB
@@ -1020,7 +1020,7 @@ void WorldSession::ProcessQueryCallbacks()
 
     if (_realmAccountLoginCallback.valid() && _realmAccountLoginCallback.wait_for(std::chrono::seconds(0)) == std::future_status::ready &&
         _accountLoginCallback.valid() && _accountLoginCallback.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
-        InitializeSessionCallback(_realmAccountLoginCallback.get(), _accountLoginCallback.get());
+        InitializeSessionCallback(static_cast<LoginDatabaseQueryHolder*>(_realmAccountLoginCallback.get()), static_cast<CharacterDatabaseQueryHolder*>(_accountLoginCallback.get()));
 
     if (_charLoginCallback.valid() && _charLoginCallback.wait_for(Seconds(0)) == std::future_status::ready)
         HandlePlayerLogin(reinterpret_cast<LoginQueryHolder*>(_charLoginCallback.get()));
@@ -1050,7 +1050,7 @@ void WorldSession::AddAuthFlag(AuthFlags f)
 
 void WorldSession::SaveAuthFlag()
 {
-    PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_AT_AUTH_FLAG);
+    LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_AT_AUTH_FLAG);
     stmt->setUInt16(0, atAuthFlag);
     stmt->setUInt32(1, GetAccountId());
     LoginDatabase.Execute(stmt);
@@ -1066,7 +1066,7 @@ ObjectGuid  WorldSession::GetBattlenetAccountGUID() const
     return ObjectGuid::Create<HighGuid::BNetAccount>(GetAccountId());
 }
 
-class AccountInfoQueryHolderPerRealm : public SQLQueryHolder
+class AccountInfoQueryHolderPerRealm : public CharacterDatabaseQueryHolder
 {
 public:
     enum
@@ -1087,7 +1087,7 @@ public:
     {
         bool ok = true;
 
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_ACCOUNT_DATA);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_ACCOUNT_DATA);
         stmt->setUInt32(0, accountId);
         ok = SetPreparedQuery(GLOBAL_ACCOUNT_DATA, stmt) && ok;
 
@@ -1103,7 +1103,7 @@ public:
     }
 };
 
-class AccountInfoQueryHolder : public SQLQueryHolder
+class AccountInfoQueryHolder : public LoginDatabaseQueryHolder
 {
 public:
     enum
@@ -1123,7 +1123,7 @@ public:
     {
         bool ok = true;
 
-        PreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_BNET_CHARACTER_COUNTS_BY_ACCOUNT_ID);
+        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_BNET_CHARACTER_COUNTS_BY_ACCOUNT_ID);
         stmt->setUInt32(0, accountId);
         ok = SetPreparedQuery(GLOBAL_REALM_CHARACTER_COUNTS, stmt) && ok;
 
@@ -1159,7 +1159,7 @@ void WorldSession::InitializeSession()
     _accountLoginCallback = LoginDatabase.DelayQueryHolder(holder);
 }
 
-void WorldSession::InitializeSessionCallback(SQLQueryHolder* realmHolder, SQLQueryHolder* holder)
+void WorldSession::InitializeSessionCallback(LoginDatabaseQueryHolder* realmHolder, CharacterDatabaseQueryHolder* holder)
 {
     LoadAccountData(realmHolder->GetPreparedResult(AccountInfoQueryHolderPerRealm::GLOBAL_ACCOUNT_DATA), GLOBAL_CACHE_MASK);
     LoadTutorialsData(realmHolder->GetPreparedResult(AccountInfoQueryHolderPerRealm::TUTORIALS));
@@ -1336,7 +1336,7 @@ void WorldSession::LookupPlayerSearchCommand(PreparedQueryResult result, int32 l
         uint32 accountId        = fields[0].GetUInt32();
         std::string accountName = fields[1].GetString();
 
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_GUID_NAME_BY_ACC);
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_GUID_NAME_BY_ACC);
         stmt->setUInt32(0, accountId);
         PreparedQueryResult result2 = CharacterDatabase.Query(stmt);
 
@@ -1347,7 +1347,7 @@ void WorldSession::LookupPlayerSearchCommand(PreparedQueryResult result, int32 l
             std::string banreason = "";
             int64 banTime = -1;
 
-            PreparedStatement* stmt1 = LoginDatabase.GetPreparedStatement(LOGIN_SEL_PINFO_BANS);
+            LoginDatabasePreparedStatement* stmt1 = LoginDatabase.GetPreparedStatement(LOGIN_SEL_PINFO_BANS);
             stmt1->setUInt32(0, accountId);
             PreparedQueryResult result3 = LoginDatabase.Query(stmt1);
             if (result3)

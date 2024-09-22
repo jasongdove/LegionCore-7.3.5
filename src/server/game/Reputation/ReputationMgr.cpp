@@ -698,12 +698,12 @@ ReputationMgr::ReputationMgr(Player* owner) : _player(owner), _visibleFactionCou
 {
 }
 
-void ReputationMgr::SaveToDB(SQLTransaction& trans)
+void ReputationMgr::SaveToDB(CharacterDatabaseTransaction& trans)
 {
     if (_factions.empty())
         return;
 
-    PreparedStatement* stmt = nullptr;
+    CharacterDatabasePreparedStatement* stmt = nullptr;
 
     for (uint16 i = 0; i < WorldPackets::Reputation::FactionCount; ++i)
     {

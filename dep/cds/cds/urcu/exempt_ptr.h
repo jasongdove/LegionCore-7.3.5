@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_URCU_EXEMPT_PTR_H
 #define CDSLIB_URCU_EXEMPT_PTR_H
@@ -113,22 +88,22 @@ namespace cds { namespace urcu {
 
     public:
         /// Constructs empty pointer
-        exempt_ptr() CDS_NOEXCEPT
+        exempt_ptr() noexcept
             : m_pNode( nullptr )
         {}
 
         //@cond
         /// Creates exempt pointer for \p pNode. Only for internal use.
-        explicit exempt_ptr( node_type * pNode ) CDS_NOEXCEPT
+        explicit exempt_ptr( node_type * pNode ) noexcept
             : m_pNode( pNode )
         {}
-        explicit exempt_ptr( std::nullptr_t ) CDS_NOEXCEPT
+        explicit exempt_ptr( std::nullptr_t ) noexcept
             : m_pNode( nullptr )
         {}
         //@endcond
 
         /// Move ctor
-        exempt_ptr( exempt_ptr&& p ) CDS_NOEXCEPT
+        exempt_ptr( exempt_ptr&& p ) noexcept
             : m_pNode( p.m_pNode )
         {
             p.m_pNode = nullptr;
@@ -144,32 +119,32 @@ namespace cds { namespace urcu {
         }
 
         /// Checks if the pointer is \p nullptr
-        bool empty() const CDS_NOEXCEPT
+        bool empty() const noexcept
         {
             return m_pNode == nullptr;
         }
 
         /// \p bool operator returns <tt>!empty()</tt>
-        explicit operator bool() const CDS_NOEXCEPT
+        explicit operator bool() const noexcept
         {
             return !empty();
         }
 
         /// Dereference operator
-        value_type * operator->() const CDS_NOEXCEPT
+        value_type * operator->() const noexcept
         {
             return !empty() ? node_to_value_cast()(m_pNode) : nullptr;
         }
 
         /// Returns a reference to the value
-        value_type& operator *() CDS_NOEXCEPT
+        value_type& operator *() noexcept
         {
             assert( !empty());
             return *node_to_value_cast()( m_pNode );
         }
 
         /// Move assignment. Can be called only outside of RCU critical section
-        exempt_ptr& operator =( exempt_ptr&& p ) CDS_NOEXCEPT
+        exempt_ptr& operator =( exempt_ptr&& p ) noexcept
         {
             release();
             m_pNode = p.m_pNode;

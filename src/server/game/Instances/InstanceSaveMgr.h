@@ -177,7 +177,7 @@ class InstanceSaveManager
         uint32 GetNumInstanceSaves() { return m_instanceSaveById.size(); }
         uint32 GetNumBoundPlayersTotal();
         uint32 GetNumBoundGroupsTotal();
-        void ResetOrWarnAll(uint32 mapid, Difficulty difficulty, SQLTransaction& trans);
+        void ResetOrWarnAll(uint32 mapid, Difficulty difficulty, CharacterDatabaseTransaction& trans);
 
         void UnloadAll();
 

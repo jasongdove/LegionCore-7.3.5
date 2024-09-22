@@ -1,32 +1,7 @@
-/*
-    This file is a part of libcds - Concurrent Data Structures library
-
-    (C) Copyright Maxim Khizhinsky (libcds.dev@gmail.com) 2006-2017
-
-    Source code repo: http://github.com/khizmax/libcds/
-    Download: http://sourceforge.net/projects/libcds/files/
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+// Copyright (c) 2006-2018 Maxim Khizhinsky
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef CDSLIB_CONTAINER_IMPL_BRONSON_AVLTREE_MAP_RCU_H
 #define CDSLIB_CONTAINER_IMPL_BRONSON_AVLTREE_MAP_RCU_H
@@ -94,10 +69,10 @@ namespace cds { namespace container {
         typedef typename traits::sync_monitor           sync_monitor;       ///< @ref cds_sync_monitor "Synchronization monitor" type for node-level locking
 
         /// Enabled or disabled @ref bronson_avltree::relaxed_insert "relaxed insertion"
-        static CDS_CONSTEXPR bool const c_bRelaxedInsert = traits::relaxed_insert;
+        static constexpr bool const c_bRelaxedInsert = traits::relaxed_insert;
 
         /// Group of \p extract_xxx functions does not require external locking
-        static CDS_CONSTEXPR const bool c_bExtractLockExternal = false;
+        static constexpr const bool c_bExtractLockExternal = false;
 
 #   ifdef CDS_DOXYGEN_INVOKED
         /// Returned pointer to \p mapped_type of extracted node
@@ -381,9 +356,9 @@ namespace cds { namespace container {
             return do_remove(
                 key,
                 key_comparator(),
-                [&f]( key_type const& key, mapped_type pVal, rcu_disposer& disp ) -> bool {
+                [&f]( key_type const& k, mapped_type pVal, rcu_disposer& disp ) -> bool {
                     assert( pVal );
-                    f( key, *pVal );
+                    f( k, *pVal );
                     disp.dispose_value(pVal);
                     return true;
                 }
@@ -404,9 +379,9 @@ namespace cds { namespace container {
             return do_remove(
                 key,
                 cds::opt::details::make_comparator_from_less<Less>(),
-                [&f]( key_type const& key, mapped_type pVal, rcu_disposer& disp ) -> bool {
+                [&f]( key_type const& k, mapped_type pVal, rcu_disposer& disp ) -> bool {
                     assert( pVal );
-                    f( key, *pVal );
+                    f( k, *pVal );
                     disp.dispose_value(pVal);
                     return true;
                 }
@@ -696,6 +671,7 @@ namespace cds { namespace container {
         void unsafe_clear()
         {
             clear(); // temp solution
+            //TODO
         }
 
         /// Checks if the map is empty
@@ -956,7 +932,7 @@ namespace cds { namespace container {
             return pNode ? height( pNode, order ) : 0;
         }
 
-        static CDS_CONSTEXPR int const c_stackSize = 64;
+        static constexpr int const c_stackSize = 64;
 
         template <typename Q, typename Compare, typename Func>
         find_result try_find( Q const& key, Compare cmp, Func f, node_type * pNode, int nDir, version_type nVersion ) const
@@ -1348,7 +1324,7 @@ namespace cds { namespace container {
 
                     if ( !pChild ) {
                         // Found min/max
-                        if ( pNode->is_valued( memory_model::memory_order_acquire ) ) {
+                        if ( pNode->is_valued( memory_model::memory_order_acquire )) {
                             int result = try_remove_node( pParent, pNode, nVersion, func, disp );
 
                             if ( result == update_flags::result_removed )
@@ -1409,13 +1385,13 @@ namespace cds { namespace container {
         {
             node_type * pNew;
 
-            auto fnCreateNode = [&funcUpdate]( node_type * pNew ) {
-                mapped_type pVal = funcUpdate( pNew );
+            auto fnCreateNode = [&funcUpdate]( node_type * node ) {
+                mapped_type pVal = funcUpdate( node );
                 assert( pVal != nullptr );
-                pNew->m_pValue.store( pVal, memory_model::memory_order_release );
+                node->m_pValue.store( pVal, memory_model::memory_order_release );
             };
 
-            if ( c_bRelaxedInsert ) {
+            constexpr_if ( c_bRelaxedInsert ) {
                 if ( pNode->version( memory_model::memory_order_acquire ) != nVersion
                      || child( pNode, nDir, memory_model::memory_order_acquire ) != nullptr )
                 {
@@ -1434,7 +1410,7 @@ namespace cds { namespace container {
                 if ( pNode->version( memory_model::memory_order_acquire ) != nVersion
                      || child( pNode, nDir, memory_model::memory_order_acquire ) != nullptr )
                 {
-                    if ( c_bRelaxedInsert ) {
+                    constexpr_if ( c_bRelaxedInsert ) {
                         mapped_type pVal = pNew->m_pValue.load( memory_model::memory_order_relaxed );
                         pNew->m_pValue.store( nullptr, memory_model::memory_order_relaxed );
                         free_value( pVal );
@@ -1446,7 +1422,7 @@ namespace cds { namespace container {
                     return update_flags::retry;
                 }
 
-                if ( !c_bRelaxedInsert )
+                constexpr_if ( !c_bRelaxedInsert )
                     fnCreateNode( pNew = alloc_node( key, 1, 0, pNode, nullptr, nullptr ));
 
                 pNode->child( pNew, nDir, memory_model::memory_order_release );
@@ -1784,7 +1760,7 @@ namespace cds { namespace container {
 
                     int hLRL = height_null( child( pLRight, left_child, memory_model::memory_order_relaxed ), memory_model::memory_order_acquire );
                     int balance = hLL - hLRL;
-                    if ( balance >= -1 && balance <= 1 && !( ( hLL == 0 || hLRL == 0 ) && !pLeft->is_valued( memory_model::memory_order_relaxed ) ) ) {
+                    if ( balance >= -1 && balance <= 1 && !( ( hLL == 0 || hLRL == 0 ) && !pLeft->is_valued( memory_model::memory_order_relaxed ))) {
                         // nParent.child.left won't be damaged after a double rotation
                         return rotate_right_over_left_locked( pParent, pNode, pLeft, hR, hLL, pLRight, hLRL );
                     }
@@ -1797,7 +1773,7 @@ namespace cds { namespace container {
                 // rotate right
                 return rotate_right_locked( pParent, pNode, pLeft, hR, hLL, pLRight, hLR );
             }
-            
+
             return pNode; // retry
         }
 
@@ -1839,7 +1815,7 @@ namespace cds { namespace container {
                     node_type * pRLRight = child( pRLeft, right_child, memory_model::memory_order_relaxed );
                     int hRLR = height_null( pRLRight, memory_model::memory_order_acquire );
                     int balance = hRR - hRLR;
-                    if ( balance >= -1 && balance <= 1 && !( ( hRR == 0 || hRLR == 0 ) && !pRight->is_valued( memory_model::memory_order_relaxed ) ) )
+                    if ( balance >= -1 && balance <= 1 && !( ( hRR == 0 || hRLR == 0 ) && !pRight->is_valued( memory_model::memory_order_relaxed )))
                         return rotate_left_over_right_locked( pParent, pNode, hL, pRight, pRLeft, hRR, hRLR );
                 }
 
@@ -1855,7 +1831,7 @@ namespace cds { namespace container {
         {
             assert(pNode->version(memory_model::memory_order_acquire) == version );
             assert( (version & node_type::shrinking) == 0 );
-            pNode->version( version | node_type::shrinking, memory_model::memory_order_release );
+            pNode->exchange_version( version | node_type::shrinking, memory_model::memory_order_acquire );
         }
         static void end_change( node_type * pNode, version_type version )
         {
@@ -1871,22 +1847,40 @@ namespace cds { namespace container {
             begin_change( pNode, nodeVersion );
 
             pNode->m_pLeft.store( pLRight, memory_model::memory_order_release );
+
             if ( pLRight != nullptr ) {
-                pLRight->parent( pNode, memory_model::memory_order_release );
+                atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pLRight->m_pParent );
+                pLRight->parent( pNode, memory_model::memory_order_relaxed );
                 assert( check_node_ordering( pNode, pLRight ) > 0 );
             }
 
-            pLeft->m_pRight.store( pNode, memory_model::memory_order_release );
-            pNode->parent( pLeft, memory_model::memory_order_release );
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pLeft->m_pRight );
+            pLeft->m_pRight.store( pNode, memory_model::memory_order_relaxed );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pNode->m_pParent );
+            pNode->parent( pLeft, memory_model::memory_order_relaxed );
             assert( check_node_ordering( pLeft, pNode ) < 0 );
 
-            if ( pParentLeft == pNode )
-                pParent->m_pLeft.store( pLeft, memory_model::memory_order_release );
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            if ( pParentLeft == pNode ) {
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pParent->m_pLeft );
+                pParent->m_pLeft.store( pLeft, memory_model::memory_order_relaxed );
+            }
             else {
                 assert( pParent->m_pRight.load( memory_model::memory_order_relaxed ) == pNode );
-                pParent->m_pRight.store( pLeft, memory_model::memory_order_release );
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pParent->m_pRight );
+                pParent->m_pRight.store( pLeft, memory_model::memory_order_relaxed );
             }
-            pLeft->parent( pParent, memory_model::memory_order_release );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pLeft->m_pParent );
+            pLeft->parent( pParent, memory_model::memory_order_relaxed );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
 
             // fix up heights links
             int hNode = 1 + std::max( hLR, hR );
@@ -1944,20 +1938,37 @@ namespace cds { namespace container {
 
             // fix up pNode links, careful to be compatible with concurrent traversal for all but pNode
             pNode->m_pRight.store( pRLeft, memory_model::memory_order_release );
-            if ( pRLeft != nullptr )
-                pRLeft->parent( pNode, memory_model::memory_order_release );
+            if ( pRLeft != nullptr ) {
+                atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pRLeft->m_pParent );
+                pRLeft->parent( pNode, memory_model::memory_order_relaxed );
+            }
 
-            pRight->m_pLeft.store( pNode, memory_model::memory_order_release );
-            pNode->parent( pRight, memory_model::memory_order_release );
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pRight->m_pLeft );
+            pRight->m_pLeft.store( pNode, memory_model::memory_order_relaxed );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pNode->m_pParent );
+            pNode->parent( pRight, memory_model::memory_order_relaxed );
             assert( check_node_ordering( pRight, pNode ) > 0 );
 
-            if ( pParentLeft == pNode )
-                pParent->m_pLeft.store( pRight, memory_model::memory_order_release );
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            if ( pParentLeft == pNode ) {
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pParent->m_pLeft );
+                pParent->m_pLeft.store( pRight, memory_model::memory_order_relaxed );
+            }
             else {
                 assert( pParent->m_pRight.load( memory_model::memory_order_relaxed ) == pNode );
-                pParent->m_pRight.store( pRight, memory_model::memory_order_release );
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pParent->m_pRight );
+                pParent->m_pRight.store( pRight, memory_model::memory_order_relaxed );
             }
-            pRight->parent( pParent, memory_model::memory_order_release );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pRight->m_pParent );
+            pRight->parent( pParent, memory_model::memory_order_relaxed );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
 
             // fix up heights
             int hNode = 1 + std::max( hL, hRL );
@@ -2007,28 +2018,56 @@ namespace cds { namespace container {
 
             // fix up pNode links, careful about the order!
             pNode->m_pLeft.store( pLRR, memory_model::memory_order_release );
-            if ( pLRR != nullptr )
-                pLRR->parent( pNode, memory_model::memory_order_release );
+            if ( pLRR != nullptr ) {
+                atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pLRR->m_pParent );
+                pLRR->parent( pNode, memory_model::memory_order_relaxed );
+            }
 
-            pLeft->m_pRight.store( pLRL, memory_model::memory_order_release );
-            if ( pLRL != nullptr )
-                pLRL->parent( pLeft, memory_model::memory_order_release );
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pLeft->m_pRight );
+            pLeft->m_pRight.store( pLRL, memory_model::memory_order_relaxed );
 
-            pLRight->m_pLeft.store( pLeft, memory_model::memory_order_release );
-            pLeft->parent( pLRight, memory_model::memory_order_release );
+            if ( pLRL != nullptr ) {
+                atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pLRL->m_pParent );
+                pLRL->parent( pLeft, memory_model::memory_order_relaxed );
+            }
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pLRight->m_pLeft );
+            pLRight->m_pLeft.store( pLeft, memory_model::memory_order_relaxed );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pLeft->m_pParent );
+            pLeft->parent( pLRight, memory_model::memory_order_relaxed );
             assert( check_node_ordering( pLRight, pLeft ) > 0 );
 
-            pLRight->m_pRight.store( pNode, memory_model::memory_order_release );
-            pNode->parent( pLRight, memory_model::memory_order_release );
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pLRight->m_pRight );
+            pLRight->m_pRight.store( pNode, memory_model::memory_order_relaxed );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pNode->m_pParent );
+            pNode->parent( pLRight, memory_model::memory_order_relaxed );
             assert( check_node_ordering( pLRight, pNode ) < 0 );
 
-            if ( pPL == pNode )
-                pParent->m_pLeft.store( pLRight, memory_model::memory_order_release );
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            if ( pPL == pNode ) {
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pParent->m_pLeft );
+                pParent->m_pLeft.store( pLRight, memory_model::memory_order_relaxed );
+            }
             else {
                 assert( child( pParent, right_child, memory_model::memory_order_relaxed ) == pNode );
-                pParent->m_pRight.store( pLRight, memory_model::memory_order_release );
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pParent->m_pRight );
+                pParent->m_pRight.store( pLRight, memory_model::memory_order_relaxed );
             }
-            pLRight->parent( pParent, memory_model::memory_order_release );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pLRight->m_pParent );
+            pLRight->parent( pParent, memory_model::memory_order_relaxed );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
 
             // fix up heights
             int hNode = 1 + std::max( hLRR, hR );
@@ -2093,28 +2132,56 @@ namespace cds { namespace container {
 
             // fix up pNode links, careful about the order!
             pNode->m_pRight.store( pRLL, memory_model::memory_order_release );
-            if ( pRLL != nullptr )
-                pRLL->parent( pNode, memory_model::memory_order_release );
+            if ( pRLL != nullptr ) {
+                atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pRLL->m_pParent );
+                pRLL->parent( pNode, memory_model::memory_order_relaxed );
+            }
 
-            pRight->m_pLeft.store( pRLR, memory_model::memory_order_release );
-            if ( pRLR != nullptr )
-                pRLR->parent( pRight, memory_model::memory_order_release );
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pRight->m_pLeft );
+            pRight->m_pLeft.store( pRLR, memory_model::memory_order_relaxed );
 
-            pRLeft->m_pRight.store( pRight, memory_model::memory_order_release );
-            pRight->parent( pRLeft, memory_model::memory_order_release );
+            if ( pRLR != nullptr ) {
+                atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pRLR->m_pParent );
+                pRLR->parent( pRight, memory_model::memory_order_relaxed );
+            }
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pRLeft->m_pRight );
+            pRLeft->m_pRight.store( pRight, memory_model::memory_order_relaxed );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pRight->m_pParent );
+            pRight->parent( pRLeft, memory_model::memory_order_relaxed );
             assert( check_node_ordering( pRLeft, pRight ) < 0 );
 
-            pRLeft->m_pLeft.store( pNode, memory_model::memory_order_release );
-            pNode->parent( pRLeft, memory_model::memory_order_release );
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pRLeft->m_pLeft );
+            pRLeft->m_pLeft.store( pNode, memory_model::memory_order_relaxed );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pNode->m_pParent );
+            pNode->parent( pRLeft, memory_model::memory_order_relaxed );
             assert( check_node_ordering( pRLeft, pNode ) > 0 );
 
-            if ( pPL == pNode )
-                pParent->m_pLeft.store( pRLeft, memory_model::memory_order_release );
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            if ( pPL == pNode ) {
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pParent->m_pLeft );
+                pParent->m_pLeft.store( pRLeft, memory_model::memory_order_relaxed );
+            }
             else {
                 assert( pParent->m_pRight.load( memory_model::memory_order_relaxed ) == pNode );
-                pParent->m_pRight.store( pRLeft, memory_model::memory_order_release );
+                CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pParent->m_pRight );
+                pParent->m_pRight.store( pRLeft, memory_model::memory_order_relaxed );
             }
-            pRLeft->parent( pParent, memory_model::memory_order_release );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
+            CDS_TSAN_ANNOTATE_HAPPENS_BEFORE( &pRLeft->m_pParent );
+            pRLeft->parent( pParent, memory_model::memory_order_relaxed );
+
+            atomics::atomic_thread_fence( memory_model::memory_order_acq_rel );
 
             // fix up heights
             int hNode = 1 + std::max( hL, hRLL );

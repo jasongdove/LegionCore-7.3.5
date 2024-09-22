@@ -238,7 +238,7 @@ void GroupMgr::LoadGroups()
 
             if (resetTime <= time(nullptr))
             {
-                PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_GROUP_INSTANCE_BY_GUID);
+                CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_GROUP_INSTANCE_BY_GUID);
                 stmt->setUInt64(0, guid);
                 stmt->setUInt32(1, instanceId);
                 CharacterDatabase.Execute(stmt);
