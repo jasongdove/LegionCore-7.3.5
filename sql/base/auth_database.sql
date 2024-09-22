@@ -524,36 +524,36 @@ DROP TABLE IF EXISTS `store_category_locales`;
 
 CREATE TABLE `store_category_locales` (
   `category` int(11) NOT NULL DEFAULT '0',
-  `name_us` varchar(255) NOT NULL DEFAULT '',
-  `name_gb` varchar(255) NOT NULL DEFAULT '',
-  `name_kr` varchar(255) NOT NULL DEFAULT '',
-  `name_fr` varchar(255) NOT NULL DEFAULT '',
-  `name_de` varchar(255) NOT NULL DEFAULT '',
-  `name_cn` varchar(255) NOT NULL DEFAULT '',
-  `name_tw` varchar(255) NOT NULL DEFAULT '',
-  `name_es` varchar(255) NOT NULL DEFAULT '',
-  `name_mx` varchar(255) NOT NULL DEFAULT '',
-  `name_ru` varchar(255) NOT NULL DEFAULT '',
-  `name_pt` varchar(255) NOT NULL DEFAULT '',
-  `name_br` varchar(255) NOT NULL DEFAULT '',
-  `name_it` varchar(255) NOT NULL DEFAULT '',
-  `name_ua` varchar(255) NOT NULL DEFAULT '',
-  `description_us` varchar(255) NOT NULL DEFAULT '',
-  `description_gb` varchar(255) NOT NULL DEFAULT '',
-  `description_kr` varchar(255) NOT NULL DEFAULT '',
-  `description_fr` varchar(255) NOT NULL DEFAULT '',
-  `description_de` varchar(255) NOT NULL DEFAULT '',
-  `description_cn` varchar(255) NOT NULL DEFAULT '',
-  `description_tw` varchar(255) NOT NULL DEFAULT '',
-  `description_es` varchar(255) NOT NULL DEFAULT '',
-  `description_mx` varchar(255) NOT NULL DEFAULT '',
-  `description_ru` varchar(255) NOT NULL DEFAULT '',
-  `description_pt` varchar(255) NOT NULL DEFAULT '',
-  `description_br` varchar(255) NOT NULL DEFAULT '',
-  `description_it` varchar(255) NOT NULL DEFAULT '',
-  `description_ua` varchar(255) NOT NULL DEFAULT '',
+  `name_us` varchar(32) NOT NULL DEFAULT '',
+  `name_gb` varchar(32) NOT NULL DEFAULT '',
+  `name_kr` varchar(32) NOT NULL DEFAULT '',
+  `name_fr` varchar(32) NOT NULL DEFAULT '',
+  `name_de` varchar(32) NOT NULL DEFAULT '',
+  `name_cn` varchar(32) NOT NULL DEFAULT '',
+  `name_tw` varchar(32) NOT NULL DEFAULT '',
+  `name_es` varchar(32) NOT NULL DEFAULT '',
+  `name_mx` varchar(32) NOT NULL DEFAULT '',
+  `name_ru` varchar(32) NOT NULL DEFAULT '',
+  `name_pt` varchar(32) NOT NULL DEFAULT '',
+  `name_br` varchar(32) NOT NULL DEFAULT '',
+  `name_it` varchar(32) NOT NULL DEFAULT '',
+  `name_ua` varchar(32) NOT NULL DEFAULT '',
+  `description_us` varchar(128) NOT NULL DEFAULT '',
+  `description_gb` varchar(128) NOT NULL DEFAULT '',
+  `description_kr` varchar(128) NOT NULL DEFAULT '',
+  `description_fr` varchar(128) NOT NULL DEFAULT '',
+  `description_de` varchar(128) NOT NULL DEFAULT '',
+  `description_cn` varchar(128) NOT NULL DEFAULT '',
+  `description_tw` varchar(128) NOT NULL DEFAULT '',
+  `description_es` varchar(128) NOT NULL DEFAULT '',
+  `description_mx` varchar(128) NOT NULL DEFAULT '',
+  `description_ru` varchar(128) NOT NULL DEFAULT '',
+  `description_pt` varchar(128) NOT NULL DEFAULT '',
+  `description_br` varchar(128) NOT NULL DEFAULT '',
+  `description_it` varchar(128) NOT NULL DEFAULT '',
+  `description_ua` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`category`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT ;
 
 /*Data for the table `store_category_locales` */
 
@@ -654,20 +654,20 @@ DROP TABLE IF EXISTS `store_product_locales`;
 CREATE TABLE `store_product_locales` (
   `product` int(11) NOT NULL DEFAULT '0',
   `type` smallint(10) NOT NULL DEFAULT '0',
-  `us` varchar(255) NOT NULL DEFAULT '',
-  `gb` varchar(255) NOT NULL DEFAULT '',
-  `kr` varchar(255) NOT NULL DEFAULT '',
-  `fr` varchar(255) NOT NULL DEFAULT '',
-  `de` varchar(255) NOT NULL DEFAULT '',
-  `cn` varchar(255) NOT NULL DEFAULT '',
-  `tw` varchar(255) NOT NULL DEFAULT '',
-  `es` varchar(255) NOT NULL DEFAULT '',
-  `mx` varchar(255) NOT NULL DEFAULT '',
-  `ru` varchar(255) NOT NULL DEFAULT '',
-  `pt` varchar(255) NOT NULL DEFAULT '',
-  `br` varchar(255) NOT NULL DEFAULT '',
-  `it` varchar(255) NOT NULL DEFAULT '',
-  `ua` varchar(255) NOT NULL DEFAULT '',
+  `us` varchar(128) NOT NULL DEFAULT '',
+  `gb` varchar(128) NOT NULL DEFAULT '',
+  `kr` varchar(128) NOT NULL DEFAULT '',
+  `fr` varchar(128) NOT NULL DEFAULT '',
+  `de` varchar(128) NOT NULL DEFAULT '',
+  `cn` varchar(128) NOT NULL DEFAULT '',
+  `tw` varchar(128) NOT NULL DEFAULT '',
+  `es` varchar(128) NOT NULL DEFAULT '',
+  `mx` varchar(128) NOT NULL DEFAULT '',
+  `ru` varchar(128) NOT NULL DEFAULT '',
+  `pt` varchar(128) NOT NULL DEFAULT '',
+  `br` varchar(128) NOT NULL DEFAULT '',
+  `it` varchar(128) NOT NULL DEFAULT '',
+  `ua` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`product`,`type`) USING BTREE,
   UNIQUE KEY `unique` (`product`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
@@ -824,6 +824,51 @@ CREATE TABLE `transferts_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 /*Data for the table `transferts_logs` */
+
+--
+-- Table structure for table `updates`
+--
+
+DROP TABLE IF EXISTS `updates`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `updates` (
+  `name` varchar(200) NOT NULL COMMENT 'filename with extension of the update.',
+  `hash` char(40) DEFAULT '' COMMENT 'sha1 hash of the sql file.',
+  `state` enum('RELEASED','ARCHIVED') NOT NULL DEFAULT 'RELEASED' COMMENT 'defines if an update is released or archived.',
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'timestamp when the query was applied.',
+  `speed` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'time the query takes to apply in ms.',
+  PRIMARY KEY (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='List of all applied updates in this database.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+
+--
+-- Table structure for table `updates_include`
+--
+
+DROP TABLE IF EXISTS `updates_include`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `updates_include` (
+  `path` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'directory to include. $ means relative to the source directory.',
+  `state` enum('RELEASED','ARCHIVED') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'RELEASED' COMMENT 'defines if the directory contains released or archived updates.',
+  PRIMARY KEY (`path`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='List of directories where we want to include sql updates.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `updates_include`
+--
+
+LOCK TABLES `updates_include` WRITE;
+/*!40000 ALTER TABLE `updates_include` DISABLE KEYS */;
+INSERT INTO `updates_include` VALUES
+('$/sql/old/auth','ARCHIVED'),
+('$/sql/updates/auth','RELEASED');
+/*!40000 ALTER TABLE `updates_include` ENABLE KEYS */;
+UNLOCK TABLES;
 
 /*Table structure for table `uptime` */
 
