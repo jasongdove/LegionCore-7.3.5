@@ -599,64 +599,64 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     // load player specific part before send times
     LoadAccountData(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADACCOUNTDATA), PER_CHARACTER_CACHE_MASK);
 
-    // rewrite client channel mask if not valid (autojoin LFG channel)
-    if (auto aData = GetAccountData(PER_CHARACTER_CHAT_CACHE))
-    {
-        auto data = aData->Data;
-
-        if (!data.empty())
-        {
-            boost::regex regEx("ZONECHANNELS[ \f\n\r\t\v][1-9][0-9]+");
-            boost::smatch res;
-            auto replace = false;
-            if (boost::regex_search(data, res, regEx))
-            {
-                std::string m = res[0];
-                auto channel = m.substr(12, m.size());
-                auto channelMask = std::stoi(channel);
-
-                if (channelMask != 0x2200003)
-                {
-                    // set now time for invalidate cache on client and forced request
-                    aData->Time = sWorld->GetGameTime();
-                    replace = true;
-                }
-            }
-
-            if (replace)
-                aData->Data = boost::regex_replace(data, regEx, "ZONECHANNELS 35651587");
-        }
-    }
-
-    // add special survey data
-    if (auto aData1 = GetAccountData(GLOBAL_CONFIG_CACHE))
-    {
-        std::string data = aData1->Data;
-
-        if (data.empty())
-            data.append("SET engineSurvey \"0\"");
-        else if (size_t pos = data.find("engineSurvey"))
-        {
-            if (pos != std::string::npos)
-            {
-                std::string surveyIdStr = data.substr(pos + 14, 1);
-                auto surveyID = std::stoi(surveyIdStr);
-                if (surveyID)
-                    data.replace(pos + 14, 1, "0");
-            }
-            else
-            {
-                if (data[data.size() - 1] == '\n')
-                    data.append("SET engineSurvey \"0\"");
-                else
-                    data.append("\nSET engineSurvey \"0\"");
-            }
-        }
-
-        // set now time for invalidate cache on client and forced request
-        aData1->Time = sWorld->GetGameTime();
-        aData1->Data = data;
-    }
+//    // rewrite client channel mask if not valid (autojoin LFG channel)
+//    if (auto aData = GetAccountData(PER_CHARACTER_CHAT_CACHE))
+//    {
+//        auto data = aData->Data;
+//
+//        if (!data.empty())
+//        {
+//            boost::regex regEx("ZONECHANNELS[ \f\n\r\t\v][1-9][0-9]+");
+//            boost::smatch res;
+//            auto replace = false;
+//            if (boost::regex_search(data, res, regEx))
+//            {
+//                std::string m = res[0];
+//                auto channel = m.substr(12, m.size());
+//                auto channelMask = std::stoi(channel);
+//
+//                if (channelMask != 0x2200003)
+//                {
+//                    // set now time for invalidate cache on client and forced request
+//                    aData->Time = sWorld->GetGameTime();
+//                    replace = true;
+//                }
+//            }
+//
+//            if (replace)
+//                aData->Data = boost::regex_replace(data, regEx, "ZONECHANNELS 35651587");
+//        }
+//    }
+//
+//    // add special survey data
+//    if (auto aData1 = GetAccountData(GLOBAL_CONFIG_CACHE))
+//    {
+//        std::string data = aData1->Data;
+//
+//        if (data.empty())
+//            data.append("SET engineSurvey \"0\"");
+//        else if (size_t pos = data.find("engineSurvey"))
+//        {
+//            if (pos != std::string::npos)
+//            {
+//                std::string surveyIdStr = data.substr(pos + 14, 1);
+//                auto surveyID = std::stoi(surveyIdStr);
+//                if (surveyID)
+//                    data.replace(pos + 14, 1, "0");
+//            }
+//            else
+//            {
+//                if (data[data.size() - 1] == '\n')
+//                    data.append("SET engineSurvey \"0\"");
+//                else
+//                    data.append("\nSET engineSurvey \"0\"");
+//            }
+//        }
+//
+//        // set now time for invalidate cache on client and forced request
+//        aData1->Time = sWorld->GetGameTime();
+//        aData1->Data = data;
+//    }
 
     WorldPackets::ClientConfig::AccountDataTimes accountDataTimes;
     accountDataTimes.PlayerGuid = playerGuid;

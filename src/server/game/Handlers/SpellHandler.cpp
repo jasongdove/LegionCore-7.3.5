@@ -739,7 +739,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPackets::Spells::SetActionBu
     TC_LOG_INFO("network", "BUTTON: %u ACTION: %u TYPE: %u", packet.Index, action, type);
 
     if (!packet.Action && !type)
-        player->removeActionButton(packet.Index);
+        player->RemoveActionButton(packet.Index);
     else
     {
         switch (type)
@@ -771,7 +771,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPackets::Spells::SetActionBu
                 break;
         }
 
-        player->addActionButton(packet.Index, action, type);
+        player->AddActionButton(packet.Index, action, type);
     }
 }
 

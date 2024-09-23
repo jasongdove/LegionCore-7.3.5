@@ -279,7 +279,7 @@ type(_type), group(_group), needs_quest(_chanceOrQuestChance < 0)
 // RATE_DROP_ITEMS is no longer used for all types of entries
 bool LootStoreItem::Roll(bool rate, bool isDungeon /* = false*/, bool isZoneLoot) const
 {
-    // TC_LOG_DEBUG("loot", "LootStoreItem::Roll chance %f rate %u mincountOrRef %i type %i itemid %u", chance, rate, mincountOrRef, type, itemid);
+    TC_LOG_DEBUG("loot", "LootStoreItem::Roll chance %f rate %u mincountOrRef %i type %i itemid %u", chance, rate, mincountOrRef, type, itemid);
 
     if (chance >= 100.0f)
         return true;
@@ -481,7 +481,7 @@ bool LootItem::AllowedForPlayer(Player const* player) const
 
 void LootItem::AddAllowedLooter(const Player* player)
 {
-    // TC_LOG_DEBUG("loot", "LootItem::AddAllowedLooter ItemID %u player %s", item.ItemID, player->GetGUID().ToString().c_str());
+    TC_LOG_DEBUG("loot", "LootItem::AddAllowedLooter ItemID %u player %s", item.ItemID, player->GetGUID().ToString().c_str());
     allowedGUIDs.insert(player->GetGUID());
 }
 
@@ -698,7 +698,7 @@ void Loot::AddItem(LootStoreItem const & item, std::vector<uint32> const& bonusL
         generatedLoot.item.ItemBonus.Context = _itemContext;
     }
 
-    // TC_LOG_DEBUG("loot", "Loot::AddItem ItemID %i needs_quest %u personal %u isOnlyQuest %u chance %f", generatedLoot.item.ItemID, item.needs_quest, personal, isOnlyQuest, item.chance);
+    TC_LOG_DEBUG("loot", "Loot::AddItem ItemID %i needs_quest %u personal %u isOnlyQuest %u chance %f", generatedLoot.item.ItemID, item.needs_quest, personal, isOnlyQuest, item.chance);
 
     if (item.needs_quest)
     {
@@ -708,7 +708,7 @@ void Loot::AddItem(LootStoreItem const & item, std::vector<uint32> const& bonusL
         if (quest_items.size() < MAX_NR_QUEST_ITEMS)
             quest_items.push_back(generatedLoot);
 
-        // TC_LOG_DEBUG("loot", "Loot::AddItem ItemID %i quest_items %u", generatedLoot.item.ItemID, quest_items.size());
+        TC_LOG_DEBUG("loot", "Loot::AddItem ItemID %i quest_items %u", generatedLoot.item.ItemID, quest_items.size());
     }
     else if (items.size() < MAX_NR_LOOT_ITEMS)
     {
@@ -732,7 +732,7 @@ void Loot::AddItem(LootStoreItem const & item, std::vector<uint32> const& bonusL
 // Auto store personal loot
 void Loot::AutoStoreItems(bool isGO)
 {
-    // TC_LOG_DEBUG("loot", "Loo::tAutoStoreItems items %i quest_items %i", items.size(), quest_items.size());
+    TC_LOG_DEBUG("loot", "Loot::AutoStoreItems items %i quest_items %i", items.size(), quest_items.size());
     for (uint8 i = 0; i < (items.size() + quest_items.size()); ++i)
         m_lootOwner->StoreLootItem(i, this);
 }
@@ -801,7 +801,7 @@ bool Loot::FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bo
                     if (_challenge->_complete)
                         _itemContext = sChallengeMgr->GetLootTreeMod(_levelBonus, _challengeLevel, _challenge);
 
-    // TC_LOG_DEBUG("loot", "Loot::FillLoot objEntry %i lootId %i isBoss %i DifficultyID %i personal %i isRareOrGo %u isRareNext %u noGroup %u isOnlyQuest %u _itemContext %u store %s", objEntry, lootId, isBoss, _DifficultyID, personal, isRareOrGo, isRareNext, noGroup, isOnlyQuest, _itemContext, store.GetName());
+    TC_LOG_DEBUG("loot", "Loot::FillLoot objEntry %i lootId %i isBoss %i DifficultyID %i personal %i isRareOrGo %u isRareNext %u noGroup %u isOnlyQuest %u _itemContext %u store %s", objEntry, lootId, isBoss, _DifficultyID, personal, isRareOrGo, isRareNext, noGroup, isOnlyQuest, _itemContext, store.GetName());
 
     if (isOploteChest)
     {
@@ -882,7 +882,7 @@ bool Loot::FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bo
     Group* group = lootOwner->GetGroup();
     if (!noGroup && group && !isOploteChest)
     {
-        // TC_LOG_DEBUG("loot", "Loot::FillLoot !noGroup && group GetMembersCount %u", group->GetMembersCount());
+        TC_LOG_DEBUG("loot", "Loot::FillLoot !noGroup && group GetMembersCount %u", group->GetMembersCount());
 
         roundRobinPlayer = lootOwner->GetGUID();
 
@@ -901,7 +901,7 @@ bool Loot::FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bo
     else if (isOnlyQuest && (creature && creature->CanShared() || isBoss))
     {
         GuidSet* savethreatlist = creature->GetSaveThreatList();
-        // TC_LOG_DEBUG("loot", "Loot::FillLoot isOnlyQuest && creature && creature->CanShared size %u", savethreatlist->size());
+        TC_LOG_DEBUG("loot", "Loot::FillLoot isOnlyQuest && creature && creature->CanShared size %u", savethreatlist->size());
 
         if (savethreatlist->empty())
             FillNotNormalLootFor(lootOwner, true);
@@ -921,7 +921,7 @@ bool Loot::FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bo
     }
     else
     {
-        // TC_LOG_DEBUG("loot", "Loot::FillLoot else");
+        TC_LOG_DEBUG("loot", "Loot::FillLoot else");
         FillNotNormalLootFor(lootOwner, true);
     }
 
@@ -960,7 +960,7 @@ void Loot::FillNotNormalLootFor(Player* player, bool presentAtLooting)
 {
     ObjectGuid::LowType plguid = player->GetGUIDLow();
 
-    // TC_LOG_DEBUG("loot", "Loot::FillNotNormalLootFor plguid %u presentAtLooting %u PlayerQuestItems %u", plguid, presentAtLooting, PlayerQuestItems.size());
+    TC_LOG_DEBUG("loot", "Loot::FillNotNormalLootFor plguid %u presentAtLooting %u PlayerQuestItems %u", plguid, presentAtLooting, PlayerQuestItems.size());
 
     QuestItemMap::const_iterator qmapitr = PlayerCurrencies.find(plguid);
     if (qmapitr == PlayerCurrencies.end())
@@ -1119,7 +1119,7 @@ QuestItemList* Loot::FillFFALoot(Player* player)
 
 QuestItemList* Loot::FillQuestLoot(Player* player)
 {
-    // TC_LOG_DEBUG("loot", "Loot::FillQuestLoot quest_items %u isOnlyQuest %u", quest_items.size(), isOnlyQuest);
+    TC_LOG_DEBUG("loot", "Loot::FillQuestLoot quest_items %u isOnlyQuest %u", quest_items.size(), isOnlyQuest);
 
     //if (items.size() == MAX_NR_LOOT_ITEMS)
     //    return NULL;
@@ -1130,7 +1130,7 @@ QuestItemList* Loot::FillQuestLoot(Player* player)
     {
         LootItem &item = quest_items[i];
 
-        // TC_LOG_DEBUG("loot", "Loot::FillQuestLoot freeforall %i is_blocked %u is_looted %u ItemID %u AllowedForPlayer %u unlootedCount %u", item.freeforall, item.is_blocked, item.is_looted, item.item.ItemID, AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest), unlootedCount);
+        TC_LOG_DEBUG("loot", "Loot::FillQuestLoot freeforall %u is_blocked %u is_looted %u ItemID %u AllowedForPlayer %u unlootedCount %u", static_cast<bool>(item.freeforall), static_cast<bool>(item.is_blocked), static_cast<bool>(item.is_looted), item.item.ItemID, AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest), unlootedCount);
 
         if (!item.is_looted && (AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest, &item) || (item.follow_loot_rules && player->GetGroup() && ((player->GetGroup()->GetLootMethod() == MASTER_LOOT && player->GetGroup()->GetLooterGuid() == player->GetGUID()) || player->GetGroup()->GetLootMethod() != MASTER_LOOT ))))
         {
@@ -1150,7 +1150,7 @@ QuestItemList* Loot::FillQuestLoot(Player* player)
         }
     }
 
-    // TC_LOG_DEBUG("loot", "Loot::FillQuestLoot ql %u unlootedCount %u", ql->size(), unlootedCount);
+    TC_LOG_DEBUG("loot", "Loot::FillQuestLoot ql %u unlootedCount %u", ql->size(), unlootedCount);
 
     if (ql->empty())
     {
@@ -1164,14 +1164,14 @@ QuestItemList* Loot::FillQuestLoot(Player* player)
 
 QuestItemList* Loot::FillNonQuestNonFFAConditionalLoot(Player* player, bool presentAtLooting)
 {
-    // TC_LOG_DEBUG("loot", "Loot::FillNonQuestNonFFAConditionalLoot GetGUIDLow %u presentAtLooting %u GetLootMethod %i", player->GetGUIDLow(), presentAtLooting, player->GetGroup() ? player->GetGroup()->GetLootMethod() : -1);
+    TC_LOG_DEBUG("loot", "Loot::FillNonQuestNonFFAConditionalLoot GetGUIDLow %u presentAtLooting %u GetLootMethod %i", player->GetGUIDLow(), presentAtLooting, player->GetGroup() ? player->GetGroup()->GetLootMethod() : -1);
 
     QuestItemList* ql = new QuestItemList();
 
     for (size_t i = 0; i < items.size(); ++i)
     {
         LootItem &item = items[i];
-        // TC_LOG_DEBUG("loot", "FillNonQuestNonFFAConditionalLoot freeforall %i is_blocked %u is_looted %u ItemID %u AllowedForPlayer %u is_underthreshold %u follow_loot_rules %u", item.freeforall, item.is_blocked, item.is_looted, item.item.ItemID, AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest), item.is_underthreshold, item.follow_loot_rules);
+        TC_LOG_DEBUG("loot", "FillNonQuestNonFFAConditionalLoot freeforall %u is_blocked %u is_looted %u ItemID %u AllowedForPlayer %u is_underthreshold %u follow_loot_rules %u", static_cast<bool>(item.freeforall), static_cast<bool>(item.is_blocked), static_cast<bool>(item.is_looted), item.item.ItemID, AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest), static_cast<bool>(item.is_underthreshold), static_cast<bool>(item.follow_loot_rules));
 
         if (!item.is_looted && !item.freeforall && !item.currency && (AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest, &item) || (item.follow_loot_rules && player->GetGroup() && ((player->GetGroup()->GetLootMethod() == MASTER_LOOT && player->GetGroup()->GetLooterGuid() == player->GetGUID()) || player->GetGroup()->GetLootMethod() != MASTER_LOOT))))
         {
@@ -1182,7 +1182,7 @@ QuestItemList* Loot::FillNonQuestNonFFAConditionalLoot(Player* player, bool pres
                     if (!proto->AllowToLooter())
                         allowToLooter = false;
 
-                // TC_LOG_DEBUG("loot", "Loot::FillNonQuestNonFFAConditionalLoot ItemID %u allowToLooter %i", item.item.ItemID, allowToLooter);
+                TC_LOG_DEBUG("loot", "Loot::FillNonQuestNonFFAConditionalLoot ItemID %u allowToLooter %i", item.item.ItemID, allowToLooter);
                 if (allowToLooter)
                     item.AddAllowedLooter(player);
             }
@@ -1211,7 +1211,7 @@ void Loot::FillPersonalLootFor(Player* lootOwner)
 {
     if (Group* group = lootOwner->GetGroup())
     {
-        // TC_LOG_DEBUG("loot", "LootItem::FillPersonalLootFor GetLootMethod %u", group->GetLootMethod());
+        TC_LOG_DEBUG("loot", "LootItem::FillPersonalLootFor GetLootMethod %u", group->GetLootMethod());
 
         // if (group->GetLootMethod() != PERSONAL_LOOT)
             // return;
@@ -1235,7 +1235,7 @@ void Loot::FillPersonalLootFor(Player* lootOwner)
                             item.is_underthreshold = true;
                     }
 
-                    // TC_LOG_DEBUG("loot", "Loot::FillPersonalLootFor freeforall %i is_blocked %u is_looted %u ItemID %u AllowedForPlayer %u is_underthreshold %u", item.freeforall, item.is_blocked, item.is_looted, item.item.ItemID, AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest), item.is_underthreshold);
+                    TC_LOG_DEBUG("loot", "Loot::FillPersonalLootFor freeforall %u is_blocked %u is_looted %u ItemID %u AllowedForPlayer %u is_underthreshold %u", static_cast<bool>(item.freeforall), static_cast<bool>(item.is_blocked), static_cast<bool>(item.is_looted), item.item.ItemID, AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest), static_cast<bool>(item.is_underthreshold));
 
                     if (!item.is_looted && !item.freeforall && !item.currency && !item.is_underthreshold && AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest, &item))
                         item.AddAllowedLooter(player);
@@ -1651,13 +1651,13 @@ void Loot::BuildLootResponse(WorldPackets::Loot::LootResponse& packet, Player* v
 
     QuestItemMap const& lootPlayerQuestItems = GetPlayerQuestItems();
 
-    // TC_LOG_DEBUG("loot", "Loot::BuildLootResponse lootPlayerQuestItems size %i", lootPlayerQuestItems.size());
+    TC_LOG_DEBUG("loot", "Loot::BuildLootResponse lootPlayerQuestItems size %i", lootPlayerQuestItems.size());
 
     QuestItemMap::const_iterator q_itr = lootPlayerQuestItems.find(viewer->GetGUIDLow());
     if (q_itr != lootPlayerQuestItems.end())
     {
         QuestItemList* q_list = q_itr->second;
-        // TC_LOG_DEBUG("loot", "Loot::BuildLootResponse QuestItemList size %i", q_list->size());
+        TC_LOG_DEBUG("loot", "Loot::BuildLootResponse QuestItemList size %i", q_list->size());
 
         for (QuestItemList::const_iterator qi = q_list->begin(); qi != q_list->end(); ++qi)
         {
@@ -1666,7 +1666,7 @@ void Loot::BuildLootResponse(WorldPackets::Loot::LootResponse& packet, Player* v
             if (personal)
                 canLoot = !item.is_looted;
 
-            // TC_LOG_DEBUG("loot", "Loot::BuildLootResponse canLoot %i personal %u LootListID %i is_looted %u ItemID %u", canLoot, personal, item.LootListID, qi->is_looted, item.item.ItemID);
+            TC_LOG_DEBUG("loot", "Loot::BuildLootResponse canLoot %i personal %u LootListID %i is_looted %u ItemID %u", canLoot, personal, item.LootListID, qi->is_looted, item.item.ItemID);
 
             if (canLoot)
             {
@@ -1780,7 +1780,7 @@ bool Loot::IsLastEncounter()
 // Basic checks for player/item compatibility - if false no chance to see the item in the loot
 bool Loot::AllowedForPlayer(Player const* player, uint32 ItemID, uint8 type, bool needs_quest, LootItem* lootItem) const
 {
-    // TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer ItemID %i type %u", ItemID, type);
+    TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer ItemID %i type %u", ItemID, type);
 
     if (lootItem)
         if (!lootItem->AllowedForPlayer(player))
@@ -1819,7 +1819,7 @@ bool Loot::AllowedForPlayer(Player const* player, uint32 ItemID, uint8 type, boo
         if ((pProto->GetFlags2() & ITEM_FLAG2_FACTION_ALLIANCE) && player->GetTeam() != ALLIANCE)
             return false;
 
-        // TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer needs_quest %u ItemID %i HasQuestForItem %u", needs_quest, ItemID, player->HasQuestForItem(ItemID));
+        TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer needs_quest %u ItemID %i HasQuestForItem %u", needs_quest, ItemID, player->HasQuestForItem(ItemID));
 
         // check quest requirements
         if (!(pProto->FlagsCu & ITEM_FLAGS_CU_IGNORE_QUEST_STATUS) && ((needs_quest || (pProto->GetStartQuestID() && player->GetQuestStatus(pProto->GetStartQuestID()) != QUEST_STATUS_NONE)) && !player->HasQuestForItem(ItemID)))
@@ -1845,7 +1845,7 @@ bool Loot::AllowedForPlayer(Player const* player, uint32 ItemID, uint8 type, boo
                 return false;
     }
 
-    // TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer ItemID %i allowed true", ItemID);
+    TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer ItemID %i allowed true", ItemID);
 
     return true;
 }
@@ -1933,7 +1933,7 @@ void LootTemplate::LootGroup::Process(Loot& loot, LootTemplate const* tab) const
     Player const* lootOwner = loot.GetLootOwner();
     const uint8 uiMaxAttempts = ExplicitlyChanced.size() + EqualChanced.size();
 
-    // TC_LOG_DEBUG("loot", "LootGroup::Process EqualPossibleDrops %i ExplicitPossibleDrops %i", EqualPossibleDrops.size(), ExplicitPossibleDrops.size());
+    TC_LOG_DEBUG("loot", "LootGroup::Process EqualPossibleDrops %i ExplicitPossibleDrops %i", EqualPossibleDrops.size(), ExplicitPossibleDrops.size());
 
     while (!ExplicitPossibleDrops.empty() || !EqualPossibleDrops.empty())
     {
@@ -2158,7 +2158,7 @@ void LootTemplate::LootGroup::ProcessAutoGroup(Loot& loot, LootTemplate const* t
 
 void LootTemplate::LootGroup::ProcessItemLoot(Loot& loot, LootTemplate const* tab) const
 {
-    // TC_LOG_DEBUG("loot", "LootGroup::LootGroup::ProcessItemLoot EqualChanced %u", EqualChanced.size());
+    TC_LOG_DEBUG("loot", "LootGroup::LootGroup::ProcessItemLoot EqualChanced %u", EqualChanced.size());
 
     Player const* lootOwner = loot.GetLootOwner();
     LootStoreItemList ItemPossibleDrops;
@@ -2199,7 +2199,7 @@ void LootTemplate::LootGroup::ProcessItemLoot(Loot& loot, LootTemplate const* ta
             ItemPossibleDrops.push_back(*i);
     }
 
-    // TC_LOG_DEBUG("loot", "LootGroup::LootGroup::ProcessItemLoot ItemPossibleDrops %u", ItemPossibleDrops.size());
+    TC_LOG_DEBUG("loot", "LootGroup::LootGroup::ProcessItemLoot ItemPossibleDrops %u", ItemPossibleDrops.size());
 
     if (!ItemPossibleDrops.empty()) // If nothing selected yet - an item is taken from equal-chanced part
     {
@@ -2209,7 +2209,7 @@ void LootTemplate::LootGroup::ProcessItemLoot(Loot& loot, LootTemplate const* ta
         loot.AddItem(*item);
     }
 
-    // TC_LOG_DEBUG("loot", "LootGroup::LootGroup::ProcessItemLoot APPossibleDrops %u", APPossibleDrops.size());
+    TC_LOG_DEBUG("loot", "LootGroup::LootGroup::ProcessItemLoot APPossibleDrops %u", APPossibleDrops.size());
 
     for (LootStoreItemList::const_iterator i = APPossibleDrops.begin(); i != APPossibleDrops.end(); ++i)
     {
@@ -2227,7 +2227,7 @@ void LootTemplate::LootGroup::ProcessWorld(Loot& loot, LootTemplate const* tab, 
     LootStoreItemList EqualPossibleDrops = EqualChanced;
     std::copy(ExplicitlyChanced.begin(), ExplicitlyChanced.end(), std::back_inserter(EqualPossibleDrops));
 
-    // TC_LOG_DEBUG("loot", "LootGroup::ProcessWorld EqualPossibleDrops %u ignore %u", EqualPossibleDrops.size(), ignore);
+    TC_LOG_DEBUG("loot", "LootGroup::ProcessWorld EqualPossibleDrops %u ignore %u", EqualPossibleDrops.size(), ignore);
 
     for (LootStoreItemList::const_iterator i = EqualPossibleDrops.begin(); i != EqualPossibleDrops.end(); ++i)
     {
@@ -2253,7 +2253,7 @@ void LootTemplate::LootGroup::ProcessWorld(Loot& loot, LootTemplate const* tab, 
             ItemPossibleDrops.push_back(*i);
     }
 
-    // TC_LOG_DEBUG("loot", "LootGroup::ProcessWorld ItemPossibleDrops %u ignore %u", ItemPossibleDrops.size(), ignore);
+    TC_LOG_DEBUG("loot", "LootGroup::ProcessWorld ItemPossibleDrops %u ignore %u", ItemPossibleDrops.size(), ignore);
 
     if (!ItemPossibleDrops.empty()) // If nothing selected yet - an item is taken from equal-chanced part
     {
@@ -2261,7 +2261,7 @@ void LootTemplate::LootGroup::ProcessWorld(Loot& loot, LootTemplate const* tab, 
         std::advance(itr, irand(0, ItemPossibleDrops.size()-1));
         LootStoreItem* item = &*itr;
         loot.AddItem(*item);
-        // TC_LOG_DEBUG("loot", "LootGroup::ProcessWorld AddItem itemid %i", itr->itemid);
+        TC_LOG_DEBUG("loot", "LootGroup::ProcessWorld AddItem itemid %i", itr->itemid);
     }
 }
 
@@ -2278,7 +2278,7 @@ bool LootTemplate::LootGroup::ProcessBossLoot(Loot& loot, LootTemplate const* ta
     Player const* lootOwner = loot.GetLootOwner();
     const uint8 uiMaxAttempts = EqualPossibleDrops.size();
 
-    // TC_LOG_DEBUG("loot", "LootGroup::ProcessBossLoot EqualChanced %i ExplicitlyChanced %i", uiMaxAttempts, ExplicitlyChanced.size());
+    TC_LOG_DEBUG("loot", "LootGroup::ProcessBossLoot EqualChanced %i ExplicitlyChanced %i", uiMaxAttempts, ExplicitlyChanced.size());
 
     loot.AddLegendaryItemToDrop(); //Generate Loot Legendary Item
 
@@ -2290,7 +2290,7 @@ bool LootTemplate::LootGroup::ProcessBossLoot(Loot& loot, LootTemplate const* ta
         if (!tab->CheckItemCondition(lootOwner, i->itemid, i->type))
             continue;
 
-        // TC_LOG_DEBUG("loot", "LootGroup::ProcessBossLoot itemid %u chance %f lootmode %u", i->itemid, i->chance, i->lootmode);
+        TC_LOG_DEBUG("loot", "LootGroup::ProcessBossLoot itemid %u chance %f lootmode %u", i->itemid, i->chance, i->lootmode);
 
         if (i->type == LOOT_ITEM_TYPE_ITEM)
         {
@@ -2356,7 +2356,7 @@ bool LootTemplate::LootGroup::ProcessRareOrGoLoot(Loot& loot, LootTemplate const
     Player const* lootOwner = loot.GetLootOwner();
     const uint8 uiMaxAttempts = EqualPossibleDrops.size();
 
-    // TC_LOG_DEBUG("loot", "LootGroup::ProcessRareOrGoLoot EqualPossibleDrops %i ExplicitlyChanced %i", uiMaxAttempts, ExplicitlyChanced.size());
+    TC_LOG_DEBUG("loot", "LootGroup::ProcessRareOrGoLoot EqualPossibleDrops %i ExplicitlyChanced %i", uiMaxAttempts, ExplicitlyChanced.size());
 
     loot.AddLegendaryItemToDrop(); //Generate Loot Legendary Item
 
@@ -2386,7 +2386,7 @@ bool LootTemplate::LootGroup::ProcessRareOrGoLoot(Loot& loot, LootTemplate const
             continue;
         }
 
-        // TC_LOG_DEBUG("loot", "LootGroup::ProcessRareOrGoLoot itemid %i type %u", item->itemid, item->type);
+        TC_LOG_DEBUG("loot", "LootGroup::ProcessRareOrGoLoot itemid %i type %u", item->itemid, item->type);
 
         if (!tab->CheckItemCondition(lootOwner, item->itemid, item->type))
         {
@@ -2396,7 +2396,7 @@ bool LootTemplate::LootGroup::ProcessRareOrGoLoot(Loot& loot, LootTemplate const
 
         if (item->lootmode != 0 && !(item->lootmode & loot._DifficultyMask))                          // Do not add if instance mode mismatch
         {
-            // TC_LOG_DEBUG("loot", "LootGroup::ProcessRareOrGoLoot lootmode %i _DifficultyMask %i", item->lootmode, loot._DifficultyMask);
+            TC_LOG_DEBUG("loot", "LootGroup::ProcessRareOrGoLoot lootmode %i _DifficultyMask %i", item->lootmode, loot._DifficultyMask);
             EqualPossibleDrops.erase(itr);
             continue;
         }
@@ -2408,16 +2408,16 @@ bool LootTemplate::LootGroup::ProcessRareOrGoLoot(Loot& loot, LootTemplate const
                 EqualPossibleDrops.erase(itr);
                 continue;
             }
-            // TC_LOG_DEBUG("loot", "LootGroup::ProcessRareOrGoLoot lootmode %i ItemSpecExist %u itemid %i", item->lootmode, _proto->ItemSpecExist, item->itemid);
+            TC_LOG_DEBUG("loot", "LootGroup::ProcessRareOrGoLoot lootmode %i ItemSpecExist %u itemid %i", item->lootmode, _proto->ItemSpecExist, item->itemid);
         }
         else
         {
-            // TC_LOG_DEBUG("loot", "LootGroup::ProcessRareOrGoLoot AllowableClass %i", _proto->AllowableClass);
+            TC_LOG_DEBUG("loot", "LootGroup::ProcessRareOrGoLoot AllowableClass %i", _proto->AllowableClass);
             EqualPossibleDrops.erase(itr);
             continue;
         }
 
-        // TC_LOG_DEBUG("loot", "LootGroup::ProcessRareOrGoLoot AddItem itemid %i", item->itemid);
+        TC_LOG_DEBUG("loot", "LootGroup::ProcessRareOrGoLoot AddItem itemid %i", item->itemid);
 
         // otherwise, add the item
         loot.AddItem(*item);
@@ -2545,7 +2545,7 @@ void LootTemplate::AddEntry(LootStoreItem& item)
                 if (group >= PersonalGroups.size())
                     PersonalGroups.resize(group);
                 PersonalGroups[group-1].AddEntry(item);
-                // TC_LOG_DEBUG("loot", "LootTemplate::AddEntry LOOT_ITEM_TYPE_CURRENCY 1220 group %i PersonalGroups %i", group, PersonalGroups.size());
+                TC_LOG_DEBUG("loot", "LootTemplate::AddEntry LOOT_ITEM_TYPE_CURRENCY 1220 group %i PersonalGroups %i", group, PersonalGroups.size());
             }
             Entries.push_back(item);
         }
@@ -2577,7 +2577,7 @@ void LootTemplate::Process(Loot& loot, bool rate, uint8 groupId) const
 
     Player const* lootOwner = loot.GetLootOwner();
 
-    // TC_LOG_DEBUG("loot", "LootTemplate::Process isBoss %i _DifficultyMask %i loot.chance %u bonusLoot %i Entries %u AutoGroups %u Groups %u", loot.isBoss, loot._DifficultyMask, loot.chance, loot.bonusLoot, Entries.size(), AutoGroups.size(), Groups.size());
+    TC_LOG_DEBUG("loot", "LootTemplate::Process isBoss %i _DifficultyMask %i loot.chance %u bonusLoot %i Entries %u AutoGroups %u Groups %u", loot.isBoss, loot._DifficultyMask, loot.chance, loot.bonusLoot, Entries.size(), AutoGroups.size(), Groups.size());
 
     // Rolling non-grouped items
     for (LootStoreItemList::const_iterator i = Entries.begin(); i != Entries.end(); ++i)
@@ -2631,7 +2631,7 @@ void LootTemplate::Process(Loot& loot, bool rate, uint8 groupId) const
         else                                                  // Plain entries (not a reference, not grouped)
             loot.AddItem(*i);                                 // Chance is already checked, just add
 
-        // TC_LOG_DEBUG("loot", "LootTemplate::Process mincountOrRef %i itemid %i chance %f", i->mincountOrRef, i->itemid, i->chance);
+        TC_LOG_DEBUG("loot", "LootTemplate::Process mincountOrRef %i itemid %i chance %f", i->mincountOrRef, i->itemid, i->chance);
     }
 
     // Now processing groups
@@ -2648,7 +2648,7 @@ void LootTemplate::ProcessBossLoot(Loot& loot) const
 {
     bool canGetInstItem = roll_chance_i(loot.chance); //Can get item or get gold
 
-    // TC_LOG_DEBUG("loot", "LootTemplate::ProcessBossLoot isBoss %i canGetInstItem %i _DifficultyMask %i loot.chance %u bonusLoot %i", loot.isBoss, canGetInstItem, loot._DifficultyMask, loot.chance, loot.bonusLoot);
+    TC_LOG_DEBUG("loot", "LootTemplate::ProcessBossLoot isBoss %i canGetInstItem %i _DifficultyMask %i loot.chance %u bonusLoot %i", loot.isBoss, canGetInstItem, loot._DifficultyMask, loot.chance, loot.bonusLoot);
 
     // Now processing groups
     if (canGetInstItem)
@@ -2682,7 +2682,7 @@ void LootTemplate::ProcessBossLoot(Loot& loot) const
         if (i->lootmode != 0 && !(i->lootmode & loot._DifficultyMask)) // Do not add if instance mode mismatch
             continue;
 
-        // TC_LOG_DEBUG("loot", "LootTemplate::ProcessBossLoot itemid %u chance %f lootmode %u lootmode %u", i->itemid, i->chance, i->lootmode, i->lootmode);
+        TC_LOG_DEBUG("loot", "LootTemplate::ProcessBossLoot itemid %u chance %f lootmode %u lootmode %u", i->itemid, i->chance, i->lootmode, i->lootmode);
 
         if (!CheckItemCondition(lootOwner, i->itemid, i->type))
             continue;
@@ -2708,7 +2708,7 @@ void LootTemplate::ProcessBossLoot(Loot& loot) const
             loot.AddItem(*i);
         }
 
-        // TC_LOG_DEBUG("loot", "LootTemplate::ProcessBossLoot AddItem itemid %i", i->itemid);
+        TC_LOG_DEBUG("loot", "LootTemplate::ProcessBossLoot AddItem itemid %i", i->itemid);
     }
 }
 
@@ -2726,7 +2726,7 @@ void LootTemplate::ProcessRareOrGoLoot(Loot& loot) const
         if (!CheckItemCondition(lootOwner, i->itemid, i->type))
             continue;
 
-        // TC_LOG_DEBUG("loot", "LootTemplate::ProcessRareOrGoLoot itemid %u chance %f lootmode %u", i->itemid, i->chance, i->lootmode);
+        TC_LOG_DEBUG("loot", "LootTemplate::ProcessRareOrGoLoot itemid %u chance %f lootmode %u", i->itemid, i->chance, i->lootmode);
 
         if (i->type == LOOT_ITEM_TYPE_ITEM)
         {
@@ -2772,10 +2772,10 @@ void LootTemplate::ProcessRareOrGoLoot(Loot& loot) const
         loot.AddItem(*i);
         // Chance is already checked, just add
 
-        // TC_LOG_DEBUG("loot", "LootTemplate::ProcessRareOrGoLoot AddItem itemid %i", i->itemid);
+        TC_LOG_DEBUG("loot", "LootTemplate::ProcessRareOrGoLoot AddItem itemid %i", i->itemid);
     }
 
-    // TC_LOG_DEBUG("loot", "LootTemplate::ProcessRareOrGoLoot PersonalGroups %i", PersonalGroups.size());
+    TC_LOG_DEBUG("loot", "LootTemplate::ProcessRareOrGoLoot PersonalGroups %i", PersonalGroups.size());
 
     if (!loot.isRareNext)
         for (LootGroups::const_iterator i = PersonalGroups.begin(); i != PersonalGroups.end(); ++i)
@@ -2785,14 +2785,14 @@ void LootTemplate::ProcessRareOrGoLoot(Loot& loot) const
 // Rolls for every item in the template and adds the rolled items the the loot
 void LootTemplate::ProcessWorld(Loot& loot, bool rate, bool ignore) const
 {
-    // TC_LOG_DEBUG("loot", "LootTemplate::ProcessWorld _ExpansionID %u _DifficultyMask %i", loot._ExpansionID, loot._DifficultyMask);
+    TC_LOG_DEBUG("loot", "LootTemplate::ProcessWorld _ExpansionID %u _DifficultyMask %i", loot._ExpansionID, loot._DifficultyMask);
 
     Player const* lootOwner = loot.GetLootOwner();
 
     // Rolling non-grouped items
     for (LootStoreItemList::const_iterator i = Entries.begin(); i != Entries.end(); ++i)
     {
-        // TC_LOG_DEBUG("loot", "LootTemplate::ProcessWorld itemid %u chance %f lootmode %u _ExpansionID %u", i->itemid, i->chance, i->lootmode, loot._ExpansionID);
+        TC_LOG_DEBUG("loot", "LootTemplate::ProcessWorld itemid %u chance %f lootmode %u _ExpansionID %u", i->itemid, i->chance, i->lootmode, loot._ExpansionID);
 
         if (i->lootmode != 0 && !(i->lootmode & loot._DifficultyMask)) // Do not add if instance mode mismatch
             continue;
@@ -2842,7 +2842,7 @@ void LootTemplate::ProcessWorld(Loot& loot, bool rate, bool ignore) const
         else                                                  // Plain entries (not a reference, not grouped)
             loot.AddItem(*i);                                 // Chance is already checked, just add
 
-        // TC_LOG_DEBUG("loot", "LootTemplate::ProcessWorld AddItem itemid %i", i->itemid);
+        TC_LOG_DEBUG("loot", "LootTemplate::ProcessWorld AddItem itemid %i", i->itemid);
     }
 
     // Now processing groups
@@ -2857,7 +2857,7 @@ void LootTemplate::ProcessWorld(Loot& loot, bool rate, bool ignore) const
 // Rolls for every item in the template and adds the rolled items the the loot
 void LootTemplate::ProcessLuck(Loot& loot, uint32 entry, bool ignore) const
 {
-    // TC_LOG_DEBUG("loot", "LootTemplate::ProcessLuck _ExpansionID %u _DifficultyMask %i entry %u", loot._ExpansionID, loot._DifficultyMask, entry);
+    TC_LOG_DEBUG("loot", "LootTemplate::ProcessLuck _ExpansionID %u _DifficultyMask %i entry %u", loot._ExpansionID, loot._DifficultyMask, entry);
 
     Player const* lootOwner = loot.GetLootOwner();
 
@@ -2868,7 +2868,7 @@ void LootTemplate::ProcessLuck(Loot& loot, uint32 entry, bool ignore) const
             continue;
 
         float chance = (i->chance * loot.rateLegendary) * (lootOwner->GetKillCreaturePoints(entry) / sWorld->getFloatConfig(CONFIG_CAP_KILL_CREATURE_POINTS));
-        // TC_LOG_DEBUG("loot", "LootTemplate::ProcessLuck itemid %u chance %f lootmode %u _ExpansionID %u chance %f", i->itemid, i->chance, i->lootmode, loot._ExpansionID, chance);
+        TC_LOG_DEBUG("loot", "LootTemplate::ProcessLuck itemid %u chance %f lootmode %u _ExpansionID %u chance %f", i->itemid, i->chance, i->lootmode, loot._ExpansionID, chance);
         if (!ignore && !roll_chance_f(chance))
             continue;
 
@@ -2911,14 +2911,14 @@ void LootTemplate::ProcessLuck(Loot& loot, uint32 entry, bool ignore) const
         else                                                  // Plain entries (not a reference, not grouped)
             loot.AddItem(*i);                                 // Chance is already checked, just add
 
-        // TC_LOG_DEBUG("loot", "LootTemplate::ProcessLuck AddItem itemid %i", i->itemid);
+        TC_LOG_DEBUG("loot", "LootTemplate::ProcessLuck AddItem itemid %i", i->itemid);
     }
 }
 
 // Rolls for every item in the template and adds the rolled items the the loot
 void LootTemplate::ProcessItemLoot(Loot& loot) const
 {
-    // TC_LOG_DEBUG("loot", "ProcessItemLoot Entries %u AutoGroups %u PersonalGroups %u", Entries.size(), AutoGroups.size(), PersonalGroups.size());
+    TC_LOG_DEBUG("loot", "ProcessItemLoot Entries %u AutoGroups %u PersonalGroups %u", Entries.size(), AutoGroups.size(), PersonalGroups.size());
 
     Player const* lootOwner = loot.GetLootOwner();
     if (loot._IsPvPLoot)
@@ -2989,7 +2989,7 @@ void LootTemplate::ProcessItemLoot(Loot& loot) const
             ItemPossibleDrops.push_back(*i);
     }
 
-    // TC_LOG_DEBUG("loot", "ProcessItemLoot ItemPossibleDrops %u APPossibleDrops %u Groups %u", ItemPossibleDrops.size(), APPossibleDrops.size(), Groups.size());
+    TC_LOG_DEBUG("loot", "ProcessItemLoot ItemPossibleDrops %u APPossibleDrops %u Groups %u", ItemPossibleDrops.size(), APPossibleDrops.size(), Groups.size());
 
     if (!ItemPossibleDrops.empty()) // If nothing selected yet - an item is taken from equal-chanced part
     {
@@ -3123,7 +3123,7 @@ void LootTemplate::ProcessOploteChest(Loot& loot) const
 
 void LootTemplate::ProcessChallengeChest(Loot& loot, uint32 lootId, Challenge* _challenge) const
 {
-    // TC_LOG_DEBUG("loot", "ProcessChallengeChest Entries %u AutoGroups %u PersonalGroups %u", Entries.size(), AutoGroups.size(), PersonalGroups.size());
+    TC_LOG_DEBUG("loot", "ProcessChallengeChest Entries %u AutoGroups %u PersonalGroups %u", Entries.size(), AutoGroups.size(), PersonalGroups.size());
 
     Player const* lootOwner = loot.GetLootOwner();
     LootStoreItemList ItemPossibleDrops;
@@ -3174,7 +3174,7 @@ void LootTemplate::ProcessChallengeChest(Loot& loot, uint32 lootId, Challenge* _
             ItemPossibleDrops.push_back(*i);
     }
 
-    // TC_LOG_DEBUG("loot", "ProcessChallengeChest ItemPossibleDrops %i", ItemPossibleDrops.size());
+    TC_LOG_DEBUG("loot", "ProcessChallengeChest ItemPossibleDrops %i", ItemPossibleDrops.size());
 
     if (!ItemPossibleDrops.empty()) // If nothing selected yet - an item is taken from equal-chanced part
     {
@@ -3189,9 +3189,9 @@ void LootTemplate::ProcessChallengeChest(Loot& loot, uint32 lootId, Challenge* _
         }
     }
 
-    // TC_LOG_DEBUG("loot", "ProcessChallengeChest OtherPossibleDrops %i", OtherPossibleDrops.size());
+    TC_LOG_DEBUG("loot", "ProcessChallengeChest OtherPossibleDrops %i", OtherPossibleDrops.size());
 
-    // TC_LOG_DEBUG("loot", "ProcessChallengeChest loot.items %i", loot.items.size());
+    TC_LOG_DEBUG("loot", "ProcessChallengeChest loot.items %i", loot.items.size());
     uint32 addCA = 0;
     if (_challenge->_complete)
         addCA = sChallengeMgr->GetCAForLoot(_challenge, lootId);
@@ -3215,7 +3215,7 @@ void LootTemplate::ProcessChallengeChest(Loot& loot, uint32 lootId, Challenge* _
 
     for (LootStoreItemList::const_iterator i = OtherPossibleDrops.begin(); i != OtherPossibleDrops.end(); ++i)
     {
-        // TC_LOG_DEBUG("loot", "ProcessChallengeChest OtherPossibleDrops itemid %i chance %f", i->itemid, i->chance);
+        TC_LOG_DEBUG("loot", "ProcessChallengeChest OtherPossibleDrops itemid %i chance %f", i->itemid, i->chance);
 
         if (!loot.AllowedForPlayer(lootOwner, i->itemid, i->type, i->needs_quest))
             continue;
@@ -3225,7 +3225,7 @@ void LootTemplate::ProcessChallengeChest(Loot& loot, uint32 lootId, Challenge* _
 
         loot.AddItem(*i);                                 // Chance is already checked, just add
 
-        // TC_LOG_DEBUG("loot", "ProcessChallengeChest AddItem itemid %i", i->itemid);
+        TC_LOG_DEBUG("loot", "ProcessChallengeChest AddItem itemid %i", i->itemid);
     }
 
     loot.generateMoneyLoot(900000, 1500000, lootOwner->GetMap()->IsDungeon());
@@ -3847,7 +3847,7 @@ void LootMgr::AddLoot(Loot* loot)
     else
         itr->second = loot;
     //m_Loots[loot->GetGUID()] = loot;
-    // TC_LOG_DEBUG("loot", "LootMgr::AddLoot guid %s size %i", loot->GetGUID().ToString().c_str(), m_Loots.size());
+    TC_LOG_DEBUG("loot", "LootMgr::AddLoot guid %s size %i", loot->GetGUID().ToString().c_str(), m_Loots.size());
 }
 
 void LootMgr::RemoveLoot(ObjectGuid const& guid)

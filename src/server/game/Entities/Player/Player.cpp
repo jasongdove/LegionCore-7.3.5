@@ -639,7 +639,6 @@ bool Player::Create(ObjectGuid::LowType guidlow, WorldPackets::Character::Charac
     auto charTemplate = static_cast<CharacterTemplate const*>(nullptr);
     if (createInfo->TemplateSet.is_initialized())
     {
-        
             if (CharacterTemplateData* charTemplateData = GetSession()->GetCharacterTemplateData(*createInfo->TemplateSet))
             {
                 if (charTemplateData->active)
@@ -847,13 +846,19 @@ bool Player::Create(ObjectGuid::LowType guidlow, WorldPackets::Character::Charac
             break;
     }
 
-    // original action bar
+    // Original action bar. Do not use Player::AddActionButton because we do not have skill spells loaded at this time
+    // but checks will still be performed later when loading character from db in Player::_LoadActions
     for (PlayerCreateInfoActions::const_iterator action_itr = info->action.begin(); action_itr != info->action.end(); ++action_itr)
-        addActionButton(action_itr->button, action_itr->action, action_itr->type);
+    {
+        // create new button
+        ActionButton& ab = m_actionButtons[action_itr->button];
+        // set data
+        ab.SetActionAndType(action_itr->action, ActionButtonType(action_itr->type));
+    }
 
     if (PlayerInfo const* allInfo = sObjectMgr->GetPlayerInfo(RACE_NONE, CLASS_NONE))
         for (PlayerCreateInfoActions::const_iterator action_itr = allInfo->action.begin(); action_itr != allInfo->action.end(); ++action_itr)
-            addActionButton(action_itr->button, action_itr->action, action_itr->type);
+            AddActionButton(action_itr->button, action_itr->action, action_itr->type);
 
     uint8 FactionGroup = GetTeamId() == TEAM_HORDE ? FACTION_MASK_HORDE : FACTION_MASK_ALLIANCE;
     if (charTemplate && !charTemplate->Items.empty())
@@ -8466,20 +8471,23 @@ bool Player::IsActionButtonDataValid(uint8 button, uint32 action, uint8 type)
     return true;
 }
 
-bool Player::addActionButton(uint8 button, uint32 action, uint8 type, ActionButtonUpdateState state)
+ActionButton* Player::AddActionButton(uint8 button, uint32 action, uint8 type)
 {
     if (!IsActionButtonDataValid(button, action, type))
-        return false;
+        return nullptr;
 
-    // it create new button (NEW state) if need or return existed
-    m_actionButtons.erase(button);
-    m_actionButtons.emplace(button, ActionButton(action, type, state));
+    // it create new button (NEW state) if need or return existing
+    ActionButton& ab = m_actionButtons[button];
 
-    TC_LOG_INFO("sql.sql", "Player '%u' Added Action '%u' (type %u) to Button '%u'", GetGUIDLow(), action, type, button);
-    return true;
+    // set data and update to CHANGED if not NEW
+    ab.SetActionAndType(action, ActionButtonType(type));
+
+    TC_LOG_DEBUG("entities.player", "Player::AddActionButton: Player '%s' (%s) added action '%u' (type %u) to button '%u'",
+                 GetName(), GetGUID().ToString().c_str(), action, type, button);
+    return &ab;
 }
 
-void Player::removeActionButton(uint8 button)
+void Player::RemoveActionButton(uint8 button)
 {
     ActionButtonList::iterator buttonItr = m_actionButtons.find(button);
     if (buttonItr == m_actionButtons.end() || buttonItr->second.uState == ACTIONBUTTON_DELETED)
@@ -8490,26 +8498,17 @@ void Player::removeActionButton(uint8 button)
     else
         buttonItr->second.uState = ACTIONBUTTON_DELETED;    // saved, will deleted at next save
 
-    TC_LOG_INFO("sql.sql", "Action Button '%u' Removed from Player '%u'", button, GetGUIDLow());
+    TC_LOG_DEBUG("entities.player", "Player::RemoveActionButton: Player '%s' (%s) removed action button '%u'",
+        GetName(), GetGUID().ToString().c_str(), button);
 }
 
 ActionButton const* Player::GetActionButton(uint8 button)
 {
     ActionButtonList::iterator buttonItr = m_actionButtons.find(button);
     if (buttonItr == m_actionButtons.end() || buttonItr->second.uState == ACTIONBUTTON_DELETED)
-        return NULL;
+        return nullptr;
 
     return &buttonItr->second;
-}
-
-int8 Player::GetFreeActionButton()
-{
-    // 12 is max button of first action bar
-    for (uint8 i = 0; i < 12; i++)
-        if (!GetActionButton(i))
-            return i;
-
-    return -1;
 }
 
 bool Player::UpdatePosition(float x, float y, float z, float orientation, bool teleport, bool stop /*=false*/)
@@ -22684,10 +22683,15 @@ void Player::_LoadActions(PreparedQueryResult result)
             uint32 action = fields[1].GetUInt32();
             uint8 type = fields[2].GetUInt8();
 
-            if (!addActionButton(button, action, type, ACTIONBUTTON_UNCHANGED))
+            if (ActionButton* ab = AddActionButton(button, action, type))
+                ab->uState = ACTIONBUTTON_UNCHANGED;
+            else
             {
-                // Will be deleted from DB at next save
-                m_actionButtons.emplace(button, ActionButton(action, type, ACTIONBUTTON_DELETED));
+                TC_LOG_DEBUG("entities.player", "Player::_LoadActions: Player '%s' (%s) has an invalid action button (Button: %u, Action: %u, Type: %u). It will be deleted at next save. This can be due to a player changing their talents.",
+                             GetName(), GetGUID().ToString().c_str(), button, action, type);
+
+                // Will be deleted in DB at next save (it can create data until save but marked as deleted).
+                m_actionButtons[button].uState = ACTIONBUTTON_DELETED;
             }
         } while (result->NextRow());
     }
@@ -32355,39 +32359,6 @@ void Player::SetRuneCooldown(uint8 index, uint32 cooldown)
 void Player::ModRuneCooldown(uint8 index, uint32 regenTime)
 {
     m_runes.Cooldown[index] += regenTime;
-}
-
-ActionButton::ActionButton(uint32 action, uint8 type, ActionButtonUpdateState state): uType(type), uAction(action), uState(state)
-{
-    packedData = 0;
-    uint64 newData = uAction | (uint64(uType) << 56);
-    if (newData != packedData || uState == ACTIONBUTTON_DELETED)
-    {
-        packedData = newData;
-        if (uState != ACTIONBUTTON_NEW)
-            uState = ACTIONBUTTON_CHANGED;
-    }
-}
-
-ActionButtonType ActionButton::GetType() const
-{
-    return ActionButtonType(ACTION_BUTTON_TYPE(packedData));
-}
-
-uint32 ActionButton::GetAction() const
-{
-    return ACTION_BUTTON_ACTION(packedData);
-}
-
-void ActionButton::SetActionAndType(uint32 action, ActionButtonType type)
-{
-    uint64 newData = action | (uint64(type) << 56);
-    if (newData != packedData || uState == ACTIONBUTTON_DELETED)
-    {
-        packedData = newData;
-        if (uState != ACTIONBUTTON_NEW)
-            uState = ACTIONBUTTON_CHANGED;
-    }
 }
 
 void Runes::SetRuneState(uint8 index, bool set /*= true*/)

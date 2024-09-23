@@ -875,11 +875,6 @@ void WorldSession::LoadAccountData(PreparedQueryResult const& result, uint32 mas
     while (result->NextRow());
 }
 
-AccountData* WorldSession::GetAccountData(AccountDataType type)
-{
-    return &m_accountData[type];
-}
-
 void WorldSession::SetAccountData(AccountDataType type, time_t tm /*= time_t(0)*/, std::string const& data /*= ""*/)
 {
     if ((1 << type) & GLOBAL_CACHE_MASK)
