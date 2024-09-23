@@ -32,14 +32,14 @@ class ReactorAI : public CreatureAI
 
         explicit ReactorAI(Creature* c) : CreatureAI(c), CreatureTexts(nullptr), CreatureCombatTexts(nullptr) {}
 
-        void MoveInLineOfSight(Unit*);
+        void MoveInLineOfSight(Unit*) override;
 
-        void Reset();
-        void InitializeAI();
-        void UpdateAI(uint32);
+        void Reset() override;
+        void InitializeAI() override;
+        void UpdateAI(uint32) override;
         static int Permissible(const Creature*);
-        void EnterCombat(Unit* who);
-        void JustDied(Unit* killer);
+        void EnterCombat(Unit* who) override;
+        void JustDied(Unit* killer) override;
 
         void AddClientVisibility(ObjectGuid guid) override;
         void RemoveClientVisibility(ObjectGuid guid) override;

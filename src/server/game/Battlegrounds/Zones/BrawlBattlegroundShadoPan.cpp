@@ -89,16 +89,20 @@ void BrawlBattlegroundShadoPan::PostUpdateImpl(uint32 diff)
         Battleground::BattlegroundTimedWin();
 
     if (m_waitChestRespawn)
+    {
         if (m_chestRespawnTimer <= diff)
         {
             SpawnBGObject(urand(BG_SP_CHEST_1, BG_SP_CHEST_2), RESPAWN_IMMEDIATELY);
 
-            if(Creature* controller = GetBGCreature(SP_CONTROLLER))
+            if (Creature *controller = GetBGCreature(SP_CONTROLLER))
                 controller->AI()->ZoneTalk(2);
             m_waitChestRespawn = false;
         }
         else
+        {
             m_chestRespawnTimer -= diff;
+        }
+    }
 }
 
 void BrawlBattlegroundShadoPan::AddPlayer(Player * player)
@@ -194,6 +198,7 @@ void BrawlBattlegroundShadoPan::CheckAndUpdatePointStatus(uint32 diff)
     int8 changeAmount = 0;
     for (auto itr : GetPlayers())
         if (Player* player = ObjectAccessor::FindPlayer(GetBgMap(), itr.first))
+        {
             if (player->isAlive() && player->GetDistance2d(controller) <= 10.0f)
             {
                 player->SendUpdateWorldState(WorldStates::BG_SP_SHOW_BAR, true, false);
@@ -202,7 +207,10 @@ void BrawlBattlegroundShadoPan::CheckAndUpdatePointStatus(uint32 diff)
                 changeAmount += (player->GetBGTeamId() == TEAM_ALLIANCE ? 1 : -1);
             }
             else
+            {
                 player->SendUpdateWorldState(WorldStates::BG_SP_SHOW_BAR, false, false);
+            }
+        }
 
     m_pointUpdateTimer = 0;
 

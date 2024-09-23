@@ -140,7 +140,7 @@ bool EventObject::LoadEventObjectFromDB(ObjectGuid::LowType guid, Map* map)
     EventObjectData const* data = sEventObjectDataStore->GetEventObjectData(guid);
     if (!data)
     {
-        TC_LOG_ERROR("sql.sql", "EventObject (GUID: %u) not found in table `eventobject`, can't load. ", guid);
+        TC_LOG_ERROR("sql.sql", "EventObject (GUID: %lu) not found in table `eventobject`, can't load. ", guid);
         return false;
     }
 
@@ -183,7 +183,7 @@ bool EventObject::Create(ObjectGuid::LowType guidlow, Map* map, uint32 phaseMask
 
     if (!IsPositionValid())
     {
-        TC_LOG_ERROR("entities.unit", "EventObject::Create(): given coordinates for eventobject (guidlow %d, entry %d) are not valid (X: %f, Y: %f, Z: %f, O: %f)", guidlow, entry, x, y, z, ang);
+        TC_LOG_ERROR("entities.unit", "EventObject::Create(): given coordinates for eventobject (guidlow %lu, entry %d) are not valid (X: %f, Y: %f, Z: %f, O: %f)", guidlow, entry, x, y, z, ang);
         return false;
     }
 

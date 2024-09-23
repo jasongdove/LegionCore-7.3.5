@@ -43,7 +43,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPackets::Loot::AutoStoreLo
             }
 
             loot = &go->loot;
-            //TC_LOG_DEBUG("loot", "HandleAutostoreLootItemOpcode lguid %u, pguid %u lguid %u", lguid, player->personalLoot.GetGUID(), loot->GetGUID());
+            //TC_LOG_DEBUG("loot", "HandleAutostoreLootItemOpcode lguid %lu, pguid %u lguid %lu", lguid, player->personalLoot.GetGUID(), loot->GetGUID());
         }
         else if (lguid.IsItem())
         {
@@ -191,7 +191,7 @@ void WorldSession::DoLootRelease(ObjectGuid lguid)
     Loot* loot = nullptr;
     Loot* lootPesonal = nullptr;
 
-    TC_LOG_DEBUG("network", "WORLD: DoLootRelease lguid %u", lguid.GetCounter());
+    TC_LOG_DEBUG("network", "WORLD: DoLootRelease lguid %lu", lguid.GetCounter());
 
     player->SetLootGUID(ObjectGuid::Empty);
 
@@ -587,8 +587,8 @@ void WorldSession::HandleMasterLootItem(WorldPackets::Loot::MasterLootItem& pack
         uint8 _LootListID = lootData.LootListID - 1;    //restore slot index; WTF?
         if (_LootListID >= loot->items.size() + loot->quest_items.size())
         {
-            TC_LOG_DEBUG("loot", "MasterLootItem: Player %s might be using a hack! (slot %d, size %lu)",
-                GetPlayer()->GetName(), _LootListID, static_cast<uint32>(loot->items.size()));
+            TC_LOG_DEBUG("loot", "MasterLootItem: Player %s might be using a hack! (slot %d, size %zu)",
+                GetPlayer()->GetName(), _LootListID, loot->items.size());
             return;
         }
 

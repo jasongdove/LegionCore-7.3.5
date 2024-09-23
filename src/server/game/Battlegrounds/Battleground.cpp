@@ -497,7 +497,7 @@ Player* Battleground::GetPlayer(ObjectGuid guid, bool offlineRemove, char const*
         if (Player* player = ObjectAccessor::FindPlayer(guid))
             return player;
 
-        TC_LOG_ERROR("bg.battleground", "Battleground::%s: player (GUID: %u) not found", context, guid.GetCounter());
+        TC_LOG_ERROR("bg.battleground", "Battleground::%s: player (GUID: %lu) not found", context, guid.GetCounter());
     }
 
     return nullptr;
@@ -1897,7 +1897,7 @@ void Battleground::DoorClose(uint32 type)
         }
     }
     else
-        TC_LOG_ERROR("bg.battleground", "Battleground::DoorClose: door gameobject (type: %u, GUID: %u) not found for BG (map: %u, instance id: %u)!", type, BgObjects[type].GetCounter(), m_MapId, m_InstanceID);
+        TC_LOG_ERROR("bg.battleground", "Battleground::DoorClose: door gameobject (type: %u, GUID: %lu) not found for BG (map: %u, instance id: %u)!", type, BgObjects[type].GetCounter(), m_MapId, m_InstanceID);
 }
 
 void Battleground::DoorOpen(uint32 type)
@@ -1908,14 +1908,14 @@ void Battleground::DoorOpen(uint32 type)
         obj->SetGoState(obj->GetGoType() == GAMEOBJECT_TYPE_TRANSPORT ? GO_STATE_TRANSPORT_ACTIVE : GO_STATE_ACTIVE);
     }
     else
-        TC_LOG_ERROR("bg.battleground", "Battleground::DoorOpen: door gameobject (type: %u, GUID: %u) not found for BG (map: %u, instance id: %u)!", type, BgObjects[type].GetCounter(), m_MapId, m_InstanceID);
+        TC_LOG_ERROR("bg.battleground", "Battleground::DoorOpen: door gameobject (type: %u, GUID: %lu) not found for BG (map: %u, instance id: %u)!", type, BgObjects[type].GetCounter(), m_MapId, m_InstanceID);
 }
 
 GameObject* Battleground::GetBGObject(uint32 type)
 {
     GameObject* obj = GetBgMap()->GetGameObject(BgObjects[type]);
     if (!obj)
-        TC_LOG_ERROR("bg.battleground", "Battleground::GetBGObject: gameobject (type: %u, GUID: %u) not found for BG (map: %u, instance id: %u)!", type, BgObjects[type].GetCounter(), m_MapId, m_InstanceID);
+        TC_LOG_ERROR("bg.battleground", "Battleground::GetBGObject: gameobject (type: %u, GUID: %lu) not found for BG (map: %u, instance id: %u)!", type, BgObjects[type].GetCounter(), m_MapId, m_InstanceID);
     return obj;
 }
 
@@ -1923,7 +1923,7 @@ Creature* Battleground::GetBGCreature(uint32 type)
 {
     Creature* creature = GetBgMap()->GetCreature(BgCreatures[type]);
     if (!creature)
-        TC_LOG_ERROR("bg.battleground", "Battleground::GetBGCreature: creature (type: %u, GUID: %u) not found for BG (map: %u, instance id: %u)!", type, BgCreatures[type].GetCounter(), m_MapId, m_InstanceID);
+        TC_LOG_ERROR("bg.battleground", "Battleground::GetBGCreature: creature (type: %u, GUID: %lu) not found for BG (map: %u, instance id: %u)!", type, BgCreatures[type].GetCounter(), m_MapId, m_InstanceID);
     return creature;
 }
 
@@ -2014,7 +2014,7 @@ bool Battleground::DelCreature(uint32 type)
         return true;
     }
 
-    TC_LOG_ERROR("bg.battleground", "Battleground::DelCreature: creature (type: %u, GUID: %u) not found for BG (map: %u, instance id: %u)!", type, BgCreatures[type].GetCounter(), m_MapId, m_InstanceID);
+    TC_LOG_ERROR("bg.battleground", "Battleground::DelCreature: creature (type: %u, GUID: %lu) not found for BG (map: %u, instance id: %u)!", type, BgCreatures[type].GetCounter(), m_MapId, m_InstanceID);
     BgCreatures[type].Clear();
     return false;
 }
@@ -2032,7 +2032,7 @@ bool Battleground::DelObject(uint32 type)
         return true;
     }
 
-    TC_LOG_ERROR("bg.battleground", "Battleground::DelObject: gameobject (type: %u, GUID: %u) not found for BG (map: %u, instance id: %u)!", type, BgObjects[type].GetCounter(), m_MapId, m_InstanceID);
+    TC_LOG_ERROR("bg.battleground", "Battleground::DelObject: gameobject (type: %u, GUID: %lu) not found for BG (map: %u, instance id: %u)!", type, BgObjects[type].GetCounter(), m_MapId, m_InstanceID);
     BgObjects[type].Clear();
     return false;
 }
@@ -2129,7 +2129,7 @@ void Battleground::HandleTriggerBuff(ObjectGuid go_guid)
         index--;
     if (index < 0)
     {
-        TC_LOG_ERROR("bg.battleground", "Battleground::HandleTriggerBuff: cannot find buff gameobject (GUID: %u, entry: %u, type: %u) in internal data for BG (map: %u, instance id: %u)!", go_guid.GetCounter(), obj->GetEntry(), obj->GetGoType(), m_MapId, m_InstanceID);
+        TC_LOG_ERROR("bg.battleground", "Battleground::HandleTriggerBuff: cannot find buff gameobject (GUID: %lu, entry: %u, type: %u) in internal data for BG (map: %u, instance id: %u)!", go_guid.GetCounter(), obj->GetEntry(), obj->GetGoType(), m_MapId, m_InstanceID);
         return;
     }
 
@@ -2259,7 +2259,7 @@ int32 Battleground::GetObjectType(ObjectGuid guid)
         if (BgObjects[i] == guid)
             return i;
 
-    TC_LOG_ERROR("bg.battleground", "Battleground::GetObjectType: player used gameobject (GUID: %u) which is not in internal data for BG (map: %u, instance id: %u), cheating?", guid.GetCounter(), m_MapId, m_InstanceID);
+    TC_LOG_ERROR("bg.battleground", "Battleground::GetObjectType: player used gameobject (GUID: %lu) which is not in internal data for BG (map: %u, instance id: %u), cheating?", guid.GetCounter(), m_MapId, m_InstanceID);
     return -1;
 }
 

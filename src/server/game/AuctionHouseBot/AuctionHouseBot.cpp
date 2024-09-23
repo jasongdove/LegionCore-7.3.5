@@ -428,7 +428,7 @@ void AuctionHouseBot::InitializeAgents()
             _marketData.emplace(entry, minBuyout);
         } while (marketDataResult->NextRow());
     }
-    TC_LOG_DEBUG("auctionHouse", "Market data has %u items...", _marketData.size());
+    TC_LOG_DEBUG("auctionHouse", "Market data has %lu items...", _marketData.size());
 
     if (sAuctionBotConfig->GetConfig(CONFIG_AHBOT_SELLER_ENABLED))
     {

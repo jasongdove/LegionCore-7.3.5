@@ -346,7 +346,7 @@ void WaypointMovementGenerator<Player>::OnArrived(Player& player)
 
     if (currentPath->event_id && roll_chance_i(currentPath->event_chance))
     {
-        TC_LOG_DEBUG("maps.script", "Player movement start script %u at point %u for %u.", currentPath->event_id, i_currentNode, player.GetGUID().GetCounter());
+        TC_LOG_DEBUG("maps.script", "Player movement start script %u at point %u for %lu.", currentPath->event_id, i_currentNode, player.GetGUID().GetCounter());
         player.ClearUnitState(UNIT_STATE_ROAMING_MOVE);
         player.GetMap()->ScriptsStart(sWaypointScripts, currentPath->event_id, &player, nullptr);
     }

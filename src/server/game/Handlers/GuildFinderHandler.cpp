@@ -142,16 +142,19 @@ void WorldSession::HandleLFGuildGetRecruits(WorldPackets::Guild::LFGuildGetRecru
         WorldPackets::Guild::LFGuildRecruitData data;
         data.RecruitGUID = x.GetPlayerGUID();
         data.RecruitVirtualRealm = GetVirtualRealmAddress();
-        data.CharacterClass = x.GetClass();
-        data.CharacterGender = x.GetGender();
-        data.CharacterLevel = x.GetLevel();
+        data.Comment = x.GetComment();
         data.ClassRoles = x.GetClassRoles();
         data.PlayStyle = x.GetPlayStyle();
         data.Availability = x.GetAvailability();
         data.SecondsSinceCreated = time(nullptr) - x.GetSubmitTime();
         data.SecondsUntilExpiration = x.GetExpiryTime() - time(nullptr);
-        data.Name = x.GetName();
-        data.Comment = x.GetComment();
+        if (CharacterInfo const* charInfo = sWorld->GetCharacterInfo(data.RecruitGUID))
+        {
+            data.Name = charInfo->Name;
+            data.CharacterClass = charInfo->Class;
+            data.CharacterGender = charInfo->Sex;
+            data.CharacterLevel = charInfo->Level;
+        }
         recruits.Recruits.push_back(data);
     }
 

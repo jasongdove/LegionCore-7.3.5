@@ -446,26 +446,17 @@ bool SpellEffectInfo::IsAura(AuraType aura) const
 
 bool SpellEffectInfo::IsTargetingArea() const
 {
-    if (!this)
-        return false;
-
     return TargetA.IsArea() || TargetB.IsArea();
 }
 
 bool SpellEffectInfo::IsAreaAuraEffect() const
 {
-    if (!this)
-        return false;
-
     return Effect == SPELL_EFFECT_APPLY_AREA_AURA_PARTY || Effect == SPELL_EFFECT_APPLY_AREA_AURA_RAID || Effect == SPELL_EFFECT_APPLY_AREA_AURA_FRIEND || Effect == SPELL_EFFECT_APPLY_AREA_AURA_ENEMY ||
         Effect == SPELL_EFFECT_APPLY_AREA_AURA_PET || Effect == SPELL_EFFECT_APPLY_AURA_ON_PET_OR_SELF || Effect == SPELL_EFFECT_APPLY_AURA_WITH_VALUE || Effect == SPELL_EFFECT_APPLY_AREA_AURA_OWNER;
 }
 
 bool SpellEffectInfo::IsFarUnitTargetEffect() const
 {
-    if (!this)
-        return false;
-
     return Effect == SPELL_EFFECT_SUMMON_PLAYER
         || Effect == SPELL_EFFECT_SUMMON_RAF_FRIEND
         || Effect == SPELL_EFFECT_RESURRECT
@@ -480,17 +471,11 @@ bool SpellEffectInfo::IsFarDestTargetEffect() const
 
 bool SpellEffectInfo::IsUnitOwnedAuraEffect() const
 {
-    if (!this)
-        return false;
-
     return IsAreaAuraEffect() || Effect == SPELL_EFFECT_APPLY_AURA;
 }
 
 float SpellEffectInfo::CalcValue(Unit const* caster, float const* bp, Unit const* target, Item* m_castItem, bool lockBasePoints, float* variance /*= nullptr*/, int32 comboPoints /*= 0*/) const
 {
-    if (!this)
-        return 0;
-
     if (caster)
         if (auto const& casterLevel = caster->GetEffectiveLevel())
             if (_spellInfo->MaxUsableLevel && casterLevel > _spellInfo->MaxUsableLevel)

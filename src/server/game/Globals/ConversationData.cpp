@@ -119,7 +119,7 @@ void ConversationDataStoreMgr::LoadConversations()
                     lastCreature->second->spawnMask |= data.spawnMask;
                     WorldDatabase.PExecute("UPDATE conversation SET phaseMask = %u, spawnMask = " UI64FMTD " WHERE guid = %u", lastCreature->second->phaseMask, lastCreature->second->spawnMask, lastCreature->second->guid);
                     WorldDatabase.PExecute("DELETE FROM conversation WHERE guid = %u", guid);
-                    TC_LOG_ERROR("sql.sql", "ConversationDataStoreMgr::LoadConversations() >> Table `conversation` have clone npc %u witch stay too close (dist: %f). original npc guid %u. npc with guid %u will be deleted.", entry, distsq1, lastCreature->second->guid, guid);
+                    TC_LOG_ERROR("sql.sql", "ConversationDataStoreMgr::LoadConversations() >> Table `conversation` have clone npc %u witch stay too close (dist: %f). original npc guid %lu. npc with guid %lu will be deleted.", entry, distsq1, lastCreature->second->guid, guid);
                     continue;
                 }
             }
@@ -138,7 +138,7 @@ void ConversationDataStoreMgr::LoadConversations()
 
         if (data.spawnMask & ~spawnMasks[data.mapid])
         {
-            TC_LOG_ERROR("sql.sql", "LoadConversations >> Table `conversation` have conversation (GUID: " UI64FMTD ") that have wrong spawn mask " UI64FMTD " including not supported difficulty modes for map (Id: %u) spawnMasks[data.mapid]: %u.", guid, data.spawnMask, data.mapid, spawnMasks[data.mapid]);
+            TC_LOG_ERROR("sql.sql", "LoadConversations >> Table `conversation` have conversation (GUID: " UI64FMTD ") that have wrong spawn mask " UI64FMTD " including not supported difficulty modes for map (Id: %u) spawnMasks[data.mapid]: %lu.", guid, data.spawnMask, data.mapid, spawnMasks[data.mapid]);
             WorldDatabase.PExecute("UPDATE conversation SET spawnMask = " UI64FMTD " WHERE guid = %u", spawnMasks[data.mapid], guid);
             data.spawnMask = spawnMasks[data.mapid];
         }

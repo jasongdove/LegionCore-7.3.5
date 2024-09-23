@@ -304,7 +304,7 @@ void BattlePayDataStoreMgr::LoadTokenTypes()
 
     if (!result)
     {
-        TC_LOG_INFO("server.loading", ">> Loaded 0 Battlepay token types in %u ms. DB table `battlepay_tokens` is empty.", uint64(_tokenTypes.size()), GetMSTimeDiffToNow(oldMsTime));
+        TC_LOG_INFO("server.loading", ">> Loaded %lu Battlepay token types in %u ms. DB table `battlepay_tokens` is empty.", uint64(_tokenTypes.size()), GetMSTimeDiffToNow(oldMsTime));
         return;
     }
 
@@ -353,11 +353,11 @@ bool BattlePayDataStoreMgr::ProductExist(uint32 productID) const
     return _products.find(productID) != _products.end();
 }
 
-Battlepay::Product const& BattlePayDataStoreMgr::GetProduct(uint32 productID) const
+Battlepay::Product const* BattlePayDataStoreMgr::GetProduct(uint32 productID) const
 {
     if (ProductExist(productID))
-        return _products.at(productID);
-    return{};
+        return &_products.at(productID);
+    return nullptr;
 }
 
 Battlepay::DisplayInfo const* BattlePayDataStoreMgr::GetDisplayInfo(uint32 id) const

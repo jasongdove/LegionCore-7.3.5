@@ -56,7 +56,7 @@ void WorldSession::HandleSendMail(WorldPackets::Mail::SendMail& packet)
         return;
     }
 
-    TC_LOG_INFO("network", "Player %u includes %u items, " UI64FMTD " copper and " UI64FMTD " COD copper with stationery = %u", player->GetGUIDLow(), packet.Info.Attachments.size(), packet.Info.SendMoney, packet.Info.Cod, packet.Info.StationeryID);
+    TC_LOG_INFO("network", "Player %u includes %zu items, " UI64FMTD " copper and " UI64FMTD " COD copper with stationery = %u", player->GetGUIDLow(), packet.Info.Attachments.size(), packet.Info.SendMoney, packet.Info.Cod, packet.Info.StationeryID);
 
     if (!CanOpenMailBox(packet.Info.Mailbox))
         return;
@@ -111,13 +111,13 @@ void WorldSession::HandleSendMail(WorldPackets::Mail::SendMail& packet)
 
     if (receiverGuid.IsEmpty())
     {
-        TC_LOG_INFO("network", "Player %u is sending mail to %s (GUID: not existed!) with subject %s and body %s includes %u items, " UI64FMTD " copper and " UI64FMTD " COD copper with stationery = %u",
+        TC_LOG_INFO("network", "Player %u is sending mail to %s (GUID: not existed!) with subject %s and body %s includes %zu items, " UI64FMTD " copper and " UI64FMTD " COD copper with stationery = %u",
             player->GetGUIDLow(), packet.Info.Target.c_str(), packet.Info.Subject.c_str(), packet.Info.Body.c_str(), packet.Info.Attachments.size(), packet.Info.SendMoney, packet.Info.Cod, packet.Info.StationeryID);
         player->SendMailResult(0, MAIL_SEND, MAIL_ERR_RECIPIENT_NOT_FOUND);
         return;
     }
 
-    TC_LOG_INFO("network", "Player %u is sending mail to %s (GUID: %u) with subject %s and body %s includes %u items, " UI64FMTD " copper and " UI64FMTD " COD copper with stationery = %u",
+    TC_LOG_INFO("network", "Player %u is sending mail to %s (GUID: %u) with subject %s and body %s includes %zu items, " UI64FMTD " copper and " UI64FMTD " COD copper with stationery = %u",
         player->GetGUIDLow(), packet.Info.Target.c_str(), receiverGuid.GetGUIDLow(), packet.Info.Subject.c_str(), packet.Info.Body.c_str(), packet.Info.Attachments.size(), packet.Info.SendMoney, packet.Info.Cod, packet.Info.StationeryID);
 
     if (player->GetGUID() == receiverGuid)

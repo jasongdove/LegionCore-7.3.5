@@ -3467,7 +3467,7 @@ struct ItemSparseEntry
     float       QualityModifier;
     int32       DurationInInventory;
     float       DmgVariance;
-    uint16      AllowableClass;
+    int16      AllowableClass;
     uint16      ItemLevel;
     uint16      RequiredSkill;
     uint16      RequiredSkillRank;

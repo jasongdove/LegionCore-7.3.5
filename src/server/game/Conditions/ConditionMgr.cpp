@@ -863,7 +863,7 @@ bool ConditionMgr::IsObjectMeetingSmartEventConditions(int64 entryOrGuid, uint32
 		ConditionTypeContainer::const_iterator i = (*itr).second.find(eventId);
 		if (i != itr->second.end())
 		{
-			TC_LOG_DEBUG("condition", "condition", "GetConditionsForSmartEvent: found conditions for Smart Event entry or guid " SI64FMTD " eventId %u", entryOrGuid, eventId);
+			TC_LOG_DEBUG("condition", "GetConditionsForSmartEvent: found conditions for Smart Event entry or guid " SI64FMTD " eventId %u", entryOrGuid, eventId);
 			ConditionSourceInfo sourceInfo(unit, baseObject);
 			//SPP NEED FIX
 			//return IsObjectMeetToConditions(sourceInfo, i->second.end);
@@ -1127,7 +1127,7 @@ ConditionList ConditionMgr::GetConditionsForSmartEvent(int64 entryOrGuid, uint32
         if (i != (*itr).second.end())
         {
             cond = (*i).second;
-            TC_LOG_DEBUG("condition", "GetConditionsForSmartEvent: found conditions for Smart Event entry or guid %d event_id %u", entryOrGuid, eventId);
+            TC_LOG_DEBUG("condition", "GetConditionsForSmartEvent: found conditions for Smart Event entry or guid %ld event_id %u", entryOrGuid, eventId);
         }
     }
     return cond;
@@ -1159,7 +1159,7 @@ ConditionList ConditionMgr::GetConditionsForPhaseDefinition(uint32 zone, uint32 
         if (i != (*itr).second.end())
         {
             cond = (*i).second;
-            TC_LOG_DEBUG("condition", "GetConditionsForPhaseDefinition: found conditions for zone %u entry %u size %u", zone, entry, cond.size());
+            TC_LOG_DEBUG("condition", "GetConditionsForPhaseDefinition: found conditions for zone %u entry %u size %zu", zone, entry, cond.size());
         }
     }
 
@@ -1176,7 +1176,7 @@ ConditionList ConditionMgr::GetConditionsForAreaTriggerAction(uint32 areaTrigger
         if (i != itr->second.end())
         {
             cond = i->second;
-            TC_LOG_DEBUG("condition", "GetConditionsForAreaTriggerAction: found conditions for areatrigger id %u entry %u spell %u", areaTriggerId, actionId);
+            TC_LOG_DEBUG("condition", "GetConditionsForAreaTriggerAction: found conditions for areatrigger id %u entry %u", areaTriggerId, actionId);
         }
     }
 
@@ -2245,7 +2245,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
 
             if (cond->ConditionValue1 >= events.size())
             {
-                TC_LOG_ERROR("sql.sql", "ActiveEvent condition has non existing event id (%u), skipped max arr. size %u", cond->ConditionValue1, events.size());
+                TC_LOG_ERROR("sql.sql", "ActiveEvent condition has non existing event id (%u), skipped max arr. size %zu", cond->ConditionValue1, events.size());
                 return false;
             }
 
@@ -2570,7 +2570,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
         }
         case CONDITION_SPAWNMASK:
             {
-                if (cond->ConditionValue1 >= (UI64LIT(1) << MAX_DIFFICULTY))
+                if (uint64(cond->ConditionValue1) >= (UI64LIT(1) << MAX_DIFFICULTY))
                 {
                     TC_LOG_ERROR("sql.sql", "Map Difficulty condition has non existing map difficulty in value1 (%u), skipped", cond->ConditionValue1);
                     return false;

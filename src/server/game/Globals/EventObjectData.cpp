@@ -140,7 +140,7 @@ void EventObjectDataStoreMgr::LoadEventObjects()
                     lastObject->second->spawnMask |= data.spawnMask;
                     WorldDatabase.PExecute("UPDATE eventobject SET phaseMask = %u, spawnMask = " UI64FMTD " WHERE guid = %u", lastObject->second->phaseMask, lastObject->second->spawnMask, lastObject->second->guid);
                     WorldDatabase.PExecute("DELETE FROM eventobject WHERE guid = %u", guid);
-                    TC_LOG_ERROR("sql.sql", "LoadEventObjects >> Table `eventobject` have clone npc %u witch stay too close (dist: %f). original npc guid %u. npc with guid %u will be deleted.", entry, distsq1, lastObject->second->guid, guid);
+                    TC_LOG_ERROR("sql.sql", "LoadEventObjects >> Table `eventobject` have clone npc %u witch stay too close (dist: %f). original npc guid %lu. npc with guid %lu will be deleted.", entry, distsq1, lastObject->second->guid, guid);
                     continue;
                 }
             }
@@ -158,7 +158,7 @@ void EventObjectDataStoreMgr::LoadEventObjects()
 
         if (data.spawnMask & ~spawnMasks[data.mapid])
         {
-            TC_LOG_ERROR("sql.sql", "LoadEventObjects >> Table `eventobject` have eventobject (GUID: " UI64FMTD ") that have wrong spawn mask %u including not supported difficulty modes for map (Id: %u) spawnMasks[data.mapid]: %u.", guid, data.spawnMask, data.mapid, spawnMasks[data.mapid]);
+            TC_LOG_ERROR("sql.sql", "LoadEventObjects >> Table `eventobject` have eventobject (GUID: " UI64FMTD ") that have wrong spawn mask %lu including not supported difficulty modes for map (Id: %u) spawnMasks[data.mapid]: %lu.", guid, data.spawnMask, data.mapid, spawnMasks[data.mapid]);
             WorldDatabase.PExecute("UPDATE eventobject SET spawnMask = " UI64FMTD " WHERE guid = %u", spawnMasks[data.mapid], guid);
             data.spawnMask = spawnMasks[data.mapid];
         }

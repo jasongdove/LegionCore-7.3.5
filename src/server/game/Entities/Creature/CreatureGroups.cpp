@@ -47,14 +47,14 @@ void FormationMgr::AddCreatureToGroup(ObjectGuid::LowType const& groupId, Creatu
     //Add member to an existing group
     if (itr != map->CreatureGroupHolder.end())
     {
-        TC_LOG_DEBUG("entities.unit", "Group found: %u, inserting creature GUID: %u, Group InstanceID %u", groupId, member->GetGUID().GetGUIDLow(), member->GetInstanceId());
+        TC_LOG_DEBUG("entities.unit", "Group found: %lu, inserting creature GUID: %u, Group InstanceID %u", groupId, member->GetGUID().GetGUIDLow(), member->GetInstanceId());
         itr->second->AddMember(member);
     }
     //Create new group
     else
     {
         map->_creatureGroupLock.lock();
-        TC_LOG_DEBUG("entities.unit", "Group not found: %u. Creating new group.", groupId);
+        TC_LOG_DEBUG("entities.unit", "Group not found: %lu. Creating new group.", groupId);
         auto group = new CreatureGroup(groupId);
         map->CreatureGroupHolder[groupId] = group;
         group->AddMember(member);
@@ -64,7 +64,7 @@ void FormationMgr::AddCreatureToGroup(ObjectGuid::LowType const& groupId, Creatu
 
 void FormationMgr::RemoveCreatureFromGroup(CreatureGroup* group, Creature* member)
 {
-    TC_LOG_DEBUG("entities.unit", "Deleting member pointer to GUID: %u from group %u", group->GetId(), member->GetDBTableGUIDLow());
+    TC_LOG_DEBUG("entities.unit", "Deleting member pointer to GUID: %lu from group %lu", group->GetId(), member->GetDBTableGUIDLow());
     group->RemoveMember(member);
 
     if (group->isEmpty())
@@ -125,14 +125,14 @@ void FormationMgr::LoadCreatureFormations()
         {
             if (!sObjectMgr->GetCreatureData(group_member->leaderGUID))
             {
-                TC_LOG_ERROR("sql.sql", "creature_formations table leader guid %u incorrect (not exist)", group_member->leaderGUID);
+                TC_LOG_ERROR("sql.sql", "creature_formations table leader guid %lu incorrect (not exist)", group_member->leaderGUID);
                 delete group_member;
                 continue;
             }
 
             if (!sObjectMgr->GetCreatureData(memberGUID))
             {
-                TC_LOG_ERROR("sql.sql", "creature_formations table member guid %u incorrect (not exist)", memberGUID);
+                TC_LOG_ERROR("sql.sql", "creature_formations table member guid %lu incorrect (not exist)", memberGUID);
                 delete group_member;
                 continue;
             }
@@ -165,7 +165,7 @@ CreatureGroup::CreatureGroup(ObjectGuid::LowType const& id): m_leader(nullptr), 
 
 void CreatureGroup::AddMember(Creature* member, FormationInfo* f)
 {
-    TC_LOG_DEBUG("entities.unit", "CreatureGroup::AddMember: Adding unit GetDBTableGUIDLow %u GUID: %u", member->GetDBTableGUIDLow(), member->GetGUID().GetGUIDLow());
+    TC_LOG_DEBUG("entities.unit", "CreatureGroup::AddMember: Adding unit GetDBTableGUIDLow %lu GUID: %u", member->GetDBTableGUIDLow(), member->GetGUID().GetGUIDLow());
 
     //Check if it is a leader
     if (member->GetDBTableGUIDLow() == m_groupID || member->GetGUIDLow() == m_groupID)
@@ -185,7 +185,7 @@ void CreatureGroup::AddMember(Creature* member, FormationInfo* f)
 
 void CreatureGroup::RemoveMember(Creature* member)
 {
-    TC_LOG_DEBUG("entities.unit", "CreatureGroup::RemoveMember: Removing unit GetDBTableGUIDLow %u GUID: %u entry %u", member->GetDBTableGUIDLow(), member->GetGUID().GetGUIDLow(), member->GetEntry());
+    TC_LOG_DEBUG("entities.unit", "CreatureGroup::RemoveMember: Removing unit GetDBTableGUIDLow %lu GUID: %u entry %u", member->GetDBTableGUIDLow(), member->GetGUID().GetGUIDLow(), member->GetEntry());
 
     if (m_leader == member)
         m_leader = nullptr;

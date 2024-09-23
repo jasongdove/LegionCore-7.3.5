@@ -219,10 +219,10 @@ void MotionMaster::MoveTargetedHome()
         Unit *target = static_cast<Creature*>(_owner)->GetCharmerOrOwner();
         if (target)
         {
-            TC_LOG_DEBUG("misc", "Following %s (GUID: %u)", target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : static_cast<Creature*>(target)->GetDBTableGUIDLow());
+            TC_LOG_DEBUG("misc", "Following %s (GUID: %lu)", target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : static_cast<Creature*>(target)->GetDBTableGUIDLow());
             if (!_owner->m_movedPlayer)
             {
-                TC_LOG_DEBUG("misc", "Following %s (GUID: %u)", target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : static_cast<Creature*>(target)->GetDBTableGUIDLow());
+                TC_LOG_DEBUG("misc", "Following %s (GUID: %lu)", target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : static_cast<Creature*>(target)->GetDBTableGUIDLow());
                 Mutate(new FollowMovementGenerator<Creature>(*target, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE), MOTION_SLOT_ACTIVE);
             }
         }
@@ -256,12 +256,12 @@ void MotionMaster::MoveChase(Unit* target, float dist, float angle)
     //_owner->ClearUnitState(UNIT_STATE_FOLLOW);
     if (_owner->IsPlayer())
     {
-        TC_LOG_DEBUG("misc", "Player (GUID: %u) chase to %s (GUID: %u)", _owner->GetGUIDLow(), target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : target->ToCreature()->GetDBTableGUIDLow());
+        TC_LOG_DEBUG("misc", "Player (GUID: %u) chase to %s (GUID: %lu)", _owner->GetGUIDLow(), target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : target->ToCreature()->GetDBTableGUIDLow());
         Mutate(new ChaseMovementGenerator<Player>(*target, dist, angle), MOTION_SLOT_ACTIVE);
     }
     else
     {
-        TC_LOG_DEBUG("misc", "Creature (Entry: %u GUID: %u) chase to %s (GUID: %u)", _owner->GetEntry(), _owner->GetGUIDLow(), target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : target->ToCreature()->GetDBTableGUIDLow());
+        TC_LOG_DEBUG("misc", "Creature (Entry: %u GUID: %u) chase to %s (GUID: %lu)", _owner->GetEntry(), _owner->GetGUIDLow(), target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : target->ToCreature()->GetDBTableGUIDLow());
         Mutate(new ChaseMovementGenerator<Creature>(*target, dist, angle), MOTION_SLOT_ACTIVE);
     }
 }
@@ -275,7 +275,7 @@ void MotionMaster::MoveFetch(Unit* target, float dist, float angle, MovementSlot
     //_owner->AddUnitState(UNIT_STATE_FOLLOW);
     if (!_owner->IsPlayer())
     {
-        TC_LOG_DEBUG("misc", "Creature (Entry: %u GUID: %u) follow to %s (GUID: %u)", _owner->GetEntry(), _owner->GetGUIDLow(), target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : target->ToCreature()->GetDBTableGUIDLow());
+        TC_LOG_DEBUG("misc", "Creature (Entry: %u GUID: %u) follow to %s (GUID: %lu)", _owner->GetEntry(), _owner->GetGUIDLow(), target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : target->ToCreature()->GetDBTableGUIDLow());
         Mutate(new FetchMovementGenerator<Creature>(*target, dist, angle), slot);
     }
 }
@@ -289,12 +289,12 @@ void MotionMaster::MoveFollow(Unit* target, float dist, float angle, MovementSlo
     //_owner->AddUnitState(UNIT_STATE_FOLLOW);
     if (_owner->IsPlayer())
     {
-        TC_LOG_DEBUG("misc", "Player (GUID: %u) follow to %s (GUID: %u)", _owner->GetGUIDLow(), target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : target->ToCreature()->GetDBTableGUIDLow());
+        TC_LOG_DEBUG("misc", "Player (GUID: %u) follow to %s (GUID: %lu)", _owner->GetGUIDLow(), target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : target->ToCreature()->GetDBTableGUIDLow());
         Mutate(new FollowMovementGenerator<Player>(*target, dist, angle), slot);
     }
     else
     {
-        TC_LOG_DEBUG("misc", "Creature (Entry: %u GUID: %u) follow to %s (GUID: %u)", _owner->GetEntry(), _owner->GetGUIDLow(), target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : target->ToCreature()->GetDBTableGUIDLow());
+        TC_LOG_DEBUG("misc", "Creature (Entry: %u GUID: %u) follow to %s (GUID: %lu)", _owner->GetEntry(), _owner->GetGUIDLow(), target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : target->ToCreature()->GetDBTableGUIDLow());
         Mutate(new FollowMovementGenerator<Creature>(*target, dist, angle), slot);
     }
 }
@@ -669,14 +669,14 @@ void MotionMaster::MoveFleeing(Unit* enemy, uint32 time)
 
     if (_owner->IsPlayer())
     {
-        TC_LOG_DEBUG("misc", "Player (GUID: %u) flee from %s (GUID: %u)", _owner->GetGUIDLow(),
+        TC_LOG_DEBUG("misc", "Player (GUID: %u) flee from %s (GUID: %lu)", _owner->GetGUIDLow(),
             enemy->IsPlayer() ? "player" : "creature",
             enemy->IsPlayer() ? enemy->GetGUIDLow() : enemy->ToCreature()->GetDBTableGUIDLow());
         Mutate(new FleeingMovementGenerator<Player>(enemy->GetGUID()), MOTION_SLOT_CONTROLLED);
     }
     else
     {
-        TC_LOG_DEBUG("misc", "Creature (Entry: %u GUID: %u) flee from %s (GUID: %u)%s",
+        TC_LOG_DEBUG("misc", "Creature (Entry: %u GUID: %u) flee from %s (GUID: %lu)%s",
             _owner->GetEntry(), _owner->GetGUIDLow(),
             enemy->IsPlayer() ? "player" : "creature",
             enemy->IsPlayer() ? enemy->GetGUIDLow() : enemy->ToCreature()->GetDBTableGUIDLow(),

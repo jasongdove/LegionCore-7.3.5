@@ -38,7 +38,7 @@
 #include "Util.h"
 #include "Vehicle.h"
 
-AuraApplication::AuraApplication(Unit* target, Unit* caster, Aura* aura, uint32 effMask) : _target(target), _base(aura), _removeMode(AURA_REMOVE_NONE), _slot(MAX_AURAS), _flags(AFLAG_NONE), _effectMask(NULL), _effectsToApply(effMask), _needClientUpdate(false)
+AuraApplication::AuraApplication(Unit* target, Unit* caster, Aura* aura, uint32 effMask) : _target(target), _base(aura), _removeMode(AURA_REMOVE_NONE), _slot(MAX_AURAS), _flags(AFLAG_NONE), _effectMask(0), _effectsToApply(effMask), _needClientUpdate(false)
 {
     ASSERT(GetTarget() && GetBase());
 
@@ -1016,7 +1016,7 @@ bool Aura::IsAppliedOnTarget(ObjectGuid const& guid)
 
 void Aura::UpdateTargetMap(Unit* caster, bool apply)
 {
-    if (!this || IsRemoved())
+    if (IsRemoved())
         return;
 
     m_updateTargetMapInterval = UPDATE_TARGET_MAP_INTERVAL;
@@ -1783,9 +1783,6 @@ bool Aura::HasAuraAttribute(AuraAttr attribute) const
 
 void Aura::SetAuraAttribute(AuraAttr attribute, bool apply)
 {
-    if (!this)
-        return;
-
     if (apply)
     {
         auraAttributes |= attribute;

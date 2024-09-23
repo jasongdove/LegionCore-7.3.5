@@ -64,7 +64,7 @@ void WordFilterMgr::LoadLetterAnalogs()
     }
     while (result->NextRow());
 
-    TC_LOG_INFO("server.loading",">> Loaded %u (%u) letter analogs in %u ms", count, m_letterAnalogs.size(), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading",">> Loaded %u (%zu) letter analogs in %u ms", count, m_letterAnalogs.size(), GetMSTimeDiffToNow(oldMSTime));
 }
 
 

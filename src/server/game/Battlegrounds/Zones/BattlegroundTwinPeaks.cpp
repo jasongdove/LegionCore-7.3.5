@@ -90,7 +90,7 @@ void BattlegroundTwinPeaks::PostUpdateImpl(uint32 diff)
                         if (GameObject* obj = GetBgMap()->GetGameObject(_droppedFlagGUID[team]))
                             obj->Delete();
                         else
-                            TC_LOG_ERROR("bg.battleground", "BattlegroundTwinPeaks: An error has occurred in PostUpdateImpl: Unknown dropped flag GUID: %u", _droppedFlagGUID[team].GetCounter());
+                            TC_LOG_ERROR("bg.battleground", "BattlegroundTwinPeaks: An error has occurred in PostUpdateImpl: Unknown dropped flag GUID: %lu", _droppedFlagGUID[team].GetCounter());
 
                         _droppedFlagGUID[team].Clear();
 
@@ -623,7 +623,7 @@ void BattlegroundTwinPeaks::RemovePlayer(Player* player, ObjectGuid guid, uint32
                         pl->RemoveAurasDueToSpell(SPELL_BG_BRUTAL_ASSAULT);
                 }
                 else
-                    TC_LOG_ERROR("bg.battleground", "BattlegroundTwinPeaks: An error has occurred in RemovePlayer: player with GUID: %u haven't been found. (_bothflagsKept is TRUE).", _flagKeepers[team].GetCounter());
+                    TC_LOG_ERROR("bg.battleground", "BattlegroundTwinPeaks: An error has occurred in RemovePlayer: player with GUID: %lu haven't been found. (_bothflagsKept is TRUE).", _flagKeepers[team].GetCounter());
             }
 
             _bothFlagsKept = false;

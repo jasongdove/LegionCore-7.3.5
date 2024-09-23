@@ -296,7 +296,7 @@ void PathGenerator::BuildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
     if (startPoly == INVALID_POLYREF || endPoly == INVALID_POLYREF)
     {
         if (_sourceUnit->IsPlayer() || _sourceUnit->isSummon())
-            TC_LOG_DEBUG("maps", "++ BuildPolyPath :: (startPoly == %u || endPoly == %u)", startPoly, endPoly);
+            TC_LOG_DEBUG("maps", "++ BuildPolyPath :: (startPoly == %lu || endPoly == %lu)", startPoly, endPoly);
 
         BuildShortcut();
         bool path = _sourceUnit->GetTypeId() == TYPEID_UNIT && _sourceUnit->ToCreature()->CanFly();
@@ -716,7 +716,7 @@ void PathGenerator::NormalizePath()
         TC_LOG_DEBUG("maps", "PathGenerator::NormalizePath next %u _pathPoints %u vector %f %f %f dist %f 2ddist %f", next, i, _pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, dtVdist(lastPoint, nextPoint), dtVdist2D(lastPoint, nextPoint));
     }
 
-    TC_LOG_DEBUG("maps", "PathGenerator::NormalizePath _pathPoints %u", _pathPoints.size());
+    TC_LOG_DEBUG("maps", "PathGenerator::NormalizePath _pathPoints %zu", _pathPoints.size());
 
     return; // Now disable, need fix calculation
 
@@ -760,7 +760,7 @@ void PathGenerator::NormalizePath()
                 _newPathPoints.push_back(G3D::Vector3{moveTgt[0], moveTgt[1], moveTgt[2]});
                 dtVcopy(lastPoint, moveTgt);
                 dtVcopy(moveCur, nextPoint);
-                TC_LOG_DEBUG("maps", "NormalizePath 0 push_back %u vector %f %f %f dist %f 2ddist %f", _newPathPoints.size(), moveTgt[0], moveTgt[1], moveTgt[2], dtVdist(lastPoint, moveCur), dtVdist2D(lastPoint, moveCur));
+                TC_LOG_DEBUG("maps", "NormalizePath 0 push_back %zu vector %f %f %f dist %f 2ddist %f", _newPathPoints.size(), moveTgt[0], moveTgt[1], moveTgt[2], dtVdist(lastPoint, moveCur), dtVdist2D(lastPoint, moveCur));
                 break;
             }
             result = map->isInLineOfSight(lastPoint[0], lastPoint[1], lastPoint[2] + 0.5f, moveTgt[0], moveTgt[1], moveTgt[2] + 0.5f, _sourceUnit->GetPhases());
@@ -774,7 +774,7 @@ void PathGenerator::NormalizePath()
                 _sourceUnit->UpdateAllowedPositionZ(moveTgt[0], moveTgt[1], moveTgt[2]);
                 _newPathPoints.push_back(G3D::Vector3{moveTgt[0], moveTgt[1], moveTgt[2]});
 
-                TC_LOG_DEBUG("maps", "NormalizePath 1 push_back %u vector %f %f %f dist %f 2ddist %f", _newPathPoints.size(), moveTgt[0], moveTgt[1], moveTgt[2], dtVdist(lastPoint, moveCur), dtVdist2D(lastPoint, moveCur));
+                TC_LOG_DEBUG("maps", "NormalizePath 1 push_back %zu vector %f %f %f dist %f 2ddist %f", _newPathPoints.size(), moveTgt[0], moveTgt[1], moveTgt[2], dtVdist(lastPoint, moveCur), dtVdist2D(lastPoint, moveCur));
 
                 if (!result)
                     result = map->isInLineOfSight(lastPoint[0], lastPoint[1], lastPoint[2] + 0.5f, moveCur[0], moveCur[1], moveCur[2] + 0.5f, _sourceUnit->GetPhases());
@@ -793,7 +793,7 @@ void PathGenerator::NormalizePath()
     for (uint32 i = 0; i < _pathPoints.size(); ++i)
         TC_LOG_DEBUG("maps", "NormalizePath _pathPoints %u vector %f %f %f", i, _pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z);
 
-    TC_LOG_DEBUG("maps", "PathGenerator::NormalizePath end _pathPoints %u counter %u", _pathPoints.size(), counter);
+    TC_LOG_DEBUG("maps", "PathGenerator::NormalizePath end _pathPoints %zu counter %u", _pathPoints.size(), counter);
 }
 
 void PathGenerator::Clear()

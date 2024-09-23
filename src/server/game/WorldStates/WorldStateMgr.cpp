@@ -222,7 +222,7 @@ void WorldStateMgr::LoadTemplatesFromDB()
         AddTemplate(variableID, fields[1].GetUInt32(), fields[2].GetUInt32(), fields[3].GetUInt32(), fields[4].GetUInt32());
     } while (result->NextRow());
 
-    TC_LOG_INFO("misc", "%s >> Loaded %u templates", __FUNCTION__, _worldStateTemplates.size());
+    TC_LOG_INFO("misc", "%s >> Loaded %zu templates", __FUNCTION__, _worldStateTemplates.size());
 }
 
 void WorldStateMgr::LoadTemplatesFromObjectTemplateDB()

@@ -41,9 +41,7 @@ GossipMenu::~GossipMenu()
 
 void GossipMenu::AddMenuItem(int32 menuItemId, uint8 icon, std::string const& message, uint32 sender, uint32 action, std::string const& boxMessage, uint32 boxMoney, uint32 boxCurrency, bool coded /*= false*/)
 {
-    if (!this || _menuItems.size() > GOSSIP_MAX_MENU_ITEMS)
-        return;
-    //ASSERT(_menuItems.size() <= GOSSIP_MAX_MENU_ITEMS);
+    ASSERT(_menuItems.size() <= GOSSIP_MAX_MENU_ITEMS);
 
     // Find a free new id - script case
     if (menuItemId == -1)
@@ -223,9 +221,6 @@ bool PlayerMenu::IsGossipOptionCoded(uint32 selection) const
 
 void PlayerMenu::SendGossipMenu(uint32 titleTextId, ObjectGuid objectGUID, uint32 friendshipFactionID /*= 0*/) const
 {
-    if (!this)
-        return;
-
     WorldPackets::NPC::GossipMessage packet;
     packet.GossipGUID = objectGUID;
     packet.TextID = titleTextId;

@@ -198,7 +198,7 @@ void BattlegroundEyeOfTheStorm::_CheckSomeoneJoinedPoint()
                 Player* player = ObjectAccessor::FindPlayer(_playersNearPoint[EY_POINTS_MAX][j]);
                 if (!player)
                 {
-                    TC_LOG_ERROR("bg.battleground", "BattlegroundEyeOfTheStorm:_CheckSomeoneJoinedPoint: Player (GUID: %u) not found!", _playersNearPoint[EY_POINTS_MAX][j].GetCounter());
+                    TC_LOG_ERROR("bg.battleground", "BattlegroundEyeOfTheStorm:_CheckSomeoneJoinedPoint: Player (GUID: %lu) not found!", _playersNearPoint[EY_POINTS_MAX][j].GetCounter());
                     ++j;
                     continue;
                 }
@@ -237,7 +237,7 @@ void BattlegroundEyeOfTheStorm::_CheckSomeoneLeftPoint()
                 Player* player = ObjectAccessor::FindPlayer(_playersNearPoint[i][j]);
                 if (!player)
                 {
-                    TC_LOG_ERROR("bg.battleground", "BattlegroundEyeOfTheStorm:_CheckSomeoneLeftPoint Player (GUID: %u) not found!", _playersNearPoint[i][j].GetCounter());
+                    TC_LOG_ERROR("bg.battleground", "BattlegroundEyeOfTheStorm:_CheckSomeoneLeftPoint Player (GUID: %lu) not found!", _playersNearPoint[i][j].GetCounter());
                     //move not existed player to "free space" - this will cause many error showing in log, but it is a very important bug
                     _playersNearPoint[EY_POINTS_MAX].push_back(_playersNearPoint[i][j]);
                     _playersNearPoint[i].erase(_playersNearPoint[i].begin() + j);

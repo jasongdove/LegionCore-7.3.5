@@ -438,7 +438,7 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
     if (effectHandleMode != SPELL_EFFECT_HANDLE_LAUNCH_TARGET)
         return;
 
-    TC_LOG_DEBUG("spells", "EffectSchoolDMG %i, m_diffMode %i, effIndex %i, spellId %u, damage %i", m_damage, m_diffMode, effIndex, m_spellInfo->Id, damage);
+    TC_LOG_DEBUG("spells", "EffectSchoolDMG %i, m_diffMode %i, effIndex %i, spellId %u, damage %f", m_damage, m_diffMode, effIndex, m_spellInfo->Id, damage);
 
     if (unitTarget && unitTarget->isAlive())
     {
@@ -657,7 +657,7 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
             m_damage /= count;                    // divide to all targets
         }
 
-        TC_LOG_DEBUG("spells", "EffectSchoolDMG end %i, m_diffMode %i, effIndex %i, spellId %u, damage %i GetComboPoints %i", m_damage, m_diffMode, effIndex, m_spellInfo->Id, damage, GetComboPoints());
+        TC_LOG_DEBUG("spells", "EffectSchoolDMG end %i, m_diffMode %i, effIndex %i, spellId %u, damage %f GetComboPoints %i", m_damage, m_diffMode, effIndex, m_spellInfo->Id, damage, GetComboPoints());
 
         switch (m_spellInfo->Id)
         {
@@ -2737,7 +2737,7 @@ void Spell::EffectHealPct(SpellEffIndex effIndex)
                 if ((*i)->GetMiscValue() == 11)
                     if ((*i)->GetAmount() == m_spellInfo->Id)
                     {
-                        (*i)->SetAmount(NULL);
+                        (*i)->SetAmount(0.0);
                         resetHeal = false;
                     }
 
@@ -2845,7 +2845,7 @@ void Spell::EffectHealthLeech(SpellEffIndex effIndex)
 
     damage = bonus + uint32(bonus * variance);
 
-    TC_LOG_DEBUG("spells", "HealthLeech damage %i bonus %u variance %f", damage, bonus, variance);
+    TC_LOG_DEBUG("spells", "HealthLeech damage %f bonus %u variance %f", damage, bonus, variance);
 
     m_damage += damage;
     if (m_caster->isAlive())
@@ -2866,7 +2866,7 @@ void Spell::EffectHealthLeech(SpellEffIndex effIndex)
         // get max possible damage, don't count overkill for heal
         healthGain = uint64(-unitTarget->GetHealthGain(-1 * healthGain) * healMultiplier);
 
-        TC_LOG_DEBUG("spells", "HealthLeech damage %i healthGain %u", damage, healthGain);
+        TC_LOG_DEBUG("spells", "HealthLeech damage %f healthGain %lu", damage, healthGain);
 
         m_caster->HealBySpell(m_caster, m_spellInfo, uint64(healthGain), isCrit);
     }
@@ -3378,7 +3378,7 @@ void Spell::EffectEnergizePct(SpellEffIndex effIndex)
     m_addpower = gain;
     m_caster->EnergizeBySpell(unitTarget, m_spellInfo->Id, gain, power);
 
-    TC_LOG_DEBUG("spells", "Spell::EffectEnergizePct Id %i damage %i power %i gain %i", m_spellInfo->Id, damage, power, gain);
+    TC_LOG_DEBUG("spells", "Spell::EffectEnergizePct Id %i damage %f power %i gain %i", m_spellInfo->Id, damage, power, gain);
 }
 
 void Spell::SendLoot(ObjectGuid const& guid, LootType loottype)
@@ -3432,7 +3432,7 @@ void Spell::SendLoot(ObjectGuid const& guid, LootType loottype)
                 // TODO: possible must be moved to loot release (in different from linked triggering)
                 if (gameObjTarget->GetGOInfo()->chest.triggeredEvent)
                 {
-                    TC_LOG_DEBUG("spells", "Chest ScriptStart id %u for GO %u", gameObjTarget->GetGOInfo()->chest.triggeredEvent, gameObjTarget->GetDBTableGUIDLow());
+                    TC_LOG_DEBUG("spells", "Chest ScriptStart id %u for GO %lu", gameObjTarget->GetGOInfo()->chest.triggeredEvent, gameObjTarget->GetDBTableGUIDLow());
                     player->GetMap()->ScriptsStart(sEventScripts, gameObjTarget->GetGOInfo()->chest.triggeredEvent, player, gameObjTarget);
                 }
 
@@ -9585,7 +9585,8 @@ void Spell::EffectObliterateItem(SpellEffIndex /*effIndex*/)
         ItemPosCountVec dest;
         if (player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, addCount) == EQUIP_ERR_OK)
         {
-            if (item = player->StoreNewItem(dest, itemId, true))
+            item = player->StoreNewItem(dest, itemId, true);
+            if (item)
             {
                 player->SendNewItem(item, addCount, true, false, true);
                 //player->SendDisplayToast(itemId, ToastType::ITEM, false, addCount, DisplayToastMethod::ITEM, 0, item);

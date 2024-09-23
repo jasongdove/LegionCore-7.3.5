@@ -44,7 +44,7 @@ public:
     uint32 GetProductGroupId(uint32 productId) const;
     std::map<uint32, Battlepay::Product> const& GetProducts() const;
     bool ProductExist(uint32 productID) const;
-    Battlepay::Product const& GetProduct(uint32 productID) const;
+    Battlepay::Product const* GetProduct(uint32 productID) const;
     Battlepay::DisplayInfo const* GetDisplayInfo(uint32 id) const;
     std::vector<WorldPackets::BattlePay::ProductDisplayVisualData> const* GetDisplayInfoVisuals(uint32 id) const;
     Battlepay::ProductGroupLocale const* GetProductGroupLocale(uint32 entry) const;

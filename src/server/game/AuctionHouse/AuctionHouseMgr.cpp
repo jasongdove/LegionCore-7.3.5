@@ -213,7 +213,7 @@ void AuctionHouseMgr::SendAuctionExpiredMail(AuctionEntry* auction, CharacterDat
     Item* pItem = GetAItem(auction->itemGUIDLow);
     if (!pItem)
     {
-        TC_LOG_ERROR("server.loading", "SendAuctionExpiredMail %u has not a existing item : %u", auction->Id, auction->itemGUIDLow);
+        TC_LOG_ERROR("server.loading", "SendAuctionExpiredMail %u has not a existing item : %lu", auction->Id, auction->itemGUIDLow);
         return;
     }
 
@@ -811,7 +811,7 @@ bool AuctionEntry::LoadFromDB(Field* fields)
     // and itemEntry in fact (GetAItem will fail if problematic in result check in AuctionHouseMgr::LoadAuctionItems)
     if (!sAuctionMgr->GetAItem(itemGUIDLow))
     {
-        TC_LOG_DEBUG("server.loading", "Auction %u has not a existing item : %u", Id, itemGUIDLow);
+        TC_LOG_DEBUG("server.loading", "Auction %u has not a existing item : %lu", Id, itemGUIDLow);
         return false;
     }
     return true;

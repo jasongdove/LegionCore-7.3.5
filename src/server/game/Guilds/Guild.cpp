@@ -360,7 +360,7 @@ void Guild::RankInfo::CreateMissingTabsIfNeeded(uint8 tabs, CharacterDatabaseTra
             rightsAndSlots.SetGuildMasterValues();
 
         if (logOnCreate)
-            TC_LOG_ERROR("guild", "Guild %u has broken Tab %u for rank %u. Created default tab.", m_guildId, i, m_rankId);
+            TC_LOG_ERROR("guild", "Guild %lu has broken Tab %u for rank %u. Created default tab.", m_guildId, i, m_rankId);
 
         CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_GUILD_BANK_RIGHT);
         stmt->setUInt64(0, m_guildId);
@@ -524,14 +524,14 @@ bool Guild::BankTab::LoadItemFromDB(Field* fields)
     uint32 itemEntry = fields[1].GetUInt32();
     if (slotId >= GUILD_BANK_MAX_SLOTS)
     {
-        TC_LOG_ERROR("guild", "Invalid slot for item (GUID: %u, id: %u) in guild bank, skipped.", itemGuid, itemEntry);
+        TC_LOG_ERROR("guild", "Invalid slot for item (GUID: %lu, id: %u) in guild bank, skipped.", itemGuid, itemEntry);
         return false;
     }
 
     ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemEntry);
     if (!proto)
     {
-        TC_LOG_ERROR("guild", "Unknown item (GUID: %u, id: %u) in guild bank, skipped.", itemGuid, itemEntry);
+        TC_LOG_ERROR("guild", "Unknown item (GUID: %lu, id: %u) in guild bank, skipped.", itemGuid, itemEntry);
         return false;
     }
 
@@ -539,7 +539,7 @@ bool Guild::BankTab::LoadItemFromDB(Field* fields)
 
     if (!pItem->LoadFromDB(itemGuid, ObjectGuid::Empty, fields, itemEntry))
     {
-        TC_LOG_ERROR("guild", "Item (GUID %u, id: %u) not found in item_instance, deleting from guild bank!", itemGuid, itemEntry);
+        TC_LOG_ERROR("guild", "Item (GUID %lu, id: %u) not found in item_instance, deleting from guild bank!", itemGuid, itemEntry);
 
         CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_NONEXISTENT_GUILD_BANK_ITEM);
         stmt->setUInt64(0, m_guildId);
@@ -2305,7 +2305,7 @@ void Guild::HandleMemberDepositMoney(WorldSession* session, uint64 amount, bool 
             player->GetName(), player->GetSession()->GetAccountId(), amount, m_id);
     }
     if (amount >= sWorld->getIntConfig(CONFIG_LOG_GOLD_FROM))
-        TC_LOG_DEBUG("auctionHouse", "GuildDepositMoney: %s GUID %u (Account: %u) deposit money (Amount: " UI64FMTD ") to guild bank (Guild ID %u)", player->GetName(), player->GetGUIDLow(), player->GetSession()->GetAccountId(), amount, m_id);
+        TC_LOG_DEBUG("auctionHouse", "GuildDepositMoney: %s GUID %u (Account: %u) deposit money (Amount: " UI64FMTD ") to guild bank (Guild ID %lu)", player->GetName(), player->GetGUIDLow(), player->GetSession()->GetAccountId(), amount, m_id);
 
     // Log guild bank event
     _LogBankEvent(trans, cashFlow ? GUILD_BANK_LOG_CASH_FLOW_DEPOSIT : GUILD_BANK_LOG_DEPOSIT_MONEY, uint8(0), player->GetGUIDLow(), amount);
@@ -2351,7 +2351,7 @@ bool Guild::HandleMemberWithdrawMoney(WorldSession* session, uint64 amount, bool
         player->SaveGoldToDB(trans);
 
         if (amount >= sWorld->getIntConfig(CONFIG_LOG_GOLD_FROM))
-            TC_LOG_DEBUG("auctionHouse", "GuildWithdrawMoney: %s GUID %u (Account: %u) deposit money (Amount: " UI64FMTD ") to guild bank (Guild ID %u)", player->GetName(), player->GetGUIDLow(), player->GetSession()->GetAccountId(), amount, m_id);
+            TC_LOG_DEBUG("auctionHouse", "GuildWithdrawMoney: %s GUID %u (Account: %u) deposit money (Amount: " UI64FMTD ") to guild bank (Guild ID %lu)", player->GetName(), player->GetGUIDLow(), player->GetSession()->GetAccountId(), amount, m_id);
     }
     // Log guild bank event
     _LogBankEvent(trans, repair ? GUILD_BANK_LOG_REPAIR_MONEY : GUILD_BANK_LOG_WITHDRAW_MONEY, uint8(0), player->GetGUIDLow(), amount);
@@ -2806,13 +2806,13 @@ bool Guild::LoadBankEventLogFromDB(Field* fields)
             {
                 if (!isMoneyTab)
                 {
-                    TC_LOG_ERROR("guild", "GuildBankEventLog ERROR: MoneyEvent(LogGuid: %u, Guild: %u) does not belong to money tab (%u), ignoring...", guid, m_id, dbTabId);
+                    TC_LOG_ERROR("guild", "GuildBankEventLog ERROR: MoneyEvent(LogGuid: %lu, Guild: %lu) does not belong to money tab (%u), ignoring...", guid, m_id, dbTabId);
                     return false;
                 }
             }
             else if (isMoneyTab)
             {
-                TC_LOG_ERROR("guild", "GuildBankEventLog ERROR: non-money event (LogGuid: %u, Guild: %u) belongs to money tab, ignoring...", guid, m_id);
+                TC_LOG_ERROR("guild", "GuildBankEventLog ERROR: non-money event (LogGuid: %lu, Guild: %lu) belongs to money tab, ignoring...", guid, m_id);
                 return false;
             }
 
@@ -2882,7 +2882,7 @@ bool Guild::Validate()
     bool broken_ranks = false;
     if (_GetRanksSize() < GUILD_RANKS_MIN_COUNT || _GetRanksSize() > GUILD_RANKS_MAX_COUNT)
     {
-        TC_LOG_ERROR("guild", "Guild %u has invalid number of ranks, creating new...", m_id);
+        TC_LOG_ERROR("guild", "Guild %lu has invalid number of ranks, creating new...", m_id);
         broken_ranks = true;
     }
     else
@@ -2892,7 +2892,7 @@ bool Guild::Validate()
             RankInfo* rankInfo = GetRankInfo(rankId);
             if (rankInfo->GetId() != rankId)
             {
-                TC_LOG_ERROR("guild", "Guild %u has broken rank id %u, creating default set of ranks...", m_id, rankId);
+                TC_LOG_ERROR("guild", "Guild %lu has broken rank id %u, creating default set of ranks...", m_id, rankId);
                 broken_ranks = true;
             }
             else

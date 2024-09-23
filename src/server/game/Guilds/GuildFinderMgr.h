@@ -69,11 +69,6 @@ struct MembershipRequest
     uint8 GetClassRoles() const { return _classRoles; }
     uint8 GetPlayStyle() const { return _playStyle; }
 
-    uint8 GetClass() const;
-    uint8 GetLevel() const;
-    std::string const& GetName() const;
-    uint8 GetGender() const;
-
     time_t GetSubmitTime() const;
     time_t GetExpiryTime() const; // Adding 30 days
     std::string const& GetComment() const;

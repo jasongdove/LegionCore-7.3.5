@@ -398,7 +398,7 @@ void ChallengeMgr::DeleteOploteLoot(ObjectGuid const& guid)
 
 void ChallengeMgr::GenerateOploteLoot(bool manual)
 {
-    TC_LOG_DEBUG("challenge", "GenerateOploteLoot manual %u _challengeWeekList %u", manual, _challengeWeekList.size());
+    TC_LOG_DEBUG("challenge", "GenerateOploteLoot manual %u _challengeWeekList %zu", manual, _challengeWeekList.size());
 
     CharacterDatabase.Query("DELETE FROM challenge_oplote_loot WHERE date <= UNIX_TIMESTAMP()");
     _oploteWeekLoot.clear();

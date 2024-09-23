@@ -95,8 +95,6 @@ bool UnitAI::DoSpellAttackIfReady(uint32 spell, TriggerCastFlags triggerFlags /*
 
 Unit* UnitAI::SelectTarget(SelectAggroTarget targetType, uint32 position, float dist, bool playerOnly, int32 aura)
 {
-    if (!this)
-        return nullptr;
     return SelectTarget(targetType, position, DefaultTargetSelector(me, dist, playerOnly, aura));
 }
 

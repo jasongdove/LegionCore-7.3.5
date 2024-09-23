@@ -173,25 +173,16 @@ void CreatureAI::Talk(std::initializer_list<uint8> ids, ObjectGuid WhisperGuid /
 
 void CreatureAI::Talk(uint8 id, ObjectGuid WhisperGuid)
 {
-    if (!this)
-        return;
-
     sCreatureTextMgr->SendChat(me, id, WhisperGuid);
 }
 
 void CreatureAI::TalkAuto(uint8 id, ObjectGuid WhisperGuid)
 {
-    if (!this)
-        return;
-
     sCreatureTextMgr->SendChat(me, id, WhisperGuid, CHAT_MSG_ADDON, LANG_ADDON, TEXT_RANGE_NORMAL, 0, TEAM_OTHER, false, nullptr, true);
 }
 
 void CreatureAI::DelayTalk(uint32 delayTimer, uint8 id, ObjectGuid WhisperGuid)
 {
-    if (!this)
-        return;
-
     delayTimer *= IN_MILLISECONDS;
 
     me->AddDelayedEvent(delayTimer, [this, id, WhisperGuid]() -> void
@@ -203,9 +194,6 @@ void CreatureAI::DelayTalk(uint32 delayTimer, uint8 id, ObjectGuid WhisperGuid)
 
 void CreatureAI::ZoneTalk(uint8 id, ObjectGuid WhisperGuid)
 {
-    if (!this)
-        return;
-
     sCreatureTextMgr->SendChat(me, id, WhisperGuid, CHAT_MSG_ADDON, LANG_ADDON, TEXT_RANGE_ZONE);
 }
 

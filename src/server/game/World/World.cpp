@@ -4607,7 +4607,7 @@ void World::Transfer()
             std::string dump;
             DumpReturn dumpState = PlayerDumpWriter().WriteDump(guid, dump);
 
-            TC_LOG_DEBUG("network", "Transfer toDump guid %u, dump %u", guid, dumpState);
+            TC_LOG_DEBUG("network", "Transfer toDump guid %lu, dump %u", guid, dumpState);
 
             if (dumpState == DUMP_SUCCESS)
             {
@@ -4651,7 +4651,7 @@ void World::Transfer()
 
             DumpReturn dumpState = PlayerDumpReader().LoadDump(toacc, dump, "", newguid);
 
-            TC_LOG_DEBUG("network", "Transfer toLoad guid %u, dump %u", guid, dumpState);
+            TC_LOG_DEBUG("network", "Transfer toLoad guid %lu, dump %u", guid, dumpState);
 
             if (dumpState == DUMP_SUCCESS)
             {

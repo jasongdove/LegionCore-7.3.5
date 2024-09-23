@@ -607,7 +607,7 @@ void ByteBuffer::textlike() const
 
 void ByteBuffer::hexlike() const
 {
-    if (!sLog->ShouldLog("network", LOG_LEVEL_WARN)) // optimize disabled debug output
+    if (!sLog->ShouldLog("network", LOG_LEVEL_TRACE)) // optimize disabled trace output
         return;
 
     uint32 j = 1, k = 1;
@@ -617,8 +617,8 @@ void ByteBuffer::hexlike() const
 
     for (uint32 i = 0; i < size(); ++i)
     {
-        char buf[3];
-        snprintf(buf, 3, "%2X ", read<uint8>(i));
+        char buf[4];
+        snprintf(buf, 4, "%2X ", read<uint8>(i));
         if ((i == (j * 8)) && ((i != (k * 16))))
         {
             o << "| ";

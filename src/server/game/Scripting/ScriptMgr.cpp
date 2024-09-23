@@ -1484,19 +1484,19 @@ BattlePayProductScript::BattlePayProductScript(std::string name) : ScriptObject(
     ScriptRegistry<BattlePayProductScript>::AddScript(this);
 }
 
-void ScriptMgr::OnBattlePayProductDelivery(WorldSession* session, Battlepay::Product const& product)
+void ScriptMgr::OnBattlePayProductDelivery(WorldSession* session, Battlepay::Product const* product)
 {
     ASSERT(session);
 
-    GET_SCRIPT(BattlePayProductScript, sObjectMgr->GetScriptId(product.ScriptName.c_str()), tmpscript);
+    GET_SCRIPT(BattlePayProductScript, sObjectMgr->GetScriptId(product->ScriptName.c_str()), tmpscript);
     tmpscript->OnProductDelivery(session, product);
 }
 
-bool ScriptMgr::BattlePayCanBuy(WorldSession* session, Battlepay::Product const& product, std::string& reason)
+bool ScriptMgr::BattlePayCanBuy(WorldSession* session, Battlepay::Product const* product, std::string& reason)
 {
     ASSERT(session);
 
-    GET_SCRIPT_RET(BattlePayProductScript, sObjectMgr->GetScriptId(product.ScriptName.c_str()), tmpscript, false);
+    GET_SCRIPT_RET(BattlePayProductScript, sObjectMgr->GetScriptId(product->ScriptName.c_str()), tmpscript, false);
     return tmpscript->CanBuy(session, product, reason);
 }
 

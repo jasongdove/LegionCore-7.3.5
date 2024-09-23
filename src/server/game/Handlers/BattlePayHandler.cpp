@@ -137,8 +137,14 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
         return;
     }
 
-    auto const& product = sBattlePayDataStore->GetProduct(purchase.ProductID);
-    purchase.CurrentPrice = product.CurrentPriceFixedPoint;
+    auto const* product = sBattlePayDataStore->GetProduct(purchase.ProductID);
+    if (!product)
+    {
+        SendStartPurchaseResponse(session, purchase, Battlepay::Error::PurchaseDenied);
+        return;
+    }
+
+    purchase.CurrentPrice = product->CurrentPriceFixedPoint;
 
     mgr->RegisterStartPurchase(purchase);
 
@@ -157,9 +163,9 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
         return;
     }
 
-    if (!product.Items.empty())
+    if (!product->Items.empty())
     {
-        if (product.Items.size() > GetBagsFreeSlots(player))
+        if (product->Items.size() > GetBagsFreeSlots(player))
         {
             std::ostringstream data;
             data << sObjectMgr->GetTrinityString(Battlepay::String::NotEnoughFreeBagSlots, session->GetSessionDbLocaleIndex());
@@ -169,7 +175,7 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
         }
     }
 
-    if (!product.ScriptName.empty())
+    if (!product->ScriptName.empty())
     {
         std::string reason;
         if (!sScriptMgr->BattlePayCanBuy(session, product, reason))
@@ -182,7 +188,7 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
         }
     }
 
-    for (auto itr : product.Items)
+    for (auto itr : product->Items)
     {
         if (mgr->AlreadyOwnProduct(itr.ItemID))
         {
@@ -260,11 +266,17 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
         return;
     }
 
+    auto const* product = sBattlePayDataStore->GetProduct(purchase->ProductID);
+    if (!product)
+    {
+        SendPurchaseUpdate(this, *purchase, Battlepay::Error::PurchaseDenied);
+        return;
+    }
+
     purchase->Lock = true;
     purchase->Status = Battlepay::UpdateStatus::Finish;
 
-    auto const& product = sBattlePayDataStore->GetProduct(purchase->ProductID);
-    if (!product.ScriptName.empty())
+    if (!product->ScriptName.empty())
     {
         std::string reason;
         if (!sScriptMgr->BattlePayCanBuy(this, product, reason))
@@ -277,9 +289,9 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
         }
     }
 
-    if (!product.Items.empty())
+    if (!product->Items.empty())
     {
-        if (product.Items.size() > GetBagsFreeSlots(player))
+        if (product->Items.size() > GetBagsFreeSlots(player))
         {
             std::ostringstream data;
             data << sObjectMgr->GetTrinityString(Battlepay::String::NotEnoughFreeBagSlots, GetSessionDbLocaleIndex());
@@ -289,7 +301,7 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
         }
     }
 
-    for (auto itr : product.Items)
+    for (auto itr : product->Items)
     {
         if (GetBattlePayMgr()->AlreadyOwnProduct(itr.ItemID))
         {

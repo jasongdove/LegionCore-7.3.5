@@ -888,7 +888,7 @@ void Spell::SelectImplicitBetweenTargets(SpellEffIndex effIndex, SpellImplicitTa
         Trinity::WorldObjectListSearcher<Trinity::WorldObjectSpellBetweenTargetCheck> searcher(m_caster, targets, check, containerTypeMask);
         SearchTargets<Trinity::WorldObjectListSearcher<Trinity::WorldObjectSpellBetweenTargetCheck> >(searcher, containerTypeMask, m_caster, m_caster, dist);
 
-        TC_LOG_DEBUG("spells", "Spell::SelectImplicitBetweenTargets angle %f, dist %f, x %f, y %f, Id %u, targets.size %u", angle, dist, center->GetPositionX(), center->GetPositionY(), m_spellInfo->Id, targets.size());
+        TC_LOG_DEBUG("spells", "Spell::SelectImplicitBetweenTargets angle %f, dist %f, x %f, y %f, Id %u, targets.size %zu", angle, dist, center->GetPositionX(), center->GetPositionY(), m_spellInfo->Id, targets.size());
 
         CallScriptObjectAreaTargetSelectHandlers(targets, effIndex, targetType.GetTarget());
 
@@ -1047,12 +1047,12 @@ void Spell::SelectImplicitAreaTargets(SpellEffIndex effIndex, SpellImplicitTarge
 
     SearchAreaTargets(targets, radius, center, referer, targetType.GetObjectType(), targetType.GetCheckType(), m_spellInfo->Effects[effIndex]->ImplicitTargetConditions, allowTargetObjSize);
 
-    TC_LOG_DEBUG("spells", "Spell::SelectImplicitAreaTargets %u, radius %f, GetObjectType %u, targets count %ull, effIndex %i",
+    TC_LOG_DEBUG("spells", "Spell::SelectImplicitAreaTargets %u, radius %f, GetObjectType %u, targets count %zull, effIndex %i",
         m_spellInfo->Id, radius, targetType.GetObjectType(), targets.size(), effIndex);
 
     CallScriptObjectAreaTargetSelectHandlers(targets, effIndex, targetType.GetTarget());
 
-    TC_LOG_DEBUG("spells", "Spell::SelectImplicitAreaTargets after filter %u, radius %f, GetObjectType %u, targets count %u, GetCheckType %i, X %f, Y %f",
+    TC_LOG_DEBUG("spells", "Spell::SelectImplicitAreaTargets after filter %u, radius %f, GetObjectType %u, targets count %zu, GetCheckType %i, X %f, Y %f",
     m_spellInfo->Id, radius, targetType.GetObjectType(), targets.size(), targetType.GetCheckType(), center->GetPositionX(), center->GetPositionY());
 
     std::list<Unit*> unitTargets;
@@ -3203,9 +3203,9 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                     }
                     else if (Unit* owner = unit->GetOwner())
                     {
-                        if (plr = owner->ToPlayer())
-                            if (plr->HasPvpRulesEnabled())
-                                isPvP = true;
+                        plr = owner->ToPlayer();
+                        if (plr && plr->HasPvpRulesEnabled())
+                            isPvP = true;
                     }
                 }
                 m_caster->SetInCombatState(unit, isPvP);
@@ -4117,7 +4117,7 @@ void Spell::cast(bool skipCheck)
     if (!m_caster->CheckAndIncreaseCastCounter())
     {
         if (m_triggeredByAuraSpell)
-            TC_LOG_DEBUG("misc", "Spell %u triggered by aura spell %u too deep in cast chain for cast. Cast not allowed for prevent overflow stack crash.", m_spellInfo->Id);
+            TC_LOG_DEBUG("misc", "Spell %u triggered by aura spell too deep in cast chain for cast. Cast not allowed for prevent overflow stack crash.", m_spellInfo->Id);
         else
             TC_LOG_DEBUG("misc", "Spell %u too deep in cast chain for cast. Cast not allowed for prevent overflow stack crash.", m_spellInfo->Id);
 

@@ -126,17 +126,20 @@ void BattlepayManager::ProcessDelivery(Purchase* purchase)
     // _existProducts.insert
     auto player = _session->GetPlayer(); // atm only ingame shop -_-
 
-    auto const& product = sBattlePayDataStore->GetProduct(purchase->ProductID);
-    switch (product.WebsiteType)
+    auto const* product = sBattlePayDataStore->GetProduct(purchase->ProductID);
+    if (!product)
+        return;
+
+    switch (product->WebsiteType)
     {
     case Battlepay::Item:
-        for (auto const& itr : product.Items)
+        for (auto const& itr : product->Items)
             if (player)
                 player->AddItem(itr.ItemID, itr.Quantity);
         break;
     case Battlepay::BattlePet:
         if (player)
-            for (auto const& itr : product.Items)
+            for (auto const& itr : product->Items)
                 player->AddBattlePetByCreatureId(itr.ItemID, true, true);
         break;
     case Rename:
@@ -214,7 +217,7 @@ void BattlepayManager::ProcessDelivery(Purchase* purchase)
         break;
     }
 
-    if (!product.ScriptName.empty())
+    if (!product->ScriptName.empty())
         sScriptMgr->OnBattlePayProductDelivery(_session, product);
 }
 
@@ -503,7 +506,7 @@ void BattlepayManager::SendProductList()
 
 std::tuple<bool, WorldPackets::BattlePay::ProductDisplayInfo> BattlepayManager::WriteDisplayInfo(uint32 displayInfoID, LocaleConstant localeIndex, uint32 productId /*= 0*/)
 {
-    auto GeneratePackDescription = [localeIndex](Product const& product) -> std::string
+    auto GeneratePackDescription = [localeIndex](Product const* product) -> std::string
     {
         auto getQualityColor = [](uint32 quality) -> std::string
         {
@@ -531,7 +534,7 @@ std::tuple<bool, WorldPackets::BattlePay::ProductDisplayInfo> BattlepayManager::
         };
 
         std::string res;
-        for (auto itr : product.Items)
+        for (auto itr : product->Items)
             if (auto itemTemplate = sObjectMgr->GetItemTemplate(itr.ItemID))
                 res += getQualityColor(itemTemplate->GetQuality()) + itemTemplate->GetName()->Get(localeIndex) + "\n";
         return res;
@@ -559,7 +562,7 @@ std::tuple<bool, WorldPackets::BattlePay::ProductDisplayInfo> BattlepayManager::
     if (productId)
     {
         auto product = sBattlePayDataStore->GetProduct(productId);
-        if (!product.Items.empty())
+        if (!product->Items.empty())
             info.Name3 = GeneratePackDescription(product);
     }
     else if (displayLocale)
@@ -619,7 +622,7 @@ void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status,
 {
     WorldPackets::BattlePay::DistributionUpdate distributionBattlePay;
     auto product = sBattlePayDataStore->GetProduct(productId);
-    if (!product.ProductID)
+    if (!product || !product->ProductID)
         return;
 
     auto const& localeIndex = _session->GetSessionDbLocaleIndex();
@@ -637,7 +640,7 @@ void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status,
 
     WorldPackets::BattlePay::BattlePayProduct productData;
 
-    for (auto const& item : product.Items)
+    for (auto const& item : product->Items)
     {
         WorldPackets::BattlePay::ProductItem productItem;
 
@@ -659,7 +662,7 @@ void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status,
         productData.Items.emplace_back(productItem);
     }
 
-    auto dataP = WriteDisplayInfo(product.DisplayInfoID, localeIndex);
+    auto dataP = WriteDisplayInfo(product->DisplayInfoID, localeIndex);
     if (std::get<0>(dataP))
     {
         productData.DisplayInfo = boost::in_place();
@@ -667,10 +670,10 @@ void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status,
     }
 
     //productData.UnkBits       Optional<uint16> ;
-    productData.ProductID = product.ProductID;
-    productData.Flags = product.Flags;
+    productData.ProductID = product->ProductID;
+    productData.Flags = product->Flags;
     productData.UnkInt1 = 0;
-    productData.DisplayId = product.DisplayInfoID;
+    productData.DisplayId = product->DisplayInfoID;
     productData.ItemId = 0;
     productData.UnkInt4 = 0;
     productData.UnkInt5 = 0;
@@ -703,13 +706,15 @@ void BattlepayManager::AssignDistributionToCharacter(ObjectGuid const& targetCha
 void BattlepayManager::Update(uint32 diff)
 {
     auto& data = _actualTransaction;
-    auto& product = sBattlePayDataStore->GetProduct(data.ProductID);
+    auto product = sBattlePayDataStore->GetProduct(data.ProductID);
+    if (!product)
+        return;
 
     switch (data.Status)
     {
     case DistributionStatus::BATTLE_PAY_DIST_STATUS_ADD_TO_PROCESS:
     {
-        switch (product.WebsiteType)
+        switch (product->WebsiteType)
         {
         case CharacterBoost:
         {
@@ -733,7 +738,7 @@ void BattlepayManager::Update(uint32 diff)
     }
     case DistributionStatus::BATTLE_PAY_DIST_STATUS_PROCESS_COMPLETE: //send SMSG_BATTLE_PAY_VAS_PURCHASE_STARTED
     {
-        switch (product.WebsiteType)
+        switch (product->WebsiteType)
         {
         case CharacterBoost:
         {
@@ -748,7 +753,7 @@ void BattlepayManager::Update(uint32 diff)
     }
     case DistributionStatus::BATTLE_PAY_DIST_STATUS_FINISHED:
     {
-        switch (product.WebsiteType)
+        switch (product->WebsiteType)
         {
         case CharacterBoost:
             SendBattlePayDistribution(data.ProductID, data.Status, data.DistributionId, data.TargetCharacter);

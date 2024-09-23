@@ -1603,7 +1603,7 @@ void DB2Manager::LoadStores(std::string const& dataPath, uint32 defaultLocale)
         for (auto const& bad_db2_file : bad_db2_files)
             str += bad_db2_file + "\n";
 
-        TC_LOG_ERROR("misc", "\nSome required *.db2 files (%u from " SZFMTD ") not found or not compatible:\n%s", bad_db2_files.size(), _stores.size(), str.c_str());
+        TC_LOG_ERROR("misc", "\nSome required *.db2 files (%zu from " SZFMTD ") not found or not compatible:\n%s", bad_db2_files.size(), _stores.size(), str.c_str());
         exit(1);
     }
 

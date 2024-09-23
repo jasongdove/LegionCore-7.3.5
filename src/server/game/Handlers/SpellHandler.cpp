@@ -764,7 +764,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPackets::Spells::SetActionBu
                 TC_LOG_INFO("network", "MISC: Added Pet Spell %u into button %u", action, packet.Index);
                 break;
             case ACTION_BUTTON_MOUNT:
-                TC_LOG_INFO("network", "MISC: Added mount or favorite mount into button %u", action, packet.Index);
+                TC_LOG_INFO("network", "MISC: Added mount or favorite mount %u into button %u", action, packet.Index);
                 break;
             default:
                 TC_LOG_ERROR("network", "MISC: Unknown action button type %u for action %u into button %u for player %s (GUID: %u)", type, action, packet.Index, _player->GetName(), _player->GetGUIDLow());

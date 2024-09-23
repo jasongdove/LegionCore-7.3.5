@@ -1596,7 +1596,7 @@ void AchievementMgr<T>::UpdateAchievementCriteria(AchievementCachePtr cachePtr, 
     // TC_LOG_DEBUG("criteria.achievement", "UpdateAchievementCriteria type %u (%u, %u, %u) CriteriaSort %u", cachePtr->type, cachePtr->miscValue1, cachePtr->miscValue2, cachePtr->miscValue3, GetCriteriaSort());
 
     // Prevent update if player not loading
-    if (!this || !CanUpdate())
+    if (!CanUpdate())
         return;
 
     // disable for gamemasters with GM-mode enabled

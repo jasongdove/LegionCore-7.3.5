@@ -1046,7 +1046,7 @@ bool BfCapturePoint::SetCapturePointData(GameObject* capturePoint)
     m_maxSpeed = m_maxValue / (goinfo->controlZone.minTime ? goinfo->controlZone.minTime : 60);
     m_State = m_value == 50.0f ? BF_CAPTUREPOINT_OBJECTIVESTATE_NEUTRAL : (m_value == 0.0f ? BF_CAPTUREPOINT_OBJECTIVESTATE_ALLIANCE : BF_CAPTUREPOINT_OBJECTIVESTATE_HORDE);
 
-    TC_LOG_ERROR("misc", "m_maxValue %u; m_minValue %u; m_neutralValuePct %u; m_value %f; m_maxSpeed %u; m_State %u",
+    TC_LOG_ERROR("misc", "m_maxValue %f; m_minValue %f; m_neutralValuePct %u; m_value %f; m_maxSpeed %f; m_State %u",
         m_maxValue, m_minValue, m_neutralValuePct, m_value, m_maxSpeed, m_State);
 
     return true;

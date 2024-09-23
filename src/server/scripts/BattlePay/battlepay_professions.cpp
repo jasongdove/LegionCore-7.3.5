@@ -50,7 +50,7 @@ template<uint32 t_SkillID, uint32 t_Value> class BattlePay_Profession : BattlePa
 public:
     explicit BattlePay_Profession(std::string scriptName) : BattlePayProductScript(scriptName) {}
 
-    void OnProductDelivery(WorldSession* session, Battlepay::Product const& /*product*/) override
+    void OnProductDelivery(WorldSession* session, Battlepay::Product const* /*product*/) override
     {
         auto player = session->GetPlayer();
         if (!player)
@@ -80,7 +80,7 @@ public:
         player->SaveToDB();
     }
 
-    bool CanBuy(WorldSession* session, Battlepay::Product const& /*product*/, std::string& reason) override
+    bool CanBuy(WorldSession* session, Battlepay::Product const* /*product*/, std::string& reason) override
     {
         auto player = session->GetPlayer();
         if (!player)

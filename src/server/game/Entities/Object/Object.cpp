@@ -1545,9 +1545,6 @@ uint16 Object::GetUInt16Value(uint16 index, uint8 offset) const
 
 ObjectGuid const& Object::GetGuidValue(uint16 index) const
 {
-    if (!this)
-        return ObjectGuid::Empty;
-
     // ASSERT(index + 1 < m_valuesCount || PrintIndexError(index, false));
     if (index + 1 < m_valuesCount || PrintIndexError(index, false))
         return *reinterpret_cast<ObjectGuid*>(&m_uint32Values[index]);
@@ -2488,7 +2485,7 @@ float WorldObject::GetVisibilityCombatLog() const
 
 float WorldObject::GetSightRange(const WorldObject* target) const
 {
-    if (!this || !GetMap())
+    if (!GetMap())
         return 0.0f;
 
     if (ToUnit())

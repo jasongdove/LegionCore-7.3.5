@@ -205,7 +205,7 @@ void WowTime::AddHolidayDuration(int32 duration)
         oldTotalMinutes = (Globals::InMinutes::Hour * Hour) + Minute;
 
     duration %= Globals::InMinutes::Day + Minute + Globals::InMinutes::Hour * Hour;
-    int64 newTotalMinute = duration - Globals::InMinutes::Day * (((((-1240768329 * duration) >> 32) + duration) >> 31) + ((((-1240768329 * duration) >> 32) + duration) >> 10));
+    int64 newTotalMinute = duration - Globals::InMinutes::Day * (((((-1240768329 * int64(duration)) >> 32) + duration) >> 31) + ((((-1240768329 * int64(duration)) >> 32) + duration) >> 10));
 
     if (newTotalMinute != oldTotalMinutes)
     {
