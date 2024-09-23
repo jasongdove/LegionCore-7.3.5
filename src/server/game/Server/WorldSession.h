@@ -1007,6 +1007,13 @@ enum DeclinedNameResult
     DECLINED_NAMES_RESULT_ERROR     = 1
 };
 
+enum TutorialsFlag : uint8
+{
+    TUTORIALS_FLAG_NONE = 0x00,
+    TUTORIALS_FLAG_CHANGED = 0x01,
+    TUTORIALS_FLAG_LOADED_FROM_DB = 0x02
+};
+
 struct CharEnumInfoData
 {
     ObjectGuid GuildGuid;
@@ -1167,8 +1174,15 @@ class WorldSession
         void LoadTutorialsData(PreparedQueryResult const& result);
         void SendTutorialsData();
         void SaveTutorialsData(CharacterDatabaseTransaction& trans);
-        uint32 GetTutorialInt(uint8 index) const;
-        void SetTutorialInt(uint8 index, uint32 value);
+        uint32 GetTutorialInt(uint8 index) const { return _tutorials[index]; }
+        void SetTutorialInt(uint8 index, uint32 value)
+        {
+            if (_tutorials[index] != value)
+            {
+                _tutorials[index] = value;
+                _tutorialsChanged |= TUTORIALS_FLAG_CHANGED;
+            }
+        }
         //auction
         void SendAuctionHello(ObjectGuid guid, Creature* unit);
         void SendAuctionCommandResult(AuctionEntry* auction, uint32 Action, uint32 ErrorCode, uint32 bidError = 0);
@@ -2102,7 +2116,7 @@ class WorldSession
         std::atomic<uint32> m_clientTimeDelay;
         AccountData m_accountData[NUM_ACCOUNT_DATA_TYPES];
         uint32 _tutorials[MAX_ACCOUNT_TUTORIAL_VALUES];
-        bool   _tutorialsChanged;
+        uint8 _tutorialsChanged;
         AddonsList m_addonsList;
         std::vector<std::string> _registeredAddonPrefixes;
         bool _filterAddonMessages;

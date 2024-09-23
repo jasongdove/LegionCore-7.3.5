@@ -75,7 +75,7 @@ void WorldPackets::Null::Read()
 
 WorldSession::WorldSession(uint32 id, std::string&& name, const std::shared_ptr<WorldSocket>& sock, AccountTypes sec, uint8 expansion, time_t mute_time, std::string os, LocaleConstant locale, uint32 recruiter, bool isARecruiter, AuthFlags flag, std::unordered_map<uint8, int64>&& accountTokenMap, uint32 referer):
 m_muteTime(mute_time), m_timeOutTime(0), _countPenaltiesHwid(0), _player(nullptr), m_map(nullptr), _security(sec), _accountId(id), m_expansion(expansion), m_accountExpansion(expansion), _logoutTime(0), m_inQueue(false), m_playerLogout(false), m_playerRecentlyLogout(false),
-m_playerSave(false), m_sessionDbLocaleIndex(locale), m_latency(0), _tutorialsChanged(false), recruiterId(recruiter), isRecruiter(isARecruiter), timeCharEnumOpcode(0), playerLoginCounter(0), forceExit(false), m_sUpdate(false), wardenModuleFailed(false), atAuthFlag(flag), canLogout(false),
+m_playerSave(false), m_sessionDbLocaleIndex(locale), m_latency(0), _tutorialsChanged(TUTORIALS_FLAG_NONE), recruiterId(recruiter), isRecruiter(isARecruiter), timeCharEnumOpcode(0), playerLoginCounter(0), forceExit(false), m_sUpdate(false), wardenModuleFailed(false), atAuthFlag(flag), canLogout(false),
 tokens(accountTokenMap), _referer(referer)
 {
     _os = std::move(os);
@@ -955,34 +955,21 @@ void WorldSession::SendTutorialsData()
 
 void WorldSession::SaveTutorialsData(CharacterDatabaseTransaction &trans)
 {
-    if (!_tutorialsChanged)
+    if (!(_tutorialsChanged & TUTORIALS_FLAG_CHANGED))
         return;
 
-    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_HAS_TUTORIALS);
-    stmt->setUInt32(0, GetAccountId());
-    bool hasTutorials = bool(CharacterDatabase.Query(stmt));
-    // Modify data in DB
-    stmt = CharacterDatabase.GetPreparedStatement(hasTutorials ? CHAR_UPD_TUTORIALS : CHAR_INS_TUTORIALS);
+    bool const hasTutorialsInDB = (_tutorialsChanged & TUTORIALS_FLAG_LOADED_FROM_DB) != 0;
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(hasTutorialsInDB ? CHAR_UPD_TUTORIALS : CHAR_INS_TUTORIALS);
     for (uint8 i = 0; i < MAX_ACCOUNT_TUTORIAL_VALUES; ++i)
         stmt->setUInt32(i, _tutorials[i]);
     stmt->setUInt32(MAX_ACCOUNT_TUTORIAL_VALUES, GetAccountId());
     trans->Append(stmt);
 
-    _tutorialsChanged = false;
-}
+    // now has, set flag so next save uses update query
+    if (!hasTutorialsInDB)
+        _tutorialsChanged |= TUTORIALS_FLAG_LOADED_FROM_DB;
 
-uint32 WorldSession::GetTutorialInt(uint8 index) const
-{
-    return _tutorials[index];
-}
-
-void WorldSession::SetTutorialInt(uint8 index, uint32 value)
-{
-    if (_tutorials[index] != value)
-    {
-        _tutorials[index] = value;
-        _tutorialsChanged = true;
-    }
+    _tutorialsChanged &= ~TUTORIALS_FLAG_CHANGED;
 }
 
 bool WorldSession::IsAddonRegistered(std::string const& prefix)
