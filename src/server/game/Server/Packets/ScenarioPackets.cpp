@@ -20,8 +20,8 @@
 void WorldPackets::Scenario::QueryScenarioPOI::Read()
 {
     MissingScenarioPOITreeIDs.resize(_worldPacket.read<uint32>());
-    for (size_t i = 0; i < MissingScenarioPOITreeIDs.size(); i++)
-        MissingScenarioPOITreeIDs.push_back(_worldPacket.read<uint32>());
+    for (uint32& scenarioPOI : MissingScenarioPOITreeIDs)
+        _worldPacket >> scenarioPOI;
 }
 
 WorldPacket const* WorldPackets::Scenario::ScenarioPOIs::Write()

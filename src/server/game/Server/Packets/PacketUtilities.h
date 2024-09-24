@@ -33,6 +33,66 @@ namespace WorldPackets
         }
     };
 
+    /**
+     * Utility class for automated prevention of loop counter spoofing in client packets
+     */
+    template<typename T, std::size_t N>
+    class Array
+    {
+    public:
+        typedef boost::container::static_vector<T, N> storage_type;
+
+        typedef std::integral_constant<std::size_t, N> max_capacity;
+
+        typedef typename storage_type::value_type value_type;
+        typedef typename storage_type::size_type size_type;
+        typedef typename storage_type::reference reference;
+        typedef typename storage_type::const_reference const_reference;
+        typedef typename storage_type::iterator iterator;
+        typedef typename storage_type::const_iterator const_iterator;
+
+        Array() { }
+
+        iterator begin() { return _storage.begin(); }
+        const_iterator begin() const { return _storage.begin(); }
+
+        iterator end() { return _storage.end(); }
+        const_iterator end() const { return _storage.end(); }
+
+        size_type size() const { return _storage.size(); }
+        bool empty() const { return _storage.empty(); }
+
+        reference operator[](size_type i) { return _storage[i]; }
+        const_reference operator[](size_type i) const { return _storage[i]; }
+
+        void resize(size_type newSize)
+        {
+            if (newSize > max_capacity::value)
+                throw PacketArrayMaxCapacityException(newSize, max_capacity::value);
+
+            _storage.resize(newSize);
+        }
+
+        void push_back(value_type const& value)
+        {
+            if (_storage.size() >= max_capacity::value)
+                throw PacketArrayMaxCapacityException(_storage.size() + 1, max_capacity::value);
+
+            _storage.push_back(value);
+        }
+
+        void push_back(value_type&& value)
+        {
+            if (_storage.size() >= max_capacity::value)
+                throw PacketArrayMaxCapacityException(_storage.size() + 1, max_capacity::value);
+
+            _storage.push_back(std::forward<value_type>(value));
+        }
+
+    private:
+        storage_type _storage;
+    };
+
     template <typename T>
     class CompactArray
     {

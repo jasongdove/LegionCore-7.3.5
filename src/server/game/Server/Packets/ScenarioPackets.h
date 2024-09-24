@@ -21,6 +21,8 @@
 #include "Packet.h"
 #include "AchievementPackets.h"
 
+#define MAX_ALLOWED_SCENARIO_POI_QUERY_SIZE 40
+
 namespace WorldPackets
 {
     namespace Scenario
@@ -32,7 +34,7 @@ namespace WorldPackets
 
             void Read() override;
 
-            std::vector<uint32> MissingScenarioPOITreeIDs;
+            Array<uint32, MAX_ALLOWED_SCENARIO_POI_QUERY_SIZE> MissingScenarioPOITreeIDs;
         };
 
         class ScenarioPOIs final : public ServerPacket
