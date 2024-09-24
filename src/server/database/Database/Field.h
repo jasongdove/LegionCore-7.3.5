@@ -92,6 +92,7 @@ class TC_DATABASE_API Field
         double GetDouble() const;
         char const* GetCString() const;
         std::string GetString() const;
+        std::string_view GetStringView() const;
         std::vector<uint8> GetBinary() const;
 
         bool IsNull() const

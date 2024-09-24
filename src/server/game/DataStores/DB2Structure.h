@@ -2177,7 +2177,7 @@ struct GameObjectsEntry
     DBCPosition3D Position;
     DBCPosition4D Rotation;
     float       Scale;
-    uint32      PropValue[8];
+    std::array<uint32, 8> PropValue;
     uint16      OwnerID;
     uint16      DisplayID;
     uint16      PhaseID;

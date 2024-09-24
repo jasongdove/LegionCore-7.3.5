@@ -264,7 +264,7 @@ class ConditionMgr
         uint32 GetSearcherTypeMaskForConditionList(ConditionList const& conditions);
         bool IsObjectMeetToConditions(WorldObject* object, ConditionList const& conditions);
         bool IsObjectMeetToConditions(WorldObject* object1, WorldObject* object2, ConditionList const& conditions);
-        bool IsObjectMeetToConditions(ConditionSourceInfo& sourceInfo, ConditionList const& conditions);
+        bool IsObjectMeetToConditions(ConditionSourceInfo& sourceInfo, ConditionList const& conditions) const;
         bool CanHaveSourceGroupSet(ConditionSourceType sourceType) const;
         bool CanHaveSourceIdSet(ConditionSourceType sourceType) const;
         ConditionList GetConditionsForNotGroupedEntry(ConditionSourceType sourceType, uint32 entry);
@@ -286,7 +286,7 @@ class ConditionMgr
         bool addToGossipMenus(Condition* cond);
         bool addToGossipMenuItems(Condition* cond);
         bool addToSpellImplicitTargetConditions(Condition* cond);
-        bool IsObjectMeetToConditionList(ConditionSourceInfo& sourceInfo, ConditionList const& conditions);
+        bool IsObjectMeetToConditionList(ConditionSourceInfo& sourceInfo, ConditionList const& conditions) const;
 
         void Clean(); // free up resources
         std::list<Condition*> AllocatedMemoryStore; // some garbage collection :)

@@ -1512,18 +1512,18 @@ const uint32 SmartAIEventMask[SMART_EVENT_END][2] =
 
 enum SmartEventFlags
 {
-    SMART_EVENT_FLAG_NOT_REPEATABLE         = 0x001,                     //Event can not repeat
-    SMART_EVENT_FLAG_DIFFICULTY_0           = 0x002,                     //Event only occurs in instance difficulty 0
-    SMART_EVENT_FLAG_DIFFICULTY_1           = 0x004,                     //Event only occurs in instance difficulty 1
-    SMART_EVENT_FLAG_DIFFICULTY_2           = 0x008,                     //Event only occurs in instance difficulty 2
-    SMART_EVENT_FLAG_DIFFICULTY_3           = 0x010,                     //Event only occurs in instance difficulty 3
-    SMART_EVENT_FLAG_ALLOW_EVENT_IN_COMBAT  = 0x020,
-    SMART_EVENT_FLAG_EVENT_NON_COMBAT       = 0x040,
-    SMART_EVENT_FLAG_DEBUG_ONLY             = 0x080,                     //Event only occurs in debug build
-    SMART_EVENT_FLAG_DONT_RESET             = 0x100,                     //Event will not reset in SmartScript::OnReset()
+    SMART_EVENT_FLAG_NOT_REPEATABLE          = 0x001,                     //Event can not repeat
+    SMART_EVENT_FLAG_DIFFICULTY_0_DEPRECATED = 0x002,                     //Event only occurs in instance difficulty 0
+    SMART_EVENT_FLAG_DIFFICULTY_1_DEPRECATED = 0x004,                     //Event only occurs in instance difficulty 1
+    SMART_EVENT_FLAG_DIFFICULTY_2_DEPRECATED = 0x008,                     //Event only occurs in instance difficulty 2
+    SMART_EVENT_FLAG_DIFFICULTY_3_DEPRECATED = 0x010,                     //Event only occurs in instance difficulty 3
+    SMART_EVENT_FLAG_ALLOW_EVENT_IN_COMBAT   = 0x020,
+    SMART_EVENT_FLAG_EVENT_NON_COMBAT        = 0x040,
+    SMART_EVENT_FLAG_DEBUG_ONLY              = 0x080,                     //Event only occurs in debug build
+    SMART_EVENT_FLAG_DONT_RESET              = 0x100,                     //Event will not reset in SmartScript::OnReset()
 
-    SMART_EVENT_FLAG_DIFFICULTY_ALL         = (SMART_EVENT_FLAG_DIFFICULTY_0|SMART_EVENT_FLAG_DIFFICULTY_1|SMART_EVENT_FLAG_DIFFICULTY_2|SMART_EVENT_FLAG_DIFFICULTY_3),
-    SMART_EVENT_FLAGS_ALL                   = (SMART_EVENT_FLAG_NOT_REPEATABLE|SMART_EVENT_FLAG_DIFFICULTY_ALL|SMART_EVENT_FLAG_ALLOW_EVENT_IN_COMBAT|SMART_EVENT_FLAG_EVENT_NON_COMBAT|SMART_EVENT_FLAG_DEBUG_ONLY|SMART_EVENT_FLAG_DONT_RESET)
+    SMART_EVENT_FLAGS_DEPRECATED             = (SMART_EVENT_FLAG_DIFFICULTY_0_DEPRECATED | SMART_EVENT_FLAG_DIFFICULTY_1_DEPRECATED | SMART_EVENT_FLAG_DIFFICULTY_2_DEPRECATED | SMART_EVENT_FLAG_DIFFICULTY_3_DEPRECATED),
+    SMART_EVENT_FLAGS_ALL                    = (SMART_EVENT_FLAG_NOT_REPEATABLE | SMART_EVENT_FLAGS_DEPRECATED | SMART_EVENT_FLAG_ALLOW_EVENT_IN_COMBAT | SMART_EVENT_FLAG_EVENT_NON_COMBAT | SMART_EVENT_FLAG_DEBUG_ONLY | SMART_EVENT_FLAG_DONT_RESET)
 };
 
 enum SmartCastFlags
@@ -1545,6 +1545,7 @@ struct SmartScriptHolder
     SmartScriptType source_type;
     uint32 event_id;
     uint32 link;
+    std::vector<Difficulty> Difficulties;
 
     SmartEvent event;
     SmartAction action;
@@ -1584,7 +1585,7 @@ class SmartWaypointMgr
 };
 
 // all events for a single entry
-typedef std::list<SmartScriptHolder> SmartAIEventList;
+typedef std::vector<SmartScriptHolder> SmartAIEventList;
 
 // all events for all entries / guids
 typedef std::unordered_map<int64, SmartAIEventList> SmartAIEventMap;

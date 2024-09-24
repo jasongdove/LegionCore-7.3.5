@@ -32,6 +32,7 @@
 #include "SmartScriptMgr.h"
 #include "EventObjectData.h"
 #include "QuestData.h"
+#include "StringConvert.h"
 
 void SmartWaypointMgr::LoadFromDB()
 {
@@ -236,32 +237,60 @@ void SmartAIMgr::LoadSmartAIFromDB()
         temp.source_type = source_type;
         temp.event_id = fields[2].GetUInt16();
         temp.link = fields[3].GetUInt16();
-        temp.event.type = (SMART_EVENT)fields[4].GetUInt8();
-        temp.event.event_phase_mask = fields[5].GetUInt8();
-        temp.event.event_chance = fields[6].GetUInt8();
-        temp.event.event_flags = fields[7].GetUInt32();
 
-        temp.event.raw.param1 = fields[8].GetUInt32();
-        temp.event.raw.param2 = fields[9].GetUInt32();
-        temp.event.raw.param3 = fields[10].GetUInt32();
-        temp.event.raw.param4 = fields[11].GetUInt32();
+        bool invalidDifficulties = false;
+        for (std::string_view token : Trinity::Tokenize(fields[4].GetStringView(), ',', false))
+        {
+            Optional<std::underlying_type_t<Difficulty>> tokenValue = Trinity::StringTo<std::underlying_type_t<Difficulty>>(token);
+            if (!tokenValue.has_value())
+            {
+                invalidDifficulties = true;
+                TC_LOG_ERROR("sql.sql", "SmartAIMgr::LoadSmartAIFromDB: Invalid difficulties for entryorguid (%ld) source_type (%u) id (%u), skipped loading.",
+                             temp.entryOrGuid, temp.GetScriptType(), temp.event_id);
+                break;
+            }
 
-        temp.action.type = (SMART_ACTION)fields[12].GetUInt8();
-        temp.action.raw.param1 = fields[13].GetUInt32();
-        temp.action.raw.param2 = fields[14].GetUInt32();
-        temp.action.raw.param3 = fields[15].GetUInt32();
-        temp.action.raw.param4 = fields[16].GetUInt32();
-        temp.action.raw.param5 = fields[17].GetUInt32();
-        temp.action.raw.param6 = fields[18].GetUInt32();
+            Difficulty difficultyId = Difficulty(tokenValue.value());
+            if (difficultyId && !sDifficultyStore.LookupEntry(difficultyId))
+            {
+                invalidDifficulties = true;
+                TC_LOG_ERROR("sql.sql", "SmartAIMgr::LoadSmartAIFromDB: Invalid difficulty id (%u) for entryorguid (%ld) source_type (%u) id (%u), skipped loading.",
+                             difficultyId, temp.entryOrGuid, temp.GetScriptType(), temp.event_id);
+                break;
+            }
 
-        temp.target.type = (SMARTAI_TARGETS)fields[19].GetUInt8();
-        temp.target.raw.param1 = fields[20].GetUInt32();
-        temp.target.raw.param2 = fields[21].GetUInt32();
-        temp.target.raw.param3 = fields[22].GetUInt32();
-        temp.target.x = fields[23].GetFloat();
-        temp.target.y = fields[24].GetFloat();
-        temp.target.z = fields[25].GetFloat();
-        temp.target.o = fields[26].GetFloat();
+            temp.Difficulties.push_back(difficultyId);
+        }
+
+        if (invalidDifficulties)
+            continue;
+
+        temp.event.type = (SMART_EVENT)fields[5].GetUInt8();
+        temp.event.event_phase_mask = fields[6].GetUInt8();
+        temp.event.event_chance = fields[7].GetUInt8();
+        temp.event.event_flags = fields[8].GetUInt32();
+
+        temp.event.raw.param1 = fields[9].GetUInt32();
+        temp.event.raw.param2 = fields[10].GetUInt32();
+        temp.event.raw.param3 = fields[11].GetUInt32();
+        temp.event.raw.param4 = fields[12].GetUInt32();
+
+        temp.action.type = (SMART_ACTION)fields[13].GetUInt8();
+        temp.action.raw.param1 = fields[14].GetUInt32();
+        temp.action.raw.param2 = fields[15].GetUInt32();
+        temp.action.raw.param3 = fields[16].GetUInt32();
+        temp.action.raw.param4 = fields[17].GetUInt32();
+        temp.action.raw.param5 = fields[18].GetUInt32();
+        temp.action.raw.param6 = fields[19].GetUInt32();
+
+        temp.target.type = (SMARTAI_TARGETS)fields[20].GetUInt8();
+        temp.target.raw.param1 = fields[21].GetUInt32();
+        temp.target.raw.param2 = fields[22].GetUInt32();
+        temp.target.raw.param3 = fields[23].GetUInt32();
+        temp.target.x = fields[24].GetFloat();
+        temp.target.y = fields[25].GetFloat();
+        temp.target.z = fields[26].GetFloat();
+        temp.target.o = fields[27].GetFloat();
 
         //check target
         if (!IsTargetValid(temp))
@@ -394,30 +423,47 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
 {
     if (e.event.type >= SMART_EVENT_END)
     {
-        TC_LOG_ERROR("sql.sql", "SmartAIMgr: EntryOrGuid %ld using event(%u) has invalid event type (%u), skipped.", e.entryOrGuid, e.event_id, e.GetEventType());
+        TC_LOG_ERROR("sql.sql", "SmartAIMgr: EntryOrGuid %ld using event (%u) has invalid event type (%u), skipped.", e.entryOrGuid, e.event_id, e.GetEventType());
         return false;
     }
+
     // in SMART_SCRIPT_TYPE_TIMED_ACTIONLIST all event types are overriden by core
     if (e.GetScriptType() != SMART_SCRIPT_TYPE_TIMED_ACTIONLIST && !(SmartAIEventMask[e.event.type][1] & SmartAITypeMask[e.GetScriptType()][1]))
     {
         TC_LOG_ERROR("sql.sql", "SmartAIMgr: EntryOrGuid %ld, event type %u can not be used for Script type %u", e.entryOrGuid, e.GetEventType(), e.GetScriptType());
         return false;
     }
+
     if (e.action.type <= 0 || e.action.type >= SMART_ACTION_END)
     {
-        TC_LOG_ERROR("sql.sql", "SmartAIMgr: EntryOrGuid %ld using event(%u) has invalid action type (%u), skipped.", e.entryOrGuid, e.event_id, e.GetActionType());
+        TC_LOG_ERROR("sql.sql", "SmartAIMgr: EntryOrGuid %ld using event (%u) has invalid action type (%u), skipped.", e.entryOrGuid, e.event_id, e.GetActionType());
         return false;
     }
+
     if (e.event.event_phase_mask > SMART_EVENT_PHASE_ALL)
     {
-        TC_LOG_ERROR("sql.sql", "SmartAIMgr: EntryOrGuid %ld using event(%u) has invalid phase mask (%u), skipped.", e.entryOrGuid, e.event_id, e.event.event_phase_mask);
+        TC_LOG_ERROR("sql.sql", "SmartAIMgr: EntryOrGuid %ld using event (%u) has invalid phase mask (%u), skipped.", e.entryOrGuid, e.event_id, e.event.event_phase_mask);
         return false;
     }
+
     if (e.event.event_flags > SMART_EVENT_FLAGS_ALL)
     {
-        TC_LOG_ERROR("sql.sql", "SmartAIMgr: EntryOrGuid %ld using event(%u) has invalid event flags (%u), skipped.", e.entryOrGuid, e.event_id, e.event.event_flags);
+        TC_LOG_ERROR("sql.sql", "SmartAIMgr: EntryOrGuid %ld using event (%u) has invalid event flags (%u), skipped.", e.entryOrGuid, e.event_id, e.event.event_flags);
         return false;
     }
+
+    if (e.Difficulties.empty() && e.event.event_flags & SMART_EVENT_FLAGS_DEPRECATED)
+    {
+        TC_LOG_ERROR("sql.sql", "SmartAIMgr: EntryOrGuid %ld using event (%u) has deprecated event flags (%u), skipped.", e.entryOrGuid, e.event_id, e.event.event_flags);
+        return false;
+    }
+
+    if (e.link && e.link == e.event_id)
+    {
+        TC_LOG_ERROR("sql.sql", "SmartAIMgr: EntryOrGuid %ld SourceType %u, Event %u, Event is linking self (infinite loop), skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id);
+        return false;
+    }
+
     if (e.GetScriptType() == SMART_SCRIPT_TYPE_TIMED_ACTIONLIST)
     {
         e.event.type = SMART_EVENT_UPDATE_OOC;//force default OOC, can change when calling the script!

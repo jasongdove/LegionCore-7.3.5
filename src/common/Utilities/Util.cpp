@@ -44,6 +44,24 @@ uint64 GetThreadID()
     return std::stoll(ss.str());
 }
 
+std::vector<std::string_view> Trinity::Tokenize(std::string_view str, char sep, bool keepEmpty)
+{
+    std::vector<std::string_view> tokens;
+
+    size_t start = 0;
+    for (size_t end = str.find(sep); end != std::string_view::npos; end = str.find(sep, start))
+    {
+        if (keepEmpty || (start < end))
+            tokens.push_back(str.substr(start, end - start));
+        start = end+1;
+    }
+
+    if (keepEmpty || (start < str.length()))
+        tokens.push_back(str.substr(start));
+
+    return tokens;
+}
+
 Tokenizer::Tokenizer(const std::string &src, const char sep, uint32 vectorReserve /*= 0*/, bool keepEmptyStrings /*= true*/)
 {
     m_str = new char[src.length() + 1];
@@ -736,6 +754,11 @@ void HexStrToByteArray(std::string const& str, uint8* out, bool reverse /*= fals
         char buffer[3] = { str[i], str[i + 1], '\0' };
         out[j++] = strtoul(buffer, nullptr, 16);
     }
+}
+
+bool StringEqualI(std::string_view a, std::string_view b)
+{
+    return std::equal(a.begin(), a.end(), b.begin(), b.end(), [](char c1, char c2) { return std::tolower(c1) == std::tolower(c2); });
 }
 
 flag128::flag128(uint32 p1, uint32 p2, uint32 p3, uint32 p4)

@@ -114,7 +114,8 @@ void SmartScript::ProcessEventsFor(SMART_EVENT e, Unit* unit, uint32 var0, uint3
             continue;
 
         if (eventType == e/* && (!(*i).event.event_phase_mask || IsInPhase((*i).event.event_phase_mask)) && !((*i).event.event_flags & SMART_EVENT_FLAG_NOT_REPEATABLE && (*i).runOnce)*/)
-            ProcessEvent(mEvent, unit, var0, var1, bvar, spell, gob);
+            if (sConditionMgr->IsObjectMeetingSmartEventConditions(mEvent.entryOrGuid, mEvent.event_id, mEvent.source_type, unit, GetBaseObject()))
+                ProcessEvent(mEvent, unit, var0, var1, bvar, spell, gob);
     }
 }
 
@@ -123,8 +124,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
     //calc random
     if (e.GetEventType() != SMART_EVENT_LINK && e.event.event_chance < 100 && e.event.event_chance)
     {
-        uint32 rnd = urand(0, 100);
-        if (e.event.event_chance <= rnd)
+        if (!roll_chance_i(e.event.event_chance))
             return;
     }
     e.runOnce = true;//used for repeat check
@@ -3951,25 +3951,31 @@ void SmartScript::FillScript(SmartAIEventList e, WorldObject* obj, AreaTriggerEn
             TC_LOG_DEBUG("scripts.ai", "SmartScript: EventMap for AreaTrigger %u is empty but is using SmartScript.", at->ID);
         return;
     }
-    for (auto& i : e)
+    for (SmartScriptHolder& scriptHolder : e)
     {
         #ifndef TRINITY_DEBUG
-            if (i.event.event_flags & SMART_EVENT_FLAG_DEBUG_ONLY)
+            if (scriptHolder.event.event_flags & SMART_EVENT_FLAG_DEBUG_ONLY)
                 continue;
         #endif
 
-        if (i.event.event_flags & SMART_EVENT_FLAG_DIFFICULTY_ALL)//if has instance flag add only if in it
+        if (obj && !scriptHolder.Difficulties.empty())
         {
-            if (obj && obj->GetMap()->IsDungeon())
+            bool foundValidDifficulty = false;
+            for (Difficulty difficulty : scriptHolder.Difficulties)
             {
-                if ((1 << (CreatureTemplate::GetDiffFromSpawn(obj->GetMap()->GetSpawnMode()))) & i.event.event_flags)
+                if (difficulty == obj->GetMap()->GetDifficultyID())
                 {
-                    mEvents.push_back(i);
+                    foundValidDifficulty = true;
+                    break;
                 }
             }
-            continue;
+
+            if (!foundValidDifficulty)
+                continue;
         }
-        mEvents.push_back(i);//NOTE: 'world(0)' events still get processed in ANY instance mode
+
+        // mAllEventFlags |= scriptHolder.event.event_flags;
+        mEvents.push_back(scriptHolder);
     }
     if (mEvents.empty() && obj)
         TC_LOG_ERROR("sql.sql", "SmartScript: Entry %u has events but no events added to list because of instance flags.", obj->GetEntry());

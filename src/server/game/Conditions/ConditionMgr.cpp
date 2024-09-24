@@ -860,14 +860,12 @@ bool ConditionMgr::IsObjectMeetingSmartEventConditions(int64 entryOrGuid, uint32
 	SmartEventConditionContainer::const_iterator itr = SmartEventConditionStore.find(std::make_pair(entryOrGuid, sourceType));
 	if (itr != SmartEventConditionStore.end())
 	{
-		ConditionTypeContainer::const_iterator i = (*itr).second.find(eventId);
+		ConditionTypeContainer::const_iterator i = itr->second.find(eventId + 1);
 		if (i != itr->second.end())
 		{
 			TC_LOG_DEBUG("condition", "GetConditionsForSmartEvent: found conditions for Smart Event entry or guid " SI64FMTD " eventId %u", entryOrGuid, eventId);
 			ConditionSourceInfo sourceInfo(unit, baseObject);
-			//SPP NEED FIX
-			//return IsObjectMeetToConditions(sourceInfo, i->second.end);
-			return true;
+			return IsObjectMeetToConditions(sourceInfo, i->second);
 		}
 	}
 	return true;
@@ -964,7 +962,7 @@ uint32 ConditionMgr::GetSearcherTypeMaskForConditionList(ConditionList const& co
     return mask;
 }
 
-bool ConditionMgr::IsObjectMeetToConditionList(ConditionSourceInfo& sourceInfo, ConditionList const& conditions)
+bool ConditionMgr::IsObjectMeetToConditionList(ConditionSourceInfo& sourceInfo, ConditionList const& conditions) const
 {
     //     groupId, groupCheckPassed
     std::map<uint32, bool> ElseGroupStore;
@@ -1022,7 +1020,7 @@ bool ConditionMgr::IsObjectMeetToConditions(WorldObject* object1, WorldObject* o
     return IsObjectMeetToConditions(srcInfo, conditions);
 }
 
-bool ConditionMgr::IsObjectMeetToConditions(ConditionSourceInfo& sourceInfo, ConditionList const& conditions)
+bool ConditionMgr::IsObjectMeetToConditions(ConditionSourceInfo& sourceInfo, ConditionList const& conditions) const
 {
     if (conditions.empty())
         return true;
