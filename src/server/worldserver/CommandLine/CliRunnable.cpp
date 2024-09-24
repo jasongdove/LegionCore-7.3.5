@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -35,11 +34,11 @@
 #include "Player.h"
 #include "Util.h"
 
-#if TRINITY_PLATFORM != TC_PLATFORM_WINDOWS
+#if TRINITY_PLATFORM != TRINITY_PLATFORM_WINDOWS
 #include <readline/readline.h>
 #include <readline/history.h>
 
-char * command_finder(const char* text, int state)
+char* command_finder(const char* text, int state)
 {
     static size_t idx, len;
     const char* ret;
@@ -69,26 +68,21 @@ char * command_finder(const char* text, int state)
     return ((char*)NULL);
 }
 
-char ** cli_completion(const char * text, int start, int /*end*/)
+char** cli_completion(const char* text, int start, int /*end*/)
 {
-    char ** matches;
-    matches = (char**)NULL;
+    char** matches = NULL;
 
-    if (start == 0)
-        matches = rl_completion_matches((char*)text, &command_finder);
-/*#ifdef PLATFORM != TC_PLATFORM_APPLE
-    else
+    if (start)
         rl_bind_key('\t', rl_abort);
-#endif*/
-    return (matches);
+    else
+        matches = rl_completion_matches((char*)text, &command_finder);
+    return matches;
 }
 
-int cli_hook_func(void)
+int cli_hook_func()
 {
-#ifdef PLATFORM != TC_PLATFORM_APPLE
        if (World::IsStopped())
            rl_done = 1;
-#endif
        return 0;
 }
 
@@ -102,9 +96,7 @@ void utf8print(void* /*arg*/, const char* str)
     if (!Utf8toWStr(str, strlen(str), wtemp_buf, wtemp_len))
         return;
 
-    char temp_buf[6000];
-    CharToOemBuffW(&wtemp_buf[0], &temp_buf[0], wtemp_len+1);
-    printf(temp_buf);
+    wprintf(L"%s", wtemp_buf);
 #else
 {
     printf("%s", str);
@@ -138,12 +130,10 @@ int kb_hit_return()
 void CliThread()
 {
     ///- Display the list of available CLI functions then beep
-    //TC_LOG_INFO(LOG_FILTER_WORLDSERVER, "");
-#if TRINITY_PLATFORM != TC_PLATFORM_WINDOWS
+    //TC_LOG_INFO("server.worldserver", "");
+#if TRINITY_PLATFORM != TRINITY_PLATFORM_WINDOWS
     rl_attempted_completion_function = cli_completion;
-    #ifdef PLATFORM != TC_PLATFORM_APPLE
     rl_event_hook = cli_hook_func;
-    #endif
 #endif
 
     if (sConfigMgr->GetBoolDefault("BeepAtStart", true))
@@ -200,7 +190,7 @@ void CliThread()
 
             fflush(stdout);
             sWorld->QueueCliCommand(new CliCommandHolder(NULL, command.c_str(), &utf8print, &commandFinished));
-#if TRINITY_PLATFORM != TC_PLATFORM_WINDOWS
+#if TRINITY_PLATFORM != TRINITY_PLATFORM_WINDOWS
             add_history(command.c_str());
             free(command_str);
 #endif
