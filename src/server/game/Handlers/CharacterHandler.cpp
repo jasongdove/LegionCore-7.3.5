@@ -127,18 +127,12 @@ void WorldSession::HandleCharEnum(PreparedQueryResult result, bool isDeleted)
     }
 
     SendPacket(charEnum.Write());
-    timeCharEnumOpcode = 0;
 
     sScriptMgr->OnSessionLogin(this);
 }
 
 void WorldSession::HandleCharEnumOpcode(WorldPackets::Character::EnumCharacters& enumCharacters)
 {
-    if (timeCharEnumOpcode)
-        return;
-
-    timeCharEnumOpcode = 1;
-
     SendCharacterEnum(enumCharacters.GetOpcode() == CMSG_ENUM_CHARACTERS_DELETED_BY_CLIENT);
 }
 
@@ -519,9 +513,6 @@ void WorldSession::HandleCharDeleteOpcode(WorldPackets::Character::DeleteChar& c
     sWorld->DeleteCharName(name);
 
     SendCharDelete(CHAR_DELETE_SUCCESS);
-
-    // reset timer.
-    timeCharEnumOpcode = 0;
 }
 
 void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin& playerLogin)

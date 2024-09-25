@@ -2123,7 +2123,6 @@ class WorldSession
         uint32 recruiterId;
         bool isRecruiter;
         LockedQueue<WorldPacket*> _recvQueue;
-        time_t timeCharEnumOpcode;
         uint8 playerLoginCounter;
         uint32 expireTime;
         bool forceExit;
