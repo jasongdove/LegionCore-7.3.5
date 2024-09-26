@@ -194,15 +194,19 @@ bool AuctionBotSeller::Initialize()
         // Filter out items with no buy/sell price unless otherwise flagged in the config.
         if (!allowZero)
         {
-            if (sAuctionBotConfig->GetConfig(CONFIG_AHBOT_BUYPRICE_SELLER))
+            // Only check buy/sell price if we don't have market data
+            if (!_marketData.contains(itemId))
             {
-                if (prototype->GetSellPrice() == 0)
-                    continue;
-            }
-            else
-            {
-                if (prototype->GetSellPrice() == 0)
-                    continue;
+                if (sAuctionBotConfig->GetConfig(CONFIG_AHBOT_BUYPRICE_SELLER))
+                {
+                    if (prototype->GetSellPrice() == 0)
+                        continue;
+                }
+                else
+                {
+                    if (prototype->GetBuyPrice() == 0)
+                        continue;
+                }
             }
         }
 
@@ -536,7 +540,7 @@ uint32 AuctionBotSeller::SetStat(SellerConfiguration& config)
         {
             ItemTemplate const* prototype = item->GetTemplate();
             if (prototype)
-                if (!auctionEntry->owner || sAuctionBotConfig->IsBotChar(auctionEntry->owner)) // Add only ahbot items
+                if (auctionEntry->Owner.IsEmpty() || sAuctionBotConfig->IsBotChar(auctionEntry->Owner)) // Add only ahbot items
                     ++itemsSaved[prototype->GetQuality()][prototype->GetClass()];
         }
     }
@@ -923,13 +927,13 @@ void AuctionBotSeller::AddNewAuctions(SellerConfiguration& config)
 
         AuctionEntry* auctionEntry = new AuctionEntry();
         auctionEntry->Id = sObjectMgr->GenerateAuctionID();
-        auctionEntry->owner = sAuctionBotConfig->GetRandChar();
+        auctionEntry->Owner = sAuctionBotConfig->GetRandChar();
         auctionEntry->itemGUIDLow = item->GetGUID().GetCounter();
         auctionEntry->itemEntry = item->GetEntry();
         auctionEntry->startbid = bidPrice;
         auctionEntry->buyout = buyoutPrice;
         auctionEntry->houseId = houseid;
-        auctionEntry->bidder = 0;
+        auctionEntry->Bidder = ObjectGuid::Empty;
         auctionEntry->bid = 0;
         auctionEntry->deposit = sAuctionMgr->GetAuctionDeposit(ahEntry, etime, item, stackCount);
         auctionEntry->auctionHouseEntry = ahEntry;

@@ -38,13 +38,6 @@ enum AuctionQuality
     AUCTION_QUALITY_YELLOW  = ITEM_QUALITY_ARTIFACT,
 };
 
-enum AuctionHouses
-{
-    AUCTIONHOUSE_ALLIANCE = 2,
-    AUCTIONHOUSE_HORDE = 6,
-    AUCTIONHOUSE_NEUTRAL = 7
-};
-
 #define MAX_AUCTION_QUALITY 7
 
 enum AuctionHouseType
@@ -238,9 +231,9 @@ public:
 
     uint32 GetItemPerCycleBoost() const { return _itemsPerCycleBoost; }
     uint32 GetItemPerCycleNormal() const { return _itemsPerCycleNormal; }
-    uint32 GetRandChar() const;
-    uint32 GetRandCharExclude(uint32 exclude) const;
-    bool IsBotChar(uint32 characterID) const;
+    ObjectGuid GetRandChar() const;
+    ObjectGuid GetRandCharExclude(ObjectGuid exclude) const;
+    bool IsBotChar(ObjectGuid characterID) const;
     void Reload() { GetConfigFromFile(); }
 
     static char const* GetHouseTypeName(AuctionHouseType houseType);
@@ -248,7 +241,7 @@ public:
 private:
     std::string _AHBotIncludes;
     std::string _AHBotExcludes;
-    std::vector<uint32> _AHBotCharacters;
+    std::vector<ObjectGuid> _AHBotCharacters;
     uint32 _itemsPerCycleBoost;
     uint32 _itemsPerCycleNormal;
 

@@ -25,6 +25,7 @@
 class Item;
 class Player;
 class WorldPacket;
+struct AuctionHouseEntry;
 
 namespace WorldPackets
 {
@@ -71,27 +72,31 @@ enum MailAuctionAnswers
     AUCTION_SALE_PENDING        = 6
 };
 
+enum AuctionHouses
+{
+    AUCTIONHOUSE_ALLIANCE = 2,
+    AUCTIONHOUSE_HORDE = 6,
+    AUCTIONHOUSE_NEUTRAL = 7
+};
+
 struct AuctionEntry
 {
     uint32 Id;
-    uint32 auctioneer;                         // creature low guid
+    uint8 houseId;
     ObjectGuid::LowType itemGUIDLow;
     uint32 itemEntry;
     uint32 itemCount;
-    ObjectGuid::LowType owner;
+    ObjectGuid Owner;
+    ObjectGuid Bidder;
     uint64 startbid;                                        //maybe useless
     uint64 bid;
     uint64 buyout;
     time_t expire_time;
-    ObjectGuid::LowType bidder;
     uint32 deposit;                                         //deposit can be calculated only when creating auction
     AuctionHouseEntry const* auctionHouseEntry;             // in AuctionHouse.dbc
-    uint32 factionTemplateId;
-    uint32 houseId;
 
     // helpers
-    uint32 GetHouseId() const;
-    uint32 GetHouseFaction() const;
+    uint32 GetHouseId() const { return houseId; }
     uint64 GetAuctionCut() const;
     uint64 GetAuctionOutBid() const;
     void BuildAuctionInfo(std::vector<WorldPackets::AuctionHouse::AuctionItem>& items, bool listAuctionItems, Item* sourceItem = nullptr) const;
@@ -179,6 +184,7 @@ class AuctionHouseMgr
         typedef std::unordered_map<ObjectGuid::LowType, Item*> ItemMap;
 
         AuctionHouseObject* GetAuctionsMap(uint32 factionTemplateId);
+        AuctionHouseObject* GetAuctionsMapByHouseId(uint8 auctionHouseId);
 
         Item* GetAItem(ObjectGuid::LowType const& id);
 
@@ -191,7 +197,8 @@ class AuctionHouseMgr
         void SendAuctionCancelledToBidderMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans, Item* item);
 
         static uint32 GetAuctionDeposit(AuctionHouseEntry const* entry, uint32 time, Item* pItem, uint32 count);
-        static AuctionHouseEntry const* GetAuctionHouseEntry(uint32 factionTemplateId, uint32* houseId);
+        static AuctionHouseEntry const* GetAuctionHouseEntry(uint32 factionTemplateId);
+        static AuctionHouseEntry const* GetAuctionHouseEntryFromHouse(uint8 houseId);
 
         //load first auction items, because of check if item exists, when loading
         void LoadAuctionItems();

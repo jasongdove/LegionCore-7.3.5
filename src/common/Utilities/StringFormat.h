@@ -25,7 +25,7 @@ namespace Trinity
 {
     /// Default TC string format function.
     template<typename Format, typename... Args>
-    std::string StringFormat(Format&& fmt, Args&&... args)
+    inline std::string StringFormat(Format&& fmt, Args&&... args)
     {
         return fmt::sprintf(std::forward<Format>(fmt), std::forward<Args>(args)...);
     }

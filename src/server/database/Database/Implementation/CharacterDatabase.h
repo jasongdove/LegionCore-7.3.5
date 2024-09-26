@@ -363,8 +363,6 @@ enum CharacterDatabaseStatements : uint32
     CHAR_INS_GM_SURVEY,
     CHAR_INS_GM_SUBSURVEY,
 
-    CHAR_SEL_EXPIRED_AUCTIONS,
-
     CHAR_INS_CHARACTER,
     CHAR_UPD_CHARACTER,
 

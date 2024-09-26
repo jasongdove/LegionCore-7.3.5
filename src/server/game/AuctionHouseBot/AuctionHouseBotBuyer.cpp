@@ -105,7 +105,7 @@ uint32 AuctionBotBuyer::GetItemInformation(BuyerConfiguration& config)
     {
         AuctionEntry* entry = itr->second;
 
-        if (!entry->owner || sAuctionBotConfig->IsBotChar(entry->owner))
+        if (entry->Owner.IsEmpty() || sAuctionBotConfig->IsBotChar(entry->Owner))
             continue; // Skip auctions owned by AHBot
 
         Item* item = sAuctionMgr->GetAItem(entry->itemGUIDLow);
@@ -144,7 +144,7 @@ uint32 AuctionBotBuyer::GetItemInformation(BuyerConfiguration& config)
         // Add/update EligibleItems if:
         // * no bid
         // * bid from player
-        if (!entry->bid || entry->bidder)
+        if (!entry->bid || !entry->Bidder.IsEmpty())
         {
             config.EligibleItems[entry->Id].LastExist = now;
             config.EligibleItems[entry->Id].AuctionId = entry->Id;
@@ -179,7 +179,7 @@ bool AuctionBotBuyer::RollBuyChance(BuyerItemInfo const* ahInfo, Item const* ite
     float chance = std::min(100.f, std::pow(100.f, 1.f + (1.f - itemBuyPrice / itemPrice) / sAuctionBotConfig->GetConfig(CONFIG_AHBOT_BUYER_CHANCE_FACTOR)));
 
     // If a player has bided on item, have fifth of normal chance
-    if (auction->bidder)
+    if (!auction->Bidder.IsEmpty())
         chance = chance / 5.f;
 
     if (ahInfo)
@@ -226,7 +226,7 @@ bool AuctionBotBuyer::RollBidChance(BuyerItemInfo const* ahInfo, Item const* ite
     }
 
     // If a player has bidded on item, have fifth of normal chance
-    if (auction->bidder && !sAuctionBotConfig->IsBotChar(auction->bidder))
+    if (!auction->Bidder.IsEmpty() && !sAuctionBotConfig->IsBotChar(auction->Bidder))
         chance = chance / 5.f;
 
     // Add config weigh in for quality
@@ -399,11 +399,11 @@ void AuctionBotBuyer::BuyEntry(AuctionEntry* auction, AuctionHouseObject* auctio
     CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
 
     // Send mail to previous bidder if any
-    if (auction->bidder && !sAuctionBotConfig->IsBotChar(auction->bidder))
+    if (!auction->Bidder.IsEmpty() && !sAuctionBotConfig->IsBotChar(auction->Bidder))
         sAuctionMgr->SendAuctionOutbiddedMail(auction, auction->buyout, nullptr, trans);
 
     // Set bot as bidder and set new bid amount
-    auction->bidder = sAuctionBotConfig->GetRandCharExclude(auction->owner);
+    auction->Bidder = sAuctionBotConfig->GetRandCharExclude(auction->Owner);
     auction->bid = auction->buyout;
 
     // Mails must be under transaction control too to prevent data loss
@@ -430,16 +430,16 @@ void AuctionBotBuyer::PlaceBidToEntry(AuctionEntry* auction, uint32 bidPrice)
     CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
 
     // Send mail to previous bidder if any
-    if (auction->bidder && !sAuctionBotConfig->IsBotChar(auction->bidder))
+    if (!auction->Bidder.IsEmpty() && !sAuctionBotConfig->IsBotChar(auction->Bidder))
         sAuctionMgr->SendAuctionOutbiddedMail(auction, bidPrice, nullptr, trans);
 
     // Set bot as bidder and set new bid amount
-    auction->bidder = sAuctionBotConfig->GetRandCharExclude(auction->owner);
+    auction->Bidder = sAuctionBotConfig->GetRandCharExclude(auction->Owner);
     auction->bid = bidPrice;
 
     // Update auction to DB
     CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_AUCTION_BID);
-    stmt->setUInt32(0, auction->bidder);
+    stmt->setUInt32(0, auction->Bidder.GetCounter());
     stmt->setUInt32(1, auction->bid);
     stmt->setUInt32(2, auction->Id);
     trans->Append(stmt);
