@@ -176,6 +176,11 @@ void AuctionHouseMgr::SendAuctionWonMail(AuctionEntry* auction, CharacterDatabas
             .AddItem(pItem)
             .SendMailTo(trans, MailReceiver(bidder, auction->Bidder.GetCounter()), auction, MAIL_CHECK_MASK_COPIED);
     }
+    else
+    {
+        // bidder doesn't exist, delete the item
+        sAuctionMgr->RemoveAItem(auction->itemGUIDLow, true);
+    }
 }
 
 void AuctionHouseMgr::SendAuctionSalePendingMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans)
@@ -239,6 +244,11 @@ void AuctionHouseMgr::SendAuctionExpiredMail(AuctionEntry* auction, CharacterDat
         MailDraft(auction->BuildAuctionMailSubject(AUCTION_EXPIRED), AuctionEntry::BuildAuctionMailBody(0, 0, auction->buyout, auction->deposit, 0))
             .AddItem(pItem)
             .SendMailTo(trans, MailReceiver(owner, auction->Owner.GetCounter()), auction, MAIL_CHECK_MASK_COPIED, 0);
+    }
+    else
+    {
+        // owner doesn't exist, delete the item
+        sAuctionMgr->RemoveAItem(auction->itemGUIDLow, true);
     }
 }
 
@@ -379,11 +389,18 @@ void AuctionHouseMgr::AddAItem(Item* it)
     mAitems[it->GetGUIDLow()] = it;
 }
 
-bool AuctionHouseMgr::RemoveAItem(ObjectGuid::LowType const& id)
+bool AuctionHouseMgr::RemoveAItem(ObjectGuid::LowType const& id, bool deleteItem)
 {
     auto i = mAitems.find(id);
     if (i == mAitems.end())
         return false;
+
+    if (deleteItem)
+    {
+        CharacterDatabaseTransaction trans = CharacterDatabaseTransaction(nullptr);
+        i->second->FSetState(ITEM_REMOVED);
+        i->second->SaveToDB(trans);
+    }
 
     mAitems.erase(i);
     return true;

@@ -205,7 +205,7 @@ class AuctionHouseMgr
         void LoadAuctions();
 
         void AddAItem(Item* it);
-        bool RemoveAItem(ObjectGuid::LowType const& id);
+        bool RemoveAItem(ObjectGuid::LowType const& id, bool deleteItem = false);
 
         void Update();
 
