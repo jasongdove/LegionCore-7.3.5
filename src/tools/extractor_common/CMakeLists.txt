@@ -1,4 +1,3 @@
-# Copyright (C) 2005-2009 MaNGOS project <http://getmangos.com/>
 # Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
 #
 # This file is free software; as a special exception the author gives
@@ -9,29 +8,19 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-set(PRIVATE_SOURCES VMapAssembler.cpp)
+CollectSourceFiles(
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  PRIVATE_SOURCES)
 
-if (WIN32)
-  list(APPEND PRIVATE_SOURCES ${sources_windows})
-endif()
+add_library(extractor_common STATIC ${PRIVATE_SOURCES})
 
-add_executable(vmap4assembler ${PRIVATE_SOURCES})
-
-target_link_libraries(vmap4assembler
+target_link_libraries(extractor_common
   PRIVATE
     trinity-core-interface
   PUBLIC
-    common
     casc
-    zlib)
+    common)
 
-set_target_properties(vmap4assembler
-    PROPERTIES
-      FOLDER
-        "tools")
-
-if( UNIX )
-  install(TARGETS vmap4assembler DESTINATION bin)
-elseif( WIN32 )
-  install(TARGETS vmap4assembler DESTINATION "${CMAKE_INSTALL_PREFIX}")
-endif()
+target_include_directories(extractor_common
+  PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR})

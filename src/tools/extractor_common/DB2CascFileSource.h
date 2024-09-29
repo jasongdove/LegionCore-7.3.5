@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -16,35 +15,25 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WDT_H
-#define WDT_H
-#include "loadlib.h"
+#ifndef DB2CascFileSource_h__
+#define DB2CascFileSource_h__
 
-//**************************************************************************************
-// WDT file class and structures
-//**************************************************************************************
-#define WDT_MAP_SIZE 64
+#include "DB2FileLoader.h"
+#include "CascHandles.h"
+#include <string>
 
-#pragma pack(push, 1)
-
-
-class wdt_MAIN
+struct DB2CascFileSource : public DB2FileSource
 {
-    union
-    {
-        uint32 fcc;
-        char   fcc_txt[4];
-    };
-public:
-    uint32 size;
+    DB2CascFileSource(CASC::StorageHandle const& storage, std::string fileName);
+    bool IsOpen() const override;
+    bool Read(void* buffer, std::size_t numBytes) override;
+    std::size_t GetPosition() const override;
+    std::size_t GetFileSize() const override;
+    char const* GetFileName() const override;
 
-    struct adtData
-    {
-        uint32 flag;
-        uint32 data1;
-    } adt_list[64][64];
+private:
+    CASC::FileHandle _fileHandle;
+    std::string _fileName;
 };
 
-#pragma pack(pop)
-
-#endif
+#endif // DB2CascFile_h__
