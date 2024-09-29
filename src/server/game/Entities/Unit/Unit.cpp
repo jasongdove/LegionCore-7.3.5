@@ -24575,6 +24575,13 @@ void Unit::RewardRage(float baseRage, bool attacker)
         addRage = baseRage;
         AddPct(addRage, GetTotalAuraModifier(SPELL_AURA_MOD_RAGE_FROM_DAMAGE_DEALT));
     }
+    else
+    {
+        // TODO: use expected max health, not actual
+        if (Player* player = ToPlayer())
+            if (player->GetSpecializationId() == SPEC_WARRIOR_PROTECTION)
+                addRage = 50.0f * baseRage / static_cast<float>(GetMaxHealth());
+    }
 
     m_addPower[POWER_RAGE] += int32(addRage * 10);
 }
