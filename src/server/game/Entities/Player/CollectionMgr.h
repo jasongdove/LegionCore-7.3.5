@@ -91,7 +91,7 @@ struct TransmogData
 typedef std::map<uint32, TransmogData> TransmogContainer;
 typedef std::map<uint32, TransmogData*> TransmogContainerSave;
 
-typedef std::map<uint32, uint16> MountContainer;
+typedef std::map<uint32, MountFlags> MountContainer;
 
 class CollectionMgr
 {
@@ -140,8 +140,8 @@ public:
 
     // Account-wide mounts
     void LoadAccountMounts(PreparedQueryResult result);
-    void SetMountFlag(uint32 spellID, MountFlags flags);
-    void SendSingleMountUpdate(std::pair<uint32, uint16> mount);
+    void MountSetFavorite(uint32 spellId, bool favorite);
+    void SendSingleMountUpdate(std::pair<uint32, MountFlags> mount);
 
     bool UpdateAccountMounts(uint32 spellID, MountFlags flags);
     bool AddMount(uint32 spellID, MountFlags flags = MOUNT_FLAG_NONE, bool factionMount = false, bool learned = false);
@@ -159,7 +159,6 @@ private:
     TransmogContainerSave _saveTransmogs;
     std::unordered_map<uint32, FavoriteAppearanceState> _favoriteAppearances;
     MountContainer _mounts;
-    MountContainer _saveMounts;
 };
 
 #endif // CollectionMgr_h__

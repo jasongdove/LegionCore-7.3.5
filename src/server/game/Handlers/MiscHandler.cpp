@@ -688,7 +688,7 @@ void WorldSession::HandleCloseInteraction(WorldPackets::Misc::CloseInteraction& 
 
 void WorldSession::HandleMountSetFavorite(WorldPackets::Misc::MountSetFavorite& packet)
 {
-    GetPlayer()->GetCollectionMgr()->SetMountFlag(packet.MountSpellID, packet.IsFavorite ? MOUNT_FLAG_FAVORITE : MOUNT_FLAG_NONE);
+    GetPlayer()->GetCollectionMgr()->MountSetFavorite(packet.MountSpellID, packet.IsFavorite);
 }
 
 void WorldSession::HandleRequestConsumptionConversionInfo(WorldPackets::Misc::RequestConsumptionConversionInfo& /*packet*/)

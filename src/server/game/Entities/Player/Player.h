@@ -300,9 +300,9 @@ enum ActionButtonType
     ACTION_BUTTON_ITEM      = 0x80
 };
 
-#define ACTION_BUTTON_ACTION(X) (uint32(uint64(X) & 0xFFFFFFFF))
-#define ACTION_BUTTON_TYPE(X)   (uint8(uint64(X) >> 56))
-#define MAX_ACTION_BUTTON_ACTION_VALUE (0xFFFFFFFF)
+#define ACTION_BUTTON_ACTION(X) (uint64(X) & 0x00FFFFFFFFFFFFFF)
+#define ACTION_BUTTON_TYPE(X)   ((uint64(X) & 0xFF00000000000000) >> 56)
+#define MAX_ACTION_BUTTON_ACTION_VALUE UI64LIT(0xFFFFFFFFFFFFFF)
 
 struct ActionButton
 {
@@ -313,8 +313,8 @@ struct ActionButton
 
     // helpers
     ActionButtonType GetType() const { return ActionButtonType(ACTION_BUTTON_TYPE(packedData)); }
-    uint32 GetAction() const { return ACTION_BUTTON_ACTION(packedData); }
-    void SetActionAndType(uint32 action, ActionButtonType type)
+    uint64 GetAction() const { return ACTION_BUTTON_ACTION(packedData); }
+    void SetActionAndType(uint64 action, ActionButtonType type)
     {
         uint64 newData = uint64(action) | (uint64(type) << 56);
         if (newData != packedData || uState == ACTIONBUTTON_DELETED)
@@ -2351,12 +2351,12 @@ class Player : public Unit, public GridObject<Player>
             m_cinematic = cine;
         }
 
-        ActionButton* AddActionButton(uint8 button, uint32 action, uint8 type);
+        ActionButton* AddActionButton(uint8 button, uint64 action, uint8 type);
         void RemoveActionButton(uint8 button);
         ActionButton const* GetActionButton(uint8 button);
         void SendInitialActionButtons() { SendActionButtons(0); }
         void SendActionButtons(uint32 state);
-        bool IsActionButtonDataValid(uint8 button, uint32 action, uint8 type);
+        bool IsActionButtonDataValid(uint8 button, uint64 action, uint8 type);
 
         PvPInfo pvpInfo;
         void UpdatePvPState(bool onlyFFA = false);

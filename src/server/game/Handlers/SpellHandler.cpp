@@ -733,10 +733,10 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPackets::Spells::SetActionBu
     if (!player)
         return;
 
-    uint32 action = packet.Action;
-    auto type = uint8(packet.Type >> 24);
+    uint32 action = ACTION_BUTTON_ACTION(packet.Action);
+    uint8 type = ACTION_BUTTON_TYPE(packet.Action);
 
-    TC_LOG_INFO("network", "BUTTON: %u ACTION: %u TYPE: %u", packet.Index, action, type);
+    TC_LOG_INFO("network", "BUTTON: %u ACTION: %u TYPE: %u", packet.Index, action, uint32(type));
 
     if (!packet.Action && !type)
         player->RemoveActionButton(packet.Index);
