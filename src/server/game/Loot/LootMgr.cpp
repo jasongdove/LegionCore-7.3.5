@@ -2580,7 +2580,7 @@ void LootTemplate::Process(Loot& loot, bool rate, uint8 groupId) const
 
     Player const* lootOwner = loot.GetLootOwner();
 
-    TC_LOG_DEBUG("loot", "LootTemplate::Process isBoss %i _DifficultyMask %i loot.chance %u bonusLoot %i Entries %zu AutoGroups %zu Groups%zuu", loot.isBoss, loot._DifficultyMask, loot.chance, loot.bonusLoot, Entries.size(), AutoGroups.size(), Groups.size());
+    TC_LOG_DEBUG("loot", "LootTemplate::Process isBoss %i _DifficultyMask %i loot.chance %u bonusLoot %i Entries %zu AutoGroups %zu Groups %zu", loot.isBoss, loot._DifficultyMask, loot.chance, loot.bonusLoot, Entries.size(), AutoGroups.size(), Groups.size());
 
     // Rolling non-grouped items
     for (LootStoreItemList::const_iterator i = Entries.begin(); i != Entries.end(); ++i)

@@ -15072,22 +15072,12 @@ bool Player::CanGetItemForLoot(ItemTemplate const* proto, bool specCheck) const
     {
         if (_class == CLASS_WARRIOR || _class == CLASS_PALADIN || _class == CLASS_DEATH_KNIGHT)
         {
-            if (getLevel() < 40)
-            {
-                if (proto->GetSubClass() != ITEM_SUBCLASS_ARMOR_MAIL)
-                    return false;
-            }
-            else if (proto->GetSubClass() != ITEM_SUBCLASS_ARMOR_PLATE)
+            if (proto->GetSubClass() != ITEM_SUBCLASS_ARMOR_PLATE)
                 return false;
         }
         else if (_class == CLASS_HUNTER || _class == CLASS_SHAMAN)
         {
-            if (getLevel() < 40)
-            {
-                if (proto->GetSubClass() != ITEM_SUBCLASS_ARMOR_LEATHER)
-                    return false;
-            }
-            else if (proto->GetSubClass() != ITEM_SUBCLASS_ARMOR_MAIL)
+            if (proto->GetSubClass() != ITEM_SUBCLASS_ARMOR_MAIL)
                 return false;
         }
 
