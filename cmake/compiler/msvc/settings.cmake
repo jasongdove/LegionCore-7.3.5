@@ -1,6 +1,3 @@
-# set up output paths for executable binaries (.exe-files, and .dll-files on DLL-capable platforms)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
 set(MSVC_EXPECTED_VERSION 19.10)
 set(MSVC_EXPECTED_VERSION_STRING "MSVC 2017")
 

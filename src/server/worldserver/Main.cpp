@@ -585,6 +585,7 @@ variables_map GetConsoleArguments(int argc, char** argv, std::string& configFile
     options_description all("Allowed options");
     all.add_options()
         ("help,h", "print usage message")
+        ("version,v", "print version build info")
         ("config,c", value<std::string>(&configFile)->default_value(_TRINITY_CORE_CONFIG), "use <arg> as configuration file")
         ;
 #ifdef _WIN32
@@ -605,8 +606,13 @@ variables_map GetConsoleArguments(int argc, char** argv, std::string& configFile
         std::cerr << e.what() << "\n";
     }
 
-    if (vm.count("help")) {
+    if (vm.count("help"))
+    {
         std::cout << all << "\n";
+    }
+    else if (vm.count("version"))
+    {
+        std::cout << GitRevision::GetFullVersion() << "\n";
     }
 
     return vm;

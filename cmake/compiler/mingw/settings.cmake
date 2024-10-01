@@ -1,6 +1,3 @@
-# set up output paths for executable binaries (.exe-files, and .dll-files on DLL-capable platforms)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
 # Set build-directive (used in core to tell which buildtype we used)
 target_compile_definitions(trinity-compile-option-interface
   INTERFACE
