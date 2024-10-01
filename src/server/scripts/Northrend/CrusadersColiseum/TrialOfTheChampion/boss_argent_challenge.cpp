@@ -94,7 +94,7 @@ enum Says
     SAY_PALETRESS_NIGHTMARE_WARNING     = 6
 };
 
-class OrientationCheck : public std::unary_function<Unit*, bool>
+class OrientationCheck
 {
     public:
         explicit OrientationCheck(Unit* _caster) : caster(_caster) { }

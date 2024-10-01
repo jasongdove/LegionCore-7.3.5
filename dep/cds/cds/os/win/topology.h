@@ -27,7 +27,7 @@ namespace cds { namespace OS {
                 \li the system has no more than 64 logical processors;
                 \li processor IDs are in numerical order from 0 to N - 1, where N - count of processor in the system
         */
-        struct CDS_EXPORT_API topology
+        struct /*CDS_EXPORT_API*/ topology
         {
 #   if _WIN32_WINNT >= 0x0601       // >= Windows 7
             static unsigned int    processor_count()

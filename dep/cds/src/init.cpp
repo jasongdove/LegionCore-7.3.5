@@ -26,7 +26,7 @@
 namespace cds {
 
 #if CDS_OS_INTERFACE == CDS_OSI_WINDOWS
-    CDS_EXPORT_API DWORD cds::threading::wintls::Manager::Holder::m_key = TLS_OUT_OF_INDEXES;
+    /*CDS_EXPORT_API*/ DWORD cds::threading::wintls::Manager::Holder::m_key = TLS_OUT_OF_INDEXES;
 #   if CDS_COMPILER == CDS_COMPILER_MSVC || CDS_COMPILER == CDS_COMPILER_INTEL
         __declspec( thread ) threading::msvc_internal::ThreadDataPlaceholder threading::msvc_internal::s_threadData;
         __declspec(thread) threading::ThreadData * threading::msvc_internal::s_pThreadData = nullptr;
@@ -48,7 +48,7 @@ namespace cds {
     namespace details {
         static atomics::atomic<size_t> s_nInitCallCount(0);
 
-        void CDS_EXPORT_API check_hpstat_enabled( bool enabled )
+        void /*CDS_EXPORT_API*/ check_hpstat_enabled( bool enabled )
         {
 #ifdef CDS_ENABLE_HPSTAT
             if ( !enabled ) {
@@ -63,12 +63,12 @@ namespace cds {
 #endif
         }
 
-        bool CDS_EXPORT_API init_first_call()
+        bool /*CDS_EXPORT_API*/ init_first_call()
         {
             return s_nInitCallCount.fetch_add(1, atomics::memory_order_relaxed) == 0;
         }
 
-        bool CDS_EXPORT_API fini_last_call()
+        bool /*CDS_EXPORT_API*/ fini_last_call()
         {
             if ( s_nInitCallCount.fetch_sub( 1, atomics::memory_order_relaxed ) == 1 ) {
                 atomics::atomic_thread_fence( atomics::memory_order_release );

@@ -1158,7 +1158,7 @@ public:
             if (uiType != POINT_MOTION_TYPE && uiPointId == 0)
                 return;
 
-                char * text = "The Eye of Acherus is in your control";
+                const char* text = "The Eye of Acherus is in your control";
                 me->MonsterTextEmote(text, me->GetGUID(), true);
                 me->CastSpell(me, 51890, true);
                 //me->RemoveUnitMovementFlag(MOVEMENTFLAG_FLYING);
@@ -1174,7 +1174,7 @@ public:
                     //me->CastSpell(me, 70889, true);
                     //me->CastSpell(me, 51892, true);
                     //me->SetPhaseMask(3, false);
-                    char * text = "The Eye of Acherus launches towards its destination";
+                    const char* text = "The Eye of Acherus launches towards its destination";
                     me->MonsterTextEmote(text, me->GetGUID(), true);
                     me->SetSpeed(MOVE_FLIGHT, 6.4f,true);
                     me->AddUnitMovementFlag(MOVEMENTFLAG_FLYING);

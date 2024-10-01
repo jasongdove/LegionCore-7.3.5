@@ -1034,7 +1034,7 @@ public:
                             for (std::list<Player*>::const_iterator Itr = pllist.begin(); Itr != pllist.end(); Itr++)
                                 _pllist.push_back((*Itr)->GetGUID());
                             pllist.clear();
-                            std::random_shuffle(_pllist.begin(), _pllist.end());
+                            Trinity::Containers::RandomShuffle(_pllist);
                             if (_pllist.size() > maxsize)
                                 _pllist.resize(maxsize);
                             for (GuidVector::const_iterator itr = _pllist.begin(); itr != _pllist.end(); itr++)

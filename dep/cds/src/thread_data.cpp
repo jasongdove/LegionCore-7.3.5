@@ -9,10 +9,10 @@
 
 namespace cds { namespace threading {
 
-    CDS_EXPORT_API atomics::atomic<size_t> ThreadData::s_nLastUsedProcNo( 0 );
-    CDS_EXPORT_API size_t ThreadData::s_nProcCount = 1;
+    /*CDS_EXPORT_API*/ atomics::atomic<size_t> ThreadData::s_nLastUsedProcNo( 0 );
+    /*CDS_EXPORT_API*/ size_t ThreadData::s_nProcCount = 1;
 
-    CDS_EXPORT_API void ThreadData::init()
+    /*CDS_EXPORT_API*/ void ThreadData::init()
     {
         if ( m_nAttachCount++ == 0 ) {
             if ( cds::gc::HP::isUsed())
@@ -33,7 +33,7 @@ namespace cds { namespace threading {
         }
     }
 
-    CDS_EXPORT_API bool ThreadData::fini()
+    /*CDS_EXPORT_API*/ bool ThreadData::fini()
     {
         if ( --m_nAttachCount == 0 ) {
             if ( cds::gc::DHP::isUsed())

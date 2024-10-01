@@ -28,7 +28,7 @@
 #include <boost/asio/ip/address.hpp>
 #include <thread>
 
-#if COMPILER == COMPILER_GNU
+#if TRINITY_COMPILER == TRINITY_COMPILER_GNU
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

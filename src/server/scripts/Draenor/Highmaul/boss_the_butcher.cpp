@@ -389,7 +389,7 @@ struct boss_the_butcher : public BossAI
         if (action == MaggotKilled)
         {
             std::vector<uint8> indexes = {0, 1, 2, 3, 4, 5};
-            std::random_shuffle(indexes.begin(), indexes.end());
+            Trinity::Containers::RandomShuffle(indexes);
 
             for (uint8 i : indexes)
             {

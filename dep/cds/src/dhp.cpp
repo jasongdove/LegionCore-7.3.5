@@ -54,10 +54,10 @@ namespace cds { namespace gc { namespace dhp {
         stat s_postmortem_stat;
     } // namespace
 
-    /*static*/ CDS_EXPORT_API smr* smr::instance_ = nullptr;
+    /*static*/ /*CDS_EXPORT_API*/ smr* smr::instance_ = nullptr;
     thread_local thread_data* tls_ = nullptr;
 
-    CDS_EXPORT_API hp_allocator::~hp_allocator()
+    /*CDS_EXPORT_API*/ hp_allocator::~hp_allocator()
     {
         while ( guard_block* gp = static_cast<guard_block*>( free_list_.get())) {
             gp->~guard_block();
@@ -65,7 +65,7 @@ namespace cds { namespace gc { namespace dhp {
         }
     }
 
-    CDS_EXPORT_API guard_block* hp_allocator::alloc()
+    /*CDS_EXPORT_API*/ guard_block* hp_allocator::alloc()
     {
         guard_block* gb;
         auto block = free_list_.get();
@@ -91,7 +91,7 @@ namespace cds { namespace gc { namespace dhp {
         return gb;
     }
 
-    CDS_EXPORT_API retired_allocator::~retired_allocator()
+    /*CDS_EXPORT_API*/ retired_allocator::~retired_allocator()
     {
         while ( retired_block* rb = static_cast<retired_block*>( free_list_.get())) {
             rb->~retired_block();
@@ -99,7 +99,7 @@ namespace cds { namespace gc { namespace dhp {
         }
     }
 
-    CDS_EXPORT_API retired_block* retired_allocator::alloc()
+    /*CDS_EXPORT_API*/ retired_block* retired_allocator::alloc()
     {
         retired_block* rb;
         auto block = free_list_.get();
@@ -130,13 +130,13 @@ namespace cds { namespace gc { namespace dhp {
         {}
     };
 
-    /*static*/ CDS_EXPORT_API thread_data* smr::tls()
+    /*static*/ /*CDS_EXPORT_API*/ thread_data* smr::tls()
     {
         assert( tls_ != nullptr );
         return tls_;
     }
 
-    /*static*/ CDS_EXPORT_API void smr::set_memory_allocator(
+    /*static*/ /*CDS_EXPORT_API*/ void smr::set_memory_allocator(
         void* ( *alloc_func )( size_t size ),
         void( *free_func )( void * p )
     )
@@ -148,14 +148,14 @@ namespace cds { namespace gc { namespace dhp {
         s_free_memory = free_func;
     }
 
-    /*static*/ CDS_EXPORT_API void smr::construct( size_t nInitialHazardPtrCount )
+    /*static*/ /*CDS_EXPORT_API*/ void smr::construct( size_t nInitialHazardPtrCount )
     {
         if ( !instance_ ) {
             instance_ = new( s_alloc_memory( sizeof( smr ))) smr( nInitialHazardPtrCount );
         }
     }
 
-    /*static*/ CDS_EXPORT_API void smr::destruct( bool bDetachAll )
+    /*static*/ /*CDS_EXPORT_API*/ void smr::destruct( bool bDetachAll )
     {
         if ( instance_ ) {
             if ( bDetachAll )
@@ -167,14 +167,14 @@ namespace cds { namespace gc { namespace dhp {
         }
     }
 
-    CDS_EXPORT_API smr::smr( size_t nInitialHazardPtrCount )
+    /*CDS_EXPORT_API*/ smr::smr( size_t nInitialHazardPtrCount )
         : initial_hazard_count_( nInitialHazardPtrCount < 4 ? 16 : nInitialHazardPtrCount )
         , last_plist_size_( initial_hazard_count_ * 64 )
     {
         thread_list_.store( nullptr, atomics::memory_order_release );
     }
 
-    CDS_EXPORT_API smr::~smr()
+    /*CDS_EXPORT_API*/ smr::~smr()
     {
         CDS_DEBUG_ONLY( const cds::OS::ThreadId nullThreadId = cds::OS::c_NullThreadId; )
         CDS_DEBUG_ONLY( const cds::OS::ThreadId mainThreadId = cds::OS::get_current_thread_id(); )
@@ -214,13 +214,13 @@ namespace cds { namespace gc { namespace dhp {
         }
     }
 
-    /*static*/ CDS_EXPORT_API void smr::attach_thread()
+    /*static*/ /*CDS_EXPORT_API*/ void smr::attach_thread()
     {
         if ( !tls_ )
             tls_ = instance().alloc_thread_data();
     }
 
-    /*static*/ CDS_EXPORT_API void smr::detach_thread()
+    /*static*/ /*CDS_EXPORT_API*/ void smr::detach_thread()
     {
         thread_data* rec = tls_;
         if ( rec ) {
@@ -229,7 +229,7 @@ namespace cds { namespace gc { namespace dhp {
         }
     }
 
-    CDS_EXPORT_API void smr::detach_all_thread()
+    /*CDS_EXPORT_API*/ void smr::detach_all_thread()
     {
         thread_record * pNext = nullptr;
         const cds::OS::ThreadId nullThreadId = cds::OS::c_NullThreadId;
@@ -242,7 +242,7 @@ namespace cds { namespace gc { namespace dhp {
         }
     }
 
-    CDS_EXPORT_API smr::thread_record* smr::create_thread_data()
+    /*CDS_EXPORT_API*/ smr::thread_record* smr::create_thread_data()
     {
         size_t const guard_array_size = sizeof( guard ) * initial_hazard_count_;
 
@@ -268,14 +268,14 @@ namespace cds { namespace gc { namespace dhp {
         );
     }
 
-    /*static*/ CDS_EXPORT_API void smr::destroy_thread_data( thread_record* pRec )
+    /*static*/ /*CDS_EXPORT_API*/ void smr::destroy_thread_data( thread_record* pRec )
     {
         // all retired pointers must be freed
         pRec->~thread_record();
         s_free_memory( pRec );
     }
 
-    CDS_EXPORT_API smr::thread_record* smr::alloc_thread_data()
+    /*CDS_EXPORT_API*/ smr::thread_record* smr::alloc_thread_data()
     {
         thread_record * hprec = nullptr;
         const cds::OS::ThreadId nullThreadId = cds::OS::c_NullThreadId;
@@ -308,7 +308,7 @@ namespace cds { namespace gc { namespace dhp {
         return hprec;
     }
 
-    CDS_EXPORT_API void smr::free_thread_data( thread_record* pRec, bool callHelpScan )
+    /*CDS_EXPORT_API*/ void smr::free_thread_data( thread_record* pRec, bool callHelpScan )
     {
         assert( pRec != nullptr );
         //CDS_HAZARDPTR_STATISTIC( ++m_Stat.m_RetireHPRec )
@@ -372,7 +372,7 @@ namespace cds { namespace gc { namespace dhp {
 
     } // namespace
 
-    CDS_EXPORT_API void smr::scan( thread_data* pThreadRec )
+    /*CDS_EXPORT_API*/ void smr::scan( thread_data* pThreadRec )
     {
         thread_record* pRec = static_cast<thread_record*>( pThreadRec );
         pRec->sync();
@@ -433,7 +433,7 @@ namespace cds { namespace gc { namespace dhp {
             pRec->retired_.extend();
     }
 
-    CDS_EXPORT_API void smr::help_scan( thread_data* pThis )
+    /*CDS_EXPORT_API*/ void smr::help_scan( thread_data* pThis )
     {
         assert( static_cast<thread_record*>( pThis )->thread_id_.load( atomics::memory_order_relaxed ) == cds::OS::get_current_thread_id());
         CDS_HPSTAT( ++pThis->help_scan_call_count_ );
@@ -490,7 +490,7 @@ namespace cds { namespace gc { namespace dhp {
         scan( pThis );
     }
 
-    CDS_EXPORT_API void smr::statistics( stat& st )
+    /*CDS_EXPORT_API*/ void smr::statistics( stat& st )
     {
         st.clear();
 #   ifdef CDS_ENABLE_HPSTAT
@@ -519,7 +519,7 @@ namespace cds { namespace gc { namespace dhp {
 
 }}} // namespace cds::gc::dhp
 
-CDS_EXPORT_API /*static*/ cds::gc::DHP::stat const& cds::gc::DHP::postmortem_statistics()
+/*CDS_EXPORT_API*/ /*static*/ cds::gc::DHP::stat const& cds::gc::DHP::postmortem_statistics()
 {
     return cds::gc::dhp::s_postmortem_stat;
 }

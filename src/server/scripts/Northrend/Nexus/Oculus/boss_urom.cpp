@@ -100,7 +100,8 @@ class boss_urom : public CreatureScript
                 for (uint8 i = 0; i < 3; ++i)
                     group[i] = i;
 
-                std::random_shuffle(group, group + 3);
+                //std::random_shuffle(group, group + 3);
+                Trinity::Containers::RandomShuffle(group);
             }
 
             void Reset() override

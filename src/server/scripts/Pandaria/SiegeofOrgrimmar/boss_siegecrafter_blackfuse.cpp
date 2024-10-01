@@ -628,7 +628,7 @@ public:
 
                     if (!_pllist.empty())
                     {
-                        std::random_shuffle(_pllist.begin(), _pllist.end());
+                        Trinity::Containers::RandomShuffle(_pllist);
                         for (std::vector<ObjectGuid>::const_iterator itr = _pllist.begin(); itr != _pllist.end(); itr++)
                         {
                             if (Player* pl = me->GetPlayer(*me, *itr))

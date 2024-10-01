@@ -152,7 +152,6 @@ namespace WorldPackets
             void Initialize(ChatMsg chatType, Language language, WorldObject const* sender, WorldObject const* receiver, std::string message, uint32 achievementId = 0, std::string channelName = "", LocaleConstant locale = DEFAULT_LOCALE, std::string addonPrefix = "");
             void SetSender(WorldObject const* sender, LocaleConstant locale);
             void SetReceiver(WorldObject const* receiver, LocaleConstant locale);
-            std::string CodeChatMessage(std::string text, uint32 lang_id);
 
             WorldPacket const* Write() override;
 

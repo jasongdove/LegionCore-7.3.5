@@ -615,7 +615,7 @@ class boss_thok_the_bloodthirsty : public CreatureScript
 
                     if (!_pllist.empty())
                     {
-                        std::random_shuffle(_pllist.begin(), _pllist.end());
+                        Trinity::Containers::RandomShuffle(_pllist);
                         std::vector<ObjectGuid>::const_iterator itr = _pllist.begin();
                         std::advance(itr, urand(0, _pllist.size() - 1));
                         return *itr;

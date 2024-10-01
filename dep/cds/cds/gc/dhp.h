@@ -51,7 +51,7 @@ namespace cds { namespace gc {
         public:
             static hp_allocator& instance();
 
-            CDS_EXPORT_API guard_block* alloc();
+            /*CDS_EXPORT_API*/ guard_block* alloc();
             void free( guard_block* block )
             {
                 free_list_.put( block );
@@ -63,7 +63,7 @@ namespace cds { namespace gc {
                 : block_allocated_(0)
 #endif
             {}
-            CDS_EXPORT_API ~hp_allocator();
+            /*CDS_EXPORT_API*/ ~hp_allocator();
 
         private:
             cds::intrusive::FreeListImpl    free_list_; ///< list of free \p guard_block
@@ -240,7 +240,7 @@ namespace cds { namespace gc {
         public:
             static retired_allocator& instance();
 
-            CDS_EXPORT_API retired_block* alloc();
+            /*CDS_EXPORT_API*/ retired_block* alloc();
             void free( retired_block* block )
             {
                 block->next_ = nullptr;
@@ -253,7 +253,7 @@ namespace cds { namespace gc {
                 : block_allocated_(0)
 #endif
             {}
-            CDS_EXPORT_API ~retired_allocator();
+            /*CDS_EXPORT_API*/ ~retired_allocator();
 
         private:
             cds::intrusive::FreeListImpl    free_list_; ///< list of free \p guard_block
@@ -505,7 +505,7 @@ namespace cds { namespace gc {
                 <tt> nHazardPtrCount * nMaxThreadCount </tt>
                 Default is <tt>2 * nHazardPtrCount * nMaxThreadCount</tt>
             */
-            static CDS_EXPORT_API void construct(
+            static /*CDS_EXPORT_API*/ void construct(
                 size_t nInitialHazardPtrCount = 16  ///< Initial number of hazard pointer per thread
             );
 
@@ -524,7 +524,7 @@ namespace cds { namespace gc {
                 can be useful when you have no control over the thread termination, for example,
                 when \p libcds is injected into existing external thread.
             */
-            static CDS_EXPORT_API void destruct(
+            static /*CDS_EXPORT_API*/ void destruct(
                 bool bDetachAll = false     ///< Detach all threads
             );
 
@@ -551,23 +551,23 @@ namespace cds { namespace gc {
                 creating SMR object.
                 By default, a standard \p new and \p delete operators are used for this.
             */
-            static CDS_EXPORT_API void set_memory_allocator(
+            static /*CDS_EXPORT_API*/ void set_memory_allocator(
                 void* ( *alloc_func )( size_t size ),
                 void( *free_func )( void * p )
             );
 
             /// Returns thread-local data for the current thread
-            static CDS_EXPORT_API thread_data* tls();
+            static /*CDS_EXPORT_API*/ thread_data* tls();
 
-            static CDS_EXPORT_API void attach_thread();
-            static CDS_EXPORT_API void detach_thread();
+            static /*CDS_EXPORT_API*/ void attach_thread();
+            static /*CDS_EXPORT_API*/ void detach_thread();
 
             /// Get internal statistics
-            CDS_EXPORT_API void statistics( stat& st );
+            /*CDS_EXPORT_API*/ void statistics( stat& st );
 
         public: // for internal use only
             /// The main garbage collecting function
-            CDS_EXPORT_API void scan( thread_data* pRec );
+            /*CDS_EXPORT_API*/ void scan( thread_data* pRec );
 
             /// Helper scan routine
             /**
@@ -578,7 +578,7 @@ namespace cds { namespace gc {
 
                 The function is called internally by \p scan().
             */
-            CDS_EXPORT_API void help_scan( thread_data* pThis );
+            /*CDS_EXPORT_API*/ void help_scan( thread_data* pThis );
 
             hp_allocator& get_hp_allocator()
             {
@@ -591,26 +591,26 @@ namespace cds { namespace gc {
             }
 
         private:
-            CDS_EXPORT_API explicit smr(
+            /*CDS_EXPORT_API*/ explicit smr(
                 size_t nInitialHazardPtrCount
             );
 
-            CDS_EXPORT_API ~smr();
+            /*CDS_EXPORT_API*/ ~smr();
 
-            CDS_EXPORT_API void detach_all_thread();
+            /*CDS_EXPORT_API*/ void detach_all_thread();
 
         private:
-            CDS_EXPORT_API thread_record* create_thread_data();
-            static CDS_EXPORT_API void destroy_thread_data( thread_record* pRec );
+            /*CDS_EXPORT_API*/ thread_record* create_thread_data();
+            static /*CDS_EXPORT_API*/ void destroy_thread_data( thread_record* pRec );
 
             /// Allocates Hazard Pointer SMR thread private data
-            CDS_EXPORT_API thread_record* alloc_thread_data();
+            /*CDS_EXPORT_API*/ thread_record* alloc_thread_data();
 
             /// Free HP SMR thread-private data
-            CDS_EXPORT_API void free_thread_data( thread_record* pRec, bool callHelpScan );
+            /*CDS_EXPORT_API*/ void free_thread_data( thread_record* pRec, bool callHelpScan );
 
         private:
-            static CDS_EXPORT_API smr* instance_;
+            static /*CDS_EXPORT_API*/ smr* instance_;
 
             atomics::atomic< thread_record*>    thread_list_;   ///< Head of thread list
             size_t const        initial_hazard_count_;  ///< initial number of hazard pointers per thread
@@ -1483,7 +1483,7 @@ namespace cds { namespace gc {
             }
             \endcode
         */
-        CDS_EXPORT_API static stat const& postmortem_statistics();
+        /*CDS_EXPORT_API*/ static stat const& postmortem_statistics();
     };
 
 }} // namespace cds::gc

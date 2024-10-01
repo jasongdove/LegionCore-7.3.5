@@ -522,7 +522,7 @@ public:
                         //active new random mutation
                         if (!evolutionspelllist.empty())
                         {
-                            std::random_shuffle(evolutionspelllist.begin(), evolutionspelllist.end());
+                            Trinity::Containers::RandomShuffle(evolutionspelllist);
                             for (std::vector<uint32>::const_iterator itr = evolutionspelllist.begin(); itr != evolutionspelllist.end(); itr++)
                             {
                                 if (!GetCaster()->HasAura(*itr) && removedmutation != (*itr))
@@ -542,7 +542,7 @@ public:
                     //active new random mutation
                     if (!evolutionspelllist.empty())
                     {
-                        std::random_shuffle(evolutionspelllist.begin(), evolutionspelllist.end());
+                        Trinity::Containers::RandomShuffle(evolutionspelllist);
                         for (std::vector<uint32>::const_iterator itr = evolutionspelllist.begin(); itr != evolutionspelllist.end(); itr++)
                         {
                             if (!GetCaster()->HasAura(*itr))

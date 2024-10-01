@@ -388,7 +388,7 @@ Player *SelectRandomAttackablePlayerInTheMap(Map *pMap)
     return SelectRandomPlayerFromList(players);
 }
 
-class NecroticPlagueTargetCheck : public std::unary_function<Unit*, bool>
+class NecroticPlagueTargetCheck
 {
     public:
         NecroticPlagueTargetCheck(Unit const* obj, uint32 notAura1 = 0, uint32 notAura2 = 0)

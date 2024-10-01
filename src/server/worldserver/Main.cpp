@@ -20,6 +20,7 @@
 /// @{
 /// \file
 
+#include <boost/asio/signal_set.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/program_options.hpp>
 #include <boost/dll/runtime_symbol_info.hpp>
@@ -370,7 +371,7 @@ void ShutdownCLIThread(std::thread* cliThread)
                 DWORD numCharsWritten = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,
                     nullptr, errorCode, 0, (LPTSTR)&errorBuffer, 0, nullptr);
                 if (!numCharsWritten)
-                    errorBuffer = "Unknown error";
+                    errorBuffer = (char*)"Unknown error";
 
                 TC_LOG_DEBUG("server.worldserver", "Error cancelling I/O of CliThread, error code %u, detail: %s", uint32(errorCode), errorBuffer);
 

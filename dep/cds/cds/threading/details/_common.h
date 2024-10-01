@@ -125,8 +125,8 @@ namespace cds {
             cds::algo::elimination::record   m_EliminationRec;
 
             //@cond
-            static CDS_EXPORT_API atomics::atomic<size_t> s_nLastUsedProcNo;
-            static CDS_EXPORT_API size_t                  s_nProcCount;
+            static /*CDS_EXPORT_API*/ atomics::atomic<size_t> s_nLastUsedProcNo;
+            static /*CDS_EXPORT_API*/ size_t                  s_nProcCount;
             //@endcond
 
             //@cond
@@ -151,8 +151,8 @@ namespace cds {
 #endif
             }
 
-            CDS_EXPORT_API void init();
-            CDS_EXPORT_API bool fini();
+            /*CDS_EXPORT_API*/ void init();
+            /*CDS_EXPORT_API*/ bool fini();
 
             size_t fake_current_processor()
             {

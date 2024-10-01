@@ -1019,7 +1019,7 @@ public:
     }
 };
 
-class OrbCheck : public std::unary_function<WorldObject*, bool>
+class OrbCheck
 {
     public:
         explicit OrbCheck(WorldObject* _caster) : caster(_caster) { }

@@ -602,34 +602,34 @@ PEXCEPTION_POINTERS pExceptionInfo)
 // Given an exception code, returns a pointer to a static string with a
 // description of the exception
 //======================================================================
-LPTSTR WheatyExceptionReport::GetExceptionString(DWORD dwCode)
+LPCTSTR WheatyExceptionReport::GetExceptionString(DWORD dwCode)
 {
     #define EXCEPTION(x) case EXCEPTION_##x: return _T(#x);
 
     switch (dwCode)
     {
         EXCEPTION(ACCESS_VIOLATION)
-            EXCEPTION(DATATYPE_MISALIGNMENT)
-            EXCEPTION(BREAKPOINT)
-            EXCEPTION(SINGLE_STEP)
-            EXCEPTION(ARRAY_BOUNDS_EXCEEDED)
-            EXCEPTION(FLT_DENORMAL_OPERAND)
-            EXCEPTION(FLT_DIVIDE_BY_ZERO)
-            EXCEPTION(FLT_INEXACT_RESULT)
-            EXCEPTION(FLT_INVALID_OPERATION)
-            EXCEPTION(FLT_OVERFLOW)
-            EXCEPTION(FLT_STACK_CHECK)
-            EXCEPTION(FLT_UNDERFLOW)
-            EXCEPTION(INT_DIVIDE_BY_ZERO)
-            EXCEPTION(INT_OVERFLOW)
-            EXCEPTION(PRIV_INSTRUCTION)
-            EXCEPTION(IN_PAGE_ERROR)
-            EXCEPTION(ILLEGAL_INSTRUCTION)
-            EXCEPTION(NONCONTINUABLE_EXCEPTION)
-            EXCEPTION(STACK_OVERFLOW)
-            EXCEPTION(INVALID_DISPOSITION)
-            EXCEPTION(GUARD_PAGE)
-            EXCEPTION(INVALID_HANDLE)
+        EXCEPTION(DATATYPE_MISALIGNMENT)
+        EXCEPTION(BREAKPOINT)
+        EXCEPTION(SINGLE_STEP)
+        EXCEPTION(ARRAY_BOUNDS_EXCEEDED)
+        EXCEPTION(FLT_DENORMAL_OPERAND)
+        EXCEPTION(FLT_DIVIDE_BY_ZERO)
+        EXCEPTION(FLT_INEXACT_RESULT)
+        EXCEPTION(FLT_INVALID_OPERATION)
+        EXCEPTION(FLT_OVERFLOW)
+        EXCEPTION(FLT_STACK_CHECK)
+        EXCEPTION(FLT_UNDERFLOW)
+        EXCEPTION(INT_DIVIDE_BY_ZERO)
+        EXCEPTION(INT_OVERFLOW)
+        EXCEPTION(PRIV_INSTRUCTION)
+        EXCEPTION(IN_PAGE_ERROR)
+        EXCEPTION(ILLEGAL_INSTRUCTION)
+        EXCEPTION(NONCONTINUABLE_EXCEPTION)
+        EXCEPTION(STACK_OVERFLOW)
+        EXCEPTION(INVALID_DISPOSITION)
+        EXCEPTION(GUARD_PAGE)
+        EXCEPTION(INVALID_HANDLE)
     }
 
     // If not one of the "known" exceptions, try to get the string
@@ -951,8 +951,8 @@ DWORD64 modBase,
 DWORD dwTypeIndex,
 DWORD_PTR offset,
 bool & bHandled,
-const char* Name,
-char* /*suffix*/,
+char const* Name,
+char const* /*suffix*/,
 bool newSymbol,
 bool logChildren)
 {

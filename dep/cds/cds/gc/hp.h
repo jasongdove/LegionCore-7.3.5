@@ -413,7 +413,7 @@ namespace cds { namespace gc {
                     <tt> nHazardPtrCount * nMaxThreadCount </tt>
                     Default is <tt>2 * nHazardPtrCount * nMaxThreadCount</tt>
             */
-            static CDS_EXPORT_API void construct(
+            static /*CDS_EXPORT_API*/ void construct(
                 size_t nHazardPtrCount = 0,     ///< Hazard pointer count per thread
                 size_t nMaxThreadCount = 0,     ///< Max count of simultaneous working thread in your application
                 size_t nMaxRetiredPtrCount = 0, ///< Capacity of the array of retired objects for the thread
@@ -438,7 +438,7 @@ namespace cds { namespace gc {
                 can be useful when you have no control over the thread termination, for example,
                 when \p libcds is injected into existing external thread.
             */
-            static CDS_EXPORT_API void destruct(
+            static /*CDS_EXPORT_API*/ void destruct(
                 bool bDetachAll = false     ///< Detach all threads
             );
 
@@ -465,7 +465,7 @@ namespace cds { namespace gc {
                 creating SMR object.
                 By default, a standard \p new and \p delete operators are used for this.
             */
-            static CDS_EXPORT_API void set_memory_allocator(
+            static /*CDS_EXPORT_API*/ void set_memory_allocator(
                 void* ( *alloc_func )( size_t size ),
                 void (*free_func )( void * p )
             );
@@ -510,13 +510,13 @@ namespace cds { namespace gc {
             }
 
             /// Returns thread-local data for the current thread
-            static CDS_EXPORT_API thread_data* tls();
+            static /*CDS_EXPORT_API*/ thread_data* tls();
 
-            static CDS_EXPORT_API void attach_thread();
-            static CDS_EXPORT_API void detach_thread();
+            static /*CDS_EXPORT_API*/ void attach_thread();
+            static /*CDS_EXPORT_API*/ void detach_thread();
 
             /// Get internal statistics
-            CDS_EXPORT_API void statistics( stat& st );
+            /*CDS_EXPORT_API*/ void statistics( stat& st );
 
         public: // for internal use only
             /// The main garbage collecting function
@@ -545,19 +545,19 @@ namespace cds { namespace gc {
 
                 The function is called internally by \p scan().
             */
-            CDS_EXPORT_API void help_scan( thread_data* pThis );
+            /*CDS_EXPORT_API*/ void help_scan( thread_data* pThis );
 
         private:
-            CDS_EXPORT_API smr(
+            /*CDS_EXPORT_API*/ smr(
                 size_t nHazardPtrCount,     ///< Hazard pointer count per thread
                 size_t nMaxThreadCount,     ///< Max count of simultaneous working thread in your application
                 size_t nMaxRetiredPtrCount, ///< Capacity of the array of retired objects for the thread
                 scan_type nScanType         ///< Scan type (see \ref scan_type enum)
             );
 
-            CDS_EXPORT_API ~smr();
+            /*CDS_EXPORT_API*/ ~smr();
 
-            CDS_EXPORT_API void detach_all_thread();
+            /*CDS_EXPORT_API*/ void detach_all_thread();
 
             /// Classic scan algorithm
             /** @anchor hzp_gc_classic_scan
@@ -583,27 +583,27 @@ namespace cds { namespace gc {
                 This function is called internally by ThreadGC object when upper bound of thread's list of reclaimed pointers
                 is reached.
             */
-            CDS_EXPORT_API void classic_scan( thread_data* pRec );
+            /*CDS_EXPORT_API*/ void classic_scan( thread_data* pRec );
 
             /// In-place scan algorithm
             /** @anchor hzp_gc_inplace_scan
                 Unlike the \p classic_scan() algorithm, \p %inplace_scan() does not allocate any memory.
                 All operations are performed in-place.
             */
-            CDS_EXPORT_API void inplace_scan( thread_data* pRec );
+            /*CDS_EXPORT_API*/ void inplace_scan( thread_data* pRec );
 
         private:
-            CDS_EXPORT_API thread_record* create_thread_data();
-            static CDS_EXPORT_API void destroy_thread_data( thread_record* pRec );
+            /*CDS_EXPORT_API*/ thread_record* create_thread_data();
+            static /*CDS_EXPORT_API*/ void destroy_thread_data( thread_record* pRec );
 
             /// Allocates Hazard Pointer SMR thread private data
-            CDS_EXPORT_API thread_record* alloc_thread_data();
+            /*CDS_EXPORT_API*/ thread_record* alloc_thread_data();
 
             /// Free HP SMR thread-private data
-            CDS_EXPORT_API void free_thread_data( thread_record* pRec, bool callHelpScan );
+            /*CDS_EXPORT_API*/ void free_thread_data( thread_record* pRec, bool callHelpScan );
 
         private:
-            static CDS_EXPORT_API smr* instance_;
+            static /*CDS_EXPORT_API*/ smr* instance_;
 
             atomics::atomic< thread_record*>    thread_list_;   ///< Head of thread list
 
@@ -1495,7 +1495,7 @@ namespace cds { namespace gc {
             }
             \endcode
         */
-        CDS_EXPORT_API static stat const& postmortem_statistics();
+        /*CDS_EXPORT_API*/ static stat const& postmortem_statistics();
     };
 
 }} // namespace cds::gc

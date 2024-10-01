@@ -201,7 +201,7 @@ public:
                             if (targets.empty())
                                 return;
 
-                            std::random_shuffle(targets.begin(), targets.end());
+                            Trinity::Containers::RandomShuffle(targets);
                             if (Unit* target = sObjectAccessor->FindUnit((*targets.begin())))
                                 me->CastSpell(target, SPELL_CORRUPTION_BOLT, true);
                         }
@@ -352,7 +352,7 @@ public:
                             if (targets.empty())
                                 return;
 
-                            std::random_shuffle(targets.begin(), targets.end());
+                            Trinity::Containers::RandomShuffle(targets);
                             if (Unit* target = sObjectAccessor->FindUnit((*targets.begin())))
                                 me->CastSpell(target, SPELL_CORRUPTION_BOLT, true);
                         }

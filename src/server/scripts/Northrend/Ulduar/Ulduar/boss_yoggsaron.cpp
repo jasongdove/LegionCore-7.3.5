@@ -2274,7 +2274,7 @@ class spell_titanic_storm : public SpellScriptLoader
         }
 };
 
-class OrientationCheck : public std::unary_function<WorldObject*, bool>
+class OrientationCheck
 {
     public:
         explicit OrientationCheck(WorldObject* _caster) : caster(_caster) { }
@@ -2287,7 +2287,7 @@ class OrientationCheck : public std::unary_function<WorldObject*, bool>
         WorldObject* caster;
 };
 
-class OrientationCheckPsychosis : public std::unary_function<WorldObject*, bool>
+class OrientationCheckPsychosis
 {
     public:
         explicit OrientationCheckPsychosis(WorldObject* _caster) : caster(_caster) { }

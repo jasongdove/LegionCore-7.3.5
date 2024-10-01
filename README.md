@@ -17,9 +17,6 @@ If you want you can join the community discord: [here](https://discord.gg/uaP2ae
 
 # Requirements
  
- ### Important
- The main difference to note is that LegionCore requires Boost (1.64.0), Visual Studio 2017 or later, and MySQL (5.6.51).
- 
 [Windows specific](https://www.trinitycore.info/en/install/requirements/windows)
   
 [Linux specific](https://www.trinitycore.info/en/install/requirements/linux)
@@ -35,7 +32,7 @@ This core has been optimized for DBC/vmap/map/mmaps files from UWoW and are not 
 ***⚠️ We will not provide further assistance if those files are not available anymore.***
 
 Some files from the above data files are wrong.
-Use the [TrinityCore 7.3.5 tools](https://github.com/TrinityCore/TrinityCore/releases/tag/7.3.5%2F26972) to generate the following files:
+Use the tools from this repo to generate the following files:
 > gt/xp.txt
 
 Replace the listed above file(s) with the one(s) you generated yourself.
@@ -44,7 +41,7 @@ Replace the listed above file(s) with the one(s) you generated yourself.
 TODO
 
 # Reporting issues
-Issues can be reported via the [Github issue tracker](https://github.com/dufernst/LegionCore-7.3.5/issues).
+Issues can be reported via the [Github issue tracker](https://github.com/jasongdove/LegionCore-7.3.5/issues).
 
 Please take the time to review existing issues before submitting your own to
 prevent duplicates.

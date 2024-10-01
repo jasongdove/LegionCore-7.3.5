@@ -386,7 +386,7 @@ struct boss_master_snowdrift : public BossAI
             {
                 std::vector<uint8> randomIndex;
                 for (int i = 0; i < 3; ++i) randomIndex.push_back(i);
-                std::random_shuffle(randomIndex.begin(), randomIndex.end());
+                Trinity::Containers::RandomShuffle(randomIndex);
 
                 bool isBoss = true;
 

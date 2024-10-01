@@ -162,7 +162,7 @@ class boss_echo_of_baine : public CreatureScript
                 DoMeleeAttackIfReady();
             }
         private:
-            struct PositionSelector : public std::unary_function<Unit*, bool>
+            struct PositionSelector
             {
                 public:
                     bool operator()(Unit const* target) const

@@ -34,7 +34,7 @@ namespace cds { namespace urcu { namespace details {
     template <typename RCUtag>
     struct gp_singleton_instance
     {
-        static CDS_EXPORT_API singleton_vtbl *     s_pRCU;
+        static /*CDS_EXPORT_API*/ singleton_vtbl *     s_pRCU;
     };
 #if !( CDS_COMPILER == CDS_COMPILER_MSVC || (CDS_COMPILER == CDS_COMPILER_INTEL && CDS_OS_INTERFACE == CDS_OSI_WINDOWS))
     template<> CDS_EXPORT_API singleton_vtbl * gp_singleton_instance< general_instant_tag >::s_pRCU;
