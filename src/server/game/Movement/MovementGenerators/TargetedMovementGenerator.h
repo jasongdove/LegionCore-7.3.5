@@ -117,27 +117,52 @@ class FetchMovementGenerator : public TargetedMovementGeneratorMedium<T, FetchMo
 template<class T>
 class FollowMovementGenerator : public TargetedMovementGeneratorMedium<T, FollowMovementGenerator<T> >
 {
-    public:
-        FollowMovementGenerator(Unit &target)
-            : TargetedMovementGeneratorMedium<T, FollowMovementGenerator<T> >(target){}
-        FollowMovementGenerator(Unit &target, float offset, float angle)
-            : TargetedMovementGeneratorMedium<T, FollowMovementGenerator<T> >(target, offset, angle) {}
-        ~FollowMovementGenerator() {}
+public:
+    FollowMovementGenerator(Unit& target) : TargetedMovementGeneratorMedium<T, FollowMovementGenerator<T> >(target){}
+    FollowMovementGenerator(Unit& target, float range, float angle)
+        : TargetedMovementGeneratorMedium<T, FollowMovementGenerator<T> >(target, range, angle),
+        i_path(nullptr),
+        i_recheckPredictedDistanceTimer(0),
+        i_recheckPredictedDistance(false),
+        _range(range),
+        _angle(angle),
+        _inheritWalkState(false)
+    {
+    }
+    ~FollowMovementGenerator() { }
 
-        MovementGeneratorType GetMovementGeneratorType() override { return FOLLOW_MOTION_TYPE; }
+    MovementGeneratorType GetMovementGeneratorType() override { return FOLLOW_MOTION_TYPE; }
 
-        void DoInitialize(T &);
-        void DoFinalize(T &);
-        void DoReset(T &);
-        void MovementInform(T &);
+    bool DoUpdate(T&, uint32);
+    void DoInitialize(T&);
+    void DoFinalize(T&);
+    void DoReset(T&);
+    void MovementInform(T&);
 
-        static void _clearUnitStateMove(T &u) { u.ClearUnitState(UNIT_STATE_FOLLOW_MOVE); }
-        static void _addUnitStateMove(T &u)  { u.AddUnitState(UNIT_STATE_FOLLOW_MOVE); }
-        bool EnableWalking() const;
-        bool _lostTarget(T &) const { return false; }
-        void _reachTarget(T &) {}
-    private:
-        void _updateSpeed(T &u);
+    Unit* GetTarget() const { return this->i_target.getTarget(); }
+
+    void unitSpeedChanged() { _lastTargetPosition.reset(); }
+
+    bool PositionOkay(Unit* target, bool isPlayerPet, bool& targetIsMoving, uint32 diff);
+
+    float GetFollowRange() const { return _range; }
+
+    static void _clearUnitStateMove(T& u) { u.ClearUnitState(UNIT_STATE_FOLLOW_MOVE); }
+    static void _addUnitStateMove(T& u)  { u.AddUnitState(UNIT_STATE_FOLLOW_MOVE); }
+    bool EnableWalking() const;
+    bool _lostTarget(T&) const { return false; }
+    void _reachTarget(T&) {}
+
+private:
+    std::unique_ptr<PathGenerator> i_path;
+    TimeTrackerSmall i_recheckPredictedDistanceTimer;
+    bool i_recheckPredictedDistance;
+
+    Optional<Position> _lastTargetPosition;
+    Optional<Position> _lastPredictedPosition;
+    float _range;
+    float _angle;
+    bool _inheritWalkState;
 };
 
 #endif

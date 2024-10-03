@@ -71,6 +71,8 @@ namespace Movement
 
         int32 GetTimePassed() const { return time_passed; }
 
+        bool isWalking() const { return walk; } // splineflags.walkmode ?
+
     protected:
         MySpline        spline;
 

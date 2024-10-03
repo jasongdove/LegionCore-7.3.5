@@ -109,6 +109,7 @@ struct Position
     float GetAngle(float x, float y) const;
     float GetRelativeAngle(Position const* pos) const;
     float GetRelativeAngle(float x, float y) const;
+    float ToAbsoluteAngle(float relAngle) const { return NormalizeOrientation(relAngle + m_orientation); }
     void GetSinCos(float x, float y, float &vsin, float &vcos) const;
     bool IsInDegreesRange(float x, float y, float degresA, float degresB, bool relative = false) const;
     float GetDegreesAngel(float x, float y, bool relative = false) const;
