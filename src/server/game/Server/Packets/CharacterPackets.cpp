@@ -22,7 +22,7 @@
 #include "World.h"
 #include "WorldSession.h"
 
-WorldPackets::Character::EnumCharactersResult::CharacterInfo::CharacterInfo(Field* fields, CharEnumMap& charInfo, uint32 accountId)
+WorldPackets::Character::EnumCharactersResult::CharacterInfo::CharacterInfo(Field* fields)
 {
     enum fieldenum
     {
@@ -37,28 +37,26 @@ WorldPackets::Character::EnumCharactersResult::CharacterInfo::CharacterInfo(Fiel
     };
 
     Guid = ObjectGuid::Create<HighGuid::Player>(fields[f_guid].GetUInt64());
-    CharEnumInfoData& charEnum = charInfo[Guid];
-
-    charEnum.Name = Name = fields[f_name].GetString();
-    charEnum.Race = Race = fields[f_race].GetUInt8();
-    charEnum.Class = Class = fields[f_class].GetUInt8();
-    charEnum.Skin = Skin = fields[f_skin].GetUInt8();
-    charEnum.Face = Face = fields[f_face].GetUInt8();
-    charEnum.HairStyle = HairStyle = fields[f_hairstyle].GetUInt8();
-    charEnum.HairColor = HairColor = fields[f_haircolor].GetUInt8();
-    charEnum.FacialHair = FacialHair = fields[f_facialhair].GetUInt8();
+    Name = fields[f_name].GetString();
+    Race = fields[f_race].GetUInt8();
+    Class = fields[f_class].GetUInt8();
+    Skin = fields[f_skin].GetUInt8();
+    Face = fields[f_face].GetUInt8();
+    HairStyle = fields[f_hairstyle].GetUInt8();
+    HairColor = fields[f_haircolor].GetUInt8();
+    FacialHair = fields[f_facialhair].GetUInt8();
     CustomDisplay[0]  = fields[f_tattoo].GetUInt8();
     CustomDisplay[1]  = fields[f_horn].GetUInt8();
     CustomDisplay[2]  = fields[f_blindfold].GetUInt8();
-    charEnum.Sex = Sex = fields[f_sex].GetUInt8();
-    charEnum.Level = Level = fields[f_level].GetUInt8();
-    charEnum.ZoneId = ZoneId = int32(fields[f_zone].GetUInt16());
-    charEnum.MapId = MapId = int32(fields[f_map].GetUInt16());
+    Sex = fields[f_sex].GetUInt8();
+    Level = fields[f_level].GetUInt8();
+    ZoneId = int32(fields[f_zone].GetUInt16());
+    MapId = int32(fields[f_map].GetUInt16());
     PreLoadPosition = Position(fields[f_position_x].GetFloat(), fields[f_position_y].GetFloat(), fields[f_position_z].GetFloat());
 
     uint32 guildId = fields[f_guildid].GetUInt32();
     if (guildId)
-        charEnum.GuildGuid = GuildGuid = ObjectGuid::Create<HighGuid::Guild>(guildId);
+        GuildGuid = ObjectGuid::Create<HighGuid::Guild>(guildId);
 
     uint32 playerFlags = fields[f_playerFlags].GetUInt32();
     uint32 atLoginFlags = fields[f_at_login].GetUInt16();
@@ -83,7 +81,7 @@ WorldPackets::Character::EnumCharactersResult::CharacterInfo::CharacterInfo(Fiel
     //    if (!fields[idx++].GetString().empty())
     //        Flags |= CHARACTER_FLAG_DECLINED;
     //}else
-    Flags |= CHARACTER_FLAG_DECLINED;
+    //Flags |= CHARACTER_FLAG_DECLINED;
 
     if (atLoginFlags & AT_LOGIN_CUSTOMIZE)
         Flags2 = CHARACTER_FLAG_2_CUSTOMIZE;
@@ -112,14 +110,13 @@ WorldPackets::Character::EnumCharactersResult::CharacterInfo::CharacterInfo(Fiel
     ProfessionIds[1] = 0;
 
     Tokenizer equipment(fields[f_equipmentCache].GetString(), ' ');
-
     ListPosition = fields[f_slot].GetUInt8();
     LastPlayedTime = fields[f_lastPlayed].GetUInt32();
+//    if (ChrSpecializationEntry const* spec = sDB2Manager.GetChrSpecializationByIndex(Class, fields[f_specID].GetUInt16()))
+//        SpecializationID = spec->ID;
     SpecializationID = fields[f_specID].GetUInt16();
-    LastLoginBuild = realm.Build;
 
-    if (!sWorld->GetCharacterInfo(Guid))
-        sWorld->AddCharacterInfo(fields[f_guid].GetUInt64(), Name, Sex, Race, Class, Level, accountId, ZoneId, guildId, 0 /*rankId*/, SpecializationID);
+    LastLoginBuild = realm.Build;
 
     for (uint8 slot = 0; slot < INVENTORY_SLOT_BAG_END; ++slot)
     {

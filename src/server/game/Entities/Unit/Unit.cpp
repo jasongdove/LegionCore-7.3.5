@@ -27381,7 +27381,7 @@ void Unit::SetLevel(uint8 lvl)
         ToPlayer()->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_LEVEL);
 
     if (IsPlayer())
-        sWorld->UpdateCharacterInfoLevel(ToPlayer()->GetGUIDLow(), lvl);
+        sWorld->UpdateCharacterInfoLevel(ToPlayer()->GetGUID(), lvl);
 }
 
 void Unit::SetEffectiveLevel(uint8 lvl)

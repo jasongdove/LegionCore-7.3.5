@@ -96,12 +96,10 @@ namespace WorldPackets
         public:
             struct CharacterInfo
             {
-                CharacterInfo(Field* fields, CharEnumMap& charInfo, uint32 accountId);
+                CharacterInfo(Field* fields);
 
                 ObjectGuid Guid;
                 std::string Name;
-                uint32 LastPlayedTime = 0;
-                uint16 SpecializationID = 0;
                 uint8 ListPosition = 0; ///< Order of the characters in list
                 uint8 Race = 0;
                 uint8 Class = 0;
@@ -111,7 +109,7 @@ namespace WorldPackets
                 uint8 HairStyle = 0;
                 uint8 HairColor = 0;
                 uint8 FacialHair = 0;
-                std::array<uint8, PLAYER_CUSTOM_DISPLAY_SIZE> CustomDisplay;
+                std::array<uint8, PLAYER_CUSTOM_DISPLAY_SIZE> CustomDisplay = { };
                 uint8 Level = 0;
                 int32 ZoneId = 0;
                 int32 MapId = 0;
@@ -123,6 +121,8 @@ namespace WorldPackets
                 uint32 Flags4 = 0;
                 bool FirstLogin = false;
                 uint8 unkWod61x = 0;
+                uint32 LastPlayedTime = 0;
+                uint16 SpecializationID = 0;
                 uint32 Unknown703 = 0;
                 uint32 LastLoginBuild = 0;
 
@@ -143,7 +143,7 @@ namespace WorldPackets
                     uint8 InventoryType = 0;
                 };
 
-                VisualItemInfo VisualItems[INVENTORY_SLOT_BAG_END];
+                std::array<VisualItemInfo, 23> VisualItems = { };
             };
 
             struct RaceUnlock
@@ -158,16 +158,18 @@ namespace WorldPackets
 
             WorldPacket const* Write() override;
 
-            std::list<CharacterInfo> Characters;
-            std::vector<RaceUnlock> RaceUnlockData;
-            Optional<uint32> DisabledClassesMask;
-            int32 MaxCharacterLevel = 1;
             bool Success = false;
             bool IsDeletedCharacters = false; 
             bool IsDemonHunterCreationAllowed = false;
             bool HasDemonHunterOnRealm = false;
-            bool IsAlliedRacesCreationAllowed = false;
             bool Unknown7x = false;
+            bool IsAlliedRacesCreationAllowed = false;
+
+            int32 MaxCharacterLevel = 1;
+            Optional<uint32> DisabledClassesMask;
+
+            std::list<CharacterInfo> Characters;
+            std::vector<RaceUnlock> RaceUnlockData;
         };
 
         class CreateChar final : public ClientPacket

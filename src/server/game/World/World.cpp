@@ -180,10 +180,6 @@ World::~World()
     VMAP::VMapFactory::clear();
     MMAP::MMapFactory::clear();
 
-    for (size_t i = 0; i < _characterInfoStore.size(); ++i)
-        if (_characterInfoStore[i])
-            delete _characterInfoStore[i];
-
     //TODO free addSessQueue
 }
 
@@ -837,15 +833,6 @@ void World::LoadConfigSettings(bool reload)
         TC_LOG_ERROR("server.loading", "CharactersPerAccount (%i) can't be less than CharactersPerRealm (%i).", m_int_configs[CONFIG_CHARACTERS_PER_ACCOUNT], m_int_configs[CONFIG_CHARACTERS_PER_REALM]);
         m_int_configs[CONFIG_CHARACTERS_PER_ACCOUNT] = m_int_configs[CONFIG_CHARACTERS_PER_REALM];
     }
-
-    m_int_configs[CONFIG_HEROIC_CHARACTERS_PER_REALM] = sConfigMgr->GetIntDefault("HeroicCharactersPerRealm", 1);
-    if (int32(m_int_configs[CONFIG_HEROIC_CHARACTERS_PER_REALM]) < 0 || m_int_configs[CONFIG_HEROIC_CHARACTERS_PER_REALM] > 10)
-    {
-        TC_LOG_ERROR("server.loading", "HeroicCharactersPerRealm (%i) must be in range 0..10. Set to 1.", m_int_configs[CONFIG_HEROIC_CHARACTERS_PER_REALM]);
-        m_int_configs[CONFIG_HEROIC_CHARACTERS_PER_REALM] = 1;
-    }
-
-    m_int_configs[CONFIG_CHARACTER_CREATING_MIN_LEVEL_FOR_HEROIC_CHARACTER] = sConfigMgr->GetIntDefault("CharacterCreating.MinLevelForHeroicCharacter", 0);
 
     m_int_configs[CONFIG_DEMON_HUNTERS_PER_REALM] = sConfigMgr->GetIntDefault("DemonHuntersPerRealm", 12);
     if (int32(m_int_configs[CONFIG_DEMON_HUNTERS_PER_REALM]) < 0 || m_int_configs[CONFIG_DEMON_HUNTERS_PER_REALM] > 12)
@@ -4195,107 +4182,91 @@ void World::LoadCharacterNameData()
     do
     {
         Field* fields = result->Fetch();
-        AddCharacterInfo(fields[0].GetUInt64(), fields[1].GetString(),
+        AddCharacterInfo(ObjectGuid::Create<HighGuid::Player>(fields[0].GetUInt64()), fields[6].GetUInt32() /*account*/, fields[1].GetString(),
             fields[3].GetUInt8() /*gender*/, fields[2].GetUInt8() /*race*/, fields[4].GetUInt8() /*class*/, fields[5].GetUInt8() /*level*/,
-            fields[6].GetUInt32() /*account*/, fields[7].GetUInt16() /*zoneId*/, fields[8].GetUInt32() /*guildId*/, fields[9].GetUInt32() /*rankId*/, fields[10].GetUInt16() /*SpecId*/);
+            fields[7].GetUInt16() /*zoneId*/, fields[8].GetUInt32() /*rankId*/, ObjectGuid::Create<HighGuid::Guild>(fields[9].GetUInt32()) /*guildId*/, fields[10].GetUInt16() /*SpecId*/);
         ++count;
     } while (result->NextRow());
 
     TC_LOG_INFO("server.loading", "Loaded name data for %u characters", count);
 }
 
-void World::AddCharacterInfo(ObjectGuid::LowType guid, std::string const& name, uint8 gender, uint8 race, uint8 playerClass, uint8 level, uint32 accountId, uint8 zoneId, uint8 rankId, uint32 guildId, uint32 specid)
+void World::AddCharacterInfo(ObjectGuid const& guid, uint32 accountId, std::string const& name, uint8 gender, uint8 race, uint8 playerClass, uint8 level, uint8 zoneId, uint8 rankId, ObjectGuid const& guildId, uint32 specid)
 {
-    if (_characterInfoStore.size() <= guid)
-        _characterInfoStore.resize(guid + 10000, nullptr);
+    CharacterInfo& data = _characterInfoStore[guid];
+    data.Guid = guid.GetCounter();
+    data.Name = name;
+    data.Race = race;
+    data.Sex = gender;
+    data.Class = playerClass;
+    data.Level = level;
+    data.AccountId = accountId;
+    data.ZoneId = zoneId;
+    data.RankId = rankId;
+    data.GuildId = guildId.GetCounter();
+    data.SpecId = specid;
 
-    CharacterInfo* data = new CharacterInfo;
-    data->Guid = guid;
-    data->Name = name;
-    data->Race = race;
-    data->Sex = gender;
-    data->Class = playerClass;
-    data->Level = level;
-    data->AccountId = accountId;
-    data->ZoneId = zoneId;
-    data->RankId = rankId;
-    data->GuildId = guildId;
-    data->SpecId = specid;
-
-    _characterInfoStore[guid] = data;
     nameMap[name] = data;
 }
 
 void World::UpdateCharacterInfo(ObjectGuid const& guid, std::string const& name, uint8 gender /*= GENDER_NONE*/, uint8 race /*= RACE_NONE*/)
 {
-    if (_characterInfoStore.size() <= guid.GetGUIDLow())
+    CharacterInfoContainer::iterator itr = _characterInfoStore.find(guid);
+    if (itr == _characterInfoStore.end())
         return;
 
-    CharacterInfo* info = _characterInfoStore[guid.GetGUIDLow()];
-    if (!info)
-        return;
-
-    DeleteCharName(info->Name);
-    info->Name = name;
+    DeleteCharName(itr->second.Name);
+    itr->second.Name = name;
 
     if (gender != GENDER_NONE)
-        info->Sex = gender;
+        itr->second.Sex = gender;
 
     if (race != RACE_NONE)
-        info->Race = race;
+        itr->second.Race = race;
 
-    AddCharacterName(name, info);
+    AddCharacterName(name, itr->second);
     SendGlobalMessage(WorldPackets::Misc::InvalidatePlayer(guid).Write());
 }
 
-void World::UpdateCharacterAccount(uint32 guid, uint32 BnetAccountId)
+void World::UpdateCharacterAccount(ObjectGuid const& guid, uint32 BnetAccountId)
 {
-    if (_characterInfoStore.size() <= guid)
+    auto itr = _characterInfoStore.find(guid);
+    if (itr == _characterInfoStore.end())
         return;
 
-    CharacterInfo* info = _characterInfoStore[guid];
-    if (!info)
-        return;
-
-    info->BnetAccountId = BnetAccountId;
+    itr->second.BnetAccountId = BnetAccountId;
 }
 
-void World::UpdateCharacterInfoLevel(ObjectGuid::LowType guid, uint8 level)
+void World::UpdateCharacterInfoLevel(ObjectGuid const& guid, uint8 level)
 {
-    if (_characterInfoStore.size() <= guid)
+    auto itr = _characterInfoStore.find(guid);
+    if (itr == _characterInfoStore.end())
         return;
 
-    CharacterInfo* info = _characterInfoStore[guid];
-    if (!info)
-        return;
-
-    info->Level = level;
+    itr->second.Level = level;
 }
 
-void World::UpdateCharacterInfoDeleted(ObjectGuid::LowType guid, bool deleted, std::string const* name /*= nullptr*/)
+void World::UpdateCharacterInfoDeleted(ObjectGuid const& guid, bool deleted, std::string const* name /*= nullptr*/)
 {
-    auto info = _characterInfoStore[guid];
-    if (!info)
+    auto itr = _characterInfoStore.find(guid);
+    if (itr == _characterInfoStore.end())
         return;
 
-    info->IsDeleted = deleted;
+    itr->second.IsDeleted = deleted;
 
     if (name)
-        info->Name = *name;
+        itr->second.Name = *name;
 }
 
-void World::UpdateCharacterNameDataZoneGuild(ObjectGuid::LowType guid, uint16 zoneId, uint16 guildId, uint8 rankId)
+void World::UpdateCharacterNameDataZoneGuild(ObjectGuid const& guid, uint16 zoneId, uint16 guildId, uint8 rankId)
 {
-    if (_characterInfoStore.size() <= guid)
+    auto itr = _characterInfoStore.find(guid);
+    if (itr == _characterInfoStore.end())
         return;
 
-    CharacterInfo* info = _characterInfoStore[guid];
-    if (!info)
-        return;
-
-    info->ZoneId = zoneId;
-    info->RankId = rankId;
-    info->GuildId = guildId;
+    itr->second.ZoneId = zoneId;
+    itr->second.RankId = rankId;
+    itr->second.GuildId = guildId;
 }
 
 uint32 World::GetCleaningFlags() const
@@ -4310,10 +4281,11 @@ void World::SetCleaningFlags(uint32 flags)
 
 CharacterInfo const* World::GetCharacterInfo(ObjectGuid const& guid) const
 {
-    if (_characterInfoStore.size() <= guid.GetGUIDLow())
-        return nullptr;
+    CharacterInfoContainer::const_iterator itr = _characterInfoStore.find(guid);
+    if (itr != _characterInfoStore.end())
+        return &itr->second;
 
-    return _characterInfoStore[guid.GetGUIDLow()];
+    return nullptr;
 }
 
 CharacterInfo const* World::GetCharacterInfo(std::string name) const
@@ -4321,20 +4293,16 @@ CharacterInfo const* World::GetCharacterInfo(std::string name) const
     return Trinity::Containers::MapGetValuePtr(nameMap, name);
 }
 
-void World::DeleteCharacterNameData(ObjectGuid::LowType guid)
+void World::DeleteCharacterNameData(ObjectGuid const& guid)
 {
-    if (_characterInfoStore.size() <= guid)
+    auto itr = _characterInfoStore.find(guid);
+    if (itr == _characterInfoStore.end())
         return;
 
-    CharacterInfo* info = _characterInfoStore[guid];
-    if (!info)
-        return;
+    itr->second.IsDeleted = true;
 
-    info->IsDeleted = true;
-
-    nameMap.erase(info->Name);
-    _characterInfoStore[guid] = nullptr;
-    delete info;
+    nameMap.erase(itr->second.Name);
+    _characterInfoStore.erase(guid);
 }
 
 void World::UpdatePhaseDefinitions()
@@ -4352,7 +4320,7 @@ bool World::CheckCharacterName(std::string name)
     return true;
 }
 
-void World::AddCharacterName(std::string name, CharacterInfo* nameData)
+void World::AddCharacterName(std::string name, CharacterInfo const& nameData)
 {
     nameMap[name] = nameData;
 }

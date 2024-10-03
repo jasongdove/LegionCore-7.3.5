@@ -41,7 +41,6 @@
 #include "AreaTriggerData.h"
 #include "SocialMgr.h"
 #include "AccountMgr.h"
-#include <boost/regex.hpp>
 #include "BattlegroundPackets.h"
 #include "GitRevision.h"
 #include "ArtifactPackets.h"
@@ -50,23 +49,14 @@
 
 void WorldSession::HandleCharEnum(PreparedQueryResult result, bool isDeleted)
 {
-    m_DHCount = 0;
-    m_DKCount = 0;
-    m_raceMask = 0;
-    m_canDK = false;
-    m_canDH = false;
-
-    uint32 heroicReqLevel = sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_MIN_LEVEL_FOR_HEROIC_CHARACTER);
-    uint32 demonHunterReqLevel = sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_MIN_LEVEL_FOR_DEMON_HUNTER);
-
+    uint8 demonHunterCount = 0; // We use this counter to allow multiple demon hunter creations when allowed in config
     bool canAlwaysCreateDemonHunter = false;
-    if (demonHunterReqLevel == 0) // char level = 0 means this check is disabled, so always true
+    if (sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_MIN_LEVEL_FOR_DEMON_HUNTER) == 0) // char level = 0 means this check is disabled, so always true
         canAlwaysCreateDemonHunter = true;
-
     WorldPackets::Character::EnumCharactersResult charEnum;
     charEnum.Success = true;
     charEnum.IsDeletedCharacters = isDeleted;
-    charEnum.Unknown7x = true;
+    //charEnum.Unknown7x = true;
     charEnum.DisabledClassesMask = sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_DISABLED_CLASSMASK);
 
     _allowedCharsToLogin.clear();
@@ -75,28 +65,40 @@ void WorldSession::HandleCharEnum(PreparedQueryResult result, bool isDeleted)
     {
         do
         {
-            charEnum.Characters.emplace_back(result->Fetch(), charEnumInfo, GetAccountId());
-            auto& charInfo = charEnum.Characters.back();
+            charEnum.Characters.emplace_back(result->Fetch());
 
-            m_raceMask |= 1 << (charInfo.Race - 1);
-            m_classMask |= 1 << (charInfo.Class - 1);
+            WorldPackets::Character::EnumCharactersResult::CharacterInfo& charInfo = charEnum.Characters.back();
 
+            TC_LOG_INFO("network", "Loading char guid %s from account %u.", charInfo.Guid.ToString().c_str(), GetAccountId());
+
+            if (!Player::ValidateAppearance(charInfo.Race, charInfo.Class, charInfo.Sex, charInfo.HairStyle, charInfo.HairColor, charInfo.Face, charInfo.FacialHair, charInfo.Skin, charInfo.CustomDisplay))
+            {
+                TC_LOG_ERROR("entities.player.loading", "Player %s has wrong Appearance values (Hair/Skin/Color), forcing re-customize", charInfo.Guid.ToString().c_str());
+
+                // Make sure customization always works properly - send all zeroes instead
+                charInfo.Skin = 0, charInfo.Face = 0, charInfo.HairStyle = 0, charInfo.HairColor = 0, charInfo.FacialHair = 0;
+
+                if (charInfo.Flags2 != CHARACTER_FLAG_2_CUSTOMIZE)
+                {
+                    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG);
+                    stmt->setUInt16(0, uint16(AT_LOGIN_CUSTOMIZE));
+                    stmt->setUInt64(1, charInfo.Guid.GetCounter());
+                    CharacterDatabase.Execute(stmt);
+                    charInfo.Flags2 = CHARACTER_FLAG_2_CUSTOMIZE;
+                }
+            }
+
+            // Do not allow locked characters to login
             if (!(charInfo.Flags & (CHARACTER_FLAG_LOCKED_FOR_TRANSFER | CHARACTER_FLAG_LOCKED_BY_BILLING)))
                 _allowedCharsToLogin.insert(charInfo.Guid.GetCounter());
 
+            if (!sWorld->GetCharacterInfo(charInfo.Guid))
+                sWorld->AddCharacterInfo(charInfo.Guid, GetAccountId(), charInfo.Name, charInfo.Sex, charInfo.Race, charInfo.Class, charInfo.Level, charInfo.ZoneId, 0 /*rankId*/, charInfo.GuildGuid, charInfo.SpecializationID);
+
             if (charInfo.Class == CLASS_DEMON_HUNTER)
-                m_DHCount++;
+                demonHunterCount++;
 
-            if (charInfo.Class == CLASS_DEATH_KNIGHT)
-                m_DKCount++;
-
-            if (charInfo.Level >= heroicReqLevel)
-                m_canDK = true;
-
-            if (charInfo.Level >= demonHunterReqLevel)
-                m_canDH = true;
-
-            if (m_DHCount >= sWorld->getIntConfig(CONFIG_DEMON_HUNTERS_PER_REALM) && !canAlwaysCreateDemonHunter)
+            if (demonHunterCount >= sWorld->getIntConfig(CONFIG_DEMON_HUNTERS_PER_REALM) && !canAlwaysCreateDemonHunter)
                 charEnum.HasDemonHunterOnRealm = true;
             else
                 charEnum.HasDemonHunterOnRealm = false;
@@ -107,14 +109,7 @@ void WorldSession::HandleCharEnum(PreparedQueryResult result, bool isDeleted)
     }
 
     charEnum.IsDemonHunterCreationAllowed = GetAccountExpansion() >= EXPANSION_LEGION || canAlwaysCreateDemonHunter;
-    charEnum.IsAlliedRacesCreationAllowed = GetAccountExpansion() >= EXPANSION_LEGION;
-
-    if (!charTemplateData.empty())
-    {
-        m_canDK = true;
-        m_canDH = true;
-        charEnum.IsDemonHunterCreationAllowed = true;
-    }
+    charEnum.IsAlliedRacesCreationAllowed = GetAccountExpansion() >= EXPANSION_BATTLE_FOR_AZEROTH;
 
     for (auto const& requirement : sObjectMgr->GetRaceUnlockRequirements())
     {
@@ -272,22 +267,6 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CreateChar& c
         return;
     }
 
-    // speedup check for heroic class disabled case
-    uint32 heroic_free_slots = sWorld->getIntConfig(CONFIG_HEROIC_CHARACTERS_PER_REALM);
-    if (heroic_free_slots == 0 && AccountMgr::IsPlayerAccount(GetSecurity()) && charCreate.CreateInfo->Class == CLASS_DEATH_KNIGHT)
-    {
-        SendCharCreate(CHAR_CREATE_UNIQUE_CLASS_LIMIT);
-        return;
-    }
-
-    // speedup check for heroic class disabled case
-    uint32 req_level_for_heroic = sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_MIN_LEVEL_FOR_HEROIC_CHARACTER);
-    if (AccountMgr::IsPlayerAccount(GetSecurity()) && charCreate.CreateInfo->Class == CLASS_DEATH_KNIGHT && req_level_for_heroic > sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
-    {
-        SendCharCreate(CHAR_CREATE_LEVEL_REQUIREMENT);
-        return;
-    }
-
     if (sWorld->GetCharacterInfo(charCreate.CreateInfo->Name))
     {
         SendCharCreate(CHAR_CREATE_NAME_IN_USE);
@@ -345,27 +324,97 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CreateChar& c
         std::function<void(PreparedQueryResult)> finalizeCharacterCreation = [this, createInfo, SendCharCreate](PreparedQueryResult result)
         {
             bool haveSameRace = false;
-            uint32 heroicReqLevel = sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_MIN_LEVEL_FOR_HEROIC_CHARACTER);
             uint32 demonHunterReqLevel = sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_MIN_LEVEL_FOR_DEMON_HUNTER);
-            bool hasHeroicReqLevel = (heroicReqLevel != 0) && !createInfo->TemplateSet.is_initialized();
             bool hasDemonHunterReqLevel = (demonHunterReqLevel != 0) && !createInfo->TemplateSet.is_initialized();
+            bool allowTwoSideAccounts = !sWorld->IsPvPRealm();
             uint32 skipCinematics = sWorld->getIntConfig(CONFIG_SKIP_CINEMATICS);
-            bool checkHeroicReqs = createInfo->Class == CLASS_DEATH_KNIGHT;
             bool checkDemonHunterReqs = createInfo->Class == CLASS_DEMON_HUNTER;
 
-            if (m_raceMask & (1 << (createInfo->Race - 1)))
-                haveSameRace = true;
-
-            uint32 freeHeroicSlots = m_DKCount > sWorld->getIntConfig(CONFIG_HEROIC_CHARACTERS_PER_REALM) ? 0 : sWorld->getIntConfig(CONFIG_HEROIC_CHARACTERS_PER_REALM) - m_DKCount;
-            uint32 freeDemonHunterSlots = m_DHCount > sWorld->getIntConfig(CONFIG_DEMON_HUNTERS_PER_REALM) ? 0 : sWorld->getIntConfig(CONFIG_DEMON_HUNTERS_PER_REALM) - m_DHCount;
-
-            if (checkHeroicReqs && !m_canDK && hasHeroicReqLevel && freeHeroicSlots)
+            if (result)
             {
-                SendCharCreate(CHAR_CREATE_LEVEL_REQUIREMENT);
-                return;
+                uint32 team = Player::TeamForRace(createInfo->Race);
+                uint32 freeDemonHunterSlots = sWorld->getIntConfig(CONFIG_DEMON_HUNTERS_PER_REALM);
+
+                Field* field = result->Fetch();
+                uint8 accRace = field[1].GetUInt8();
+
+                if (checkDemonHunterReqs)
+                {
+                    uint8 accClass = field[2].GetUInt8();
+                    if (accClass == CLASS_DEMON_HUNTER)
+                    {
+                        if (freeDemonHunterSlots > 0)
+                            --freeDemonHunterSlots;
+
+                        if (freeDemonHunterSlots == 0)
+                        {
+                            SendCharCreate(CHAR_CREATE_FAILED);
+                            return;
+                        }
+                    }
+
+                    if (!hasDemonHunterReqLevel)
+                    {
+                        uint8 accLevel = field[0].GetUInt8();
+                        if (accLevel >= demonHunterReqLevel)
+                            hasDemonHunterReqLevel = true;
+                    }
+                }
+
+                // need to check team only for first character
+                /// @todo what to if account already has characters of both races?
+                if (!allowTwoSideAccounts)
+                {
+                    uint32 accTeam = 0;
+                    if (accRace > 0)
+                        accTeam = Player::TeamForRace(accRace);
+
+                    if (accTeam != team)
+                    {
+                        SendCharCreate(CHAR_CREATE_PVP_TEAMS_VIOLATION);
+                        return;
+                    }
+                }
+
+                // search same race for cinematic or same class if need
+                /// @todo check if cinematic already shown? (already logged in?; cinematic field)
+                while ((skipCinematics == 1 && !haveSameRace) || createInfo->Class == CLASS_DEMON_HUNTER)
+                {
+                    if (!result->NextRow())
+                        break;
+
+                    field = result->Fetch();
+                    accRace = field[1].GetUInt8();
+
+                    if (!haveSameRace)
+                        haveSameRace = createInfo->Race == accRace;
+
+                    if (checkDemonHunterReqs)
+                    {
+                        uint8 accClass = field[2].GetUInt8();
+                        if (accClass == CLASS_DEMON_HUNTER)
+                        {
+                            if (freeDemonHunterSlots > 0)
+                                --freeDemonHunterSlots;
+
+                            if (freeDemonHunterSlots == 0)
+                            {
+                                SendCharCreate(CHAR_CREATE_FAILED);
+                                return;
+                            }
+                        }
+
+                        if (!hasDemonHunterReqLevel)
+                        {
+                            uint8 accLevel = field[0].GetUInt8();
+                            if (accLevel >= demonHunterReqLevel)
+                                hasDemonHunterReqLevel = true;
+                        }
+                    }
+                }
             }
 
-            if (checkDemonHunterReqs && !m_canDH && hasDemonHunterReqLevel && freeDemonHunterSlots)
+            if (checkDemonHunterReqs && !hasDemonHunterReqLevel)
             {
                 SendCharCreate(CHAR_CREATE_LEVEL_REQUIREMENT_DEMON_HUNTER);
                 return;
@@ -443,8 +492,8 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CreateChar& c
 
             TC_LOG_INFO("entities.player.character", "Account: %d (IP: %s) Create Character:[%s] (GUID: %u)", GetAccountId(), GetRemoteAddress().c_str(), createInfo->Name.c_str(), newChar.GetGUIDLow());
             sScriptMgr->OnPlayerCreate(&newChar);
-            sWorld->AddCharacterInfo(newChar.GetGUIDLow(), std::string(newChar.GetName()), newChar.getGender(), newChar.getRace(), newChar.getClass(), newChar.getLevel(), GetAccountId());
-            sWorld->UpdateCharacterAccount(newChar.GetGUIDLow(), GetAccountId());
+            sWorld->AddCharacterInfo(newChar.GetGUID(), GetAccountId(), std::string(newChar.GetName()), newChar.getGender(), newChar.getRace(), newChar.getClass(), newChar.getLevel());
+            sWorld->UpdateCharacterAccount(newChar.GetGUID(), GetAccountId());
 
             newChar.GetAchievementMgr()->ClearMap();
             newChar.CleanupsBeforeDelete();
@@ -499,7 +548,7 @@ void WorldSession::HandleCharDeleteOpcode(WorldPackets::Character::DeleteChar& c
 
     TC_LOG_INFO("entities.player.character", "Account: %d (IP: %s) Delete Character:[%s] (GUID: %u)", GetAccountId(), GetRemoteAddress().c_str(), name.c_str(), charDelete.Guid.GetGUIDLow());
     sScriptMgr->OnPlayerDelete(charDelete.Guid);
-    sWorld->DeleteCharacterNameData(charDelete.Guid.GetCounter());
+    sWorld->DeleteCharacterNameData(charDelete.Guid);
 
     if (sLog->ShouldLog("entities.player.dump", LOG_LEVEL_INFO)) // optimize GetPlayerDump call
     {
@@ -576,7 +625,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
 
     SendTutorialsData();
 
-    sWorld->UpdateCharacterAccount(playerGuid.GetGUIDLow(), GetAccountId());
+    sWorld->UpdateCharacterAccount(playerGuid, GetAccountId());
 
     pCurrChar->GetMotionMaster()->Initialize();
     pCurrChar->SendDungeonDifficulty();
@@ -2187,7 +2236,7 @@ void WorldSession::HandleUndeleteCharacter(WorldPackets::Character::UndeleteChar
         stmt->setUInt32(0, GetAccountId());
         CharacterDatabase.Execute(stmt);
 
-        sWorld->UpdateCharacterInfoDeleted(undeleteInfo->CharacterGuid.GetCounter(), false, &undeleteInfo->Name);
+        sWorld->UpdateCharacterInfoDeleted(undeleteInfo->CharacterGuid, false, &undeleteInfo->Name);
 
         RemoveAuthFlag(AT_AUTH_FLAG_RESTORE_DELETED_CHARACTER);
         SendUndeleteCharacterResponse(CHARACTER_UNDELETE_RESULT_OK, undeleteInfo.get());

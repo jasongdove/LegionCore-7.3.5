@@ -284,8 +284,6 @@ enum WorldIntConfigs
     CONFIG_CHARACTER_CREATING_DISABLED_CLASSMASK,
     CONFIG_CHARACTERS_PER_ACCOUNT,
     CONFIG_CHARACTERS_PER_REALM,
-    CONFIG_HEROIC_CHARACTERS_PER_REALM,
-    CONFIG_CHARACTER_CREATING_MIN_LEVEL_FOR_HEROIC_CHARACTER,
     CONFIG_DEMON_HUNTERS_PER_REALM,
     CONFIG_CHARACTER_CREATING_MIN_LEVEL_FOR_DEMON_HUNTER,
     CONFIG_SKIP_CINEMATICS,
@@ -872,13 +870,13 @@ class World
 
         CharacterInfo const* GetCharacterInfo(ObjectGuid const& guid) const;
         CharacterInfo const* GetCharacterInfo(std::string name) const;
-        void AddCharacterInfo(ObjectGuid::LowType guid, std::string const& name, uint8 gender, uint8 race, uint8 playerClass, uint8 level, uint32 accountId, uint8 zoneId = 0, uint8 rankId = 0, uint32 guildId = 0, uint32 specid = 0);
+        void AddCharacterInfo(ObjectGuid const& guid, uint32 accountId, std::string const& name, uint8 gender, uint8 race, uint8 playerClass, uint8 level, uint8 zoneId = 0, uint8 rankId = 0, ObjectGuid const& guildId = ObjectGuid::Empty, uint32 specid = 0);
         void UpdateCharacterInfo(ObjectGuid const& guid, std::string const& name, uint8 gender = GENDER_NONE, uint8 race = RACE_NONE);
-        void UpdateCharacterAccount(uint32 guid, uint32 BnetAccountId);
-        void UpdateCharacterInfoLevel(ObjectGuid::LowType guid, uint8 level);
-        void UpdateCharacterInfoDeleted(ObjectGuid::LowType guid, bool deleted, std::string const* name = nullptr);
-        void DeleteCharacterNameData(ObjectGuid::LowType guid);
-        void UpdateCharacterNameDataZoneGuild(ObjectGuid::LowType guid, uint16 zoneId, uint16 guildId, uint8 rankId);
+        void UpdateCharacterAccount(ObjectGuid const& guid, uint32 BnetAccountId);
+        void UpdateCharacterInfoLevel(ObjectGuid const& guid, uint8 level);
+        void UpdateCharacterInfoDeleted(ObjectGuid const& guid, bool deleted, std::string const* name = nullptr);
+        void DeleteCharacterNameData(ObjectGuid const& guid);
+        void UpdateCharacterNameDataZoneGuild(ObjectGuid const& guid, uint16 zoneId, uint16 guildId, uint8 rankId);
 
         uint32 GetCleaningFlags() const;
         void SetCleaningFlags(uint32 flags);
@@ -888,7 +886,7 @@ class World
         void UpdatePhaseDefinitions();
 
         bool CheckCharacterName(std::string name);
-        void AddCharacterName(std::string name, CharacterInfo* nameData);
+        void AddCharacterName(std::string name, CharacterInfo const& nameData);
         void DeleteCharName(std::string name);
 
         time_t getInstanceResetTime(uint32 resetTime);
@@ -1030,10 +1028,11 @@ class World
 
         std::list<std::string> m_Autobroadcasts;
 
-        std::vector<CharacterInfo*> _characterInfoStore;
+        typedef std::map<ObjectGuid, CharacterInfo> CharacterInfoContainer;
+        CharacterInfoContainer _characterInfoStore;
         void LoadCharacterNameData();
 
-        std::unordered_map<std::string, CharacterInfo*> nameMap;
+        std::unordered_map<std::string, CharacterInfo> nameMap;
 
         void ProcessQueryCallbacks();
         QueryCallbackProcessor _queryProcessor;
