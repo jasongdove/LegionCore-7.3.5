@@ -57,6 +57,7 @@
 #include "EquipmentSetPackets.h"
 #include "Formulas.h"
 #include "GameEventMgr.h"
+#include "GameObjectAI.h"
 #include "Garrison.h"
 #include "GlobalFunctional.h"
 #include "GossipData.h"
@@ -15033,7 +15034,7 @@ bool Player::CanGetItemForLoot(ItemTemplate const* proto, bool specCheck) const
         bool allGood = false;
         for (auto& specId : specList)
         {
-            if (proto->IsUsableBySpecialization(specId, getLevel()))
+            if (proto->IsUsableByLootSpecialization(this, true))
                 allGood = true;
         }
         if (!allGood)
@@ -18542,62 +18543,60 @@ void Player::SendPreparedQuest(ObjectGuid guid)
     if (questMenu.Empty())
         return;
 
-    QuestMenuItem const& qmi0 = questMenu.GetItem(0);
-
-    uint32 icon = qmi0.QuestIcon;
-
     // single element case
     if (questMenu.GetMenuItemCount() == 1)
     {
-        // Auto open -- maybe also should verify there is no greeting
+        QuestMenuItem const& qmi0 = questMenu.GetItem(0);
         uint32 questId = qmi0.QuestId;
+
+        // Auto open -- maybe also should verify there is no greeting
         if (Quest const* quest = sQuestDataStore->GetQuestTemplate(questId))
         {
-            if (icon == 4 && !GetQuestRewardStatus(questId))
+            if (qmi0.QuestIcon == 4)
+            {
                 PlayerTalkClass->SendQuestGiverRequestItems(quest, guid, CanRewardQuest(quest, false), true);
-            else if (icon == 4)
-                PlayerTalkClass->SendQuestGiverRequestItems(quest, guid, CanRewardQuest(quest, false), true);
+                return;
+            }
             // Send completable on repeatable and autoCompletable quest if player don't have quest
             // TODO: verify if check for !quest->IsDaily() is really correct (possibly not)
             else
             {
-                Object* object = ObjectAccessor::GetObjectByTypeMask(*this, guid, TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT | TYPEMASK_ITEM);
-                if (!object || (!object->hasQuest(questId) && !object->hasInvolvedQuest(questId)))
+                Object* source = ObjectAccessor::GetObjectByTypeMask(*this, guid, TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT | TYPEMASK_ITEM);
+                if (!source || (!source->hasQuest(questId) && !source->hasInvolvedQuest(questId)))
                 {
                     PlayerTalkClass->SendCloseGossip();
                     return;
                 }
 
-                if (quest->IsAutoAccept() && CanAddQuest(quest, true) && CanTakeQuest(quest, true))
+                if (source->GetTypeId() != TYPEID_UNIT  || source->GetUInt64Value(UNIT_FIELD_NPC_FLAGS) & UNIT_NPC_FLAG_GOSSIP)
                 {
-                    AddQuest(quest, object);
-                    if (CanCompleteQuest(questId))
-                        CompleteQuest(questId);
-                }
+                    if (quest->IsAutoAccept() && CanAddQuest(quest, true) && CanTakeQuest(quest, true))
+                        AddQuestAndCheckCompletion(quest, source);
 
-                if ((quest->IsAutoComplete() && quest->IsRepeatable() && !quest->IsDailyOrWeekly())/* || quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE)*/)
-                    PlayerTalkClass->SendQuestGiverRequestItems(quest, guid, CanCompleteRepeatableQuest(quest), true);
-                else
-                    PlayerTalkClass->SendQuestGiverQuestDetails(quest, guid, true);
+                    if ((quest->IsAutoComplete() && quest->IsRepeatable() && !quest->IsDailyOrWeekly())/* || quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE)*/)
+                        PlayerTalkClass->SendQuestGiverRequestItems(quest, guid, CanCompleteRepeatableQuest(quest), true);
+                    else
+                        PlayerTalkClass->SendQuestGiverQuestDetails(quest, guid, true);
+                    return;
+                }
             }
         }
     }
-    // multiple entries
-    else
-    {
-        uint32 BroadcastTextID = 0;
 
-        // need pet case for some quests
-        Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid);
-        if (creature)
-        {
-            uint32 textid = GetGossipTextId(creature);
-            NpcText const* gossiptext = sObjectMgr->GetNpcText(textid);
-            if (gossiptext)
-                BroadcastTextID = gossiptext->Data[0].BroadcastTextID;
-        }
-        PlayerTalkClass->SendQuestGiverQuestList(BroadcastTextID, guid);
+    // multiple entries
+    uint32 BroadcastTextID = 0;
+
+    // need pet case for some quests
+    Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid);
+    if (creature)
+    {
+        uint32 textid = GetGossipTextId(creature);
+        NpcText const* gossiptext = sObjectMgr->GetNpcText(textid);
+        if (gossiptext)
+            BroadcastTextID = gossiptext->Data[0].BroadcastTextID;
     }
+
+    PlayerTalkClass->SendQuestGiverQuestList(BroadcastTextID, guid);
 }
 
 Quest const* Player::GetNextQuest(ObjectGuid guid, Quest const* quest)
@@ -18916,7 +18915,7 @@ bool Player::CanRewardQuest(Quest const* quest, bool msg)
     return true;
 }
 
-bool Player::CanRewardQuest(Quest const* quest, uint32 reward, bool msg, uint32 packItemId)
+bool Player::CanRewardQuest(Quest const* quest, uint32 reward, bool msg)
 {
     // prevent receive reward with quest items in bank or for not completed quest
     if (!CanRewardQuest(quest, msg))
@@ -18932,7 +18931,9 @@ bool Player::CanRewardQuest(Quest const* quest, uint32 reward, bool msg, uint32 
                 InventoryResult res = CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, quest->RewardChoiceItemId[i], quest->RewardChoiceItemCount[i]);
                 if (res != EQUIP_ERR_OK)
                 {
-                    SendEquipError(res, NULL, NULL, quest->RewardChoiceItemId[i]);
+                    if (msg)
+                        SendQuestFailed(quest->GetQuestId(), res);
+
                     return false;
                 }
             }
@@ -18948,7 +18949,9 @@ bool Player::CanRewardQuest(Quest const* quest, uint32 reward, bool msg, uint32 
                 InventoryResult res = CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, quest->RewardItemId[i], quest->RewardItemCount[i]);
                 if (res != EQUIP_ERR_OK)
                 {
-                    SendEquipError(res, NULL, NULL, quest->RewardItemId[i]);
+                    if (msg)
+                        SendQuestFailed(quest->GetQuestId(), res);
+
                     return false;
                 }
             }
@@ -18957,23 +18960,41 @@ bool Player::CanRewardQuest(Quest const* quest, uint32 reward, bool msg, uint32 
 
     if (quest->PackageID)
     {
+        bool hasFilteredQuestPackageReward = false;
         if (std::vector<QuestPackageItemEntry const*> const* questPackageItems = sDB2Manager.GetQuestPackageItems(quest->PackageID))
         {
-            for (QuestPackageItemEntry const* questPackageItem : *questPackageItems)
+            for (QuestPackageItemEntry const *questPackageItem: *questPackageItems)
             {
-                if (questPackageItem->ItemID != reward)
+                if (questPackageItem->ItemID != int32(reward))
                     continue;
 
-                if (ItemTemplate const* rewardProto = sObjectMgr->GetItemTemplate(questPackageItem->ItemID))
+                if (CanSelectQuestPackageItem(questPackageItem))
                 {
-                    if (rewardProto->IsUsableBySpecialization(GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID), getLevel()))
+                    hasFilteredQuestPackageReward = true;
+                    InventoryResult res = CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, questPackageItem->ItemID, questPackageItem->ItemQuantity);
+                    if (res != EQUIP_ERR_OK)
                     {
-                        InventoryResult res = CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, questPackageItem->ItemID, questPackageItem->ItemQuantity);
-                        if (res != EQUIP_ERR_OK)
-                        {
-                            SendEquipError(res, NULL, NULL, questPackageItem->ItemID);
-                            return false;
-                        }
+                        SendEquipError(res, nullptr, nullptr, questPackageItem->ItemID);
+                        return false;
+                    }
+                }
+            }
+        }
+
+        if (!hasFilteredQuestPackageReward)
+        {
+            if (std::vector<QuestPackageItemEntry const*> const* questPackageItems = sDB2Manager.GetQuestPackageItemsFallback(quest->PackageID))
+            {
+                for (QuestPackageItemEntry const* questPackageItem : *questPackageItems)
+                {
+                    if (questPackageItem->ItemID != int32(reward))
+                        continue;
+
+                    InventoryResult res = CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, questPackageItem->ItemID, questPackageItem->ItemQuantity);
+                    if (res != EQUIP_ERR_OK)
+                    {
+                        SendEquipError(res, NULL, NULL, questPackageItem->ItemID);
+                        return false;
                     }
                 }
             }
@@ -18981,6 +19002,58 @@ bool Player::CanRewardQuest(Quest const* quest, uint32 reward, bool msg, uint32 
     }
 
     return true;
+}
+
+void Player::AddQuestAndCheckCompletion(Quest const* quest, Object* questGiver)
+{
+    AddQuest(quest, questGiver);
+
+//    for (QuestObjective const& obj : quest->GetObjectives())
+//        if (obj.Type == QUEST_OBJECTIVE_CRITERIA_TREE)
+//            if (m_questObjectiveCriteriaMgr->HasCompletedObjective(&obj))
+//                KillCreditCriteriaTreeObjective(obj);
+
+    if (CanCompleteQuest(quest->GetQuestId()))
+        CompleteQuest(quest->GetQuestId());
+
+    if (!questGiver)
+        return;
+
+    switch (questGiver->GetTypeId())
+    {
+        case TYPEID_UNIT:
+            sScriptMgr->OnQuestAccept(this, questGiver->ToCreature(), quest);
+            questGiver->ToCreature()->AI()->sQuestAccept(this, quest);
+            break;
+        case TYPEID_ITEM:
+        case TYPEID_CONTAINER:
+        {
+            Item* item = dynamic_cast<Item*>(questGiver);
+            sScriptMgr->OnQuestAccept(this, item, quest);
+
+            // destroy not required for quest finish quest starting item
+            bool destroyItem = true;
+            for (QuestObjective const& obj : quest->GetObjectives())
+            {
+                if (obj.Type == QUEST_OBJECTIVE_ITEM && uint32(obj.ObjectID) == item->GetEntry() && item->GetTemplate()->GetMaxCount() > 0)
+                {
+                    destroyItem = false;
+                    break;
+                }
+            }
+
+            if (destroyItem)
+                DestroyItem(item->GetBagSlot(), item->GetSlot(), true);
+
+            break;
+        }
+        case TYPEID_GAMEOBJECT:
+            sScriptMgr->OnQuestAccept(this, questGiver->ToGameObject(), quest);
+            questGiver->ToGameObject()->AI()->QuestAccept(this, quest);
+            break;
+        default:
+            break;
+    }
 }
 
 void Player::AddQuest(Quest const* quest, Object* questGiver)
@@ -19035,7 +19108,7 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
 
         AddTimedQuest(quest_id);
         status_q.Timer = limittime * IN_MILLISECONDS;
-        qtime = static_cast<uint32>(time(NULL)) + limittime;
+        qtime = static_cast<uint32>(time(nullptr)) + limittime;
     }
     else
         status_q.Timer = 0;
@@ -19131,7 +19204,75 @@ uint32 Player::GetQuestXPReward(Quest const* quest)
     return XP;
 }
 
-void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, bool announce, uint32 packItemId)
+bool Player::CanSelectQuestPackageItem(QuestPackageItemEntry const* questPackageItem) const
+{
+    ItemTemplate const* rewardProto = sObjectMgr->GetItemTemplate(questPackageItem->ItemID);
+    if (!rewardProto)
+        return false;
+
+    if ((rewardProto->GetFlags2() & ITEM_FLAG2_FACTION_ALLIANCE && GetTeam() != ALLIANCE) ||
+        (rewardProto->GetFlags2() & ITEM_FLAG2_FACTION_HORDE && GetTeam() != HORDE))
+        return false;
+
+    switch (questPackageItem->DisplayType)
+    {
+        case QUEST_PACKAGE_FILTER_LOOT_SPECIALIZATION:
+            return rewardProto->IsUsableByLootSpecialization(this, true);
+        case QUEST_PACKAGE_FILTER_CLASS:
+            return !rewardProto->ItemSpecClassMask || (rewardProto->ItemSpecClassMask & getClassMask()) != 0;
+        case QUEST_PACKAGE_FILTER_EVERYONE:
+            return true;
+        default:
+            break;
+    }
+
+    return false;
+}
+
+void Player::RewardQuestPackage(uint32 questPackageId, uint32 onlyItemId /*= 0*/)
+{
+    bool hasFilteredQuestPackageReward = false;
+    if (std::vector<QuestPackageItemEntry const*> const* questPackageItems = sDB2Manager.GetQuestPackageItems(questPackageId))
+    {
+        for (QuestPackageItemEntry const* questPackageItem : *questPackageItems)
+        {
+            if (onlyItemId && questPackageItem->ItemID != int32(onlyItemId))
+                continue;
+
+            if (CanSelectQuestPackageItem(questPackageItem))
+            {
+                hasFilteredQuestPackageReward = true;
+                ItemPosCountVec dest;
+                if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, questPackageItem->ItemID, questPackageItem->ItemQuantity) == EQUIP_ERR_OK)
+                {
+                    Item* item = StoreNewItem(dest, questPackageItem->ItemID, true, Item::GenerateItemRandomPropertyId(questPackageItem->ItemID));
+                    SendNewItem(item, questPackageItem->ItemQuantity, true, false);
+                }
+            }
+        }
+    }
+
+    if (!hasFilteredQuestPackageReward)
+    {
+        if (std::vector<QuestPackageItemEntry const*> const* questPackageItems = sDB2Manager.GetQuestPackageItemsFallback(questPackageId))
+        {
+            for (QuestPackageItemEntry const* questPackageItem : *questPackageItems)
+            {
+                if (onlyItemId && questPackageItem->ItemID != int32(onlyItemId))
+                    continue;
+
+                ItemPosCountVec dest;
+                if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, questPackageItem->ItemID, questPackageItem->ItemQuantity) == EQUIP_ERR_OK)
+                {
+                    Item* item = StoreNewItem(dest, questPackageItem->ItemID, true, Item::GenerateItemRandomPropertyId(questPackageItem->ItemID));
+                    SendNewItem(item, questPackageItem->ItemQuantity, true, false);
+                }
+            }
+        }
+    }
+}
+
+void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, bool announce)
 {
     //this THING should be here to protect code from quest, which cast on player far teleport as a reward
     //should work fine, cause far teleport will be executed in Player::Update()
@@ -19166,25 +19307,43 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
         }
     }
 
-    if ( !quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE))
+    if (!(quest->FlagsEx & QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS))
+    {
+        for (uint8 i = 0; i < QUEST_ITEM_DROP_COUNT; ++i)
+        {
+            if (quest->ItemDrop[i])
+            {
+                uint32 count = quest->ItemDropQuantity[i];
+                DestroyItemCount(quest->ItemDrop[i], count ? count : 9999, true);
+            }
+        }
+    }
+
+    if (!quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE))
         TakeQuestSourceItem(quest_id, true); // remove quest src item from player
 
     RemoveTimedQuest(quest_id);
 
-    if (quest->m_rewChoiceItemsCount)
+    ItemTemplate const* rewardProto = sObjectMgr->GetItemTemplate(reward);
+    if (rewardProto && quest->m_rewChoiceItemsCount)
     {
-        if (uint32 itemId = quest->RewardChoiceItemId[reward])
+        for (uint32 i = 0; i < quest->m_rewChoiceItemsCount; ++i)
         {
-            ItemPosCountVec dest;
-            if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, quest->RewardChoiceItemCount[reward]) == EQUIP_ERR_OK)
+            if (quest->RewardChoiceItemId[i] && quest->RewardChoiceItemId[i] == reward)
             {
-                Item* item = StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId, GetLootSpecID()), GuidSet(), sObjectMgr->GetItemBonusTree(itemId, GetMap()->GetDifficultyLootItemContext(), getLevel()), GetMap()->GetDifficultyLootItemContext());
-                // triggers some lua events
-                SendDisplayToast(itemId, ToastType::ITEM, 0, quest->RewardChoiceItemCount[reward], DisplayToastMethod::DISPLAY_TOAST_SPECIAL_UNK, quest_id, item);
-                SendNewItem(item, quest->RewardChoiceItemCount[reward], true, false);
+                ItemPosCountVec dest;
+                if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, reward, quest->RewardChoiceItemCount[i]) == EQUIP_ERR_OK)
+                {
+                    Item* item = StoreNewItem(dest, reward, true, Item::GenerateItemRandomPropertyId(reward));
+                    SendNewItem(item, quest->RewardChoiceItemCount[i], true, false);
+                }
             }
         }
     }
+
+    // QuestPackageItem.db2
+    if (rewardProto && quest->PackageID)
+        RewardQuestPackage(quest->PackageID, reward);
 
     if (quest->m_rewItemsCount)
     {
@@ -19200,33 +19359,8 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
                     SendDisplayToast(itemId, ToastType::ITEM, false, quest->RewardItemCount[i], DisplayToastMethod::DISPLAY_TOAST_SPECIAL_UNK, quest_id, item);
                     SendNewItem(item, quest->RewardItemCount[i], true, false);
                 }
-            }
-        }
-    }
-
-    if (quest->PackageID)
-    {
-        if (std::vector<QuestPackageItemEntry const*> const* questPackageItems = sDB2Manager.GetQuestPackageItems(quest->PackageID))
-        {
-            for (QuestPackageItemEntry const* questPackageItem : *questPackageItems)
-            {
-                if (questPackageItem->ItemID != packItemId)
-                    continue;
-
-                if (sObjectMgr->GetItemTemplate(questPackageItem->ItemID))
-                {
-                    // if (rewardProto->IsUsableBySpecialization(GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID), getLevel())) // Check bug on item without spec
-                    {
-                        ItemPosCountVec dest;
-                        if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, questPackageItem->ItemID, questPackageItem->ItemQuantity) == EQUIP_ERR_OK)
-                        {
-                            Item* item = StoreNewItem(dest, questPackageItem->ItemID, true, Item::GenerateItemRandomPropertyId(questPackageItem->ItemID, GetLootSpecID()), GuidSet(), sObjectMgr->GetItemBonusTree(questPackageItem->ItemID, GetMap()->GetDifficultyLootItemContext(), getLevel()), GetMap()->GetDifficultyLootItemContext());
-                            // triggers some lua events
-                            SendDisplayToast(questPackageItem->ItemID, ToastType::ITEM, false, questPackageItem->ItemQuantity, DisplayToastMethod::DISPLAY_TOAST_SPECIAL_UNK, quest_id, item);
-                            SendNewItem(item, questPackageItem->ItemQuantity, true, false);
-                        }
-                    }
-                }
+//                else if (quest->IsDFQuest())
+//                    SendItemRetrievalMail(quest->RewardItemId[i], quest->RewardItemCount[i]);
             }
         }
     }
@@ -19451,7 +19585,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     // Must come after the insert in m_RewardedQuests because of spell_area check
     RemoveActiveQuest(quest_id);
 
-    SendQuestReward(quest, XP, questGiver, moneyRew, rewardItem, !announce);
+    SendQuestReward(quest, XP, questGiver ? questGiver->ToCreature() : nullptr, moneyRew, !announce);
 
     AddDelayedEvent(100, [this, quest_id]() -> void
     {
@@ -19521,7 +19655,12 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     UpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_QUEST, quest_id, quest->QuestInfoID);
     UpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_QUESTS_COUNT, 1, 0, 0, NULL, true);
 
-    SetQuestCompletedBit(sDB2Manager.GetQuestUniqueBitFlag(quest_id), true);
+    if (uint32 questBit = sDB2Manager.GetQuestUniqueBitFlag(quest_id))
+        SetQuestCompletedBit(questBit, true);
+
+    //SendQuestUpdate(quest_id);
+
+    SendQuestGiverStatusMultiple();
 
     //lets remove flag for delayed teleports
     SetCanDelayTeleport(false);
@@ -21131,7 +21270,7 @@ void Player::SendQuestComplete(Quest const* quest)
     }
 }
 
-void Player::SendQuestReward(Quest const* quest, uint32 XP, Object* questGiver, int32 moneyReward, Item* item, bool hideChatMessage)
+void Player::SendQuestReward(Quest const* quest, uint32 XP, Object* questGiver, int32 moneyReward, bool hideChatMessage)
 {
     uint32 questId = quest->GetQuestId();
     sGameEventMgr->HandleQuestComplete(questId);
@@ -21172,9 +21311,6 @@ void Player::SendQuestReward(Quest const* quest, uint32 XP, Object* questGiver, 
             giver->AI()->OnQuestReward(this, quest);
         }
     }
-
-    if (item)
-        packet.ItemReward.Initialize(item);
 
     SendDirectMessage(packet.Write());
     
@@ -37994,8 +38130,8 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
     if (!playerChoice)
         return;
 
-    if (!sConditionMgr->IsObjectMeetToConditions(this, sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE, choiceId)))
-        return;
+//    if (!sConditionMgr->IsObjectMeetToConditions(this, sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE, choiceId)))
+//        return;
 
     auto locale = GetSession()->GetSessionDbLocaleIndex();
     auto playerChoiceLocale = locale != DEFAULT_LOCALE ? sObjectMgr->GetPlayerChoiceLocale(choiceId) : nullptr;
@@ -38015,23 +38151,23 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
     {
         auto const& playerChoiceResponseTemplate = playerChoice->Responses[i];
 
-        if (!sConditionMgr->IsObjectMeetToConditions(this, sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS, playerChoiceResponseTemplate.ResponseId)))
-            continue;
-
-        if (playerChoiceResponseTemplate.Reward)
-        {
-            bool rewardNotNeed = false;
-            for (auto const& item : playerChoiceResponseTemplate.Reward->Items)
-            {
-                if (GetItemCount(item.Id) >= item.Quantity)
-                {
-                    rewardNotNeed = true;
-                    break;
-                }
-            }
-            if (rewardNotNeed)
-                continue;
-        }
+//        if (!sConditionMgr->IsObjectMeetToConditions(this, sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS, playerChoiceResponseTemplate.ResponseId)))
+//            continue;
+//
+//        if (playerChoiceResponseTemplate.Reward)
+//        {
+//            bool rewardNotNeed = false;
+//            for (auto const& item : playerChoiceResponseTemplate.Reward->Items)
+//            {
+//                if (GetItemCount(item.Id) >= item.Quantity)
+//                {
+//                    rewardNotNeed = true;
+//                    break;
+//                }
+//            }
+//            if (rewardNotNeed)
+//                continue;
+//        }
 
         WorldPackets::Quest::PlayerChoiceResponse playerChoiceResponse;
         playerChoiceResponse.ResponseID = playerChoiceResponseTemplate.ResponseId;
@@ -38091,14 +38227,6 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
                 rewardEntry.Item.ItemID = faction.Id;
                 rewardEntry.Quantity = faction.Quantity;
             }
-
-            //for (auto const& currency : playerChoiceResponseTemplate.Reward->ItemChoices) @TODO whats this? no data in our dbn anuway for that container
-            //{
-            //    playerChoiceResponse.Reward->Items.emplace_back();
-            //    auto& rewardEntry = playerChoiceResponse.Reward->ItemChoices.back();
-            //    rewardEntry.Item.ItemID = currency.Id;
-            //    rewardEntry.Quantity = currency.Quantity;
-            //}
 
             displayPlayerChoice.Responses.push_back(playerChoiceResponse);
         }

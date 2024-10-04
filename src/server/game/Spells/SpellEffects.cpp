@@ -7616,10 +7616,16 @@ void Spell::EffectQuestStart(SpellEffIndex effIndex)
     Player* player = unitTarget->ToPlayer();
     if (Quest const* qInfo = sQuestDataStore->GetQuestTemplate(m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue))
     {
-        if (player->CanTakeQuest(qInfo, false) && player->CanAddQuest(qInfo, false))
+        if (!player->CanTakeQuest(qInfo, false))
+            return;
+
+        if (qInfo->IsAutoAccept() && player->CanAddQuest(qInfo, false))
         {
-            player->AddQuest(qInfo, nullptr);
+            player->AddQuestAndCheckCompletion(qInfo, player);
+            player->PlayerTalkClass->SendQuestGiverQuestDetails(qInfo, player->GetGUID(), true, true);
         }
+        else
+            player->PlayerTalkClass->SendQuestGiverQuestDetails(qInfo, player->GetGUID(), true, false);
     }
 }
 

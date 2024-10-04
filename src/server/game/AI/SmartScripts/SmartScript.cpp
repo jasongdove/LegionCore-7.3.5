@@ -374,9 +374,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                         }
                         else
                         {
-                            player->AddQuest(q, nullptr);
-                            if (player->CanCompleteQuest(questid))
-                                player->CompleteQuest(questid);
+                            player->AddQuestAndCheckCompletion(q, nullptr);
                             TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_ADD_QUEST: Player guidLow %u add quest %u",
                                 (*itr)->GetGUIDLow(), e.action.quest.quest);
                         }

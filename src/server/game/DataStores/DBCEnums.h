@@ -642,6 +642,14 @@ enum DifficultyFlags
 
 const uint8 MAX_BOUND = 3;
 
+enum QuestPackageFilter
+{
+    QUEST_PACKAGE_FILTER_LOOT_SPECIALIZATION    = 0,    // Players can select this quest reward if it matches their selected loot specialization
+    QUEST_PACKAGE_FILTER_CLASS                  = 1,    // Players can select this quest reward if it matches their class
+    QUEST_PACKAGE_FILTER_UNMATCHED              = 2,    // Players can select this quest reward if no class/loot_spec rewards are available
+    QUEST_PACKAGE_FILTER_EVERYONE               = 3     // Players can always select this quest reward
+};
+
 enum ScenarioFlags
 {
     SCENARIO_FLAG_CHALLENGE             = 0x1,

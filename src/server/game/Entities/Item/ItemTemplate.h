@@ -806,7 +806,8 @@ struct ItemTemplate
 
     uint32 GetArmor(uint32 itemLevel) const;
     void GetDamage(uint32 itemLevel, float& minDamage, float& maxDamage) const;
-    bool IsUsableBySpecialization(uint32 specId, uint8 level) const;
+    [[deprecated]] bool IsUsableBySpecialization(uint32 specId, uint8 level) const;
+    bool IsUsableByLootSpecialization(Player const* player, bool alwaysAllowBoundToAccount) const;
     static std::size_t CalculateItemSpecBit(ChrSpecializationEntry const* spec);
 
     bool HasStats() const;

@@ -667,7 +667,7 @@ typedef std::unordered_map<uint32, MapChallengeModeEntry const*> MapChallengeMod
 typedef std::vector<uint32 /*MapID*/> MapChallengeModeListContainer;
 typedef std::vector<double> MapChallengeWeightListContainer;
 typedef std::unordered_map<uint32, uint32> RulesetItemUpgradeContainer;
-typedef std::unordered_map<uint32, std::vector<QuestPackageItemEntry const*>> QuestPackageItemContainer;
+typedef std::unordered_map<uint32, std::pair<std::vector<QuestPackageItemEntry const*>, std::vector<QuestPackageItemEntry const*>>> QuestPackageItemContainer;
 typedef std::unordered_set<uint32> ToyItemIdsContainer;
 typedef std::unordered_map<uint32, HeirloomEntry const*> HeirloomItemsContainer;
 typedef std::unordered_map<uint32, AchievementEntry const*> AchievementParentContainer;
@@ -1725,7 +1725,12 @@ void DB2Manager::InitDB2CustomStores()
     }
 
     for (QuestPackageItemEntry const* questPackageItem : sQuestPackageItemStore)
-        _questPackages[questPackageItem->PackageID].push_back(questPackageItem);
+    {
+        if (questPackageItem->DisplayType != QUEST_PACKAGE_FILTER_UNMATCHED)
+            _questPackages[questPackageItem->PackageID].first.push_back(questPackageItem);
+        else
+            _questPackages[questPackageItem->PackageID].second.push_back(questPackageItem);
+    }
 
     for (GameObjectsEntry const* store : sGameObjectsStore)
         _gameObjectsList.push_back(store->ID);
@@ -2793,7 +2798,20 @@ std::vector<std::string> const* DB2Manager::GetLanguageWordsBySize(uint32 langID
 
 std::vector<QuestPackageItemEntry const*> const* DB2Manager::GetQuestPackageItems(uint32 questPackageID) const
 {
-    return Trinity::Containers::MapGetValuePtr(_questPackages, questPackageID);
+    auto itr = _questPackages.find(questPackageID);
+    if (itr != _questPackages.end())
+        return &itr->second.first;
+
+    return nullptr;
+}
+
+std::vector<QuestPackageItemEntry const*> const* DB2Manager::GetQuestPackageItemsFallback(uint32 questPackageID) const
+{
+    auto itr = _questPackages.find(questPackageID);
+    if (itr != _questPackages.end())
+        return &itr->second.second;
+
+    return nullptr;
 }
 
 MountEntry const* DB2Manager::GetMount(uint32 spellId) const

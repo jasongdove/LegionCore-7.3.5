@@ -186,6 +186,30 @@ bool ItemTemplate::IsUsableBySpecialization(uint32 specId, uint8 level) const
     return false;
 }
 
+bool ItemTemplate::IsUsableByLootSpecialization(Player const* player, bool alwaysAllowBoundToAccount) const
+{
+    if (GetFlags() & ITEM_FLAG_IS_BOUND_TO_ACCOUNT && alwaysAllowBoundToAccount)
+        return true;
+
+    uint32 spec = player->GetUInt32Value(PLAYER_FIELD_LOOT_SPEC_ID);
+    if (!spec)
+        spec = player->GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID);
+    if (!spec)
+        spec = player->GetDefaultSpecId();
+
+    ChrSpecializationEntry const* chrSpecialization = sChrSpecializationStore.LookupEntry(spec);
+    if (!chrSpecialization)
+        return false;
+
+    std::size_t levelIndex = 0;
+    if (player->getLevel() >= 110)
+        levelIndex = 2;
+    else if (player->getLevel() > 40)
+        levelIndex = 1;
+
+    return Specializations[levelIndex].test(CalculateItemSpecBit(chrSpecialization));
+}
+
 std::size_t ItemTemplate::CalculateItemSpecBit(ChrSpecializationEntry const* spec)
 {
     return (spec->ClassID - 1) * MAX_SPECIALIZATIONS + spec->OrderIndex;

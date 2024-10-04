@@ -1930,13 +1930,16 @@ class Player : public Unit, public GridObject<Player>
         bool CanCompleteQuest(uint32 quest_id);
         bool CanCompleteRepeatableQuest(Quest const* quest);
         bool CanRewardQuest(Quest const* quest, bool msg);
-        bool CanRewardQuest(Quest const* quest, uint32 reward, bool msg, uint32 packItemId);
+        bool CanRewardQuest(Quest const* quest, uint32 reward, bool msg);
+        void AddQuestAndCheckCompletion(Quest const* quest, Object* questGiver);
         void AddQuest(Quest const* quest, Object* questGiver);
         void CompleteQuest(uint32 quest_id);
         void IncompleteQuest(uint32 quest_id);
         int32 GetQuestMoneyReward(Quest const* quest) const;
         uint32 GetQuestXPReward(Quest const* quest);
-        void RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, bool announce = true, uint32 packItemId = 0);
+        bool CanSelectQuestPackageItem(QuestPackageItemEntry const* questPackageItem) const;
+        void RewardQuestPackage(uint32 questPackageId, uint32 onlyItemId = 0);
+        void RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, bool announce = true);
         void FailQuest(uint32 quest_id);
         bool SatisfyQuestSkill(Quest const* qInfo, bool msg) const;
         bool SatisfyQuestLevel(Quest const* qInfo, bool msg);
@@ -2014,7 +2017,7 @@ class Player : public Unit, public GridObject<Player>
         void UpdateQuestObjectiveData(Quest const* quest);
         bool HasCompletedQuest(uint32 questId) const;
         void SendQuestComplete(Quest const* quest);
-        void SendQuestReward(Quest const* quest, uint32 XP, Object* questGiver, int32 moneyReward, Item* item, bool hideChatMessage);
+        void SendQuestReward(Quest const* quest, uint32 XP, Object* questGiver, int32 moneyReward, bool hideChatMessage);
         void SendQuestFailed(uint32 questId, InventoryResult reason = EQUIP_ERR_OK);
         void SendQuestTimerFailed(uint32 quest_id);
         void SendCanTakeQuestResponse(uint32 msg, Quest const* qInfo, std::string = "none") const;

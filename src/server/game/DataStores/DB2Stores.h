@@ -431,6 +431,7 @@ public:
     LanguageWordsContainer const* GetLanguageWordMap(uint32 landID);
     std::vector<std::string> const* GetLanguageWordsBySize(uint32 landID, uint32 size);
     std::vector<QuestPackageItemEntry const*> const* GetQuestPackageItems(uint32 questPackageID) const;
+    std::vector<QuestPackageItemEntry const*> const* GetQuestPackageItemsFallback(uint32 questPackageID) const;
     MountEntry const* GetMount(uint32 spellId) const;
     static MountEntry const* GetMountById(uint32 id);
     MountTypeXCapabilitySet const* GetMountCapabilities(uint32 mountType) const;

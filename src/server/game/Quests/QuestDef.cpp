@@ -348,15 +348,7 @@ void Quest::BuildQuestRewards(WorldPackets::Quest::QuestRewards& rewards, Player
     rewards.ChoiceItemCount = m_rewChoiceItemsCount;
     rewards.ItemCount = m_rewItemsCount;
     rewards.Money = player->GetQuestMoneyReward(this);
-    float QuestXpRate = 1.0f;
-    if (float rate = player->GetSession()->GetPersonalXPRate())
-        QuestXpRate = rate;
-    else if (player->GetPersonnalXpRate())
-        QuestXpRate = player->GetPersonnalXpRate();
-    else
-        QuestXpRate = sWorld->getRate(RATE_XP_QUEST);
-
-    rewards.XP = uint32(XPValue(player) * QuestXpRate);
+    rewards.XP = player->GetQuestXPReward(this);
     rewards.ArtifactCategoryID = RewardArtifactCategoryID;
     rewards.ArtifactXP = RewardArtifactXP;
     rewards.Honor = RewardHonor;
