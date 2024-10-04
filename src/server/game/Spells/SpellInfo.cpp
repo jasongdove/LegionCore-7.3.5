@@ -1854,6 +1854,11 @@ bool SpellInfo::IsChanneled() const
     return (GetMisc()->MiscData.Attributes[1] & (SPELL_ATTR1_CHANNELED_1 | SPELL_ATTR1_CHANNELED_2)) != 0;
 }
 
+bool SpellInfo::IsMoveAllowedChannel() const
+{
+    return IsChanneled() && HasAttribute(SPELL_ATTR5_USABLE_WHILE_MOVING);
+}
+
 bool SpellInfo::IsBreakingStealth() const
 {
     return !HasAttribute(SPELL_ATTR1_NOT_BREAK_STEALTH);

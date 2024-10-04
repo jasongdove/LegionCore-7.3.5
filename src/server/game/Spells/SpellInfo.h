@@ -758,6 +758,7 @@ public:
     bool IsPositive() const;
     bool IsPositiveEffect(uint8 effIndex, bool caster = false) const;
     bool IsChanneled() const;
+    bool IsMoveAllowedChannel() const;
     bool IsBreakingStealth() const;
     bool IsRangedWeaponSpell() const;
     bool IsRangedSpell() const;

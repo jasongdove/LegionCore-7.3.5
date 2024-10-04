@@ -569,30 +569,6 @@ static Position const PredictPosition(Unit* target)
     return pos;
 }
 
-bool IsMovementPreventedByCasting(Creature* owner)
-{
-    Spell* spell = owner->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
-    // first check if currently a movement allowed channel is active and we're not casting
-    if (spell && spell->getState() != SPELL_STATE_FINISHED && spell->IsChannelActive() &&
-        (spell->GetSpellInfo() && spell->GetSpellInfo()->IsChanneled() && spell->GetSpellInfo()->HasAttribute(SPELL_ATTR5_USABLE_WHILE_MOVING))
-        )
-    {
-        return false;
-    }
-
-    /*if (owner->HasSpellFocus())
-    {
-        return true;
-    }*/
-
-    if (owner->HasUnitState(UNIT_STATE_CASTING))
-    {
-        return true;
-    }
-
-    return false;
-}
-
 template<class T>
 bool FollowMovementGenerator<T>::DoUpdate(T& owner, uint32 time_diff)
 {
@@ -606,7 +582,7 @@ bool FollowMovementGenerator<T>::DoUpdate(T& owner, uint32 time_diff)
     Unit* target = this->i_target.getTarget();
 
     // the owner might be unable to move (rooted or casting), or we have lost the target, pause movement
-    if (owner.HasUnitState(UNIT_STATE_NOT_MOVE) || (cOwner && IsMovementPreventedByCasting(owner.ToCreature())))
+    if (owner.HasUnitState(UNIT_STATE_NOT_MOVE) || (cOwner && owner.IsMovementPreventedByCasting()))
     {
         i_path = nullptr;
         owner.StopMoving();
@@ -676,8 +652,7 @@ bool FollowMovementGenerator<T>::DoUpdate(T& owner, uint32 time_diff)
         float x, y, z;
         targetPosition.GetPosition(x, y, z);
 
-        //if (owner->IsHovering())
-        if (owner.m_movementInfo.HasMovementFlag(MOVEMENTFLAG_HOVER)) // alt: owner.isHover()
+        if (owner.IsHovering())
             owner.UpdateAllowedPositionZ(x, y, z);
 
         bool success = i_path->CalculatePath(x, y, z, forceDest);

@@ -1551,6 +1551,7 @@ class Unit : public WorldObject
 
         bool IsLevitating() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);}
         bool IsWalking() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING);}
+        bool IsHovering() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_HOVER);}
         bool SetWalk(bool enable);
         bool SetDisableGravity(bool disable, bool isPlayer = false);
         bool SetFall(bool enable, bool isPlayer = false);
@@ -1894,6 +1895,7 @@ class Unit : public WorldObject
         Spell* GetCurrentSpell(uint32 spellType) const { return m_currentSpells[spellType]; }
         Spell* FindCurrentSpellBySpellId(uint32 spell_id) const;
         int32 GetCurrentSpellCastTime(uint32 spell_id) const;
+        bool IsMovementPreventedByCasting() const;
         SpellInfo const* GetCastSpellInfo(SpellInfo const* spellInfo) const;
         void SendSpellCreateVisual(SpellInfo const* spellInfo, Position const* position = nullptr, Unit* target = nullptr, uint32 type = 0, uint32 visualId = 0);
         void CancelSpellVisualKit(int32 spellVisualKitID);
