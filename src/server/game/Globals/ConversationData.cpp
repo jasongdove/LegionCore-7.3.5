@@ -217,7 +217,7 @@ void ConversationDataStoreMgr::LoadConversationData()
             data.entry = fields[i++].GetUInt32();
             data.id = fields[i++].GetUInt32();
             data.creatureId = fields[i++].GetUInt32();
-            data.creatureGuid = fields[i++].GetUInt32();
+            data.creatureGuid = fields[i++].GetUInt64();
             data.unk1 = fields[i++].GetUInt32();
             data.unk2 = fields[i++].GetUInt32();
             data.duration = fields[i++].GetUInt32();

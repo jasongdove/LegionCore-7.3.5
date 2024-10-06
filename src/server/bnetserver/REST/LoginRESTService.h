@@ -107,9 +107,8 @@ private:
     std::string _bindIP;
     int32 _port;
     int32 _waitTime;
-    boost::asio::ip::tcp::endpoint _externalAddress;
-    boost::asio::ip::tcp::endpoint _localAddress;
-    boost::asio::ip::address_v4 _localNetmask;
+    std::array<boost::asio::ip::address, 2> _addresses;
+    std::array<boost::asio::ip::tcp::endpoint, 2> _endpoints;
     std::mutex _loginTicketMutex;
     std::unordered_map<std::string, LoginTicket> _validLoginTickets;
     std::shared_ptr<Trinity::Asio::DeadlineTimer> _loginTicketCleanupTimer;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
+ * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef Process_h__
-#define Process_h__
+#ifndef TRINITYCORE_START_PROCESS_H
+#define TRINITYCORE_START_PROCESS_H
 
 #include "Define.h"
 #include <future>
@@ -32,8 +32,8 @@ namespace Trinity
 /// When an input path is given, the file will be routed to the processes stdin.
 /// When the process is marked as secure no arguments are leaked to logs.
 /// Note that most executables expect it's name as the first argument.
-TC_COMMON_API int StartProcess(std::string const& executable, std::vector<std::string> const& args,
-                               std::string const& logger, std::string input_file = "",
+TC_COMMON_API int32 StartProcess(std::string executable, std::vector<std::string> args,
+                               std::string logger, std::string input_file = "",
                                bool secure = false);
 
 /// Platform and library independent representation
@@ -45,7 +45,7 @@ public:
 
     /// Returns the future which contains the result of the process
     /// as soon it is finished.
-    virtual std::future<int>& GetFutureResult() = 0;
+    virtual std::future<int32>& GetFutureResult() = 0;
 
     /// Tries to terminate the process
     virtual void Terminate() = 0;
@@ -62,9 +62,9 @@ TC_COMMON_API std::shared_ptr<AsyncProcessResult>
                       bool secure = false);
 
 /// Searches for the given executable in the PATH variable
-/// and returns a present optional when it was found.
+/// and returns a non-empty string when it was found.
 TC_COMMON_API std::string SearchExecutableInPath(std::string const& filename);
 
 } // namespace Trinity
 
-#endif // Process_h__
+#endif // TRINITYCORE_START_PROCESS_H

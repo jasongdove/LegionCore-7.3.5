@@ -20,6 +20,7 @@
 
 #include "Define.h"
 #include "DatabaseEnvFwd.h"
+#include <stdexcept>
 #include <string>
 
 template <class T>
@@ -33,16 +34,10 @@ namespace boost
     }
 }
 
-class TC_DATABASE_API UpdateException : public std::exception
+class TC_DATABASE_API UpdateException : public std::runtime_error
 {
 public:
-    UpdateException(std::string const& msg) : _msg(msg) { }
-    ~UpdateException() throw() { }
-
-    char const* what() const throw() override { return _msg.c_str(); }
-
-private:
-    std::string const _msg;
+    using std::runtime_error::runtime_error;
 };
 
 enum BaseLocation
@@ -89,7 +84,8 @@ private:
     static void Apply(DatabaseWorkerPool<T>& pool, std::string const& query);
     static void ApplyFile(DatabaseWorkerPool<T>& pool, Path const& path);
     static void ApplyFile(DatabaseWorkerPool<T>& pool, std::string const& host, std::string const& user,
-        std::string const& password, std::string const& port_or_socket, std::string const& database, Path const& path);
+        std::string const& password, std::string const& port_or_socket, std::string const& database, std::string const& ssl,
+        Path const& path);
 };
 
 #endif // DBUpdater_h__

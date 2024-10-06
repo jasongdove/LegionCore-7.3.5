@@ -191,6 +191,9 @@ std::string GetRolesString(uint8 roles);
 std::string GetStateString(LfgState state);
 float GetShortagePercent();
 
+// allow implicit enum to int conversions for formatting
+inline int32 format_as(LfgUpdateType e) { return e; }
+inline uint8 format_as(LfgState e) { return e; }
 } // namespace lfg
 
 #endif

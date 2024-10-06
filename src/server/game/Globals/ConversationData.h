@@ -39,7 +39,7 @@ struct ConversationCreature
     uint32 entry;
     uint32 id;
     uint32 creatureId;
-    uint32 creatureGuid;
+    uint64 creatureGuid;
     uint32 unk1;
     uint32 unk2;
     uint32 duration;

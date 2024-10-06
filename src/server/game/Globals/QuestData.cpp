@@ -2888,7 +2888,6 @@ void QuestDataStoreMgr::ResetWorldQuest()
         }
     }
     CharacterDatabase.CommitTransaction(trans);
-    CharacterDatabase.WaitExecution();
     needWait = false;
 }
 
@@ -2939,7 +2938,6 @@ void QuestDataStoreMgr::ClearWorldQuest()
             itr->second.erase(iter++);
         }
         CharacterDatabase.CommitTransaction(trans);
-        CharacterDatabase.WaitExecution();
     }
 }
 
@@ -3048,7 +3046,6 @@ void QuestDataStoreMgr::ResetWorldQuest(uint32 QuestID)
         }
     }
     CharacterDatabase.CommitTransaction(trans);
-    CharacterDatabase.WaitExecution();
     needWait = false;
 }
 

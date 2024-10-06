@@ -15,25 +15,47 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _FIELD_H
-#define _FIELD_H
+#ifndef TRINITY_DATABASE_FIELD_H
+#define TRINITY_DATABASE_FIELD_H
 
 #include "Define.h"
-#include "DatabaseEnvFwd.h"
+#include "Duration.h"
+#include <array>
+#include <string>
+#include <string_view>
 #include <vector>
+
+class BaseDatabaseResultValueConverter;
 
 enum class DatabaseFieldTypes : uint8
 {
     Null,
+    UInt8,
     Int8,
+    UInt16,
     Int16,
+    UInt32,
     Int32,
+    UInt64,
     Int64,
     Float,
     Double,
     Decimal,
     Date,
+    Time,
     Binary
+};
+
+struct QueryResultFieldMetadata
+{
+    char const* TableName = nullptr;
+    char const* TableAlias = nullptr;
+    char const* Name = nullptr;
+    char const* Alias = nullptr;
+    char const* TypeName = nullptr;
+    uint32 Index = 0;
+    DatabaseFieldTypes Type = DatabaseFieldTypes::Null;
+    BaseDatabaseResultValueConverter const* Converter = nullptr;
 };
 
 /**
@@ -90,58 +112,34 @@ class TC_DATABASE_API Field
         int64 GetInt64() const;
         float GetFloat() const;
         double GetDouble() const;
+        SystemTimePoint GetDate() const;
         char const* GetCString() const;
         std::string GetString() const;
         std::string_view GetStringView() const;
         std::vector<uint8> GetBinary() const;
+        template <size_t S>
+        std::array<uint8, S> GetBinary() const
+        {
+            std::array<uint8, S> buf;
+            GetBinarySizeChecked(buf.data(), S);
+            return buf;
+        }
 
         bool IsNull() const
         {
-            return data.value == NULL;
+            return _value == nullptr;
         }
-
-        struct Metadata
-        {
-            char const* TableName;
-            char const* TableAlias;
-            char const* Name;
-            char const* Alias;
-            char const* Type;
-            uint32 Index;
-        };
-
-    protected:
-        #pragma pack(push, 1)
-        struct
-        {
-            uint32 length;          // Length (prepared strings only)
-            void* value;            // Actual data in memory
-            DatabaseFieldTypes type;  // Field type
-            bool raw;               // Raw bytes? (Prepared statement or ad hoc)
-         } data;
-        #pragma pack(pop)
-
-        void SetByteValue(void* newValue, DatabaseFieldTypes newType, uint32 length);
-        void SetStructuredValue(char* newValue, DatabaseFieldTypes newType, uint32 length);
-
-        void CleanUp()
-        {
-            // Field does not own the data if fetched with prepared statement
-            if (!data.raw)
-                delete[] ((char*)data.value);
-            data.value = NULL;
-        }
-
-        bool IsType(DatabaseFieldTypes type) const;
-
-        bool IsNumeric() const;
 
     private:
-        #ifdef TRINITY_DEBUG
-        void LogWrongType(char const* getter) const;
-        void SetMetadata(MySQLField* field, uint32 fieldIndex);
-        Metadata meta;
-        #endif
+        char const* _value;             // Actual data in memory
+        uint32 _length;                 // Length
+
+        void SetValue(char const* newValue, uint32 length);
+
+        QueryResultFieldMetadata const* _meta;
+        void SetMetadata(QueryResultFieldMetadata const* meta);
+
+        void GetBinarySizeChecked(uint8* buf, size_t size) const;
 };
 
 #endif

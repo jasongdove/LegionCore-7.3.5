@@ -499,7 +499,7 @@ void WorldSession::HanleSetPetSlot(WorldPackets::PetPackets::SetPetSlot& packet)
     stmt->setUInt64(0, _player->GetGUIDLow());
     stmt->setUInt32(1, packet.PetIndex);
 
-    _queryProcessor.AddQuery(CharacterDatabase.AsyncQuery(stmt).WithPreparedCallback(std::bind(&WorldSession::HandleStableChangeSlotCallback, this, std::placeholders::_1, packet.PetIndex)));
+    _queryProcessor.AddCallback(CharacterDatabase.AsyncQuery(stmt).WithPreparedCallback(std::bind(&WorldSession::HandleStableChangeSlotCallback, this, std::placeholders::_1, packet.PetIndex)));
 }
 
 void WorldSession::HandleStableChangeSlotCallback(PreparedQueryResult const& result, uint8 new_slot)

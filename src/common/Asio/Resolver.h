@@ -18,9 +18,10 @@
 #ifndef Resolver_h__
 #define Resolver_h__
 
-#include "Common.h"
+#include "IoContext.h"
 #include "Optional.h"
 #include <boost/asio/ip/tcp.hpp>
+#include <string>
 
 namespace Trinity
 {
@@ -32,24 +33,17 @@ namespace Trinity
         class Resolver
         {
         public:
-#if BOOST_VERSION >= 106600
-            explicit Resolver(boost::asio::io_context& ioContext) : _impl(ioContext) { }
-#else
-            explicit Resolver(boost::asio::io_service& ioService) : _impl(ioService) { }
-#endif
+            explicit Resolver(IoContext& ioContext) : _impl(ioContext) { }
 
             Optional<boost::asio::ip::tcp::endpoint> Resolve(boost::asio::ip::tcp const& protocol, std::string const& host, std::string const& service)
             {
                 boost::system::error_code ec;
-                boost::asio::ip::resolver_query_base::flags flagsResolver = boost::asio::ip::resolver_query_base::all_matching;
-                boost::asio::ip::tcp::resolver::query externalAddressQuery(protocol, host, service, flagsResolver);
-
-                boost::asio::ip::tcp::resolver::iterator end;
-                boost::asio::ip::tcp::resolver::iterator results = _impl.resolve(externalAddressQuery, ec);
-                if (results == end || ec)
+                boost::asio::ip::resolver_base::flags flagsResolver = boost::asio::ip::resolver_base::all_matching;
+                boost::asio::ip::tcp::resolver::results_type results = _impl.resolve(protocol, host, service, flagsResolver, ec);
+                if (results.begin() == results.end() || ec)
                     return {};
 
-                return results->endpoint();
+                return results.begin()->endpoint();
             }
 
         private:

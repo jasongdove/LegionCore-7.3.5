@@ -822,7 +822,7 @@ void ObjectMgr::LoadCreatureTemplates()
         creatureTemplate.ScriptID           = GetScriptId(fields[index++].GetCString());
         creatureTemplate.ScaleLevelMin      = std::min(fields[index++].GetUInt8(), CREATURE_MAX_LEVEL);
         creatureTemplate.ScaleLevelMax      = std::min(fields[index++].GetUInt8(), CREATURE_MAX_LEVEL);
-        creatureTemplate.ScaleLevelDelta    = std::min(fields[index++].GetUInt8(), CREATURE_MAX_LEVEL);
+        creatureTemplate.ScaleLevelDelta    = std::min(fields[index++].GetUInt16(), uint16(CREATURE_MAX_LEVEL));
         creatureTemplate.ScaleLevelDuration = std::min(fields[index++].GetUInt16(), std::numeric_limits<uint16>::max());
         creatureTemplate.ControllerID       = fields[index++].GetInt32();
         Tokenizer WorldEffects(fields[index++].GetString(), ' ');
@@ -7691,7 +7691,6 @@ void ObjectMgr::RestructCreatureGUID()
         worldTrans->PAppend("TRUNCATE linked_respawnrestruct1;");
 
         WorldDatabase.CommitTransaction(worldTrans);
-        WorldDatabase.WaitExecution();
         newGUID++;
     } while (result->NextRow());
 
@@ -7770,7 +7769,6 @@ void ObjectMgr::RestructGameObjectGUID()
         worldTrans->PAppend("TRUNCATE pool_gameobjectRestruct1;");
 
         WorldDatabase.CommitTransaction(worldTrans);
-        WorldDatabase.WaitExecution();
 
         newGUID++;
     } while (result->NextRow());

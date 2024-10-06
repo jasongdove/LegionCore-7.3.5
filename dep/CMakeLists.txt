@@ -10,7 +10,6 @@
 
 add_subdirectory(threads)
 add_subdirectory(boost)
-add_subdirectory(process)
 add_subdirectory(zlib)
 add_subdirectory(g3dlite)
 add_subdirectory(recastnavigation)

@@ -18,15 +18,13 @@
 #ifndef DatabaseEnvFwd_h__
 #define DatabaseEnvFwd_h__
 
-#include <future>
 #include <memory>
 
+struct QueryResultFieldMetadata;
 class Field;
 
 class ResultSet;
-typedef std::shared_ptr<ResultSet> QueryResult;
-typedef std::future<QueryResult> QueryResultFuture;
-typedef std::promise<QueryResult> QueryResultPromise;
+using QueryResult = std::shared_ptr<ResultSet>;
 
 class CharacterDatabaseConnection;
 class HotfixDatabaseConnection;
@@ -44,16 +42,21 @@ using LoginDatabasePreparedStatement = PreparedStatement<LoginDatabaseConnection
 using WorldDatabasePreparedStatement = PreparedStatement<WorldDatabaseConnection>;
 
 class PreparedResultSet;
-typedef std::shared_ptr<PreparedResultSet> PreparedQueryResult;
-typedef std::future<PreparedQueryResult> PreparedQueryResultFuture;
-typedef std::promise<PreparedQueryResult> PreparedQueryResultPromise;
+using PreparedQueryResult = std::shared_ptr<PreparedResultSet>;
 
 class QueryCallback;
+
+template<typename T>
+class AsyncCallbackProcessor;
+
+using QueryCallbackProcessor = AsyncCallbackProcessor<QueryCallback>;
 
 class TransactionBase;
 
 template<typename T>
 class Transaction;
+
+class TransactionCallback;
 
 template<typename T>
 using SQLTransaction = std::shared_ptr<Transaction<T>>;
@@ -64,8 +67,6 @@ using LoginDatabaseTransaction = SQLTransaction<LoginDatabaseConnection>;
 using WorldDatabaseTransaction = SQLTransaction<WorldDatabaseConnection>;
 
 class SQLQueryHolderBase;
-typedef std::future<SQLQueryHolderBase*> QueryResultHolderFuture;
-typedef std::promise<SQLQueryHolderBase*> QueryResultHolderPromise;
 
 template<typename T>
 class SQLQueryHolder;
@@ -74,6 +75,8 @@ using CharacterDatabaseQueryHolder = SQLQueryHolder<CharacterDatabaseConnection>
 using HotfixDatabaseQueryHolder = SQLQueryHolder<HotfixDatabaseConnection>;
 using LoginDatabaseQueryHolder = SQLQueryHolder<LoginDatabaseConnection>;
 using WorldDatabaseQueryHolder = SQLQueryHolder<WorldDatabaseConnection>;
+
+class SQLQueryHolderCallback;
 
 // mysql
 struct MySQLHandle;

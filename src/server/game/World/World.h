@@ -23,6 +23,7 @@
 #ifndef __WORLD_H
 #define __WORLD_H
 
+#include "AsyncCallbackProcessor.h"
 #include "Common.h"
 #include "Realm/Realm.h"
 #include "ObjectGuid.h"
@@ -30,7 +31,7 @@
 #include "SharedDefines.h"
 #include "DatabaseEnvFwd.h"
 #include "Opcodes.h"
-#include "QueryCallbackProcessor.h"
+//#include "QueryCallbackProcessor.h"
 #include "WorldPacket.h"
 #include "Threading/LockedQueue.h"
 #include <safe_ptr.h>

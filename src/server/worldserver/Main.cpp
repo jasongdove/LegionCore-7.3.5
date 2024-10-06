@@ -422,18 +422,7 @@ bool LoadRealmInfo()
 {
     if (Realm const* realmListRealm = sRealmList->GetRealm(realm.Id))
     {
-        realm.Id = realmListRealm->Id;
-        realm.Build = sConfigMgr->GetIntDefault("Game.Build.Version", 26972);
-        realm.ExternalAddress = std::make_unique<boost::asio::ip::address>(*realmListRealm->ExternalAddress);
-        realm.LocalAddress = std::make_unique<boost::asio::ip::address>(*realmListRealm->LocalAddress);
-        realm.LocalSubnetMask = std::make_unique<boost::asio::ip::address>(*realmListRealm->LocalSubnetMask);
-        realm.Port = realmListRealm->Port;
-        realm.Name = realmListRealm->Name;
-        realm.Type = realmListRealm->Type;
-        realm.Flags = realmListRealm->Flags;
-        realm.Timezone = realmListRealm->Timezone;
-        realm.AllowedSecurityLevel = realmListRealm->AllowedSecurityLevel;
-        realm.PopulationLevel = realmListRealm->PopulationLevel;
+        realm = *realmListRealm;
         return true;
     }
 

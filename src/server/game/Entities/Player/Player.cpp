@@ -21870,7 +21870,7 @@ float Player::GetFloatValueFromArray(Tokenizer const& data, uint16 index)
     return result;
 }
 
-bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
+bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& holder)
 {
     enum fieldIDX
     {
@@ -21883,7 +21883,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
         f_killPoints
     };
 
-    PreparedQueryResult result = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADFROM);
+    PreparedQueryResult result = holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
     if (!result)
     {
@@ -21903,7 +21903,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
         return false;
     }
 
-    if (holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADBANNED))
+    if (holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADBANNED))
     {
         TC_LOG_ERROR("entities.player", "Player (GUID: %lu) is banned, can't load.", guid.GetCounter());
         return false;
@@ -21960,10 +21960,10 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
         AddDynamicValue(PLAYER_DYNAMIC_FIELD_TRANSMOG, 0);
 
     // load achievements before anything else to prevent multiple gains for the same achievement/criteria on every loading (as loading does call UpdateAchievementCriteria)
-    m_achievementMgr->LoadFromDB(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADACHIEVEMENTS),
-                                holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADCRITERIAPROGRESS),
-                                holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADACCOUNTACHIEVEMENTS),
-                                holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADACCOUNTCRITERIAPROGRESS));
+    m_achievementMgr->LoadFromDB(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADACHIEVEMENTS),
+                                holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADCRITERIAPROGRESS),
+                                holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADACCOUNTACHIEVEMENTS),
+                                holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADACCOUNTCRITERIAPROGRESS));
 
     uint64 money = fields[f_money].GetUInt64();
     if (money > MAX_MONEY_AMOUNT)
@@ -22017,7 +22017,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
     setFactionForRace(getRace());
 
     // load home bind and check in same time class/race pair, it used later for restore broken positions
-    if (!_LoadHomeBind(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADHOMEBIND)))
+    if (!_LoadHomeBind(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADHOMEBIND)))
         return false;
 
     InitPrimaryProfessions();                               // to max set before any spell loaded
@@ -22035,26 +22035,26 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
     SetLegacyRaidDifficultyID(CheckLoadedLegacyRaidDifficultyID(Difficulty(fields[f_legacyRaidDifficulty].GetUInt8())));
 
     _garrison->LoadFromDB(
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON),
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_BLUEPRINTS),
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_BUILDINGS),
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_FOLLOWERS),
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_FOLLOWER_ABILITIES),
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_MISSIONS),
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_SHIPMENTS),
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_TALENTS));
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON),
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_BLUEPRINTS),
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_BUILDINGS),
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_FOLLOWERS),
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_FOLLOWER_ABILITIES),
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_MISSIONS),
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_SHIPMENTS),
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GARRISON_TALENTS));
 
 
     std::string taxi_nodes = fields[f_taxi_path].GetString();
 
 #define RelocateToHomebind(){ mapId = m_homebindMapId; instanceId = 0; Relocate(m_homebindX, m_homebindY, m_homebindZ); }
 
-    _LoadGroup(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADGROUP));
-    _LoadLootCooldown(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_LOOTCOOLDOWN));
-    _LoadLfgCooldown(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_LFGCOOLDOWN));
-    _LoadKillCreature(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_KILL_CREATURE));
+    _LoadGroup(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADGROUP));
+    _LoadLootCooldown(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_LOOTCOOLDOWN));
+    _LoadLfgCooldown(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_LFGCOOLDOWN));
+    _LoadKillCreature(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_KILL_CREATURE));
 
-    _LoadCurrency(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADCURRENCY));
+    _LoadCurrency(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADCURRENCY));
 
     InitBrackets();
 
@@ -22062,10 +22062,10 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
     SetUInt16Value(PLAYER_FIELD_YESTERDAY_HONORABLE_KILLS, 0, fields[f_todayKills].GetUInt16());
     SetUInt16Value(PLAYER_FIELD_YESTERDAY_HONORABLE_KILLS, 1, fields[f_yesterdayKills].GetUInt16());
 
-    _LoadBoundInstances(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADBOUNDINSTANCES));
-    _LoadBGData(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADBGDATA));
+    _LoadBoundInstances(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADBOUNDINSTANCES));
+    _LoadBGData(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADBGDATA));
 
-    _LoadPetData(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_PETS));
+    _LoadPetData(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_PETS));
 
     GetSession()->SetPlayer(this);
     MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
@@ -22408,21 +22408,21 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
         SetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID, spec->ID);
 
     // load skills after InitStatsForLevel because it triggering aura apply also
-    _LoadSkills(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSKILLS));
+    _LoadSkills(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSKILLS));
     UpdateSkillsForLevel(); //update skills after load, to make sure they are correctly update at player load
-    _LoadArchaeology(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADARCHAELOGY));
-    _LoadArchaeologyFinds(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ARCHAEOLOGY_FINDS));
+    _LoadArchaeology(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADARCHAELOGY));
+    _LoadArchaeologyFinds(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ARCHAEOLOGY_FINDS));
 
     // apply original stats mods before spell loading or item equipment that call before equip _RemoveStatsMods()
 
     //mails are loaded only when needed ;-) - when player in game click on mailbox.
     //_LoadMail();
 
-    _LoadTalents(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADTALENTS), holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_PVP_TALENTS));
-    _LoadSpells(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSPELLS));
+    _LoadTalents(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADTALENTS), holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_PVP_TALENTS));
+    _LoadSpells(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSPELLS));
 
-    _LoadGlyphs(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GLYPHS));
-    _LoadAuras(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADAURAS), holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADAURAS_EFFECTS), time_diff);
+    _LoadGlyphs(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GLYPHS));
+    _LoadAuras(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADAURAS), holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADAURAS_EFFECTS), time_diff);
     _LoadGlyphAuras();
     // add ghost flag (must be after aura load: PLAYER_FLAGS_GHOST set in aura)
     if (HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
@@ -22431,17 +22431,17 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
     // after spell load, learn rewarded spell if need also - test on achievements
     _LoadSpellRewards();
     // after rewarded spell load various quest statuses
-    _LoadQuestStatus(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
-    _LoadQuestStatusObjectives(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_QUEST_STATUS_OBJECTIVES));
-    _LoadQuestStatusRewarded(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW));
-    _LoadDailyQuestStatus(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADDAILYQUESTSTATUS));
-    _LoadWeeklyQuestStatus(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADWEEKLYQUESTSTATUS));
-    _LoadSeasonalQuestStatus(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSEASONALQUESTSTATUS));
-    _LoadAdventureQuestStatus(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_ADVENTURE_QUEST));
-    _LoadAccountQuest(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_ACCOUNT_QUEST));
-    _LoadRandomBGStatus(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADRANDOMBG));
-    _LoadWorldQuestStatus(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADWORLDQUESTSTATUS));
-    _LoadPetBattles(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_BATTLE_PETS));
+    _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
+    _LoadQuestStatusObjectives(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_QUEST_STATUS_OBJECTIVES));
+    _LoadQuestStatusRewarded(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW));
+    _LoadDailyQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADDAILYQUESTSTATUS));
+    _LoadWeeklyQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADWEEKLYQUESTSTATUS));
+    _LoadSeasonalQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSEASONALQUESTSTATUS));
+    _LoadAdventureQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_ADVENTURE_QUEST));
+    _LoadAccountQuest(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_ACCOUNT_QUEST));
+    _LoadRandomBGStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADRANDOMBG));
+    _LoadWorldQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADWORLDQUESTSTATUS));
+    _LoadPetBattles(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_BATTLE_PETS));
     UpdateAvailableQuestLines();
 
     // after spell and quest load
@@ -22450,35 +22450,35 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
     LearnDefaultSpells();
 
     // must be before inventory (some items required reputation check)
-    m_reputationMgr.LoadFromDB(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADREPUTATION));
+    m_reputationMgr.LoadFromDB(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADREPUTATION));
 
     _collectionMgr->LoadFromDB(
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_TOYS),
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_HEIRLOOMS),
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_TRANSMOGS),
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ACCOUNT_MOUNTS),
-        holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ITEM_FAVORITE_APPEARANCES));
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_TOYS),
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_HEIRLOOMS),
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_TRANSMOGS),
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ACCOUNT_MOUNTS),
+        holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ITEM_FAVORITE_APPEARANCES));
 
-    _LoadChallengeKey(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_CHALLENGE_KEY));
-    _LoadAccountProgress(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_ACCOUNT_PROGRESS));
+    _LoadChallengeKey(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_CHALLENGE_KEY));
+    _LoadAccountProgress(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_ACCOUNT_PROGRESS));
 
-    _LoadInventory(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADINVENTORY), holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ARTIFACTS), time_diff);
-    _LoadNotInventory(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADNOTINVENTORY), time_diff);
+    _LoadInventory(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADINVENTORY), holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ARTIFACTS), time_diff);
+    _LoadNotInventory(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADNOTINVENTORY), time_diff);
 
     if (IsVoidStorageUnlocked())
-        _LoadVoidStorage(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADVOIDSTORAGE), holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_VOIDSTORAGE_ITEM));
+        _LoadVoidStorage(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADVOIDSTORAGE), holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_VOIDSTORAGE_ITEM));
 
     AddNonVisibleItemToCollect(); // Delete this after open game realm
 
     // update items with duration and realtime
     UpdateItemDuration(time_diff, true);
 
-    _LoadActions(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADACTIONS));
+    _LoadActions(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADACTIONS));
 
     // unread mails and next delivery time, actual mails not loaded
-    _LoadMailInit(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADMAILCOUNT), holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADMAILDATE));
+    _LoadMailInit(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADMAILCOUNT), holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADMAILDATE));
 
-    m_social = sSocialMgr->LoadFromDB(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSOCIALLIST), GetGUID());
+    m_social = sSocialMgr->LoadFromDB(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSOCIALLIST), GetGUID());
 
     // check PLAYER_FIELD_PLAYER_TITLE compatibility with PLAYER_FIELD_KNOWN_TITLES
     // note: PLAYER_FIELD_KNOWN_TITLES updated at quest status loaded
@@ -22493,8 +22493,8 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
     // has to be called after last Relocate() in Player::LoadFromDB
     SetFallInformation(0, GetPositionZ());
 
-    _LoadSpellCooldowns(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSPELLCOOLDOWNS));
-    _LoadHonor(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_HONOR), holder->GetPreparedResult(PLAYER_LOGIN_QUERY_HONOR_INFO));
+    _LoadSpellCooldowns(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSPELLCOOLDOWNS));
+    _LoadHonor(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_HONOR), holder.GetPreparedResult(PLAYER_LOGIN_QUERY_HONOR_INFO));
     UpdateHonorFields(true);
 
     // Spell code allow apply any auras to dead character in load time in aura/spell/item loading
@@ -22587,18 +22587,18 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
     if (m_grantableLevels > 0)
         SetByteValue(PLAYER_FIELD_BYTES_4, PLAYER_BYTES_4_RAF_GRANTABLE_LEVEL, 0x01);
 
-    _LoadDeclinedNames(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADDECLINEDNAMES));
+    _LoadDeclinedNames(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADDECLINEDNAMES));
 
     m_achievementMgr->CheckAllAchievementCriteria(this);
 
-    _LoadEquipmentSets(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS));
-    _LoadTransmogOutfits(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_TRANSMOG_OUTFITS));
+    _LoadEquipmentSets(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS));
+    _LoadTransmogOutfits(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_TRANSMOG_OUTFITS));
 
-    _LoadCUFProfiles(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_CUF_PROFILES));
+    _LoadCUFProfiles(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_CUF_PROFILES));
 
     SetLfgBonusFaction(fields[f_lfgBonusFaction].GetUInt32());
 
-    if(PreparedQueryResult PersonnalRateResult = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_PERSONAL_RATE))
+    if(PreparedQueryResult PersonnalRateResult = holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_PERSONAL_RATE))
         m_PersonnalXpRate = (PersonnalRateResult->Fetch())[0].GetFloat();
 
     ModifyCanUseDonate(true);
@@ -22612,7 +22612,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
 
     _ApplyOrRemoveItemEquipDependentAuras(ObjectGuid::Empty, false);
 
-    if(PreparedQueryResult resultvis = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_VISUAL))
+    if(PreparedQueryResult resultvis = holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_VISUAL))
     {
         if (!m_vis)
             m_vis = new Visuals;
@@ -22637,13 +22637,13 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
         HandleAltVisSwitch();
     }
     
-    if (PreparedQueryResult DMStats = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_DEATHMATCH_STATS))
+    if (PreparedQueryResult DMStats = holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_DEATHMATCH_STATS))
     {
         Field *fieldDM = DMStats->Fetch();
         ModifyDeathMatchStats(fieldDM[0].GetUInt32(), fieldDM[1].GetUInt32(), fieldDM[2].GetUInt64(), fieldDM[3].GetUInt32(), 0, fieldDM[4].GetUInt32());
     }
     
-    if (PreparedQueryResult dmStore = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_DEATHMATCH_STORE))
+    if (PreparedQueryResult dmStore = holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_DEATHMATCH_STORE))
     {
         Field *fieldDM = dmStore->Fetch();
         dmScore.totalKills = fieldDM[0].GetUInt32();
@@ -22654,7 +22654,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
         
     }
     
-    if (PreparedQueryResult ChatResult = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_CHAT_LOGOS))
+    if (PreparedQueryResult ChatResult = holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_CHAT_LOGOS))
     {
         do
         {
@@ -22670,7 +22670,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder)
         } while (ChatResult->NextRow());
     }
 
-    if (PreparedQueryResult armyQuery = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_ARMY_TRAINING))
+    if (PreparedQueryResult armyQuery = holder.GetPreparedResult(PLAYER_LOGIN_QUERY_ARMY_TRAINING))
     {
         Field *armyField = armyQuery->Fetch();
         uint8 i = 0;
@@ -28813,7 +28813,7 @@ void Player::AddSpellAndCategoryCooldowns(SpellInfo const* spellInfo, uint32 ite
 
             SpellCategoryEntry const* categoryEntry = sSpellCategoryStore.LookupEntry(categoryId);
             if (categoryEntry && categoryEntry->Flags & SPELL_CATEGORY_FLAG_COOLDOWN_EXPIRES_AT_DAILY_RESET)
-                categoryCooldown = int32(std::chrono::duration_cast<std::chrono::milliseconds>(SystemClock::from_time_t(sWorld->GetNextDailyQuestsResetTime()) - SystemClock::now()).count());
+                categoryCooldown = int32(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::from_time_t(sWorld->GetNextDailyQuestsResetTime()) - std::chrono::system_clock::now()).count());
         }
 
         // replace negative cooldowns by 0

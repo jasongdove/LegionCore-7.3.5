@@ -167,7 +167,7 @@ struct CreatureTemplate
     uint8 minlevel = 1;
     uint8 ScaleLevelMin = 0;
     uint8 ScaleLevelMax = 0;
-    uint8 ScaleLevelDelta = 0;
+    uint16 ScaleLevelDelta = 0;
     int8 ControllerID = 0;
     float dmg_multiplier = 1.0f;
     float HoverHeight = 1.0f;

@@ -16,28 +16,32 @@
  */
 
 #include "Transaction.h"
+#include "Errors.h"
+#include "Log.h"
 #include "MySQLConnection.h"
 #include "PreparedStatement.h"
+#include "Timer.h"
 #include <mysqld_error.h>
+#include <sstream>
+#include <thread>
+#include <cstring>
 
 std::mutex TransactionTask::_deadlockLock;
 
+#define DEADLOCK_MAX_RETRY_TIME_MS 60000
+
 //- Append a raw ad-hoc query to the transaction
-void TransactionBase::Append(const char* sql)
+void TransactionBase::Append(char const* sql)
 {
-    SQLElementData data;
-    data.type = SQL_ELEMENT_RAW;
-    data.element.query = strdup(sql);
-    m_queries.push_back(data);
+    ASSERT(sql);
+    m_queries.emplace_back(std::in_place_type<std::string>, sql);
 }
 
 //- Append a prepared statement to the transaction
 void TransactionBase::AppendPreparedStatement(PreparedStatementBase* stmt)
 {
-    SQLElementData data;
-    data.type = SQL_ELEMENT_PREPARED;
-    data.element.stmt = stmt;
-    m_queries.push_back(data);
+    ASSERT(stmt);
+    m_queries.emplace_back(std::in_place_type<std::unique_ptr<PreparedStatementBase>>, stmt);
 }
 
 void TransactionBase::Cleanup()
@@ -46,41 +50,58 @@ void TransactionBase::Cleanup()
     if (_cleanedUp)
         return;
 
-    for (SQLElementData const &data : m_queries)
-    {
-        switch (data.type)
-        {
-            case SQL_ELEMENT_PREPARED:
-                delete data.element.stmt;
-            break;
-            case SQL_ELEMENT_RAW:
-                free((void*)(data.element.query));
-            break;
-        }
-    }
-
     m_queries.clear();
     _cleanedUp = true;
 }
 
-bool TransactionTask::Execute()
+bool TransactionTask::Execute(MySQLConnection* conn, std::shared_ptr<TransactionBase> trans)
 {
-    int errorCode = m_conn->ExecuteTransaction(m_trans);
+    int errorCode = TryExecute(conn, trans);
     if (!errorCode)
         return true;
 
     if (errorCode == ER_LOCK_DEADLOCK)
     {
+        std::string threadId = []()
+        {
+            // wrapped in lambda to fix false positive analysis warning C26115
+            std::ostringstream threadIdStream;
+            threadIdStream << std::this_thread::get_id();
+            return threadIdStream.str();
+        }();
+
         // Make sure only 1 async thread retries a transaction so they don't keep dead-locking each other
         std::lock_guard<std::mutex> lock(_deadlockLock);
-        uint8 loopBreaker = 5;  // Handle MySQL Errno 1213 without extending deadlock to the core itself
-        for (uint8 i = 0; i < loopBreaker; ++i)
-            if (!m_conn->ExecuteTransaction(m_trans))
+
+        for (uint32 loopDuration = 0, startMSTime = getMSTime(); loopDuration <= DEADLOCK_MAX_RETRY_TIME_MS; loopDuration = GetMSTimeDiffToNow(startMSTime))
+        {
+            if (!TryExecute(conn, trans))
                 return true;
+
+            TC_LOG_WARN("sql.sql", "Deadlocked SQL Transaction, retrying. Loop timer: %u ms, Thread Id: %s", loopDuration, threadId.c_str());
+        }
+
+        TC_LOG_ERROR("sql.sql", "Fatal deadlocked SQL Transaction, it will not be retried anymore. Thread Id: %s", threadId.c_str());
     }
 
     // Clean up now.
-    m_trans->Cleanup();
+    trans->Cleanup();
+
+    return false;
+}
+
+int TransactionTask::TryExecute(MySQLConnection* conn, std::shared_ptr<TransactionBase> trans)
+{
+    return conn->ExecuteTransaction(trans);
+}
+
+bool TransactionCallback::InvokeIfReady()
+{
+    if (m_future.valid() && m_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+    {
+        m_callback(m_future.get());
+        return true;
+    }
 
     return false;
 }

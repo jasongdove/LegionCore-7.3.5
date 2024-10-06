@@ -2051,7 +2051,7 @@ class Player : public Unit, public GridObject<Player>
         /***                   LOAD SYSTEM                     ***/
         /*********************************************************/
 
-        bool LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder* holder);
+        bool LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& holder);
         bool isBeingLoaded() const override { return GetSession()->PlayerLoading();}
 
         void Initialize(ObjectGuid::LowType guid);

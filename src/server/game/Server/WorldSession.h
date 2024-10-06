@@ -24,6 +24,7 @@
 #define __WORLDSESSION_H
 
 #include "AddonMgr.h"
+#include "AsyncCallbackProcessor.h"
 #include "Common.h"
 #include "Cryptography/BigNumber.h"
 #include "EventProcessor.h"
@@ -1072,7 +1073,7 @@ class WorldSession
         void SendAuthResponse(uint8 code, bool queued = false, uint32 queuePos = 0);
         void SendClientCacheVersion(uint32 version);
         void InitializeSession();
-        void InitializeSessionCallback(LoginDatabaseQueryHolder* realmHolder, CharacterDatabaseQueryHolder* holder);
+        void InitializeSessionCallback(LoginDatabaseQueryHolder const& realmHolder, CharacterDatabaseQueryHolder const& holder);
 
         void HandleGetPurchaseListQuery(WorldPackets::BattlePay::GetPurchaseListQuery& packet);
         void HandleBattlePayQueryClassTrialResult(WorldPackets::BattlePay::BattlePayQueryClassTrialResult& packet);
@@ -1266,7 +1267,7 @@ class WorldSession
         void HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin& playerLogin);
         void HandleLoadScreenOpcode(WorldPackets::Character::LoadingScreenNotify& loadingScreenNotify);
         void HandleCharEnum(PreparedQueryResult result, bool isDelete);
-        void HandlePlayerLogin(LoginQueryHolder * holder);
+        void HandlePlayerLogin(LoginQueryHolder const& holder);
         void HandleCharRaceOrFactionChange(WorldPackets::Character::CharRaceOrFactionChange& packet);
         void HandleGenerateRandomCharacterName(WorldPackets::Character::GenerateRandomCharacterName& packet);
         void HandleReorderCharacters(WorldPackets::Character::ReorderCharacters& packet);
@@ -2042,8 +2043,6 @@ class WorldSession
 
         CharacterTemplateData* GetCharacterTemplateData(uint32 id);
 
-        QueryCallbackProcessor _queryProcessor;
-
         BattlepayManager* GetBattlePayMgr() const { return _battlePayMgr.get(); }
 
         std::vector<bool> m_achievement;
@@ -2053,12 +2052,17 @@ class WorldSession
 
         uint32 m_classMask = 0;
 
+    public:
+        QueryCallbackProcessor& GetQueryProcessor() { return _queryProcessor; }
+        TransactionCallback& AddTransactionCallback(TransactionCallback&& callback);
+        SQLQueryHolderCallback& AddQueryHolderCallback(SQLQueryHolderCallback&& callback);
+
     private:
         void ProcessQueryCallbacks();
 
-        QueryResultHolderFuture _realmAccountLoginCallback;
-        QueryResultHolderFuture _accountLoginCallback;
-        QueryResultHolderFuture _charLoginCallback;
+        QueryCallbackProcessor _queryProcessor;
+        AsyncCallbackProcessor<TransactionCallback> _transactionCallbacks;
+        AsyncCallbackProcessor<SQLQueryHolderCallback> _queryHolderProcessor;
 
         void moveItems(Item* myItems[], Item* hisItems[]);
 

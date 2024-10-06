@@ -959,7 +959,6 @@ void PoolMgr::SaveQuestsToDB()
     }
 
     CharacterDatabase.CommitTransaction(trans);
-    CharacterDatabase.WaitExecution();
 
     for (SearchMap::iterator itr = mQuestSearchMap.begin(); itr != mQuestSearchMap.end(); ++itr)
     {

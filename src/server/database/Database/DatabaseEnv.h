@@ -21,9 +21,9 @@
 #include "Define.h"
 #include "DatabaseWorkerPool.h"
 
-#include "Implementation/WorldDatabase.h"
-#include "Implementation/CharacterDatabase.h"
 #include "Implementation/LoginDatabase.h"
+#include "Implementation/CharacterDatabase.h"
+#include "Implementation/WorldDatabase.h"
 #include "Implementation/HotfixDatabase.h"
 
 #include "Field.h"
@@ -31,11 +31,6 @@
 #include "QueryCallback.h"
 #include "QueryResult.h"
 #include "Transaction.h"
-
-#define _LIKE_           "LIKE"
-#define _TABLE_SIM_      "`"
-#define _CONCAT3_(A, B, C) "CONCAT( " A ", " B ", " C " )"
-#define _OFFSET_         "LIMIT %d, 1"
 
 /// Accessor to the world database
 TC_DATABASE_API extern DatabaseWorkerPool<WorldDatabaseConnection> WorldDatabase;

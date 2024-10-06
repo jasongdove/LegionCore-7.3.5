@@ -18,7 +18,12 @@
 #ifndef _QUERYHOLDER_H
 #define _QUERYHOLDER_H
 
-#include "SQLOperation.h"
+#include "Define.h"
+#include "DatabaseEnvFwd.h"
+#include <future>
+#include <vector>
+
+class MySQLConnection;
 
 class TC_DATABASE_API SQLQueryHolderBase
 {
@@ -26,10 +31,10 @@ class TC_DATABASE_API SQLQueryHolderBase
     private:
         std::vector<std::pair<PreparedStatementBase*, PreparedQueryResult>> m_queries;
     public:
-        SQLQueryHolderBase() { }
+        SQLQueryHolderBase() = default;
         virtual ~SQLQueryHolderBase();
         void SetSize(size_t size);
-        PreparedQueryResult GetPreparedResult(size_t index);
+        PreparedQueryResult GetPreparedResult(size_t index) const;
         void SetPreparedResult(size_t index, PreparedResultSet* result);
 
     protected:
@@ -46,21 +51,32 @@ public:
     }
 };
 
-class TC_DATABASE_API SQLQueryHolderTask : public SQLOperation
+class TC_DATABASE_API SQLQueryHolderTask
 {
-    private:
-        SQLQueryHolderBase* m_holder;
-        QueryResultHolderPromise m_result;
-        bool m_executed;
+public:
+    static bool Execute(MySQLConnection* conn, SQLQueryHolderBase* holder);
+};
 
-    public:
-        SQLQueryHolderTask(SQLQueryHolderBase* holder)
-            : m_holder(holder), m_executed(false) { }
+class TC_DATABASE_API SQLQueryHolderCallback
+{
+public:
+    SQLQueryHolderCallback(std::shared_ptr<SQLQueryHolderBase>&& holder, std::future<void>&& future)
+        : m_holder(std::move(holder)), m_future(std::move(future)) { }
 
-        ~SQLQueryHolderTask();
+    SQLQueryHolderCallback(SQLQueryHolderCallback&&) = default;
 
-        bool Execute() override;
-        QueryResultHolderFuture GetFuture() { return m_result.get_future(); }
+    SQLQueryHolderCallback& operator=(SQLQueryHolderCallback&&) = default;
+
+    void AfterComplete(std::function<void(SQLQueryHolderBase const&)> callback) &
+    {
+        m_callback = std::move(callback);
+    }
+
+    bool InvokeIfReady();
+
+    std::shared_ptr<SQLQueryHolderBase> m_holder;
+    std::future<void> m_future;
+    std::function<void(SQLQueryHolderBase const&)> m_callback;
 };
 
 #endif
