@@ -496,31 +496,32 @@ class spell_gen_pet_summoned : public SpellScriptLoader
             void HandleScript(SpellEffIndex /*effIndex*/)
             {
                 Player* player = GetCaster()->ToPlayer();
-                PetType newPetType = (player->getClass() == CLASS_HUNTER) ? HUNTER_PET : SUMMON_PET;
-
-                Pet* newPet = new Pet(player, newPetType);
-                if (newPet->LoadPetFromDB(player, 0, player->GetLastPetNumber(), true))
+                if (player->GetLastPetNumber())
                 {
-                    // revive the pet if it is dead
-                    if (newPet->getDeathState() == DEAD || newPet->getDeathState() == CORPSE)
-                        newPet->setDeathState(ALIVE);
-
-                    newPet->ClearUnitState(uint32(UNIT_STATE_ALL_STATE));
-                    newPet->SetFullHealth();
-                    newPet->SetPower(newPet->getPowerType(), newPet->GetMaxPower(newPet->getPowerType()));
-
-                    switch (newPet->GetEntry())
+                    PetType newPetType = (player->getClass() == CLASS_HUNTER) ? HUNTER_PET : SUMMON_PET;
+                    Pet *newPet = new Pet(player, newPetType);
+                    if (newPet->LoadPetFromDB(player, 0, player->GetLastPetNumber(), true))
                     {
-                        case NPC_DOOMGUARD:
-                        case NPC_INFERNAL:
-                            newPet->SetEntry(NPC_IMP);
-                            break;
-                        default:
-                            break;
-                    }
+                        // revive the pet if it is dead
+                        if (newPet->getDeathState() == DEAD || newPet->getDeathState() == CORPSE)
+                            newPet->setDeathState(ALIVE);
+
+                        newPet->ClearUnitState(uint32(UNIT_STATE_ALL_STATE));
+                        newPet->SetFullHealth();
+                        newPet->SetPower(newPet->getPowerType(), newPet->GetMaxPower(newPet->getPowerType()));
+
+                        switch (newPet->GetEntry())
+                        {
+                            case NPC_DOOMGUARD:
+                            case NPC_INFERNAL:
+                                newPet->SetEntry(NPC_IMP);
+                                break;
+                            default:
+                                break;
+                        }
+                    } else
+                        delete newPet;
                 }
-                else
-                    delete newPet;
             }
 
             void Register() override
