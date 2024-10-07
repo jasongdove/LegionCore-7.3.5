@@ -41,6 +41,7 @@
 #include "DeadlineTimer.h"
 #include "GitRevision.h"
 #include "IoContext.h"
+#include "IpNetwork.h"
 #include "MapInstanced.h"
 #include "MapManager.h"
 #include "MySQLThreading.h"
@@ -229,6 +230,8 @@ extern int main(int argc, char **argv)
         return 1;
 
     std::shared_ptr<void> dbHandle(nullptr, [](void*) { StopDB(); });
+
+    Trinity::Net::ScanLocalNetworks();
 
     // Set server offline (not connectable)
     LoginDatabase.DirectPExecute("UPDATE realmlist SET flag = flag | %u WHERE id = '%d'", REALM_FLAG_OFFLINE, realm.Id.Realm);

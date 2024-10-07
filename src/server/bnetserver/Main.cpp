@@ -29,6 +29,7 @@
 #include "DatabaseEnv.h"
 #include "DatabaseLoader.h"
 #include "GitRevision.h"
+#include "IpNetwork.h"
 #include "LoginRESTService.h"
 #include "MySQLThreading.h"
 #include "ProcessPriority.h"
@@ -154,6 +155,8 @@ int main(int argc, char** argv)
     std::shared_ptr<void> dbHandle(nullptr, [](void*) { StopDB(); });
 
     std::shared_ptr<Trinity::Asio::IoContext> ioContext = std::make_shared<Trinity::Asio::IoContext>();
+
+    Trinity::Net::ScanLocalNetworks();
 
     // Start the listening port (acceptor) for auth connections
     int32 bnport = sConfigMgr->GetIntDefault("BattlenetPort", 1119);
