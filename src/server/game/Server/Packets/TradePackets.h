@@ -126,6 +126,8 @@ namespace WorldPackets
         public:
             struct UnwrappedTradeItem
             {
+                UnwrappedTradeItem() { } // allows emplace() with clang
+
                 std::vector<Item::ItemGemData> Gems;
                 ObjectGuid Creator;
                 int32 EnchantID = 0;

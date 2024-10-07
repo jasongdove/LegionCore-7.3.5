@@ -383,7 +383,8 @@ struct PlayerInfo
     float positionZ;
     float orientation;
     PlayerCreateInfoItems item;
-    PlayerCreateInfoSpells spell;
+    PlayerCreateInfoSpells customSpells;
+    PlayerCreateInfoSpells castSpells;
     PlayerCreateInfoActions action;
     PlayerCreateInfoSkills skills;
     PlayerCreateInfoQuests quests;
@@ -998,7 +999,6 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOAD_TRANSMOG_OUTFITS,
     PLAYER_LOGIN_QUERY_LOAD_PVP_TALENTS,
     PLAYER_LOGIN_QUERY_ADVENTURE_QUEST,
-    PLAYER_LOGIN_QUERY_PETS,
     PLAYER_LOGIN_QUERY_LOAD_VOIDSTORAGE_ITEM,
     PLAYER_LOGIN_QUERY_LOADWORLDQUESTSTATUS,
     PLAYER_LOGIN_QUERY_BATTLE_PETS,
@@ -1012,6 +1012,7 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOAD_KILL_CREATURE,
     PLAYER_LOGIN_QUERY_LOADNOTINVENTORY,
     PLAYER_LOGIN_QUERY_ACCOUNT_QUEST,
+    PLAYER_LOGIN_QUERY_LOAD_PET_SLOTS,
 
     MAX_PLAYER_LOGIN_QUERY
 };
@@ -1261,7 +1262,6 @@ private:
 };
 
 typedef std::unordered_map<uint8, Bracket*> BracketList;
-typedef std::vector<uint32/*PetEntry*/> PlayerPetSlotList;
 
 #pragma pack(push, 1)
 struct PlayerDynamicFieldSpellModByLabel
@@ -1608,9 +1608,13 @@ class Player : public Unit, public GridObject<Player>
 
         void setDeathState(DeathState s) override;
 
+        PetStable* GetPetStable() { return m_petStable.get(); }
+        PetStable& GetOrInitPetStable();
+        PetStable const* GetPetStable() const { return m_petStable.get(); }
+
         Pet* GetPet() const;
-        Pet* SummonPet(uint32 entry, float x, float y, float z, float ang, PetType petType, uint32 despwtime, uint32 spellId = 0);
-        void RemovePet(Pet* pet, bool isDelete = false);
+        Pet* SummonPet(uint32 entry, Optional<PetSaveMode> slot, float x, float y, float z, float ang, uint32 despwtime, bool* isNew = nullptr);
+        void RemovePet(Pet* pet, PetSaveMode mode, bool returnreagent = false);
 
         PhaseMgr& GetPhaseMgr() { return phaseMgr; }
 
@@ -1890,7 +1894,6 @@ class Player : public Unit, public GridObject<Player>
         void RemoveItemDurations(Item* item);
         void SendItemDurations();
         void LoadCorpse();
-        void LoadPet();
 
         bool AddItem(uint32 itemId, uint32 count, uint32* noSpaceForCount = nullptr, ObjectGuid guid = ObjectGuid::Empty );
 
@@ -2177,7 +2180,7 @@ class Player : public Unit, public GridObject<Player>
         void RemoveSpecializationSpells();
         void UpdateSkillsForLevel();
         void LearnDefaultSkills();
-        void LearnDefaultSpells();
+        void LearnCustomSpells();
         void LearnDefaultSkill(SkillRaceClassInfoEntry const* rcInfo);
         void learnQuestRewardedSpells();
         void learnQuestRewardedSpells(Quest const* quest);
@@ -2896,20 +2899,6 @@ class Player : public Unit, public GridObject<Player>
 
         WorldLocation GetStartPosition() const;
 
-        // current pet slot
-        uint32 m_currentPetNumber;
-        PetSlot m_currentSummonedSlot;
-
-        void setPetSlot(PetSlot slot, uint32 petID);
-        int16 SetOnAnyFreeSlot(uint32 petID);
-        void cleanPetSlotForMove(PetSlot slot, uint32 petID);
-        void SwapPetSlot(PetSlot oldSlot, PetSlot newSlot);
-        uint32 getPetIdBySlot(uint32 slot) const { return m_PetSlots[slot]; }
-        const PlayerPetSlotList &GetPetSlotList() { return m_PetSlots; }
-        PetSlot getSlotForNewPet(bool full = false);
-        PetSlot GetSlotForPetId(uint32 petID);
-        PetSlot GetMaxCurentPetSlot() const;
-
         uint8 GetClassFamily() const;
 
         bool CanSummonPet(uint32 entry) const;
@@ -2972,7 +2961,7 @@ class Player : public Unit, public GridObject<Player>
         void SetTemporaryUnsummonedPetNumber(uint32 petnumber) { m_temporaryUnsummonedPetNumber = petnumber; }
         void UnsummonPetTemporaryIfAny();
         void ResummonPetTemporaryUnSummonedIfAny();
-        bool IsPetNeedBeTemporaryUnsummoned() const { return !IsInWorld() || !isAlive() || IsMounted() /*+in flight*/; }
+        bool IsPetNeedBeTemporaryUnsummoned() const { return !IsInWorld() || !IsAlive() || IsMounted() /*+in flight*/; }
 
         void SendCinematicStart(uint32 CinematicSequenceId);
         void SendMovieStart(uint32 MovieId);
@@ -3008,17 +2997,9 @@ class Player : public Unit, public GridObject<Player>
         bool Satisfy(AccessRequirement const* ar, uint32 target_map, bool report = false);
         bool CheckInstanceLoginValid();
 
-        PetInfoData* GetPetInfo(uint32 petentry, uint32 petnumber);
-        void AddPetInfo(Pet* pet);
-        PetInfoDataMap* GetPetInfoData() { return &m_petInfo; }
-        void DeletePetInfo(uint32 petnumber) { m_petInfo.erase(petnumber); }
-
         // last used pet number (for BG's)
         uint32 GetLastPetNumber() const { return m_lastpetnumber; }
         void SetLastPetNumber(uint32 petnumber) { m_lastpetnumber = petnumber; }
-
-        uint32 GetLastPetEntry() const { return m_LastPetEntry; }
-        void SetLastPetEntry(uint32 entry) { m_LastPetEntry = entry; }
 
         uint32 GetEncounterMask(lfg::LFGDungeonData const* dungeonData, lfg::LfgReward const* reward);
 
@@ -3255,8 +3236,6 @@ class Player : public Unit, public GridObject<Player>
 
         void DeliveryRewardPack(uint32 rewardPackID);
 
-        void CreateDefaultPet();
-
         RestMgr& GetRestMgr() const { return *_restMgr; }
 
     protected:
@@ -3364,7 +3343,7 @@ class Player : public Unit, public GridObject<Player>
         void _LoadCUFProfiles(PreparedQueryResult result);
         void _LoadHonor(PreparedQueryResult result, PreparedQueryResult result2);
         void _LoadLootCooldown(PreparedQueryResult result);
-        void _LoadPetData(PreparedQueryResult result);
+        void _LoadPetStable(uint32 summonedPetNumber, PreparedQueryResult result);
         void _LoadWorldQuestStatus(PreparedQueryResult result);
         void _LoadChallengeKey(PreparedQueryResult result);
         void _LoadAccountProgress(PreparedQueryResult result);
@@ -3519,11 +3498,6 @@ class Player : public Unit, public GridObject<Player>
         bool m_canTitanGrip;
         uint8 m_swingErrorMsg;
 
-        ////////////////////Pet System/////////////////////
-        void LoadPetSlot(std::string const &data);
-        PlayerPetSlotList m_PetSlots;
-        ////////////////////Rest System/////////////////////
-
     public:
         void SendCustomMessage(std::string const& n);
         void SendCustomMessage(std::string const& n, std::ostringstream const& data);
@@ -3623,7 +3597,6 @@ class Player : public Unit, public GridObject<Player>
 
         // last used pet number (for BG's)
         uint32 m_lastpetnumber;
-        uint32 m_LastPetEntry;
 
         // Player summoning
         time_t m_summon_expire;
@@ -3691,6 +3664,8 @@ class Player : public Unit, public GridObject<Player>
         bool m_bHasDelayedTeleport;
         bool m_bHasglobalTeleport;
 
+        std::unique_ptr<PetStable> m_petStable;
+
         // Temporary removed pet cache
         uint32 m_temporaryUnsummonedPetNumber;
         uint32 m_oldpetspell;
@@ -3750,8 +3725,6 @@ class Player : public Unit, public GridObject<Player>
 
         uint16 m_scenarioId = 0;
         uint16 m_adventure_questID = 0;
-
-        PetInfoDataMap m_petInfo;
 
         WargameRequest* _wargameRequest;
         std::unordered_map<uint32, std::vector<ItemDynamicFieldArtifactPowers>> GlobalArtifactData;

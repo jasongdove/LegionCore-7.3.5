@@ -121,13 +121,13 @@ bool WorldPackets::Item::ItemInstance::operator==(ItemInstance const& r) const
     if (ItemID != r.ItemID || RandomPropertiesID != r.RandomPropertiesID || RandomPropertiesSeed != r.RandomPropertiesSeed)
         return false;
 
-    if (ItemBonus.is_initialized() != r.ItemBonus.is_initialized() || Modifications.is_initialized() != r.Modifications.is_initialized())
+    if (ItemBonus.has_value() != r.ItemBonus.has_value() || Modifications.has_value() != r.Modifications.has_value())
         return false;
 
-    if (Modifications.is_initialized() && *Modifications != *r.Modifications)
+    if (Modifications.has_value() && *Modifications != *r.Modifications)
         return false;
 
-    if (ItemBonus.is_initialized() && *ItemBonus != *r.ItemBonus)
+    if (ItemBonus.has_value() && *ItemBonus != *r.ItemBonus)
         return false;
 
     return true;
@@ -139,8 +139,8 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Item::ItemInstance const&
     data << int32(itemInstance.RandomPropertiesSeed);
     data << int32(itemInstance.RandomPropertiesID);
 
-    data.WriteBit(itemInstance.ItemBonus.is_initialized());
-    data.WriteBit(itemInstance.Modifications.is_initialized());
+    data.WriteBit(itemInstance.ItemBonus.has_value());
+    data.WriteBit(itemInstance.Modifications.has_value());
     data.FlushBits();
 
     if (itemInstance.ItemBonus)
@@ -164,13 +164,13 @@ ByteBuffer& operator>>(ByteBuffer& data, WorldPackets::Item::ItemInstance& itemI
 
     if (hasItemBonus)
     {
-        itemInstance.ItemBonus = boost::in_place();
+        itemInstance.ItemBonus.emplace();
         data >> *itemInstance.ItemBonus;
     }
 
     if (hasModifications)
     {
-        itemInstance.Modifications = boost::in_place();
+        itemInstance.Modifications.emplace();
         data >> *itemInstance.Modifications;
     }
 
@@ -188,14 +188,14 @@ void WorldPackets::Item::ItemInstance::Initialize(::Item const* item)
     std::vector<uint32> const& bonusListIds = item->GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUS_LIST_IDS);
     if (!bonusListIds.empty())
     {
-        ItemBonus = boost::in_place();
+        ItemBonus.emplace();
         ItemBonus->BonusListIDs.insert(ItemBonus->BonusListIDs.end(), bonusListIds.begin(), bonusListIds.end());
         ItemBonus->Context = item->GetUInt32Value(ITEM_FIELD_CONTEXT);
     }
 
     if (uint32 mask = item->GetUInt32Value(ITEM_FIELD_MODIFIERS_MASK))
     {
-        Modifications = boost::in_place();
+        Modifications.emplace();
 
         for (size_t i = 0; mask != 0; mask >>= 1, ++i)
             if ((mask & 1) != 0)
@@ -211,14 +211,14 @@ void WorldPackets::Item::ItemInstance::Initialize(LootItem const& lootItem)
         RandomPropertiesID = lootItem.item.RandomPropertiesID.Id;
     if (!lootItem.item.ItemBonus.BonusListIDs.empty())
     {
-        ItemBonus = boost::in_place();
+        ItemBonus.emplace();
         ItemBonus->BonusListIDs = lootItem.item.ItemBonus.BonusListIDs;
         ItemBonus->Context = lootItem.item.ItemBonus.Context;
     }
 
     if (lootItem.item.UpgradeID)
     {
-        Modifications = boost::in_place();
+        Modifications.emplace();
         Modifications->Insert(ITEM_MODIFIER_UPGRADE_ID, lootItem.item.UpgradeID);
     }
 }
@@ -231,7 +231,7 @@ void WorldPackets::Item::ItemInstance::Initialize(VoidStorageItem const* voidIte
         RandomPropertiesID = voidItem->ItemRandomPropertyId.Id;
     if (voidItem->ItemUpgradeId)
     {
-        Modifications = boost::in_place();
+        Modifications.emplace();
         Modifications->Insert(ITEM_MODIFIER_UPGRADE_ID, voidItem->ItemUpgradeId);
     }
 }
@@ -244,7 +244,7 @@ void WorldPackets::Item::ItemInstance::Initialize(Roll const* roll)
         RandomPropertiesID = roll->item.RandomPropertiesID.Id;
     if (!roll->item.ItemBonus.BonusListIDs.empty())
     {
-        ItemBonus = boost::in_place();
+        ItemBonus.emplace();
         ItemBonus->BonusListIDs = roll->item.ItemBonus.BonusListIDs;
         ItemBonus->Context = roll->item.ItemBonus.Context;
     }
@@ -581,7 +581,7 @@ WorldPacket const* WorldPackets::Item::ItemPurchaseRefundResult::Write()
 {
     _worldPacket << ItemGUID;
     _worldPacket << uint8(Result);
-    _worldPacket.WriteBit(Contents.is_initialized());
+    _worldPacket.WriteBit(Contents.has_value());
     _worldPacket.FlushBits();
     if (Contents)
         _worldPacket << *Contents;

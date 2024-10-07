@@ -1219,7 +1219,7 @@ public:
                     me->GetMotionMaster()->Clear(false);
                     if (Creature* klaxxi = me->GetCreature(*me, klaxxiGuid))
                     {
-                        if (klaxxi->isAlive())
+                        if (klaxxi->IsAlive())
                         {
                             klaxxi->SetHealth(klaxxi->GetHealth() + me->GetHealth());
                             me->DespawnOrUnsummon();
@@ -1233,7 +1233,7 @@ public:
         {
             if (Creature* klaxxi = me->GetCreature(*me, klaxxiGuid))
             {
-                if (klaxxi->isAlive())
+                if (klaxxi->IsAlive())
                 {
                     me->GetMotionMaster()->Clear(false);
                     me->GetMotionMaster()->MoveCharge(klaxxi->GetPositionX(), klaxxi->GetPositionY(), me->GetPositionZ(), 4.0f, 0);
@@ -1337,7 +1337,7 @@ public:
         void JustDied(Unit* killer)
         {
             if (Player* pl = me->GetPlayer(*me, targetGuid))
-                if (pl->isAlive())
+                if (pl->IsAlive())
                     pl->RemoveAurasDueToSpell(SPELL_HUNGER);
         }
 
@@ -1371,7 +1371,7 @@ public:
                 if (checktarget <= diff)
                 {
                     Player* pl = me->GetPlayer(*me, targetGuid);
-                    if (!pl || !pl->isAlive())
+                    if (!pl || !pl->IsAlive())
                     {
                         checktarget = 0;
                         me->SetReactState(REACT_PASSIVE);
@@ -1549,7 +1549,7 @@ public:
                 if (me->GetPower(POWER_ENERGY) < 100)
                     DoCast(me, SPELL_THICK_SHELL, true);
                 if (Player* pl = me->GetPlayer(*me, targetGuid))
-                    if (pl->isAlive())
+                    if (pl->IsAlive())
                         pl->RemoveAurasDueToSpell(SPELL_DEVOUR);
                 me->RemoveAurasDueToSpell(SPELL_DEVOUR);
                 targetGuid.Clear();

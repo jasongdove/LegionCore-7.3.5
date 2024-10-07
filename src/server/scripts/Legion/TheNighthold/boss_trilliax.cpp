@@ -299,7 +299,7 @@ public:
                 {
                     me->AddDelayedEvent(250 * i, [this, i] () -> void
                     {
-                        if (me && me->isAlive())
+                        if (me && me->IsAlive())
                             me->CastSpell(scrubberPos[i], SPELL_TIDY_UP_SUM, true);
                     });
                 }

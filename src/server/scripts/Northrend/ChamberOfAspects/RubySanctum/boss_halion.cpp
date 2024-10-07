@@ -351,11 +351,11 @@ class boss_halion : public CreatureScript
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
 
                 if (Creature* twilightHalion = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_TWILIGHT_HALION)))
-                    if (twilightHalion->isAlive())
+                    if (twilightHalion->IsAlive())
                         twilightHalion->Kill(twilightHalion);
 
                 if (Creature* controller = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_HALION_CONTROLLER)))
-                    if (controller->isAlive())
+                    if (controller->IsAlive())
                         controller->Kill(controller);
             }
 
@@ -509,12 +509,12 @@ class boss_twilight_halion : public CreatureScript
                     if (me->IsDamageEnoughForLootingAndReward())
                         halion->LowerPlayerDamageReq(halion->GetMaxHealth());
 
-                    if (halion->isAlive())
+                    if (halion->IsAlive())
                         killer->Kill(halion);
                 }
 
                 if (Creature* controller = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_HALION_CONTROLLER)))
-                    if (controller->isAlive())
+                    if (controller->IsAlive())
                         controller->Kill(controller);
 
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);

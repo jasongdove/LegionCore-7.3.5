@@ -1325,7 +1325,7 @@ class spell_helya_swirling_water : public SpellScript
 
             caster->AddDelayedEvent(100, [caster]() -> void
             {
-                if (caster && caster->isAlive() && caster->GetPositionZ() < 512.0f)
+                if (caster && caster->IsAlive() && caster->GetPositionZ() < 512.0f)
                 {
                     float x, y, z;
                     caster->GetClosePoint(x, y, z, caster->GetObjectSize(), 5.0f, frand(0.0f, 6.28f));

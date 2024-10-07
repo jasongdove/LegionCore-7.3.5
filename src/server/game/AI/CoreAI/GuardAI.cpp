@@ -50,7 +50,7 @@ bool GuardAI::CanSeeAlways(WorldObject const* obj)
 
 void GuardAI::EnterEvadeMode()
 {
-    if (!me->isAlive())
+    if (!me->IsAlive())
     {
         me->GetMotionMaster()->MoveIdle();
         me->CombatStop(true);

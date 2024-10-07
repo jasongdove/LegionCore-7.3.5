@@ -103,7 +103,7 @@ void TaskScheduler::Dispatch(success_t const& callback)
 TaskScheduler::Task::Task(timepoint_t const& end, duration_t const& duration, Optional<uint32>  group, uint32 const repeated, task_handler_t  task) :
     _end(end), _duration(duration), _group(std::move(group)), _repeated(repeated), _task(std::move(task)) { }
 
-TaskScheduler::Task::Task(timepoint_t const& end, duration_t const& duration, task_handler_t  task) : _end(end), _duration(duration), _group(boost::none), _repeated(0), _task(std::move(task)) { }
+TaskScheduler::Task::Task(timepoint_t const& end, duration_t const& duration, task_handler_t  task) : _end(end), _duration(duration), _group(std::nullopt), _repeated(0), _task(std::move(task)) { }
 
 bool TaskScheduler::Task::operator<(Task const& other) const
 {
@@ -222,7 +222,7 @@ TaskContext& TaskContext::SetGroup(uint32 const group)
 
 TaskContext& TaskContext::ClearGroup()
 {
-    _task->_group = boost::none;
+    _task->_group = std::nullopt;
     return *this;
 }
 

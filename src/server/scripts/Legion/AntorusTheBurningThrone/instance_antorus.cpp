@@ -173,7 +173,7 @@ public:
                     break;
             }
 
-            if (!creature->isAlive())
+            if (!creature->IsAlive())
                 return;
 
             if (creature->getFaction() == 35 || creature->getFaction() == 2921 || creature->getFaction() == 2916)
@@ -603,7 +603,7 @@ public:
             {
                 introGuids.remove_if([this](const ObjectGuid& guid) {
                     Creature* cre = instance->GetCreature(guid);
-                    return !cre || !cre->isAlive();
+                    return !cre || !cre->IsAlive();
                 });
 
                 if (!wireframesGuids.empty())
@@ -646,7 +646,7 @@ public:
 
                 instance->ApplyOnEveryPlayer([&](Player* plr)
                 {
-                    if ((plr->GetCurrentAreaID() == 8681 || plr->GetCurrentAreaID() == 9333) && plr->isAlive())
+                    if ((plr->GetCurrentAreaID() == 8681 || plr->GetCurrentAreaID() == 9333) && plr->IsAlive())
                     {
                         if (plr->GetPositionX() > MIN_X && plr->GetPositionX() < MAX_X && plr->GetPositionY() > MIN_Y && plr->GetPositionY() < MAX_Y)
                         {
@@ -671,14 +671,14 @@ public:
                     {
                         if (player->GetDistance(-10574.53f, 8629.80f, 1871.52f) < 300.0f && player->GetPositionZ() < 1820.0f)
                         {
-                            if (player->isAlive())
+                            if (player->IsAlive())
                                 player->Kill(player);
 
                             player->NearTeleportTo(-10574.89f, 8771.44f, 1871.46f, player->GetOrientation());
                         }
                         else if (player->GetDistance(-10574.7f, 8098.39f, 1873.72f) < 250.0f && player->GetPositionZ() < 1835.0f)
                         {
-                            if (player->isAlive())
+                            if (player->IsAlive())
                                 player->Kill(player);
 
                             player->NearTeleportTo(-10575.16f, 8199.96f, 1871.29f, player->GetOrientation());

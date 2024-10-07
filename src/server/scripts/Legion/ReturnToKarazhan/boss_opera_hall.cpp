@@ -541,7 +541,7 @@ public:
 
             me->AddDelayedEvent(100, [this]() -> void
             {
-                if (me && me->isAlive())
+                if (me && me->IsAlive())
                 {
                     Talk(SAY_MAGNIFICENT);
                     Talk(SAY_MAGNIFICENT_WARN);
@@ -553,7 +553,7 @@ public:
             // Remove Immune
             me->AddDelayedEvent(5000, [this]() -> void
             {
-                if (me && me->isAlive())
+                if (me && me->IsAlive())
                     me->RemoveAurasDueToSpell(SPELL_MAGIC_MAGNIFICENT_IMMUNE);
             });
         }
@@ -975,7 +975,7 @@ public:
 
                     if (Creature* Toe = instance->instance->GetCreature(instance->GetGuidData(NPC_TOE_KNEE)))
                     {
-                        if (Toe && !Toe->isAlive())
+                        if (Toe && !Toe->IsAlive())
                         {
                             Toe->AI()->DoAction(ACTION_3);
                             me->RemoveAurasDueToSpell(SPELL_STUN);
@@ -1153,7 +1153,7 @@ public:
                 for (uint8 i = 0; i < 4; i++)
                 {
                     if (Creature* boss = instance->instance->GetCreature(instance->GetGuidData(bossId[i])))
-                        if (boss->isAlive())
+                        if (boss->IsAlive())
                             boss->CastSpell(boss, SPELL_EMINENCE, true);
                 }
 
@@ -1407,7 +1407,7 @@ public:
                     case EVENT_BABBLET_FOLLOW_TARGET:
                         if (Unit* pTarget = ObjectAccessor::GetUnit(*me, playerGUID))
                         {
-                            if (!pTarget || !pTarget->isAlive())
+                            if (!pTarget || !pTarget->IsAlive())
                             {
                                 events.RescheduleEvent(EVENT_BABBLET_FIXATE, 1000);
                                 break;

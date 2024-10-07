@@ -199,7 +199,7 @@ void BrawlBattlegroundShadoPan::CheckAndUpdatePointStatus(uint32 diff)
     for (auto itr : GetPlayers())
         if (Player* player = ObjectAccessor::FindPlayer(GetBgMap(), itr.first))
         {
-            if (player->isAlive() && player->GetDistance2d(controller) <= 10.0f)
+            if (player->IsAlive() && player->GetDistance2d(controller) <= 10.0f)
             {
                 player->SendUpdateWorldState(WorldStates::BG_SP_SHOW_BAR, true, false);
                 player->SendUpdateWorldState(WorldStates::BG_SP_BAR_STATUS, m_score, false);

@@ -262,7 +262,7 @@ void CallRaDenAndUseSphere(InstanceScript* instance, Creature* caller, uint32 ca
         {
             if (Unit* raden = caller->ToTempSummon()->GetSummoner())
             {
-                if (raden->isAlive())
+                if (raden->IsAlive())
                 {
                     if (died)
                     {
@@ -271,7 +271,7 @@ void CallRaDenAndUseSphere(InstanceScript* instance, Creature* caller, uint32 ca
                         case NPC_CORRUPTED_ANIMA:
                             if (Creature* cv = caller->GetCreature(*caller, instance->GetGuidData(NPC_CORRUPTED_VITA)))
                             {
-                                if (cv->isAlive())
+                                if (cv->IsAlive())
                                 {
                                     caller->DespawnOrUnsummon();
                                     cv->DespawnOrUnsummon();
@@ -283,7 +283,7 @@ void CallRaDenAndUseSphere(InstanceScript* instance, Creature* caller, uint32 ca
                         case NPC_CORRUPTED_VITA:
                             if (Creature* ca = caller->GetCreature(*caller, instance->GetGuidData(NPC_CORRUPTED_ANIMA)))
                             {
-                                if (ca->isAlive())
+                                if (ca->IsAlive())
                                 {
                                     caller->DespawnOrUnsummon();
                                     ca->DespawnOrUnsummon();
@@ -357,7 +357,7 @@ class npc_corrupted_sphere : public CreatureScript
                 {
                     if (Unit* raden = me->ToTempSummon()->GetSummoner())
                     {
-                        if (raden->isAlive())
+                        if (raden->IsAlive())
                         {
                             if (me->GetDistance(raden) <= 5.0f)
                                 CallRaDenAndUseSphere(pInstance, me, me->GetEntry(), false);

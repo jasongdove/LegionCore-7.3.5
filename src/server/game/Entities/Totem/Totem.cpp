@@ -36,7 +36,7 @@ void Totem::Update(uint32 time)
 
     m_isUpdate = true;
 
-    if (!m_owner->isAlive() || !isAlive())
+    if (!m_owner->IsAlive() || !IsAlive())
     {
         UnSummon();                                         // remove self
         m_isUpdate = false;
@@ -139,7 +139,6 @@ void Totem::UnSummon(uint32 msTime)
 
     CombatStop();
     RemoveAurasDueToSpell(GetSpell(), GetGUID());
-    CastPetAuras(false);
 
     // clear owner's totem slot
     for (int i = SUMMON_SLOT_TOTEM; i < MAX_TOTEM_SLOT; ++i)

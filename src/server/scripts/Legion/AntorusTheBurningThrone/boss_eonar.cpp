@@ -611,7 +611,7 @@ struct npc_eonar_the_paraxis : public ScriptedAI
         {
             if (auto player = Player::GetPlayer(*me, ref->getUnitGuid()))
             {
-                if (player->isAlive() && player->GetCurrentAreaID() == 9333)
+                if (player->IsAlive() && player->GetCurrentAreaID() == 9333)
                 {
                     if (player->GetPositionZ() < 672.0f)
                     {
@@ -1459,7 +1459,7 @@ struct npc_eonar_spear_of_doom : public ScriptedAI
                 moveTimer = 1000;
                 
                 auto player = Player::GetPlayer(*me, targetGUID);
-                if (!player || !player->isAlive())
+                if (!player || !player->IsAlive())
                 {
                     if (auto player = me->FindNearestPlayer(30.0f, true))
                         targetGUID = player->GetGUID();

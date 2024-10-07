@@ -306,7 +306,7 @@ Player* FollowerAI::GetLeaderForFollower()
 {
     if (Player* player = Unit::GetPlayer(*me, m_uiLeaderGUID))
     {
-        if (player->isAlive())
+        if (player->IsAlive())
             return player;
         if (Group* group = player->GetGroup())
         {
@@ -314,7 +314,7 @@ Player* FollowerAI::GetLeaderForFollower()
             {
                 Player* member = groupRef->getSource();
 
-                if (member && member->isAlive() && me->IsWithinDistInMap(member, MAX_PLAYER_DISTANCE))
+                if (member && member->IsAlive() && me->IsWithinDistInMap(member, MAX_PLAYER_DISTANCE))
                 {
                     TC_LOG_DEBUG("scripts", "FollowerAI GetLeader changed and returned new leader.");
                     m_uiLeaderGUID = member->GetGUID();

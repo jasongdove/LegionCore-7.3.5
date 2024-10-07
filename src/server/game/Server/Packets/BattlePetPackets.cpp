@@ -380,8 +380,8 @@ WorldPacket const* WorldPackets::BattlePet::PetBattleQueueStatus::Write()
     for (auto const& map : Msg.SlotResult)
         _worldPacket << map;
 
-    _worldPacket.WriteBit(Msg.ClientWaitTime.is_initialized());
-    _worldPacket.WriteBit(Msg.AverageWaitTime.is_initialized());
+    _worldPacket.WriteBit(Msg.ClientWaitTime.has_value());
+    _worldPacket.WriteBit(Msg.AverageWaitTime.has_value());
     _worldPacket.FlushBits();
 
     if (Msg.ClientWaitTime)

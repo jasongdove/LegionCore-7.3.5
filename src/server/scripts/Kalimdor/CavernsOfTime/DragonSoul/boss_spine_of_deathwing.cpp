@@ -494,7 +494,7 @@ class npc_spine_of_deathwing_deathwing : public CreatureScript
                     AnyLivePlayerNoGmCheck(WorldObject const* obj, float range, bool withAura = false) : _obj(obj), _range(range), _withAura(withAura) {}
                     bool operator()(Player* u)
                     {
-                        if (!u->isAlive())
+                        if (!u->IsAlive())
                             return false;
 
                         if (!_obj->IsWithinDistInMap(u, _range))
@@ -692,7 +692,7 @@ class npc_spine_of_deathwing_hideous_amalgamation : public CreatureScript
                 events.Reset();
                 me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, false);
                 me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, false);
-                if (!isExplode && me->isAlive())
+                if (!isExplode && me->IsAlive())
                     if (Unit* target = me->SelectNearestTarget(100))
                         AttackStart(target);
             }
@@ -877,7 +877,7 @@ class npc_spine_of_deathwing_corrupted_blood : public CreatureScript
 
             void Reset()
             {
-                if (!isDead && me->isAlive())
+                if (!isDead && me->IsAlive())
                     if (Unit* target = me->SelectNearestTarget(100))
                         AttackStart(target);
             }
@@ -1379,7 +1379,7 @@ class spell_spine_of_deathwing_blood_corruption : public SpellScriptLoader
                     PlayersCheck(WorldObject const* obj) : _obj(obj) {}
                     bool operator()(Player* u)
                     {
-                        if (!u->isAlive())
+                        if (!u->IsAlive())
                             return false;
 
                         if (u->isGameMaster())

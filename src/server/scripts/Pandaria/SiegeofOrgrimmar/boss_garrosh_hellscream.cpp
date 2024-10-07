@@ -337,21 +337,21 @@ uint32 transformvisual[4] =
 enum CreatureText
 {
     //Real
-    SAY_ENTERCOMBAT                 = 1,//Я, Гаррош, сын Грома, покажу вам, что значит быть Адским Криком! 38064
-    SAY_HELLSCREAM_WARSONG          = 2,//Умрите с честью! 38075
-    SAY_SUMMON_WOLF_RIDER           = 3,//Исцелите наши раны! 38072
-    SAY_START_LAUNCH_IRON_STAR      = 4,//Узрите силу оружия Истинной Орды! 38068
-    SAY_START_LAUNCH_IRON_STAR2     = 5,//Мы очистим этот мир сталью и пламенем! 38070
-    SAY_PHASE_PREPARE               = 6,//Злоба. Ненависть. Страх! Вот орудия войны, вот слуги Вождя! 38048
-    SAY_PHASE_REALM_OF_YSHAARJ      = 7,//Да... я вижу... вижу, какое будущее ждет этот мир... им будет править Орда... Моя Орда! 38051
-    SAY_WHIRLING_CORRUPTION         = 8,//Я полон силы! 38076
-    SAY_EM_WHIRLING_CORRUPTION      = 9,//Сила во мне уничтожит вас и весь ваш мир. 38077
-    SAY_LAST_PHASE                  = 10,//Начнется правление Истинной Орды. Я видел это. Он показал мне горы черепов и реки крови. Мир... будет... моим! 38056
-    SAY_KILL_PLAYER                 = 11,//Ничтожество! 38065
-    SAY_DIE                         = 12,//Это не может... кончиться... так... Нет... я же видел... 38046
-    SAY_ENTER_REALM_OF_YSHAARJ      = 13,//Вы окажетесь в ловушке навеки! 38055
-    SAY_HM_LAST_PHASE               = 14,//(долго злобно смеется) Думаете вы победили? Слепцы. Я раскрою вам глаза! 38057
-    SAY_MANIFEST_RAGE               = 15,//Я уничтожу все что вам было дорого! 38050
+    SAY_ENTERCOMBAT                 = 1,//пїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ! 38064
+    SAY_HELLSCREAM_WARSONG          = 2,//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ! 38075
+    SAY_SUMMON_WOLF_RIDER           = 3,//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ! 38072
+    SAY_START_LAUNCH_IRON_STAR      = 4,//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ! 38068
+    SAY_START_LAUNCH_IRON_STAR2     = 5,//пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ! 38070
+    SAY_PHASE_PREPARE               = 6,//пїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ! 38048
+    SAY_PHASE_REALM_OF_YSHAARJ      = 7,//пїЅпїЅ... пїЅ пїЅпїЅпїЅпїЅ... пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ... пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ... пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ! 38051
+    SAY_WHIRLING_CORRUPTION         = 8,//пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ! 38076
+    SAY_EM_WHIRLING_CORRUPTION      = 9,//пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ. 38077
+    SAY_LAST_PHASE                  = 10,//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ. пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ. пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅ... пїЅпїЅпїЅпїЅпїЅ... пїЅпїЅпїЅпїЅ! 38056
+    SAY_KILL_PLAYER                 = 11,//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ! 38065
+    SAY_DIE                         = 12,//пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ... пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ... пїЅпїЅпїЅ... пїЅпїЅпїЅ... пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ... 38046
+    SAY_ENTER_REALM_OF_YSHAARJ      = 13,//пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ! 38055
+    SAY_HM_LAST_PHASE               = 14,//(пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ) пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ? пїЅпїЅпїЅпїЅпїЅпїЅ. пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ! 38057
+    SAY_MANIFEST_RAGE               = 15,//пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ! 38050
 };
 
 //71865
@@ -697,7 +697,7 @@ class boss_garrosh_hellscream : public CreatureScript
                             if (!PlayerList.isEmpty())
                                 for (Map::PlayerList::const_iterator Itr = PlayerList.begin(); Itr != PlayerList.end(); ++Itr)
                                     if (Player* player = Itr->getSource())
-                                        if (player->isAlive())
+                                        if (player->IsAlive())
                                             if (player->HasAura(SPELL_GARROSH_ENERGY))
                                                 player->SetPower(POWER_ALTERNATE, power);
                             updatepower = 1500;
@@ -915,7 +915,7 @@ class boss_garrosh_hellscream : public CreatureScript
                         if (!PlayerList.isEmpty())
                             for (Map::PlayerList::const_iterator Itr = PlayerList.begin(); Itr != PlayerList.end(); ++Itr)
                                 if (Player* player = Itr->getSource())
-                                    if (player->isAlive())
+                                    if (player->IsAlive())
                                         if (player->HasAura(SPELL_REALM_OF_YSHAARJ))
                                             player->RemoveAurasDueToSpell(SPELL_REALM_OF_YSHAARJ);
                         events.RescheduleEvent(EVENT_PHASE_TWO, 3000);
@@ -1108,7 +1108,7 @@ public:
                 {
                     if (Unit* summoner = me->ToTempSummon()->GetSummoner())
                     {
-                        if (!summoner->isAlive() || !summoner->isInCombat())
+                        if (!summoner->IsAlive() || !summoner->isInCombat())
                         {
                             me->DespawnOrUnsummon();
                             return;
@@ -1747,7 +1747,7 @@ public:
                 case EVENT_CAST:
                     if (Player* pl = me->GetPlayer(*me, charmedplGuid))
                     {
-                        if (pl->isAlive() && IsPlayerInMindControl(pl))
+                        if (pl->IsAlive() && IsPlayerInMindControl(pl))
                         {
                             pl->GetMotionMaster()->MoveIdle();
                             pl->CastSpell(pl, SPELL_PL_TOUCH_OF_YSHAARJ);
@@ -1760,7 +1760,7 @@ public:
                 case EVENT_RE_ATTACK:
                     if (Player* pl = me->GetPlayer(*me, charmedplGuid))
                     {
-                        if (pl->isAlive() && IsPlayerInMindControl(pl))
+                        if (pl->IsAlive() && IsPlayerInMindControl(pl))
                         {
                             if (pl->getVictim())
                                 pl->GetMotionMaster()->MoveChase(pl->getVictim());
@@ -2654,7 +2654,7 @@ public:
         void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
             if (GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_DEATH || GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE) //end time pursuit or target died
-                if (GetCaster() && GetCaster()->isAlive() && GetCaster()->ToCreature())
+                if (GetCaster() && GetCaster()->IsAlive() && GetCaster()->ToCreature())
                     GetCaster()->ToCreature()->AI()->DoAction(ACTION_CHANGE_TARGET);
         }
 

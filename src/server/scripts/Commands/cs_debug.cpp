@@ -2266,12 +2266,12 @@ public:
         //data.RealmID = realm.Id.Realm;
         //data.MapID = player->GetMapId();
 
-        //data.Guild = boost::in_place();
+        //data.Guild.emplace();
         //data.Guild->GuildID = 9;
         //data.Guild->GuildFaction = player->GetTeamId();
         //data.Guild->GuildName = player->GetGuildName();
 
-        //data.Encounter = boost::in_place();
+        //data.Encounter.emplace();
         //data.Encounter->EncounterID = 1704;
         //data.Encounter->Expansion = CURRENT_EXPANSION;
         //data.Encounter->DifficultyID = 16;

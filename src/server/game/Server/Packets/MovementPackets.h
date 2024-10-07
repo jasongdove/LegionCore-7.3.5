@@ -224,6 +224,8 @@ namespace WorldPackets
         public:
             struct ShipTransferPending
             {
+                ShipTransferPending() { } // allows emplace() with clang
+
                 uint32 ID = 0;
                 int32 OriginMapID = -1;
             };

@@ -285,7 +285,7 @@ void WorldSession::HandleQueryTreasurePicker(WorldPackets::Quest::QueryTreasureP
             if (wq->worldQuest->MinItemLevel)
                 needLevel = wq->worldQuest->MinItemLevel;
 
-            itemRew.Item.ItemBonus = boost::in_place();
+            itemRew.Item.ItemBonus.emplace();
             itemRew.Item.ItemBonus->Context = modTreeID;
             itemRew.Item.ItemBonus->BonusListIDs = sObjectMgr->GetItemBonusForLevel(ItemID, modTreeID, GetPlayer()->getLevel(), needLevel);
 
@@ -323,7 +323,7 @@ void WorldSession::HandleQueryTreasurePicker(WorldPackets::Quest::QueryTreasureP
         WorldPackets::Quest::QueryQuestRewardResponse::ItemReward itemRew;
         itemRew.ItemCount = 1;
         itemRew.Item.ItemID = 150369;
-        itemRew.Item.ItemBonus = boost::in_place();
+        itemRew.Item.ItemBonus.emplace();
         itemRew.Item.ItemBonus->Context = modTreeID;
         itemRew.Item.ItemBonus->BonusListIDs = sObjectMgr->GetItemBonusForLevel(147421, modTreeID, GetPlayer()->getLevel(), needLevel);
         response.Items.emplace_back(itemRew);

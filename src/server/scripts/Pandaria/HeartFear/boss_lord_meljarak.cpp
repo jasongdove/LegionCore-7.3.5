@@ -287,7 +287,7 @@ class boss_lord_meljarak : public CreatureScript
                             GetCreatureListWithEntryInGrid(soldiers, me, NPC_KORTHIK, 100.0f);
                             for (std::list<Creature*>::iterator itr = soldiers.begin(); itr != soldiers.end(); ++itr)
                             {
-                                if ((*itr)->isAlive() && (*itr)->AI()->IsInControl())
+                                if ((*itr)->IsAlive() && (*itr)->AI()->IsInControl())
                                 {
                                     soldierControlCount++;
                                     if (IsHeroic())
@@ -319,7 +319,7 @@ class boss_lord_meljarak : public CreatureScript
                             }
                             if (checkSoldier)
                                 for (std::list<Creature*>::iterator itr = soldiers.begin(); itr != soldiers.end(); ++itr)
-                                    if ((*itr)->isAlive())
+                                    if ((*itr)->IsAlive())
                                         (*itr)->RemoveAurasWithMechanic(IMMUNE_TO_MOVEMENT_IMPAIRMENT_AND_LOSS_CONTROL_MASK);
                             events.ScheduleEvent(EVENT_CHECK_CONTROL, 1000);
                             break;
@@ -361,19 +361,19 @@ struct npc_soldierAI : ScriptedAI
             case NPC_SRATHIK:
                 for (uint32 n = NPC_SRATHIK_1; n <= NPC_SRATHIK_3; n++)
                     if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                        if (soldier->GetGUID() != callerGuid && soldier->isAlive())
+                        if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
                             soldier->SetHealth(soldier->GetHealth() - damage);
                 break;
             case NPC_ZARTHIK:
                 for (uint32 n = NPC_ZARTHIK_1; n <= NPC_ZARTHIK_3; n++)
                     if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                        if (soldier->GetGUID() != callerGuid && soldier->isAlive())
+                        if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
                             soldier->SetHealth(soldier->GetHealth() - damage);
                 break;
             case NPC_KORTHIK:
                 for (uint32 n = NPC_KORTHIK_1; n <= NPC_KORTHIK_3; n++)
                     if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                        if (soldier->GetGUID() != callerGuid && soldier->isAlive())
+                        if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
                             soldier->SetHealth(soldier->GetHealth() - damage);
                 break;
             }
@@ -385,7 +385,7 @@ struct npc_soldierAI : ScriptedAI
         if (caller && instance)
         {
             Creature* meljarak = caller->GetCreature(*caller, instance->GetGuidData(NPC_MELJARAK));
-            if (!meljarak || !meljarak->isAlive())
+            if (!meljarak || !meljarak->IsAlive())
                 return;
 
             meljarak->AI()->DoAction(ACTION_1);
@@ -397,21 +397,21 @@ struct npc_soldierAI : ScriptedAI
                     meljarak->AI()->DoAction(ACTION_2);
                     for (uint32 n = NPC_ZARTHIK_1; n <= NPC_ZARTHIK_3; n++)
                         if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                            if (soldier->GetGUID() != callerGuid && soldier->isAlive())
+                            if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
                                 soldier->Kill(soldier, true);
                     break;
                 case NPC_SRATHIK:
                     meljarak->AI()->DoAction(ACTION_3);
                     for (uint32 n = NPC_SRATHIK_1; n <= NPC_SRATHIK_3; n++)
                         if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                            if (soldier->GetGUID() != callerGuid && soldier->isAlive())
+                            if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
                                 soldier->Kill(soldier, true);
                     break;
                 case NPC_KORTHIK:
                     meljarak->AI()->DoAction(ACTION_4);
                     for (uint32 n = NPC_KORTHIK_1; n <= NPC_KORTHIK_3; n++)
                         if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                            if (soldier->GetGUID() != callerGuid && soldier->isAlive())
+                            if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
                                 soldier->Kill(soldier, true);
                     break;
             }
@@ -427,19 +427,19 @@ struct npc_soldierAI : ScriptedAI
                 case NPC_SRATHIK:
                     for (uint32 n = NPC_SRATHIK_1; n <= NPC_SRATHIK_3; n++)
                         if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                            if (soldier->GetGUID() != callerGuid && soldier->isAlive())
+                            if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
                                 soldier->SetHealth(soldier->GetHealth() + modhealth);
                     break;
                 case NPC_ZARTHIK:
                     for (uint32 n = NPC_ZARTHIK_1; n <= NPC_ZARTHIK_3; n++)
                         if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                            if (soldier->GetGUID() != callerGuid && soldier->isAlive())
+                            if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
                                 soldier->SetHealth(soldier->GetHealth() + modhealth);
                     break;
                 case NPC_KORTHIK:
                     for (uint32 n = NPC_KORTHIK_1; n <= NPC_KORTHIK_3; n++)
                         if (Creature* soldier = caller->GetCreature(*caller, instance->GetGuidData(n)))
-                            if (soldier->GetGUID() != callerGuid && soldier->isAlive())
+                            if (soldier->GetGUID() != callerGuid && soldier->IsAlive())
                                 soldier->SetHealth(soldier->GetHealth() + modhealth);
                     break;
             }
@@ -474,7 +474,7 @@ class npc_generic_soldier : public CreatureScript
                 {
                     if (Creature* meljarak = me->GetCreature(*me, pInstance->GetGuidData(NPC_MELJARAK)))
                     {
-                        if (meljarak->isAlive() && !meljarak->isInCombat())
+                        if (meljarak->IsAlive() && !meljarak->isInCombat())
                             meljarak->AI()->AttackStart(attacker);
                     }
                 }
@@ -540,7 +540,7 @@ class npc_generic_soldier : public CreatureScript
                         {
                             if (soldier->GetGUID() != me->GetGUID())
                             {
-                                if (soldier->isAlive() && soldier->HealthBelowPct(75))
+                                if (soldier->IsAlive() && soldier->HealthBelowPct(75))
                                 {
                                     DoCast(soldier, SPELL_HEAL);
                                     break;

@@ -1123,7 +1123,7 @@ class instance_dragon_soul : public InstanceMapScript
                         bool operator()(ObjectGuid guid)
                         {
                             Creature* assaulter = m_instance->instance->GetCreature(guid);
-                            return assaulter && assaulter->isAlive() && !assaulter->AI()->GetData(1);
+                            return assaulter && assaulter->IsAlive() && !assaulter->AI()->GetData(1);
                         }
 
                     private:

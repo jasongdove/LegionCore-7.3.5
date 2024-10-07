@@ -191,7 +191,7 @@ class boss_ultraxion: public CreatureScript
 
             void JustReachedHome()
             {
-                if (me->isAlive())
+                if (me->IsAlive())
                     if (InstanceScript* instance = me->GetInstanceScript())
                         if (instance->GetBossState(DATA_ULTRAXION) == FAIL)
                             events.ScheduleEvent(EVENT_WIPE_1, 1000);

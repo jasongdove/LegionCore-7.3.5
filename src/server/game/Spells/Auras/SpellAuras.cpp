@@ -3521,13 +3521,13 @@ void UnitAura::FillTargetMap(std::map<Unit*, uint32> & targets, Unit* caster)
                     {
                         Trinity::AnyAoETargetUnitInObjectRangeCheck u_check(GetUnitOwner(), GetUnitOwner(), radius); // No GetCharmer in searcher
                         Trinity::UnitListSearcher<Trinity::AnyAoETargetUnitInObjectRangeCheck> searcher(GetUnitOwner(), targetList, u_check);
-                        if (GetUnitOwner()->isAlive())
+                        if (GetUnitOwner()->IsAlive())
                             Trinity::VisitNearbyObject(GetOwner(), radius, searcher);
                         break;
                     }
                     case SPELL_EFFECT_APPLY_AREA_AURA_PET:
                     {
-                        if (GetUnitOwner()->isAlive())
+                        if (GetUnitOwner()->IsAlive())
                             targetList.push_back(GetUnitOwner());
                         if (Unit* owner = GetUnitOwner()->GetCharmerOrOwner())
                             if (GetUnitOwner()->IsWithinDistInMap(owner, radius))

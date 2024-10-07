@@ -580,7 +580,7 @@ class mob_lightning_fist : public CreatureScript
                 {
                     if (Unit* target = me->GetPlayer(*me, guid))
                     {
-                        if (target->isAlive())
+                        if (target->IsAlive())
                         {
                             me->SetFacingToObject(target);
                             me->AddAura(SPELL_AURA_SEARCHER, me);

@@ -143,7 +143,7 @@ AchievementCache::AchievementCache(Player* _player, Unit* _target, CriteriaTypes
         target.Level = _target->getLevelForTarget(player);
         target.Gender = _target->getGender();
         target.HealthPct = _target->GetHealthPct();
-        target.isAlive = _target->isAlive();
+        target.isAlive = _target->IsAlive();
         target.IsMounted = _target->IsMounted();
         target.ZoneID = _target->GetCurrentZoneID();
         target.AreaID = _target->GetCurrentAreaID();
@@ -3998,7 +3998,7 @@ bool AchievementMgr<T>::AdditionalRequirementsSatisfied(ModifierTreeNode const* 
                     check = false;
                 break;
             case CRITERIA_ADDITIONAL_CONDITION_DEATH_COUNTER:   // 122
-                if (!referencePlayer || !referencePlayer->InInstance() || referencePlayer->isAlive())
+                if (!referencePlayer || !referencePlayer->InInstance() || referencePlayer->IsAlive())
                     check = false;
                 break;
             case CRITERIA_ADDITIONAL_CONDITION_BONUS_EVENT_WEEKEND: // 123

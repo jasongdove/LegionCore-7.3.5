@@ -775,7 +775,7 @@ public:
                 {
                     // check if vashj is death
                     Unit* Vashj = Unit::GetUnit(*me, instance->GetGuidData(DATA_LADYVASHJ));
-                    if (!Vashj || (Vashj && !Vashj->isAlive()) || (Vashj && CAST_AI(boss_lady_vashj::boss_lady_vashjAI, CAST_CRE(Vashj)->AI())->Phase != 3))
+                    if (!Vashj || (Vashj && !Vashj->IsAlive()) || (Vashj && CAST_AI(boss_lady_vashj::boss_lady_vashjAI, CAST_CRE(Vashj)->AI())->Phase != 3))
                     {
                         // remove
                         me->setDeathState(DEAD);
@@ -832,7 +832,7 @@ public:
             {
                 Unit* vashj = Unit::GetUnit(*me, instance->GetGuidData(DATA_LADYVASHJ));
 
-                if (vashj && vashj->isAlive())
+                if (vashj && vashj->IsAlive())
                 {
                     // start visual channel
                     if (!Casted || !vashj->HasAura(SPELL_MAGIC_BARRIER))

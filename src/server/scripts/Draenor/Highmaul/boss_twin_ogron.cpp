@@ -536,7 +536,7 @@ struct boss_twin_ogron_phemos : public BossAI
                         if (creature->GetEntry() == InvisibleStalker)
                             return true;
 
-                        if (!creature->isAlive())
+                        if (!creature->IsAlive())
                             return true;
 
                         return false;

@@ -108,7 +108,7 @@ void WorldPackets::Party::PartyInviteResponse::Read()
     Accept = _worldPacket.ReadBit();
     if (_worldPacket.ReadBit())
     {
-        RolesDesired = boost::in_place();
+        RolesDesired.emplace();
         _worldPacket >> *RolesDesired;
     }
 }
@@ -160,13 +160,13 @@ void WorldPackets::Party::PartyMemberStatseUpdate::Initialize(Player* player)
 
     if (mask & GROUP_UPDATE_FLAG_STATUS)
     {
-        MemberState.Status = boost::in_place();
+        MemberState.Status.emplace();
         int16 memberStatus = MEMBER_STATUS_ONLINE;
 
         if (player->IsPvP())
             memberStatus |= MEMBER_STATUS_PVP;
 
-        if (!player->isAlive())
+        if (!player->IsAlive())
         {
             if (player->HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
                 memberStatus |= MEMBER_STATUS_GHOST;
@@ -191,49 +191,49 @@ void WorldPackets::Party::PartyMemberStatseUpdate::Initialize(Player* player)
 
     if (mask & GROUP_UPDATE_FLAG_LEVEL)
     {
-        MemberState.Level = boost::in_place();
+        MemberState.Level.emplace();
         MemberState.Level = player->getLevel();
     }
 
     if (mask & GROUP_UPDATE_FLAG_CUR_HP)
     {
-        MemberState.CurrentHealth = boost::in_place();
+        MemberState.CurrentHealth.emplace();
         MemberState.CurrentHealth = player->GetHealth();
     }
 
     if (mask & GROUP_UPDATE_FLAG_MAX_HP)
     {
-        MemberState.MaxHealth = boost::in_place();
+        MemberState.MaxHealth.emplace();
         MemberState.MaxHealth = player->GetMaxHealth();
     }
 
     if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)
     {
-        MemberState.PowerType = boost::in_place();
+        MemberState.PowerType.emplace();
         MemberState.PowerType = player->getPowerType();
     }
 
     if (mask & GROUP_UPDATE_FLAG_CUR_POWER)
     {
-        MemberState.CurrentPower = boost::in_place();
+        MemberState.CurrentPower.emplace();
         MemberState.CurrentPower = player->GetPower(player->getPowerType());
     }
 
     if (mask & GROUP_UPDATE_FLAG_MAX_POWER)
     {
-        MemberState.MaxPower = boost::in_place();
+        MemberState.MaxPower.emplace();
         MemberState.MaxPower = player->GetMaxPower(player->getPowerType());
     }
 
     if (mask & GROUP_UPDATE_FLAG_ZONE)
     {
-        MemberState.ZoneID = boost::in_place();
+        MemberState.ZoneID.emplace();
         MemberState.ZoneID = player->GetCurrentZoneID();
     }
 
     if (mask & GROUP_UPDATE_FLAG_POSITION)
     {
-        MemberState.Position = boost::in_place();
+        MemberState.Position.emplace();
         MemberState.Position->PositionX = int16(player->GetPositionX());
         MemberState.Position->PositionY = int16(player->GetPositionY());
         MemberState.Position->PositionZ = int16(player->GetPositionZ());
@@ -241,39 +241,39 @@ void WorldPackets::Party::PartyMemberStatseUpdate::Initialize(Player* player)
 
     if (mask & GROUP_UPDATE_FLAG_POWER_DISPLAY_ID)
     {
-        MemberState.PowerDisplayID = boost::in_place();
+        MemberState.PowerDisplayID.emplace();
         MemberState.PowerDisplayID = 0;
     }
 
     if (mask & GROUP_UPDATE_FLAG_OTHER_PARTY)
     {
-        MemberState.PartyType[0] = boost::in_place();
-        MemberState.PartyType[1] = boost::in_place();
+        MemberState.PartyType[0].emplace();
+        MemberState.PartyType[1].emplace();
         MemberState.PartyType[0] = player->GetByteValue(PLAYER_FIELD_BYTES_3, PLAYER_BYTES_3_OFFSET_PARTY_TYPE) & 0xF;
         MemberState.PartyType[1] = player->GetByteValue(PLAYER_FIELD_BYTES_3, PLAYER_BYTES_3_OFFSET_PARTY_TYPE) >> 4;
     }
 
     if (mask & GROUP_UPDATE_FLAG_WMO_GROUP_ID)
     {
-        MemberState.WmoGroupID = boost::in_place();
+        MemberState.WmoGroupID.emplace();
         MemberState.WmoGroupID = 0;
     }
 
     if (mask & GROUP_UPDATE_FLAG_WMO_DOODAD_PLACEMENT_ID)
     {
-        MemberState.WmoDoodadPlacementID = boost::in_place();
+        MemberState.WmoDoodadPlacementID.emplace();
         MemberState.WmoDoodadPlacementID = 0;
     }
 
     if (mask & GROUP_UPDATE_FLAG_SPECIALIZATION_ID)
     {
-        MemberState.SpecializationID = boost::in_place();
+        MemberState.SpecializationID.emplace();
         MemberState.SpecializationID = player->GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID);
     }
 
     if (mask & GROUP_UPDATE_FLAG_VEHICLE_SEAT) //! @TODO
     {
-        MemberState.VehicleSeat = boost::in_place();
+        MemberState.VehicleSeat.emplace();
         uint8 VehicleSeat = 0;
         if (auto const veh = player->GetVehicle())
             if (auto const vehInfo = veh->GetVehicleInfo())
@@ -284,7 +284,7 @@ void WorldPackets::Party::PartyMemberStatseUpdate::Initialize(Player* player)
 
     if (mask & GROUP_UPDATE_FLAG_AURAS)
     {
-        MemberState.AuraList = boost::in_place();
+        MemberState.AuraList.emplace();
         Unit::VisibleAuraContainer const visibleAuras = player->GetVisibleAuras();
         for (AuraApplication const* aurApp : visibleAuras)
         {
@@ -313,7 +313,7 @@ void WorldPackets::Party::PartyMemberStatseUpdate::Initialize(Player* player)
 
     if (mask & GROUP_UPDATE_FLAG_PHASE) //! @TODO
     {
-        MemberState.Phases = boost::in_place();
+        MemberState.Phases.emplace();
         std::set<uint32> phases = player->GetPhases();
         MemberState.Phases->PhaseShiftFlags = 0x08 | (!phases.empty() ? 0x10 : 0);
         MemberState.Phases->PersonalGUID = ObjectGuid::Empty;
@@ -334,7 +334,7 @@ void WorldPackets::Party::PartyMemberStatseUpdate::Initialize(Player* player)
             if (petMask == GROUP_UPDATE_FLAG_PET_NONE)
                 return;
 
-            MemberState.PetStats = boost::in_place();
+            MemberState.PetStats.emplace();
 
             if (petMask & GROUP_UPDATE_FLAG_PET_GUID) //! @TODO
                 MemberState.PetStats->GUID = pet->GetGUID();
@@ -384,24 +384,24 @@ void WorldPackets::Party::PartyMemberStatseUpdate::Initialize(Player* player)
 
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::PartyMemberState const& memberState)
 {
-    data.WriteBit(memberState.PartyType[0].is_initialized() || memberState.PartyType[1].is_initialized());
-    data.WriteBit(memberState.Status.is_initialized());
-    data.WriteBit(memberState.PowerType.is_initialized());
-    data.WriteBit(memberState.PowerDisplayID.is_initialized());
-    data.WriteBit(memberState.CurrentHealth.is_initialized());
-    data.WriteBit(memberState.MaxHealth.is_initialized());
-    data.WriteBit(memberState.CurrentPower.is_initialized());
-    data.WriteBit(memberState.MaxPower.is_initialized());
-    data.WriteBit(memberState.Level.is_initialized());
-    data.WriteBit(memberState.SpecializationID.is_initialized());
-    data.WriteBit(memberState.ZoneID.is_initialized());
-    data.WriteBit(memberState.WmoGroupID.is_initialized());
-    data.WriteBit(memberState.WmoDoodadPlacementID.is_initialized());
-    data.WriteBit(memberState.Position.is_initialized());
-    data.WriteBit(memberState.VehicleSeat.is_initialized());
-    data.WriteBit(memberState.AuraList.is_initialized());
-    data.WriteBit(memberState.PetStats.is_initialized());
-    data.WriteBit(memberState.Phases.is_initialized());
+    data.WriteBit(memberState.PartyType[0].has_value() || memberState.PartyType[1].has_value());
+    data.WriteBit(memberState.Status.has_value());
+    data.WriteBit(memberState.PowerType.has_value());
+    data.WriteBit(memberState.PowerDisplayID.has_value());
+    data.WriteBit(memberState.CurrentHealth.has_value());
+    data.WriteBit(memberState.MaxHealth.has_value());
+    data.WriteBit(memberState.CurrentPower.has_value());
+    data.WriteBit(memberState.MaxPower.has_value());
+    data.WriteBit(memberState.Level.has_value());
+    data.WriteBit(memberState.SpecializationID.has_value());
+    data.WriteBit(memberState.ZoneID.has_value());
+    data.WriteBit(memberState.WmoGroupID.has_value());
+    data.WriteBit(memberState.WmoDoodadPlacementID.has_value());
+    data.WriteBit(memberState.Position.has_value());
+    data.WriteBit(memberState.VehicleSeat.has_value());
+    data.WriteBit(memberState.AuraList.has_value());
+    data.WriteBit(memberState.PetStats.has_value());
+    data.WriteBit(memberState.Phases.has_value());
     data.FlushBits();
 
     if (memberState.PetStats)
@@ -410,7 +410,7 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::PartyMemberState c
     if (memberState.GUID)
         data << *memberState.GUID;
 
-    if (memberState.PartyType[0].is_initialized() || memberState.PartyType[1].is_initialized())
+    if (memberState.PartyType[0].has_value() || memberState.PartyType[1].has_value())
         for (auto const& partyType : memberState.PartyType)
             data << *partyType;
 
@@ -667,9 +667,9 @@ WorldPacket const* WorldPackets::Party::PartyUpdate::Write()
 
     _worldPacket << static_cast<int32>(PlayerList.size());
 
-    _worldPacket.WriteBit(LfgInfos.is_initialized());
-    _worldPacket.WriteBit(LootSettings.is_initialized());
-    _worldPacket.WriteBit(DifficultySettings.is_initialized());
+    _worldPacket.WriteBit(LfgInfos.has_value());
+    _worldPacket.WriteBit(LootSettings.has_value());
+    _worldPacket.WriteBit(DifficultySettings.has_value());
     _worldPacket.FlushBits();
 
     for (GroupPlayerInfos const& playerInfos : PlayerList)
@@ -742,7 +742,7 @@ void WorldPackets::Party::PartyMemberStats::Initialize(Player* player)
     if (player->IsPvP())
         MemberStats.Status |= MEMBER_STATUS_PVP;
 
-    if (!player->isAlive())
+    if (!player->IsAlive())
     {
         if (player->HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
             MemberStats.Status |= MEMBER_STATUS_GHOST;
@@ -837,7 +837,7 @@ void WorldPackets::Party::PartyMemberStats::Initialize(Player* player)
     {
         Pet* pet = player->GetPet();
 
-        MemberStats.PetStats = boost::in_place();
+        MemberStats.PetStats.emplace();
 
         MemberStats.PetStats->GUID = pet->GetGUID();
         MemberStats.PetStats->Name = pet->GetName();
@@ -1021,7 +1021,7 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::GroupMemberStats c
     for (WorldPackets::Party::GroupAura const& aura : memberStats.AuraList)
         data << aura;
 
-    data.WriteBit(memberStats.PetStats.is_initialized());
+    data.WriteBit(memberStats.PetStats.has_value());
     data.FlushBits();
 
     if (memberStats.PetStats)

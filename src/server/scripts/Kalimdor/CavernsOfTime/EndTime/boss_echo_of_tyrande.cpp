@@ -363,7 +363,7 @@ struct boss_echo_of_tyrande : public BossAI
                 if (!playerList.isEmpty())
                     for (Map::PlayerList::const_iterator itr = playerList.begin(); itr != playerList.end(); ++itr)
                         if (Player* player = itr->getSource())
-                            if (player->GetCurrentAreaID() == AREA_EMERALD && player->isAlive())
+                            if (player->GetCurrentAreaID() == AREA_EMERALD && player->IsAlive())
                                 num++;
 
                 if (!num)

@@ -21,6 +21,7 @@
 #include "CombatPackets.h"
 #include "Common.h"
 #include "Chat.h"
+#include "CharmInfo.h"
 #include "Creature.h"
 #include <utility>
 #include "CreatureAI.h"
@@ -559,7 +560,7 @@ void Creature::DisappearAndDie()
     DestroyForNearbyPlayers();
     //SetVisibility(VISIBILITY_OFF);
     //ObjectAccessor::UpdateObjectVisibility(this);
-    if (isAlive())
+    if (IsAlive())
         setDeathState(JUST_DIED);
     RemoveCorpse(false);
 }
@@ -1068,7 +1069,7 @@ void Creature::Update(uint32 diff)
 
             // creature can be dead after Unit::Update call
             // CORPSE/DEAD state will processed at next tick (in other case death timer will be updated unexpectedly)
-            if (!isAlive())
+            if (!IsAlive())
                 break;
 
             //Check current difficulty map for change stats
@@ -1112,7 +1113,7 @@ void Creature::Update(uint32 diff)
             break;
     }
 
-    if (!isAlive())
+    if (!IsAlive())
         if (GetMap()->Instanceable() && !isPet())
             if(GetMap()->GetSpawnMode() != GetSpawnMode() || GetMap()->IsNeedRespawn(m_respawnChallenge))
             {
@@ -1210,7 +1211,7 @@ bool Creature::AIM_Initialize(CreatureAI* ai)
     delete oldAI;
     IsAIEnabled = true;
 
-    if (i_AI && isAlive())
+    if (i_AI && IsAlive())
         i_AI->InitializeAI();
     
     // Initialize vehicle
@@ -2315,33 +2316,12 @@ bool Creature::hasInvolvedQuest(uint32 quest_id) const
     return false;
 }
 
-uint8 Creature::GetPetAutoSpellSize() const
-{
-    return m_autospells.size();
-}
-
 uint32 Creature::GetPetAutoSpellOnPos(uint8 pos) const
 {
-    if (pos >= m_autospells.size())
+    if (pos >= MAX_SPELL_CHARM || m_charmInfo->GetCharmSpell(pos)->GetType() != ACT_ENABLED)
         return 0;
-    return m_autospells[pos];
-}
-
-uint8 Creature::GetPetCastSpellSize() const
-{
-    return m_castspells.size();
-}
-
-void Creature::AddPetCastSpell(uint32 spellid)
-{
-    m_castspells.push_back(spellid);
-}
-
-uint32 Creature::GetPetCastSpellOnPos(uint8 pos) const
-{
-    if (pos >= m_castspells.size())
-        return 0;
-    return m_castspells[pos];
+    else
+        return m_charmInfo->GetCharmSpell(pos)->GetAction();
 }
 
 void Creature::DeleteFromDB()
@@ -2381,7 +2361,7 @@ bool Creature::IsInvisibleDueToDespawn() const
     if (Unit::IsInvisibleDueToDespawn())
         return true;
 
-    if (isAlive() || isDying() || m_corpseRemoveTime > time(nullptr))
+    if (IsAlive() || isDying() || m_corpseRemoveTime > time(nullptr))
         return false;
 
     return true;
@@ -2590,7 +2570,7 @@ void Creature::Respawn(bool force, uint32 timer /*= 3*/)
 
     if (force)
     {
-        if (isAlive())
+        if (IsAlive())
             setDeathState(JUST_DIED);
         else if (getDeathState() != CORPSE)
             setDeathState(CORPSE);
@@ -2678,7 +2658,7 @@ void Creature::ForcedDespawn(uint32 timeMSToDespawn /*= 0*/, Seconds const& forc
 
     if (forceRespawnTimer > Seconds::zero())
     {
-        if (isAlive())
+        if (IsAlive())
         {
             auto respawnDelay = m_respawnDelay;
             auto corpseDelay = m_corpseDelay;
@@ -2694,7 +2674,7 @@ void Creature::ForcedDespawn(uint32 timeMSToDespawn /*= 0*/, Seconds const& forc
             m_respawnTime = time(nullptr) + forceRespawnTimer.count();
         }
     }
-    else if (isAlive())
+    else if (IsAlive())
         setDeathState(JUST_DIED);
 
     RemoveCorpse(false);
@@ -3051,7 +3031,7 @@ bool Creature::CanAssistTo(const Unit* u, const Unit* enemy, bool checkfaction /
         return false;
 
     // we don't need help from zombies :)
-    if (!isAlive())
+    if (!IsAlive())
         return false;
 
     // we don't need help from non-combatant ;)
@@ -3231,7 +3211,7 @@ bool Creature::LoadCreaturesAddon(bool /*reload*/)
         //! Suspected correlation between UNIT_FIELD_BYTES_1, offset 3, value 0x2:
         //! If no inhabittype_fly (if no MovementFlag_DisableGravity flag found in sniffs)
         //! Set MovementFlag_Hover. Otherwise do nothing.
-        if ((GetMiscStandValue() & UNIT_BYTE1_FLAG_HOVER) && isAlive())
+        if ((GetMiscStandValue() & UNIT_BYTE1_FLAG_HOVER) && IsAlive())
             SetHover(true);
     }
 
@@ -3314,7 +3294,7 @@ void Creature::SetInCombatWithZone()
 
     map->ApplyOnEveryPlayer([&](Player* player)
     {
-        if (!player->isGameMaster() && player->isAlive() && (!player->getHostileRefManager().HasTarget(this) || !player->isInCombat()))
+        if (!player->isGameMaster() && player->IsAlive() && (!player->getHostileRefManager().HasTarget(this) || !player->isInCombat()))
         {
             this->SetInCombatWith(player);
             player->SetInCombatWith(this);
@@ -3731,24 +3711,6 @@ bool Creature::IsPlayerRewarded(ObjectGuid targetGuid) const
 
 void Creature::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs)
 {
-    for (uint8 i = 0; i < GetPetCastSpellSize(); ++i)
-    {
-        uint32 spellID = GetPetCastSpellOnPos(i);
-        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellID);
-        if (!spellInfo)
-            continue;
-
-        // Not send cooldown for this spells
-        if (spellInfo->HasAttribute(SPELL_ATTR0_DISABLED_WHILE_ACTIVE))
-            continue;
-
-        if (!(spellInfo->Categories.PreventionType & SPELL_PREVENTION_TYPE_SILENCE))
-            continue;
-
-        if ((idSchoolMask & spellInfo->GetSchoolMask()) && _GetSpellCooldownDelay(spellID) < unTimeMs)
-            _AddCreatureSpellCooldown(spellID, time(nullptr) + unTimeMs/IN_MILLISECONDS);
-    }
-
     for (uint8 i = 0; (1 << i) < SPELL_SCHOOL_MASK_ALL; ++i)
         if ((1 << i) & idSchoolMask)
             m_CreatureSchoolCooldowns[(1 << i)] = time(nullptr) + unTimeMs / IN_MILLISECONDS;

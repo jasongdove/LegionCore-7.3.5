@@ -135,7 +135,7 @@ class boss_nazan : public CreatureScript
                 if (flight) // phase 1 - the flight
                 {
                     Creature* Vazruden = ObjectAccessor::GetCreature(*me, VazrudenGUID);
-                    if (Fly_Timer < diff || !(Vazruden && Vazruden->isAlive() && Vazruden->HealthAbovePct(20)))
+                    if (Fly_Timer < diff || !(Vazruden && Vazruden->IsAlive() && Vazruden->HealthAbovePct(20)))
                     {
                         flight = false;
                         BellowingRoar_Timer = 6000;
@@ -252,7 +252,7 @@ class boss_vazruden : public CreatureScript
             {
                 if (!UpdateVictim())
                 {
-                    if (UnsummonCheck < diff && me->isAlive())
+                    if (UnsummonCheck < diff && me->IsAlive())
                     {
                         if (!WipeSaid)
                         {
@@ -436,7 +436,7 @@ class boss_vazruden_the_herald : public CreatureScript
                     {
                         Creature* Nazan = ObjectAccessor::GetCreature(*me, NazanGUID);
                         Creature* Vazruden = ObjectAccessor::GetCreature(*me, VazrudenGUID);
-                        if ((Nazan && Nazan->isAlive()) || (Vazruden && Vazruden->isAlive()))
+                        if ((Nazan && Nazan->IsAlive()) || (Vazruden && Vazruden->IsAlive()))
                         {
                             if ((Nazan && Nazan->getVictim()) || (Vazruden && Vazruden->getVictim()))
                                 return;

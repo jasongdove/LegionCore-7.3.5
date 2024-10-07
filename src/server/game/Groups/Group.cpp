@@ -920,7 +920,7 @@ bool Group::RemoveMemberQueue(ObjectGuid const& guid, RemoveMethod const& method
         {
             Player* leader = ObjectAccessor::FindPlayer(GetLeaderGUID());
             uint32 mapId = sLFGMgr->GetDungeonMapId(GetGUID());
-            if (!mapId || !leader || leader->isAlive() && leader->GetMapId() != mapId)
+            if (!mapId || !leader || leader->IsAlive() && leader->GetMapId() != mapId)
             {
                 Disband();
                 return false;
@@ -1767,12 +1767,12 @@ void Group::SendUpdateToPlayer(ObjectGuid playerGUID, MemberSlot* slot /*= nullp
 
     if (GetMembersCount())
     {
-        partyUpdate.LootSettings = boost::in_place();
+        partyUpdate.LootSettings.emplace();
         partyUpdate.LootSettings->Method = m_lootMethod;
         partyUpdate.LootSettings->Threshold = m_lootThreshold;
         partyUpdate.LootSettings->LootMaster = m_lootMethod == MASTER_LOOT ? m_looterGuid : ObjectGuid::Empty;
 
-        partyUpdate.DifficultySettings = boost::in_place();
+        partyUpdate.DifficultySettings.emplace();
         partyUpdate.DifficultySettings->DungeonDifficultyID = m_dungeonDifficulty;
         partyUpdate.DifficultySettings->RaidDifficultyID = m_raidDifficulty;
         partyUpdate.DifficultySettings->LegacyRaidDifficultyID = m_legacyRaidDifficulty;
@@ -1788,7 +1788,7 @@ void Group::SendUpdateToPlayer(ObjectGuid playerGUID, MemberSlot* slot /*= nullp
         if (lfgState == lfg::LFG_STATE_FINISHED_DUNGEON || dungeon && dungeon->dbc->Flags & LFG_FLAG_NON_BACKFILLABLE)
             flags |= 2;
 
-        partyUpdate.LfgInfos = boost::in_place();
+        partyUpdate.LfgInfos.emplace();
         partyUpdate.LfgInfos->Slot = sLFGMgr->GetLFGDungeonEntry(sLFGMgr->GetDungeon(m_guid));
         partyUpdate.LfgInfos->MyFlags = flags;
         partyUpdate.LfgInfos->MyPartialClear = sLFGMgr->GetState(m_guid, QueueId) == lfg::LFG_STATE_FINISHED_DUNGEON ? 2 : 0;
@@ -2946,7 +2946,7 @@ void Group::UpdateGuildAchievementCriteria(CriteriaTypes type, uint32 miscValue1
                 if (!pPlayer->IsAtGroupRewardDistance(pRewardSource))
                     continue;
 
-                if (!pPlayer->isAlive())
+                if (!pPlayer->IsAlive())
                     continue;
             }
 

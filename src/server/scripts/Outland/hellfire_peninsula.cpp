@@ -186,7 +186,7 @@ public:
                     break;
                 case 50:
                     if (auto ryga = ObjectAccessor::GetCreature(*me, pRyga))
-                        if (ryga->isAlive() && !ryga->isInCombat())
+                        if (ryga->IsAlive() && !ryga->isInCombat())
                             ryga->AI()->Talk(SAY_WOLF_WELCOME);
                     break;
             }

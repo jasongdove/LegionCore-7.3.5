@@ -92,7 +92,7 @@ class AreaTrigger_at_legion_teleporter : public AreaTriggerScript
 
         bool OnTrigger(Player* player, AreaTriggerEntry const* /*trigger*/, bool /*enter*/) override
         {
-            if (player->isAlive() && !player->isInCombat())
+            if (player->IsAlive() && !player->isInCombat())
             {
                 if (player->GetTeam() == ALLIANCE && player->GetQuestRewardStatus(QUEST_GAINING_ACCESS_A))
                 {
@@ -287,7 +287,7 @@ class AreaTrigger_at_nats_landing : public AreaTriggerScript
 
         bool OnTrigger(Player* player, AreaTriggerEntry const* /*trigger*/, bool /*enter*/) override
         {
-            if (!player->isAlive() || !player->HasAura(SPELL_FISH_PASTE))
+            if (!player->IsAlive() || !player->HasAura(SPELL_FISH_PASTE))
                 return false;
 
             if (player->GetQuestStatus(QUEST_NATS_BARGAIN) == QUEST_STATUS_INCOMPLETE)
@@ -457,7 +457,7 @@ class AreaTrigger_at_area_52_entrance : public AreaTriggerScript
         {
             float x = 0.0f, y = 0.0f, z = 0.0f;
 
-            if (!player->isAlive())
+            if (!player->IsAlive())
                 return false;
 
             uint32 triggerId = trigger->ID;

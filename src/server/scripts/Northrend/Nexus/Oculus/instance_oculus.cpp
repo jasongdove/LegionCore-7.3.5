@@ -81,7 +81,7 @@ class instance_oculus : public InstanceMapScript
                             creature->SetPhaseMask(1, true);
                         break;
                     case NPC_CENTRIFUGE_CONSTRUCT:
-                        if (creature->isAlive())
+                        if (creature->IsAlive())
                             DoUpdateWorldState(WorldStates::WORLD_STATE_CENTRIFUGE_CONSTRUCT_AMOUNT, ++CentrifugueConstructCounter);
                         break;
                     case NPC_BELGARISTRASZ:

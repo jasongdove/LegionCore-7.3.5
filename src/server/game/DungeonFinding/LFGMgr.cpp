@@ -1489,7 +1489,7 @@ void LFGMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
                 if (player->IsBeingTeleported())
                     return;
 
-                if (!player->isAlive())
+                if (!player->IsAlive())
                 {
                     player->ResurrectPlayer(1.0f);
                     player->SpawnCorpseBones();
@@ -1510,7 +1510,7 @@ void LFGMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
 
     LfgTeleportError error = LFG_TELEPORTERROR_OK;
 
-    if (!player->isAlive())
+    if (!player->IsAlive())
         error = LFG_TELEPORTERROR_PLAYER_DEAD;
     else if (player->IsMirrorTimerActive(FATIGUE_TIMER))
         error = LFG_TELEPORTERROR_FATIGUE;

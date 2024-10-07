@@ -209,7 +209,7 @@ struct boss_skorpyron : BossAI
 
             me->AddDelayedEvent(20000, [this, entry, path]() -> void
             {
-                if (me->isAlive() && me->isInCombat())
+                if (me->IsAlive() && me->isInCombat())
                     if (Creature* scrop = me->SummonCreature(entry, 121.33f + frand(-0.3f, 0.3f), 3418.02f + frand(-0.3f, 0.3f), -250.12f, 2.36f))
                     {
                         scrop->GetMotionMaster()->MovePath(path, false);
@@ -500,7 +500,7 @@ struct npc_skorpyron_generic_scorp : public ScriptedAI
             me->AddUnitState(UNIT_STATE_STUNNED);
             me->AddDelayedEvent(1500, [this]() -> void
             {
-                if (me && me->isAlive())
+                if (me && me->IsAlive())
                     me->ClearUnitState(UNIT_STATE_STUNNED);
             });
             //<<<Hack

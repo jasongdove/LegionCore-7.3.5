@@ -285,7 +285,7 @@ struct npc_glaidalis_nightmare_abomination : public ScriptedAI
                 if (!targetGUID.IsEmpty())
                 {
                     auto player = Player::GetPlayer(*me, targetGUID);
-                    if (!player || !player->isAlive())
+                    if (!player || !player->IsAlive())
                     {
                         targetGUID.Clear();
                         me->StopAttack(true, true);

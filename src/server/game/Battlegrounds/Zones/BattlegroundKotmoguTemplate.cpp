@@ -409,7 +409,7 @@ class spell_brawl_pass_the_orb : public SpellScript
         if (!target || !caster)
             return SPELL_FAILED_CUSTOM_ERROR;
 
-        if (!target->IsPlayer() || !target->isAlive() || target->ToPlayer()->GetBGTeamId() != caster->ToPlayer()->GetBGTeamId())
+        if (!target->IsPlayer() || !target->IsAlive() || target->ToPlayer()->GetBGTeamId() != caster->ToPlayer()->GetBGTeamId())
             return SPELL_FAILED_CUSTOM_ERROR;
 
         if (Battleground* tempBg = caster->ToPlayer()->GetBattleground())
@@ -435,7 +435,7 @@ class spell_brawl_pass_the_orb : public SpellScript
     {
         Unit* target = GetHitUnit();
         Unit* caster = GetCaster();
-        if (!target || !caster || !target->isAlive())
+        if (!target || !caster || !target->IsAlive())
             return;
 
         Battleground* tempBg = caster->ToPlayer()->GetBattleground();

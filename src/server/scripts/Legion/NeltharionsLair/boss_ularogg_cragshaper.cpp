@@ -364,7 +364,7 @@ struct npc_nl_understone_drummer : public ScriptedAI
     {
         if (Creature* drums = me->FindNearestCreature(92387, 40.0f, true))
         {
-            if (drums->isAlive())
+            if (drums->IsAlive())
                 events.RescheduleEvent(EVENT_1, 500);
             else
                 events.Reset();
@@ -387,7 +387,7 @@ struct npc_nl_understone_drummer : public ScriptedAI
         {
             if (Creature* drums = me->FindNearestCreature(92387, 40.0f, true))
             {
-                if (drums->isAlive())
+                if (drums->IsAlive())
                 {
                     events.RescheduleEvent(EVENT_1, 1000);
                     drumsMove = false;
@@ -412,7 +412,7 @@ struct npc_nl_understone_drummer : public ScriptedAI
                 {
                     if (Creature* drums = me->FindNearestCreature(92387, 40.0f, true))
                     {
-                        if (drums->isAlive())
+                        if (drums->IsAlive())
                         {
                             pos = me->FindNearestCreature(92387, 40.0f, true)->GetPosition();
                             pos.m_positionX -= 3.0f;

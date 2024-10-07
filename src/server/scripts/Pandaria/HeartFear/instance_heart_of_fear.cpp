@@ -313,7 +313,7 @@ public:
                             {
                                 if (Creature* soldier = instance->GetCreature(*guid))
                                 {
-                                    if (soldier->isAlive() && !soldier->isInCombat())
+                                    if (soldier->IsAlive() && !soldier->isInCombat())
                                         soldier->AI()->DoZoneInCombat(soldier, 100.0f);
                                 }
                             }
@@ -507,7 +507,7 @@ public:
                 if (!player)
                     continue;
 
-                if (player->isAlive() && !player->isGameMaster() && !player->HasAura(115877)) // Aura 115877 = Totally Petrified
+                if (player->IsAlive() && !player->isGameMaster() && !player->HasAura(115877)) // Aura 115877 = Totally Petrified
                     return false;
             }
 

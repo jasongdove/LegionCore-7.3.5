@@ -882,7 +882,7 @@ struct npc_tos_erupting_reflection : public ScriptedAI
         {
             if (auto target = Player::GetPlayer(*me, targetGUID))
             {
-                if (target->isAlive())
+                if (target->IsAlive())
                     if (auto owner = me->GetAnyOwner())
                         owner->CastSpell(target, SPELL_LINGERING_ERUPTION, true);
             }
@@ -932,7 +932,7 @@ struct npc_tos_wailing_reflection : public ScriptedAI
 
         if (auto target = Player::GetPlayer(*me, targetGUID))
         {
-            if (target->isAlive())
+            if (target->IsAlive())
                 if (auto owner = me->GetAnyOwner())
                     owner->CastSpell(target, SPELL_LINGERING_WAIL, true);
         }
@@ -1296,7 +1296,7 @@ struct npc_tos_flaming_orb : public ScriptedAI
                 startMovingTimer = 500;
 
                 auto target = Player::GetPlayer(*me, targetGUID);
-                if (!target || !target->isAlive())
+                if (!target || !target->IsAlive())
                 {
                     startMovingTimer = 2000;
                     DoCast(me, SPELL_ORG_FIXATE, true);

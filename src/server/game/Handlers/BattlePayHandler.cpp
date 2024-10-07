@@ -402,7 +402,7 @@ void WorldSession::SendDisplayPromo(int32 promotionID /*= 0*/)
         auto dataP = GetBattlePayMgr()->WriteDisplayInfo(itr.DisplayInfoID, GetSessionDbLocaleIndex());
         if (std::get<0>(dataP))
         {
-            pItem.DisplayInfo = boost::in_place();
+            pItem.DisplayInfo.emplace();
             pItem.DisplayInfo = std::get<1>(dataP);
         }
 
@@ -412,11 +412,11 @@ void WorldSession::SendDisplayPromo(int32 promotionID /*= 0*/)
     auto dataP = GetBattlePayMgr()->WriteDisplayInfo(product.DisplayInfoID, GetSessionDbLocaleIndex());
     if (std::get<0>(dataP))
     {
-        pProduct.DisplayInfo = boost::in_place();
+        pProduct.DisplayInfo.emplace();
         pProduct.DisplayInfo = std::get<1>(dataP);
     }
 
-    data.Product = boost::in_place();
+    data.Product.emplace();
     data.Product = pProduct;
 
     packet.DistributionObject.emplace_back(data);

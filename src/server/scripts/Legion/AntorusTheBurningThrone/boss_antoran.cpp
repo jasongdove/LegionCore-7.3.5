@@ -190,7 +190,7 @@ struct boss_antoran_high_command : BossAI
 {
     explicit boss_antoran_high_command(Creature* creature) : BossAI(creature, DATA_ANTORAN)
     {
-        if (me->isAlive())
+        if (me->IsAlive())
         {
             instance->SetBossState(DATA_ANTORAN, NOT_STARTED);
             me->SetReactState(REACT_PASSIVE);
@@ -304,7 +304,7 @@ struct boss_antoran_high_command : BossAI
                         {
                             command->CastSpell(command, SPELL_SHARED_HEALTH, true);
 
-                            if (command->isAlive() && !command->isInCombat())
+                            if (command->IsAlive() && !command->isInCombat())
                                 command->AI()->DoZoneInCombat(command, 100.0f);
                         }
                     }

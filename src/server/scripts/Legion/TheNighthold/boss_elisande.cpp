@@ -626,7 +626,7 @@ struct boss_elisande : BossAI
                 DoCast(me, SPELL_TERMINATE, true);
                 me->AddDelayedCombat(60000, [this] () -> void
                 {
-                    if (me && me->isAlive() && me->isInCombat())
+                    if (me && me->IsAlive() && me->isInCombat())
                         me->AI()->EnterEvadeMode();
                 });
             }

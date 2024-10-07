@@ -460,7 +460,7 @@ class npc_roling_friends_guard : public CreatureScript
         void EnterEvadeMode() override
         {
             //should send when our group kill someone. so do it on evade.
-            if(me->isInCombat() && me->isAlive())
+            if(me->isInCombat() && me->IsAlive())
                 sCreatureTextMgr->SendChat(me, TEXT_KILL);
             ScriptedAI::EnterEvadeMode();
         }
@@ -1370,9 +1370,9 @@ class npc_hack_bank_controller : public CreatureScript
     }
 };
 
-//67502 - Используйте |cFFFF2222невероятное гамма-излучение!|r$B|TInterface\Icons\INV_Misc_EngGizmos_20.blp:64|t
+//67502 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ |cFFFF2222пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!|r$B|TInterface\Icons\INV_Misc_EngGizmos_20.blp:64|t
 //67020 - sound - 847 - 16381 - spell 67494
-//67502 -67496 Используйте |cFFFF2222взрывхлопушки!|r$B|TInterface\Icons\INV_Misc_Bomb_07.blp:64|t
+//67502 -67496 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ |cFFFF2222пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!|r$B|TInterface\Icons\INV_Misc_Bomb_07.blp:64|t
 
 //Kaja'mite Deposit
 enum misc_data

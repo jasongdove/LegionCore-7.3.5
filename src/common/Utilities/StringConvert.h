@@ -60,7 +60,7 @@ namespace Trinity::Impl::StringConvertImpl
                     base = 10;
 
                 if (str.empty())
-                    return boost::none;
+                    return std::nullopt;
             }
 
             char const* const start = str.data();
@@ -71,7 +71,7 @@ namespace Trinity::Impl::StringConvertImpl
             if ((res.ptr == end) && (res.ec == std::errc()))
                 return val;
             else
-                return boost::none;
+                return std::nullopt;
         }
 
         static std::string ToString(T val)
@@ -102,16 +102,16 @@ namespace Trinity::Impl::StringConvertImpl
         static Optional<uint64> FromString(std::string_view str, int base = 10)
         {
             if (str.empty())
-                return boost::none;
+                return std::nullopt;
             try
             {
                 size_t n;
                 uint64 val = std::stoull(std::string(str), &n, base);
                 if (n != str.length())
-                    return boost::none;
+                    return std::nullopt;
                 return val;
             }
-            catch (...) { return boost::none; }
+            catch (...) { return std::nullopt; }
         }
 
         static std::string ToString(uint64 val)
@@ -127,14 +127,14 @@ namespace Trinity::Impl::StringConvertImpl
         {
             try {
                 if (str.empty())
-                    return boost::none;
+                    return std::nullopt;
                 size_t n;
                 int64 val = std::stoll(std::string(str), &n, base);
                 if (n != str.length())
-                    return boost::none;
+                    return std::nullopt;
                 return val;
             }
-            catch (...) { return boost::none; }
+            catch (...) { return std::nullopt; }
         }
 
         static std::string ToString(int64 val)
@@ -155,7 +155,7 @@ namespace Trinity::Impl::StringConvertImpl
                     return true;
                 if (str == "0")
                     return false;
-                return boost::none;
+                return std::nullopt;
             }
             else
             {
@@ -163,7 +163,7 @@ namespace Trinity::Impl::StringConvertImpl
                     return true;
                 if ((str == "0") || StringEqualI(str, "n") || StringEqualI(str, "off") || StringEqualI(str, "no") || StringEqualI(str, "false"))
                     return false;
-                return boost::none;
+                return std::nullopt;
             }
         }
 
@@ -180,7 +180,7 @@ namespace Trinity::Impl::StringConvertImpl
         static Optional<T> FromString(std::string_view str, std::chars_format fmt = std::chars_format())
         {
             if (str.empty())
-                return boost::none;
+                return std::nullopt;
 
             if (fmt == std::chars_format())
             {
@@ -193,7 +193,7 @@ namespace Trinity::Impl::StringConvertImpl
                     fmt = std::chars_format::general;
 
                 if (str.empty())
-                    return boost::none;
+                    return std::nullopt;
             }
 
             char const* const start = str.data();
@@ -204,7 +204,7 @@ namespace Trinity::Impl::StringConvertImpl
             if ((res.ptr == end) && (res.ec == std::errc()))
                 return val;
             else
-                return boost::none;
+                return std::nullopt;
         }
 
         // this allows generic converters for all numeric types (easier templating!)
@@ -232,10 +232,10 @@ namespace Trinity::Impl::StringConvertImpl
         {
             try {
                 if (str.empty())
-                    return boost::none;
+                    return std::nullopt;
 
                 if ((base == 10) && StringEqualI(str.substr(0, 2), "0x"))
-                    return boost::none;
+                    return std::nullopt;
 
                 std::string tmp;
                 if (base == 16)
@@ -245,10 +245,10 @@ namespace Trinity::Impl::StringConvertImpl
                 size_t n;
                 T val = static_cast<T>(std::stold(tmp, &n));
                 if (n != tmp.length())
-                    return boost::none;
+                    return std::nullopt;
                 return val;
             }
-            catch (...) { return boost::none; }
+            catch (...) { return std::nullopt; }
         }
 
         static std::string ToString(T val)

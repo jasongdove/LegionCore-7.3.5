@@ -101,7 +101,7 @@ struct boss_murozond : public BossAI
         for (auto& mirrors : mirrorList)
         {
             if (auto mirror = mirrors->ToCreature())
-                if (mirror->isAlive() && mirror->IsInWorld())
+                if (mirror->IsAlive() && mirror->IsInWorld())
                     mirror->AI()->DoAction(ACTION_HOURGLASS);
         }
     }
@@ -332,7 +332,7 @@ struct npc_murozond_mirror_image : public ScriptedAI
                 if (!m_owner)
                     return;
 
-                if (!m_owner->isAlive())
+                if (!m_owner->IsAlive())
                     m_owner->ResurrectPlayer(1.0f, false);
 
                 m_owner->RemoveAura(SPELL_TEMPORAL_BLAST);

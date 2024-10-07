@@ -272,7 +272,7 @@ class spell_atbt_bound_by_fel : public AuraScript
         if (target->GetDistance(second_targ) <= 10)
             target->CastSpell(second_targ, 252623);
         else if (Unit* caster = GetCaster())
-            if (caster->isAlive())
+            if (caster->IsAlive())
                 caster->CastSpell(target, 252621);
     }
 

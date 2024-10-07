@@ -1699,7 +1699,7 @@ void Map::MoveAllCreaturesInMoveList()
                 //TODO: pets will disappear if this is outside CreatureRespawnRelocation
                 //need to check why pet is frequently relocated to an unloaded cell
                 if (c->isPet())
-                    c->ToPet()->Remove();
+                    c->ToPet()->Remove(PET_SAVE_NOT_IN_SLOT, true);
                 else
                     AddObjectToRemoveList(c);
             }
@@ -4828,7 +4828,7 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     AddToMap(summon->ToCreature());
     summon->InitSummon();
-    summon->CastPetAuras(true);
+    //summon->CastPetAuras(true);
 
     //TC_LOG_DEBUG("misc", "Map::SummonCreature summoner %u entry %i mask %i", summoner ? summoner->GetGUID() : 0, entry, mask);
 

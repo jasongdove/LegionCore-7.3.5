@@ -456,8 +456,8 @@ class spell_venoxis_toxic_link : public SpellScriptLoader
                 if (!GetCaster())
                     return;
 
-                if (bCanLink &&target1 && target1->isAlive() && target1->IsInWorld() &&
-                    target2 && target2->isAlive() && target2->IsInWorld())
+                if (bCanLink && target1 && target1->IsAlive() && target1->IsInWorld() &&
+                    target2 && target2->IsAlive() && target2->IsInWorld())
                 {
                     GetCaster()->CastSpell(target1, SPELL_TOXIC_LINK_AURA, true);
                     GetCaster()->CastSpell(target2, SPELL_TOXIC_LINK_AURA, true);

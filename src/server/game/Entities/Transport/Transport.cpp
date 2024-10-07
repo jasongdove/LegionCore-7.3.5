@@ -629,7 +629,7 @@ bool Transport::TeleportTransport(uint32 newMapid, float x, float y, float z, fl
             switch (obj->GetTypeId())
             {
                 case TYPEID_PLAYER:
-                    if (!obj->ToPlayer()->isAlive())
+                    if (!obj->ToPlayer()->IsAlive())
                         obj->ToPlayer()->ResurrectPlayer(1.0f);
                     if (obj->ToPlayer()->IsChangeMap() || !obj->ToPlayer()->TeleportTo(newMapid, destX, destY, destZ, destO, TELE_TO_NOT_LEAVE_TRANSPORT))
                         RemovePassenger(obj);

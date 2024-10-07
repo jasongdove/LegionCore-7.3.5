@@ -105,7 +105,7 @@ inline void KillRewarder::_InitGroupData()
             if (member->IsAtGroupRewardDistance(_victim))
             {
                 ++_countForRep;
-                if (!member->isAlive())
+                if (!member->IsAlive())
                     continue;
 
                 const uint8 lvl = member->getLevel();
@@ -138,7 +138,7 @@ inline void KillRewarder::_InitXP(Player* player)
 
 inline void KillRewarder::_RewardHonor(Player* player)
 {
-    if (player->isAlive())
+    if (player->IsAlive())
         player->RewardHonor(_victim, _count, -1, true);
 }
 
@@ -150,7 +150,7 @@ inline void KillRewarder::_RewardXP(Player* player, float rate)
         // 4.2.1. If player is in group, adjust XP:
         //        * set to 0 if player's level is more than maximum level of not gray member;
         //        * cut XP in half if _isFullXP is false.
-        if (_maxNotGrayMember && player->isAlive() &&
+        if (_maxNotGrayMember && player->IsAlive() &&
             _maxNotGrayMember->getLevel() >= player->getLevel())
             xp = _isFullXP ?
             uint32(xp * rate) :             // Reward FULL XP if all group members are not gray.
@@ -192,7 +192,7 @@ inline void KillRewarder::_RewardReputation(Player* player, float rate)
 inline void KillRewarder::_RewardKillCredit(Player* player)
 {
     // 4.4. Give kill credit (player must not be in group, or he must be alive or without corpse).
-    if (!_group || player->isAlive() || !player->GetCorpse())
+    if (!_group || player->IsAlive() || !player->GetCorpse())
         if (Creature* creature = _victim->ToCreature())
         {
             ObjectGuid victimGuid = creature->GetGUID();

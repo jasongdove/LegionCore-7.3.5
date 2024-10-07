@@ -171,7 +171,7 @@ public:
             {
                 if (Creature* pSpark = Unit::GetCreature(*me, *itr))
                 {
-                    if (pSpark->isAlive())
+                    if (pSpark->IsAlive())
                     {
                         pSpark->SetSpeed(MOVE_RUN, 2.0f);
                         pSpark->GetMotionMaster()->Clear();
@@ -350,7 +350,7 @@ public:
                 if (instance)
                 {
                     Creature* pIonar = instance->instance->GetCreature(instance->GetGuidData(DATA_IONAR));
-                    if (pIonar && pIonar->isAlive())
+                    if (pIonar && pIonar->IsAlive())
                     {
                         if (me->GetDistance(pIonar) > DATA_MAX_SPARK_DISTANCE)
                         {

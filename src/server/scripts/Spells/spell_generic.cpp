@@ -499,7 +499,7 @@ class spell_gen_pet_summoned : public SpellScriptLoader
                 PetType newPetType = (player->getClass() == CLASS_HUNTER) ? HUNTER_PET : SUMMON_PET;
 
                 Pet* newPet = new Pet(player, newPetType);
-                if (newPet->LoadPetFromDB(player, 0, player->GetLastPetNumber()))
+                if (newPet->LoadPetFromDB(player, 0, player->GetLastPetNumber(), true))
                 {
                     // revive the pet if it is dead
                     if (newPet->getDeathState() == DEAD || newPet->getDeathState() == CORPSE)
@@ -2854,7 +2854,7 @@ class spell_gen_summon_elemental : public SpellScriptLoader
                 if (GetCaster())
                     if (Unit* owner = GetCaster()->GetOwner())
                         if (owner->GetTypeId() == TYPEID_PLAYER) // todo: this check is maybe wrong
-                            owner->ToPlayer()->RemovePet(NULL);
+                            owner->ToPlayer()->RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT, true);
             }
 
             void Register() override
@@ -6081,7 +6081,7 @@ class spell_failure_detection_pylon : public SpellScript
     {
         targets.remove_if([](WorldObject* target)
         {
-            return target->ToPlayer()->isAlive();
+            return target->ToPlayer()->IsAlive();
         });
     }
 
@@ -6402,7 +6402,7 @@ class spell_mothers_skinning_knife : public SpellScript
         {
             if (auto cre = Unit::GetCreature(*caster, selected))
             {
-                if (cre->isAlive())
+                if (cre->IsAlive())
                     return SPELL_FAILED_BAD_TARGETS;
                 else if (cre->GetCreatureType() != CREATURE_TYPE_BEAST)
                     return SPELL_FAILED_BAD_TARGETS;

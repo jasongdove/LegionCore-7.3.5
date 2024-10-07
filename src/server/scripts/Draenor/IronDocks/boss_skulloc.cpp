@@ -74,7 +74,7 @@ struct boss_encounter_skulloc : public BossAI
         bossDiedCount = 0;
         for (uint8 i = 0; i < 3; i++)
             if (auto enfor = ObjectAccessor::GetCreature(*me, instance->GetGuidData(bossSkulloc[i])))
-                if (!enfor->isAlive())
+                if (!enfor->IsAlive())
                     bossDiedCount++;
 
         if (bossDiedCount == 3)

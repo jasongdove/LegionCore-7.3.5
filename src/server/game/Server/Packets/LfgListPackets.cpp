@@ -44,14 +44,14 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::LfgList::ListRequest cons
     data.WriteBits(join.VoiceChat.length(), 8);
     data.WriteBit(join.AutoAccept);
     data.WriteBit(join.PrivateGroup);
-    data.WriteBit(join.QuestID.is_initialized() && *join.QuestID != 0);
+    data.WriteBit(join.QuestID.has_value() && *join.QuestID != 0);
     data.FlushBits();
 
     data.WriteString(join.GroupName);
     data.WriteString(join.Comment);
     data.WriteString(join.VoiceChat);
 
-    if (join.QuestID.is_initialized() && *join.QuestID != 0)
+    if (join.QuestID.has_value() && *join.QuestID != 0)
         data << *join.QuestID;
 
     return data;
@@ -356,13 +356,13 @@ WorldPacket const* WorldPackets::LfgList::LfgListSearchResultUpdate::Write()
         for (auto const& member : update.Members)
             _worldPacket << member;
 
-        _worldPacket.WriteBit(update.UnkGuid.is_initialized());
-        _worldPacket.WriteBit(update.VirtualRealmAddress.is_initialized());
-        _worldPacket.WriteBit(update.UnkInt2.is_initialized());
+        _worldPacket.WriteBit(update.UnkGuid.has_value());
+        _worldPacket.WriteBit(update.VirtualRealmAddress.has_value());
+        _worldPacket.WriteBit(update.UnkInt2.has_value());
         _worldPacket.WriteBit(update.UnkBit96);
-        _worldPacket.WriteBit(update.UnkGuid2.is_initialized());
-        _worldPacket.WriteBit(update.LeaderGuid.is_initialized());
-        _worldPacket.WriteBit(update.UnkGuid3.is_initialized());
+        _worldPacket.WriteBit(update.UnkGuid2.has_value());
+        _worldPacket.WriteBit(update.LeaderGuid.has_value());
+        _worldPacket.WriteBit(update.UnkGuid3.has_value());
         _worldPacket.WriteBit(update.UnkBIt);
         _worldPacket.WriteBit(update.UnkBIt2);
         _worldPacket.WriteBit(update.UnkBIt3);
@@ -371,22 +371,22 @@ WorldPacket const* WorldPackets::LfgList::LfgListSearchResultUpdate::Write()
 
         _worldPacket << update.JoinRequest;
 
-        if (update.UnkGuid.is_initialized())
+        if (update.UnkGuid.has_value())
             _worldPacket << *update.UnkGuid;
 
-        if (update.VirtualRealmAddress.is_initialized())
+        if (update.VirtualRealmAddress.has_value())
             _worldPacket << *update.VirtualRealmAddress;
 
-        if (update.UnkInt2.is_initialized())
+        if (update.UnkInt2.has_value())
             _worldPacket << *update.UnkInt2;
 
-        if (update.UnkGuid2.is_initialized())
+        if (update.UnkGuid2.has_value())
             _worldPacket << *update.UnkGuid2;
 
-        if (update.LeaderGuid.is_initialized())
+        if (update.LeaderGuid.has_value())
             _worldPacket << *update.LeaderGuid;
 
-        if (update.UnkGuid3.is_initialized())
+        if (update.UnkGuid3.has_value())
             _worldPacket << *update.UnkGuid3;
     }
 

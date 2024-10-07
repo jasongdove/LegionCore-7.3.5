@@ -36,7 +36,7 @@
 
 void WorldSession::HandleRepopRequest(WorldPackets::Misc::RepopRequest& /*packet*/)
 {
-    if (GetPlayer()->isAlive() || GetPlayer()->HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
+    if (GetPlayer()->IsAlive() || GetPlayer()->HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
         return;
 
     if (GetPlayer()->HasAuraType(SPELL_AURA_PREVENT_RESURRECTION))
@@ -54,7 +54,7 @@ void WorldSession::HandleRepopRequest(WorldPackets::Misc::RepopRequest& /*packet
     }
 
     //this is spirit release confirm?
-    GetPlayer()->RemovePet(nullptr);
+    GetPlayer()->RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
     GetPlayer()->BuildPlayerRepop();
     GetPlayer()->RepopAtGraveyard();
 }
@@ -124,7 +124,7 @@ void WorldSession::HandleSetPvP(WorldPackets::Misc::SetPvP& packet)
 
 void WorldSession::HandlePortGraveyard(WorldPackets::Misc::PortGraveyard& /*packet*/)
 {
-    if (GetPlayer()->isAlive() || !GetPlayer()->HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
+    if (GetPlayer()->IsAlive() || !GetPlayer()->HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
         return;
 
     GetPlayer()->RepopAtGraveyard();
@@ -146,7 +146,7 @@ void WorldSession::HandleReclaimCorpse(WorldPackets::Misc::ReclaimCorpse& /*pack
     if (!player)
         return;
 
-    if (player->isAlive() || player->InArena() || !player->HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
+    if (player->IsAlive() || player->InArena() || !player->HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
         return;
 
     Corpse* corpse = player->GetCorpse();
@@ -169,7 +169,7 @@ void WorldSession::HandleResurrectResponse(WorldPackets::Misc::ResurrectResponse
     if (!player)
         return;
 
-    if (player->isAlive())
+    if (player->IsAlive())
         return;
 
     if (packet.Response != 0)
@@ -218,7 +218,7 @@ void WorldSession::HandleAreaTrigger(WorldPackets::Misc::AreaTrigger& packet)
     if (sScriptMgr->OnAreaTrigger(player, atEntry, packet.Entered))
         return;
 
-    if (player->isAlive())
+    if (player->IsAlive())
     {
         if (std::unordered_set<uint32> const* quests = sAreaTriggerDataStore->GetQuestsForAreaTrigger(packet.AreaTriggerID))
         {
@@ -460,7 +460,26 @@ void WorldSession::HandleSetRaidDifficulty(WorldPackets::Misc::SetRaidDifficulty
     }
 }
 
-void WorldSession::HandleRequestPetInfo(WorldPackets::PetPackets::RequestPetInfo& /*packet*/) { }
+void WorldSession::HandleRequestPetInfo(WorldPackets::PetPackets::RequestPetInfo& /*packet*/)
+{
+    // Handle the packet CMSG_REQUEST_PET_INFO - sent when player does ingame /reload command
+
+    // Packet sent when player has a pet
+    if (_player->GetPet())
+        _player->PetSpellInitialize();
+    else if (Unit* charm = _player->GetCharm())
+    {
+        // Packet sent when player has a possessed unit
+        if (charm->HasUnitState(UNIT_STATE_POSSESSED))
+            _player->PossessSpellInitialize();
+        // Packet sent when player controlling a vehicle
+        else if (charm->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+            _player->VehicleSpellInitialize();
+        // Packet sent when player has a charmed unit
+        else
+            _player->CharmSpellInitialize();
+    }
+}
 
 void WorldSession::HandleUITimeRequest(WorldPackets::Misc::UITimeRequest& /*request*/)
 {
@@ -598,7 +617,7 @@ void WorldSession::HandleSummonResponse(WorldPackets::Movement::SummonResponse& 
     if (!player)
         return;
 
-    if (!player->isAlive() || player->isInCombat())
+    if (!player->IsAlive() || player->isInCombat())
         return;
 
     player->SummonIfPossible(packet.Accept);
@@ -656,7 +675,7 @@ void WorldSession::HandleChoiceResponse(WorldPackets::Misc::ChoiceResponse& pack
         return;
 
     if (auto reward = playerChoiceResponse->Reward)
-        if (reward.is_initialized() && reward->SpellID)
+        if (reward.has_value() && reward->SpellID)
             _player->CastSpell(_player, reward->SpellID, true);
 }
 

@@ -277,7 +277,7 @@ struct boss_felhounds_encounters : public BossAI
 
     void SoulTouched(bool first = false)
     {
-        if (!me->isAlive())
+        if (!me->IsAlive())
             return;
 
         for (auto guid : GroupA)
@@ -1405,7 +1405,7 @@ struct at_felhounds_consuming_sphere : AreaTriggerAI
                     player->SendMovementForce(windAt[despawn ? tempId : oldId]); //Disable ForceMove
                     player->SendMovementForce(windAt2[despawn ? tempId : oldId]); //Disable ForceMove
 
-                    if (player->isAlive() && !despawn)
+                    if (player->IsAlive() && !despawn)
                     {
                         if (windAt[newId])
                             player->SendMovementForce(windAt[newId], *windAt[newId], 3.0f, 1, true);

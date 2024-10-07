@@ -37,6 +37,8 @@ namespace WorldPackets
 
             struct EuropaTicketConfig
             {
+                EuropaTicketConfig() { } // allows emplace() with clang
+
                 SavedThrottleObjectState ThrottleState;
                 bool TicketsEnabled = false;
                 bool BugsEnabled = false;

@@ -615,7 +615,7 @@ struct npc_ilgynoth_tentacles : public ScriptedAI
                             dist += 0.54f;
                             AddDelayedEvent(50 * i, [this, groundPos] () -> void
                             {
-                                if (me && me->isAlive() && me->isInCombat())
+                                if (me && me->IsAlive() && me->isInCombat())
                                     me->CastSpell(groundPos, SPELL_GROUND_SLAM_VISUAL, true);
                             });
                         }

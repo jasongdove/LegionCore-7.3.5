@@ -154,7 +154,7 @@ public:
             bool done = true;
             for (auto itr : fear)
             {
-                if (itr->isAlive())
+                if (itr->IsAlive())
                 {
                     done = false;
                     break;
@@ -163,7 +163,7 @@ public:
 
             for (auto itr : terror)
             {
-                if (itr->isAlive())
+                if (itr->IsAlive())
                 {
                     done = false;
                     break;
@@ -305,7 +305,7 @@ public:
             bool done = true;
             for (auto itr : fear)
             {
-                if (itr->isAlive())
+                if (itr->IsAlive())
                 {
                     done = false;
                     break;
@@ -314,7 +314,7 @@ public:
 
             for (auto itr : terror)
             {
-                if (itr->isAlive())
+                if (itr->IsAlive())
                 {
                     done = false;
                     break;

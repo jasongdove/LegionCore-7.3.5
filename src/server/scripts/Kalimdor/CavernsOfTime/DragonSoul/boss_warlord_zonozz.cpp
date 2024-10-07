@@ -218,7 +218,7 @@ class boss_warlord_zonozz: public CreatureScript
                 GetCreatureListWithEntryInGrid(trashmobs, me, NPC_CLAW_OF_GORATH_TRASH, 150);
                 for (std::list<Creature*>::const_iterator itr = trashmobs.begin(); itr != trashmobs.end(); ++itr)
                     if (Creature* trash = *itr)
-                        if (trash->isAlive())
+                        if (trash->IsAlive())
                             trash->SetInCombatWithZone();
             }
 

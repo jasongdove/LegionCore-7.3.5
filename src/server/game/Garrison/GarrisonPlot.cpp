@@ -237,7 +237,7 @@ void Plot::ClearBuildingInfo(Player* owner)
     plotPlaced.PlotInfo = &PacketInfo;
     owner->SendDirectMessage(plotPlaced.Write());
 
-    BuildingInfo.PacketInfo = boost::none;
+    BuildingInfo.PacketInfo = std::nullopt;
     db_state_building = DB_STATE_REMOVED;
 }
 

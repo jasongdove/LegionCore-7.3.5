@@ -302,7 +302,7 @@ class spell_shadopan_apparitions : public AuraScript
             caster->GetCreatureListWithEntryInGridAppend(hatredList, NPC_FRAGMENT_OF_HATRED, 20.0f);
 
             for (std::list<Creature*>::const_iterator itr = hatredList.begin(); itr != hatredList.end(); ++itr)
-                if ((*itr)->isAlive())
+                if ((*itr)->IsAlive())
                     (*itr)->CastSpell(*itr, GetSpellInfo()->Effects[EFFECT_0]->TriggerSpell, true);
         }
     }

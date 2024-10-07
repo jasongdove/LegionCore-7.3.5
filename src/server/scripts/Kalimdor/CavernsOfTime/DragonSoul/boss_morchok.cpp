@@ -307,11 +307,11 @@ class boss_morchok: public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_UPDATE_HEALTH:
-                            if (me->isAlive())
+                            if (me->IsAlive())
                             {
                                 if (pKohcrom)
                                 {
-                                    if (!pKohcrom->isAlive())
+                                    if (!pKohcrom->IsAlive())
                                         break;
 
                                     if (me->GetHealth() < 500000 || pKohcrom->GetHealth() < 500000)

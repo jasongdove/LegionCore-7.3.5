@@ -583,7 +583,7 @@ public:
                 std::list<Creature*> constructList;
                 me->GetCreatureListWithEntryInGrid(constructList, NPC_BONE_CONSTRUCT, 500.0f);
                 for (std::list<Creature*>::const_iterator itr = constructList.begin(); itr != constructList.end(); ++itr)
-                    if ((*itr) && !(*itr)->isAlive())
+                    if ((*itr) && !(*itr)->IsAlive())
                     {
                         (*itr)->Respawn();
                         (*itr)->SetInCombatWithZone();

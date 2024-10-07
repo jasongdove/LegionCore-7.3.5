@@ -1067,7 +1067,7 @@ void Spell::SelectImplicitAreaTargets(SpellEffIndex effIndex, SpellImplicitTarge
                 continue;
             if (Unit* unitTarget = target->ToUnit())
             {
-                if (targetType.GetTarget() == TARGET_MASS_RESSURECTION && unitTarget->isAlive())
+                if (targetType.GetTarget() == TARGET_MASS_RESSURECTION && unitTarget->IsAlive())
                     continue;
 
                 unitTargets.push_back(unitTarget);
@@ -2367,7 +2367,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
     // Get spell hit result on target
     TargetInfoPtr targetInfo = std::make_shared<TargetInfo>(targetGUID, effectMask);
 
-    if (target->isAlive())
+    if (target->IsAlive())
         targetInfo->AddMask(TARGET_INFO_ALIVE);
 
     if (jump)
@@ -2465,7 +2465,7 @@ void Spell::AddTargetVisualHit(Unit* target)
     // Get spell hit result on target
     TargetInfoPtr targetInfo = std::make_shared<TargetInfo>(target->GetGUID(), m_spellInfo->EffectMask);
 
-    if (target->isAlive())
+    if (target->IsAlive())
         targetInfo->AddMask(TARGET_INFO_ALIVE);
 
     // Add target to list
@@ -2637,7 +2637,7 @@ void Spell::DoAllEffectOnTarget(TargetInfoPtr target)
         return;
     }
 
-    if (unit->isAlive() != target->HasMask(TARGET_INFO_ALIVE))
+    if (unit->IsAlive() != target->HasMask(TARGET_INFO_ALIVE))
         return;
 
     //if (m_spellInfo)
@@ -3433,7 +3433,7 @@ void Spell::DoTriggersOnSpellHit(Unit* unit, uint32 effMask)
     {
         if (sSpellMgr->GetSpellInfo(m_preCastSpell))
         {
-            if(m_preCastSpell == 160029 && unit->isAlive()) // aura only for death target
+            if(m_preCastSpell == 160029 && unit->IsAlive()) // aura only for death target
             {}
             else
                 // Blizz seems to just apply aura without bothering to cast
@@ -4216,7 +4216,7 @@ void Spell::cast(bool skipCheck)
 		if (this->GetSpellInfo()->Categories.DefenseType != SPELL_DAMAGE_CLASS_NONE)
 		{
 			if (Pet* playerPet = playerCaster->GetPet())
-				if (playerPet->isAlive() && playerPet->isControlled() && (m_targets.GetTargetMask() & TARGET_FLAG_UNIT))
+				if (playerPet->IsAlive() && playerPet->isControlled() && (m_targets.GetTargetMask() & TARGET_FLAG_UNIT))
 					if (m_targets.GetObjectTarget())
 						if (Unit* target_ = m_targets.GetObjectTarget()->ToUnit())
 							playerPet->AI()->OwnerAttacked(target_);
@@ -5405,7 +5405,7 @@ void Spell::SendSpellStart()
 
     if (castFlags & CAST_FLAG_RUNE_LIST) // rune cooldowns list
     {
-        castData.RemainingRunes = boost::in_place();
+        castData.RemainingRunes.emplace();
 
         //TODO: There is a crash caused by a spell with CAST_FLAG_RUNE_LIST casted by a creature
         //The creature is the mover of a player, so HandleCastSpellOpcode uses it as the caster
@@ -5548,7 +5548,7 @@ void Spell::SendSpellGo()
 
     if (castFlags & CAST_FLAG_RUNE_LIST) // rune cooldowns list
     {
-        castData.RemainingRunes = boost::in_place();
+        castData.RemainingRunes.emplace();
         //TODO: There is a crash caused by a spell with CAST_FLAG_RUNE_LIST casted by a creature
         //The creature is the mover of a player, so HandleCastSpellOpcode uses it as the caster
         if (Player* player = m_caster->ToPlayer())
@@ -5738,7 +5738,7 @@ void Spell::SendChannelStart(uint32 duration)
 
     if (schoolImmunityMask || mechanicImmunityMask)
     {
-        spellChannelStart.InterruptImmunities = boost::in_place();
+        spellChannelStart.InterruptImmunities.emplace();
         spellChannelStart.InterruptImmunities->SchoolImmunities = schoolImmunityMask;
         spellChannelStart.InterruptImmunities->Immunities = mechanicImmunityMask;
     }
@@ -6677,7 +6677,7 @@ SpellCastResult Spell::CheckCast(bool strict)
         return castResult;
 
     // check death state
-    if (!m_caster->isAlive() && !m_spellInfo->IsPassive() && !(m_spellInfo->HasAttribute(SPELL_ATTR0_CASTABLE_WHILE_DEAD) || (IsTriggered() && !m_triggeredByAuraSpell)))
+    if (!m_caster->IsAlive() && !m_spellInfo->IsPassive() && !(m_spellInfo->HasAttribute(SPELL_ATTR0_CASTABLE_WHILE_DEAD) || (IsTriggered() && !m_triggeredByAuraSpell)))
         return SPELL_FAILED_CASTER_DEAD;
 
     if (!strict && m_spellInfo->talentId)
@@ -7224,7 +7224,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                             {
                                 if (Player* targetplr = target->ToPlayer())
                                 {
-                                    if (targetplr->isAlive())
+                                    if (targetplr->IsAlive())
                                         return SPELL_FAILED_BAD_TARGETS;
 
                                     if (targetplr->GetTeam() == HORDE && plr->GetTeam() == HORDE)
@@ -7385,7 +7385,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 {
                     if (Unit* target = m_targets.GetUnitTarget())
                     {
-                        if (!target->isAlive())
+                        if (!target->IsAlive())
                             return SPELL_FAILED_BAD_TARGETS;
 
                         if (Vehicle* vehicleTar = target->GetVehicle())
@@ -7527,9 +7527,22 @@ SpellCastResult Spell::CheckCast(bool strict)
             }
             case SPELL_EFFECT_SUMMON_DEAD_PET:
             {
-                Creature* pet = m_caster->GetGuardianPet();
-                if (pet && pet->isAlive())
+                Player* playerCaster = m_caster->ToPlayer();
+                if (!playerCaster || !playerCaster->GetPetStable())
+                    return SPELL_FAILED_BAD_TARGETS;
+
+                Pet* pet = playerCaster->GetPet();
+                if (pet && pet->IsAlive())
                     return SPELL_FAILED_ALREADY_HAVE_SUMMON;
+
+                PetStable const* petStable = playerCaster->GetPetStable();
+                auto deadPetItr = std::find_if(petStable->ActivePets.begin(), petStable->ActivePets.end(), [](Optional<PetStable::PetInfo> const& petInfo)
+                {
+                    return petInfo && !petInfo->Health;
+                });
+
+                if (deadPetItr == petStable->ActivePets.end())
+                    return SPELL_FAILED_BAD_TARGETS;
 
                 break;
             }
@@ -7565,11 +7578,11 @@ SpellCastResult Spell::CheckCast(bool strict)
             }
             case SPELL_EFFECT_SUMMON_PET:
             {
-                if (m_caster->GetPetGUID())                  //let warlock do a replacement summon
+                if (!m_caster->GetPetGUID().IsEmpty()) // let warlock do a replacement summon
                 {
                     if (m_caster->IsPlayer() && m_caster->getClass() == CLASS_WARLOCK)
                     {
-                        if (strict)                         //starting cast, trigger pet stun (cast by pet so it doesn't attack player)
+                        if (strict) // starting cast, trigger pet stun (cast by pet so it doesn't attack player)
                             if (Pet* pet = m_caster->ToPlayer()->GetPet())
                             {
                                 pet->CastSpell(pet, 32752, true, nullptr, nullptr, pet->GetGUID());
@@ -7581,6 +7594,65 @@ SpellCastResult Spell::CheckCast(bool strict)
 
                 if (!m_caster->GetCharmGUID().IsEmpty())
                     return SPELL_FAILED_ALREADY_HAVE_CHARM;
+
+                Player* playerCaster = m_caster->ToPlayer();
+                if (playerCaster && playerCaster->GetPetStable())
+                {
+                    Optional<PetSaveMode> petSlot;
+                    if (!m_spellInfo->GetEffect(i, m_diffMode)->MiscValue)
+                    {
+                        petSlot = PetSaveMode(m_spellInfo->GetEffect(i, m_diffMode)->CalcValue());
+
+                        // no pet can be summoned if any pet is dead
+                        for (Optional<PetStable::PetInfo> const& activePet : playerCaster->GetPetStable()->ActivePets)
+                        {
+                            if (activePet && !activePet->Health)
+                            {
+                                playerCaster->SendPetTameResult(PetTameResult::Dead);
+                                return SPELL_FAILED_DONT_REPORT;
+                            }
+                        }
+                    }
+
+                    std::pair<PetStable::PetInfo const*, PetSaveMode> info = Pet::GetLoadPetInfo(*playerCaster->GetPetStable(), m_spellInfo->GetEffect(i, m_diffMode)->MiscValue, 0, petSlot);
+                    if (info.first)
+                    {
+                        if (info.first->Type == HUNTER_PET)
+                        {
+                            CreatureTemplate const* creatureInfo = sObjectMgr->GetCreatureTemplate(info.first->CreatureId);
+                            if (!creatureInfo || !creatureInfo->isTameable(playerCaster))
+                            {
+//                        // if problem in exotic pet
+//                        if (creatureInfo && creatureInfo->IsTameable(true))
+//                            playerCaster->SendPetTameResult(PetTameResult::CantControlExotic);
+//                        else
+                                playerCaster->SendPetTameResult(PetTameResult::NoPetAvailable);
+                                return SPELL_FAILED_DONT_REPORT;
+                            }
+                        }
+                    }
+                    else if (!m_spellInfo->GetEffect(i, m_diffMode)->MiscValue) // when miscvalue is present it is allowed to create new
+                    {
+                        playerCaster->SendPetTameResult(PetTameResult::NoPetAvailable);
+                        return SPELL_FAILED_DONT_REPORT;
+                    }
+                }
+
+                break;
+            }
+            case SPELL_EFFECT_DISMISS_PET:
+            {
+                Player* playerCaster = m_caster->ToPlayer();
+                if (!playerCaster)
+                    return SPELL_FAILED_BAD_TARGETS;
+
+                Pet* pet = playerCaster->GetPet();
+                if (!pet)
+                    return SPELL_FAILED_NO_PET;
+
+                if (!pet->IsAlive())
+                    return SPELL_FAILED_TARGETS_DEAD;
+
                 break;
             }
             case SPELL_EFFECT_SUMMON_PLAYER:
@@ -7925,7 +7997,7 @@ SpellCastResult Spell::CheckCast(bool strict)
             {
                 // not allow cast fly spells if not have req. skills  (all spells is self target)
                 // allow always ghost flight spells
-                if (m_originalCaster && m_originalCaster->IsPlayer() && m_originalCaster->isAlive())
+                if (m_originalCaster && m_originalCaster->IsPlayer() && m_originalCaster->IsAlive())
                 {
                     Battlefield* Bf = sBattlefieldMgr->GetBattlefieldToZoneId(m_originalCaster->GetCurrentZoneID());
                     if (AreaTableEntry const* area = sAreaTableStore.LookupEntry(m_originalCaster->GetCurrentAreaID()))
@@ -8012,7 +8084,7 @@ SpellCastResult Spell::CheckPetCast(Unit* target)
     // dead owner (pets still alive when owners ressed?)
     if (Unit* owner = m_caster->GetCharmerOrOwner())
     {
-        if (!owner->isAlive())
+        if (!owner->IsAlive())
             return SPELL_FAILED_CASTER_DEAD;
 
         if (Player* player = owner->ToPlayer())
@@ -9312,7 +9384,7 @@ bool SpellEvent::IsDeletable() const
 
 bool Spell::IsValidDeadOrAliveTarget(Unit const* target) const
 {
-    if (target->isAlive())
+    if (target->IsAlive())
         return !m_spellInfo->IsRequiringDeadTarget();
     if (m_spellInfo->IsAllowingDeadTarget())
         return true;

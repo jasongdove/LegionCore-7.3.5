@@ -56,6 +56,8 @@ namespace WorldPackets
 
             struct GuildInfo
             {
+                GuildInfo() { } // allows emplace() with clang
+
                 ObjectGuid GuildGUID;
                 uint32 VirtualRealmAddress = 0;
                 std::string GuildName;

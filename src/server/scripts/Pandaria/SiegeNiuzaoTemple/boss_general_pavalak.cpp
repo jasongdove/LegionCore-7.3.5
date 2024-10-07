@@ -286,7 +286,7 @@ struct boss_general_pavalak : public BossAI
                 {
                     if (Player* player = itr->getSource())
                     {
-                        if (player->isAlive() && !player->isGameMaster() && player->GetCurrentAreaID() == 6411)
+                        if (player->IsAlive() && !player->isGameMaster() && player->GetCurrentAreaID() == 6411)
                         {
                             playersAlive = true;
                             break;

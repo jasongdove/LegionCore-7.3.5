@@ -88,7 +88,7 @@ public:
             Talk(SAY_DEATH);
 
             if (Creature* dalliah = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_DALLIAH)))
-                if (dalliah->isAlive() && !dalliah->isInCombat())
+                if (dalliah->IsAlive() && !dalliah->isInCombat())
                     dalliah->AI()->SetData(1, 1);
         }
 
@@ -236,7 +236,7 @@ public:
                     break;
                 case EVENT_ME_FIRST:
                     if (Creature* dalliah = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_DALLIAH)))
-                        if (dalliah->isAlive() && !dalliah->isInCombat())
+                        if (dalliah->IsAlive() && !dalliah->isInCombat())
                             dalliah->AI()->Talk(SAY_AGGRO_SOCCOTHRATES_FIRST);
                     break;
                 default:

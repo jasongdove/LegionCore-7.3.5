@@ -52,7 +52,7 @@ bool ThreatCalcHelper::isValidProcess(Unit* hatedUnit, Unit* hatingUnit, SpellIn
     if (hatedUnit->IsPlayer() && hatedUnit->ToPlayer()->isGameMaster())
         return false;
 
-    if (!hatedUnit->isAlive() || !hatingUnit->isAlive())
+    if (!hatedUnit->IsAlive() || !hatingUnit->IsAlive())
         return false;
 
     if (!hatedUnit->IsInMap(hatingUnit) || !hatedUnit->InSamePhase(hatingUnit))
@@ -111,7 +111,7 @@ void HostileReference::addThreat(float modThreat)
     if (isValid() && modThreat >= 0.0f)
     {
         Unit* victimOwner = getTarget()->GetCharmerOrOwner();
-        if (victimOwner && victimOwner->isAlive())
+        if (victimOwner && victimOwner->IsAlive())
             getSource()->addThreat(victimOwner, 0.0f);     // create a threat to the owner of a pet, if the pet attacks
     }
 }

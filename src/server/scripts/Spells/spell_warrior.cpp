@@ -58,7 +58,7 @@ public:
             {
                 if (Unit* target = GetOriginalTarget())
                 {
-                    if (target->isAlive())
+                    if (target->IsAlive())
                         SetEffectValue(CalculatePct(caster->GetPowerCost(POWER_RAGE), GetSpellInfo()->Effects[EFFECT_4]->BasePoints));
                 }
             }

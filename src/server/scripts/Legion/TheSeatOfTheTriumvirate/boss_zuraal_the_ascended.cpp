@@ -117,7 +117,7 @@ public:
             me->SetDisableGravity(true);
             AddsDiedCount = 0;
             phase = 0;
-            if (me->isAlive())
+            if (me->IsAlive())
                 SummonAdds();
         }
 
@@ -278,7 +278,7 @@ public:
             Map::PlayerList const &players = me->GetMap()->GetPlayers();
             for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
                 if (Player* player = itr->getSource()->ToPlayer())
-                    if (!player->isGameMaster() && player->isAlive())
+                    if (!player->isGameMaster() && player->IsAlive())
                         if (player->IsRangedDamageDealer(false) || player->IsMeleeDamageDealer())
                             DPSSelector.push_back(player);
                     
@@ -663,7 +663,7 @@ public:
         {
             instance = me->GetInstanceScript();
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            if (me->isAlive())
+            if (me->IsAlive())
                 instance->SetBossState(DATA_ALLERIA2, NOT_STARTED);
         }
 

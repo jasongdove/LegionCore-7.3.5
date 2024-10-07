@@ -287,7 +287,7 @@ public:
                                 GetCreatureListWithEntryInGrid(lspectatorList, me, CREATURE_SPECTATOR, 100.0f);
                                 for (std::list<Creature*>::iterator itr = lspectatorList.begin(); itr != lspectatorList.end(); ++itr)
                                 {
-                                    if ((*itr)->isAlive())
+                                    if ((*itr)->IsAlive())
                                     {
                                         (*itr)->SetStandState(UNIT_STAND_STATE_STAND);
                                         (*itr)->SetWalk(false);

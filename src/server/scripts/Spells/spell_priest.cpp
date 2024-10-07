@@ -588,7 +588,7 @@ class spell_pri_shadow_word_death : public SpellScriptLoader
                     if (Unit* target = GetExplTargetUnit())
                     {
                         float bp0 = 1500.f;
-                        if (target->isAlive())
+                        if (target->IsAlive())
                             caster->CastCustomSpell(caster, 190714, &bp0, NULL, NULL, true);
                         else
                             caster->CastSpell(caster, 190714, true);
@@ -1417,7 +1417,7 @@ class spell_pri_penance_cast : public SpellScriptLoader
                 {
                     if (Unit* unitTarget = GetHitUnit())
                     {
-                        if (!unitTarget->isAlive())
+                        if (!unitTarget->IsAlive())
                             return;
  
                         if (_player->IsFriendlyTo(unitTarget))

@@ -780,7 +780,7 @@ WorldPacket const* WorldPackets::Garrison::QueryGarrisonCreatureNameResponse::Wr
 {
     _worldPacket << InqueKey;
     _worldPacket << NpcGUID;
-    _worldPacket.WriteBit(Name.is_initialized());
+    _worldPacket.WriteBit(Name.has_value());
     _worldPacket.FlushBits();
 
     if (Name)

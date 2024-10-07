@@ -343,7 +343,7 @@ public:
         {
             if (searchPlrTimer <= diff)
             {
-                if (!playerTarget || !playerTarget->isAlive())
+                if (!playerTarget || !playerTarget->IsAlive())
                 {
                     if (!spawn)
                     {

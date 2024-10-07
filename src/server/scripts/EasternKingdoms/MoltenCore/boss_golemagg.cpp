@@ -146,7 +146,7 @@ class mob_core_rager : public CreatureScript
 
                 if (Creature* pGolemagg = instance->instance->GetCreature(instance->GetGuidData(BOSS_GOLEMAGG_THE_INCINERATOR)))
                 {
-                    if (pGolemagg->isAlive())
+                    if (pGolemagg->IsAlive())
                     {
                         me->AddAura(SPELL_GOLEMAGG_TRUST, me);
                         Talk(EMOTE_LOWHP);

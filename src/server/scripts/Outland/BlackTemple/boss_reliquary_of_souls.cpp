@@ -292,7 +292,7 @@ public:
                     Timer = 1000;
                     if (Phase == 3)
                     {
-                        if (!Essence->isAlive())
+                        if (!Essence->IsAlive())
                             DoCast(me, 7, true);
                         else return;
                     }
@@ -444,7 +444,7 @@ public:
             for (; itr != m_threatlist.end(); ++itr)
             {
                 Unit* unit = Unit::GetUnit(*me, (*itr)->getUnitGuid());
-                if (unit && unit->isAlive() && (unit->GetTypeId() == TYPEID_PLAYER)) // Only alive players
+                if (unit && unit->IsAlive() && (unit->GetTypeId() == TYPEID_PLAYER)) // Only alive players
                     targets.push_back(unit);
             }
             if (targets.empty())

@@ -193,7 +193,7 @@ public:
 
                 me->AddDelayedEvent(1000, [this]() -> void
                 {
-                    if (me->isAlive() && me->isInCombat())
+                    if (me->IsAlive() && me->isInCombat())
                         SetAnomalySpeed();
                 });
             }
@@ -1235,7 +1235,7 @@ class spell_anomaly_temporal_orb : public SpellScriptLoader
             void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes mode)
             {
                 Unit* caster = GetCaster();
-                if (!caster || !GetTarget() || !caster->isAlive() || !caster->isInCombat())
+                if (!caster || !GetTarget() || !caster->IsAlive() || !caster->isInCombat())
                     return;
 
                 if (GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
@@ -1255,7 +1255,7 @@ class spell_anomaly_temporal_orb : public SpellScriptLoader
                             if (!caster)
                                 return;
 
-                            if (caster->isAlive() && caster->isInCombat())
+                            if (caster->IsAlive() && caster->isInCombat())
                                 caster->CastSpell(pos, spellID, true);
                         });
                         angle += 0.1744f;

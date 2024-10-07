@@ -86,7 +86,7 @@ struct boss_illysanna_ravencrest : public BossAI
 {
     boss_illysanna_ravencrest(Creature* creature) : BossAI(creature, DATA_ILLYSANNA)
     {
-        if (me->isAlive())
+        if (me->IsAlive())
             me->AddDelayedEvent(500, [this]() -> void { Intro(); });
     }
 
@@ -651,7 +651,7 @@ struct npc_brh_wyrmtongue_scavenger : public ScriptedAI
                 hyperactiveTimer = 1000;
                 auto target = ObjectAccessor::GetUnit(*me, fixateGUID);
 
-                if (target && target->isAlive() && target->HasAura(SPELL_HYPERACTIVE_AT, me->GetGUID()))
+                if (target && target->IsAlive() && target->HasAura(SPELL_HYPERACTIVE_AT, me->GetGUID()))
                     me->GetMotionMaster()->MovePoint(1, target->GetPosition(), false);
                 else if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 60.0f, true))
                 {

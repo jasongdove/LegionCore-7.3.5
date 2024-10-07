@@ -309,7 +309,7 @@ public:
                         RaidWiped = true;
                         for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                         {
-                            if (i->getSource()->isAlive() && !i->getSource()->isGameMaster())
+                            if (i->getSource()->IsAlive() && !i->getSource()->isGameMaster())
                             {
                                 RaidWiped = false;
                                 break;
@@ -609,7 +609,7 @@ public:
                     InstanceMap::PlayerList const &PlayerList = map->GetPlayers();
                     for (InstanceMap::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                     {
-                        if (i->getSource()->isAlive())
+                        if (i->getSource()->IsAlive())
                         {
                             if (i->getSource()->GetQuestStatus(9645) == QUEST_STATUS_INCOMPLETE)
                                 i->getSource()->CompleteQuest(9645);

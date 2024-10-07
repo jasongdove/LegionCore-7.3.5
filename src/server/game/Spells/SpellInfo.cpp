@@ -2397,7 +2397,7 @@ SpellCastResult SpellInfo::CheckTarget(Unit const* caster, WorldObject const* ta
     if (HasAttribute(SPELL_ATTR3_ONLY_TARGET_PLAYERS) && !unitTarget->ToPlayer())
         return SPELL_FAILED_TARGET_NOT_PLAYER;
 
-    if (!IsAllowingDeadTarget() && !unitTarget->isAlive())
+    if (!IsAllowingDeadTarget() && !unitTarget->IsAlive())
         return SPELL_FAILED_TARGETS_DEAD;
 
     // check this flag only for implicit targets (chain and area), allow to explicitly target units for spells like Shield of Righteousness

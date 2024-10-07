@@ -640,7 +640,7 @@ struct boss_kargath_bladefist : public BossAI
                 DoModifyThreatPercent(target, -99);
                 break;
             case BerserkerRushDamage:
-                if (target->isAlive() || !IsMythicRaid())
+                if (target->IsAlive() || !IsMythicRaid())
                     break;
 
                 GrantFavorToAllPlayers(me, -25, BerserkerRushDamage);
@@ -685,7 +685,7 @@ struct boss_kargath_bladefist : public BossAI
         {
             if (Player* target = Player::GetPlayer(*me, m_BerserkerRushTarget))
             {
-                if (!target->isAlive())
+                if (!target->IsAlive())
                 {
                     EndBerserkerRush(target);
                     return;
@@ -864,7 +864,7 @@ struct boss_kargath_bladefist : public BossAI
             /// Don't spawn two Iron Bombers at the same position
             if (Creature* ironBomber = creature->FindNearestCreature(IronBomber, 3.0f))
             {
-                if (ironBomber->isAlive())
+                if (ironBomber->IsAlive())
                     return true;
                 else
                     ironBomber->DespawnOrUnsummon();
@@ -1689,7 +1689,7 @@ struct npc_highmaul_ravenous_bloodmaw : public ScriptedAI
 
             for (Player* player : playerList)
             {
-                if (!player->isAlive() || player->GetPositionZ() > 50.0f)
+                if (!player->IsAlive() || player->GetPositionZ() > 50.0f)
                     continue;
 
                 me->AddAura(InThePitAura, player);
@@ -2460,7 +2460,7 @@ struct npc_highmaul_areatrigger_for_crowd : public ScriptedAI
 
                 if (Creature* vulgor = m_Instance->GetCreature((Vulgor)))
                 {
-                    if (vulgor->isAlive())
+                    if (vulgor->IsAlive())
                     {
                         if (Creature* john = m_Instance->GetCreature((JhornTheMad)))
                             john->AI()->DoAction(StartIntro);

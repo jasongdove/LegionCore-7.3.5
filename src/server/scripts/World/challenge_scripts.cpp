@@ -317,7 +317,7 @@ class spell_challengers_burden : public AuraScript
     // Grievous
     void OnTick(AuraEffect const* aurEff)
     {
-        if (!aurEff->GetAmount() || !GetUnitOwner() || !GetUnitOwner()->isAlive())
+        if (!aurEff->GetAmount() || !GetUnitOwner() || !GetUnitOwner()->IsAlive())
             return;
 
         if (GetUnitOwner()->HealthBelowPct(90))

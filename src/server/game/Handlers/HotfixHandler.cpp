@@ -39,7 +39,7 @@ void WorldSession::HandleHotfixRequest(WorldPackets::Hotfix::HotfixRequest& pack
             hotfixData.RecordID = *hotfix;
             if (storage->HasRecord(hotfixData.RecordID))
             {
-                hotfixData.Data = boost::in_place();
+                hotfixData.Data.emplace();
                 storage->WriteRecord(hotfixData.RecordID, GetSessionDbcLocale(), *hotfixData.Data);
             }
 

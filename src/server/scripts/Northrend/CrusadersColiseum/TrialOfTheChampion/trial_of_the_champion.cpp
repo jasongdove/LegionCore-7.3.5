@@ -1368,7 +1368,7 @@ and teleporting and unmounting them after defeating the mounted waves.
                     if (player->isGameMaster())
                         continue;
 
-                    if (player->isAlive())
+                    if (player->IsAlive())
                     {
                         if (Creature* mount = player->GetVehicleCreatureBase())
                         {

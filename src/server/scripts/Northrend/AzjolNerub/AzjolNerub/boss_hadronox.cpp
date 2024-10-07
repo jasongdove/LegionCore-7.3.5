@@ -94,7 +94,7 @@ public:
         void KilledUnit(Unit* Victim) override
         {
             // not sure if this aura check is correct, I think it is though
-            if (!Victim || !Victim->HasAura(DUNGEON_MODE(SPELL_LEECH_POISON, H_SPELL_LEECH_POISON)) || !me->isAlive())
+            if (!Victim || !Victim->HasAura(DUNGEON_MODE(SPELL_LEECH_POISON, H_SPELL_LEECH_POISON)) || !me->IsAlive())
                 return;
 
             me->ModifyHealth(int32(me->CountPctFromMaxHealth(10)));

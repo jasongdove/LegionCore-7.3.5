@@ -87,7 +87,7 @@ public:
         {
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);      
             events.Reset();
-            if (me->isAlive() && me->GetAnyOwner())
+            if (me->IsAlive() && me->GetAnyOwner())
                 AttackStart(me->GetAnyOwner());
         }
         
@@ -238,7 +238,7 @@ public:
                             me->CastSpell(me, SPELL_BURNING_GROUND);
                         break;
                     case EVENT_2:
-                        if (!me->GetAnyOwner() || !me->GetAnyOwner()->isAlive())
+                        if (!me->GetAnyOwner() || !me->GetAnyOwner()->IsAlive())
                             me->DespawnOrUnsummon();
                         else
                             events.RescheduleEvent(EVENT_2, 1000);

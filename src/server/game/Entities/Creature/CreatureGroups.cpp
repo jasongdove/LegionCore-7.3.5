@@ -235,7 +235,7 @@ void CreatureGroup::MemberAttackStart(Creature* member, Unit* target)
         if (itr.first == member)
             continue;
 
-        if (!itr.first->isAlive() || !itr.first->IsInWorld())
+        if (!itr.first->IsAlive() || !itr.first->IsInWorld())
             continue;
 
         if (itr.first->getVictim())
@@ -253,7 +253,7 @@ void CreatureGroup::FormationReset(bool dismiss)
 {
     for (auto& itr : m_members)
     {
-        if (itr.first != m_leader && itr.first->isAlive() && itr.first->IsInWorld())
+        if (itr.first != m_leader && itr.first->IsAlive() && itr.first->IsInWorld())
         {
             if (dismiss)
                 itr.first->GetMotionMaster()->Initialize();
@@ -278,7 +278,7 @@ void CreatureGroup::LeaderMoveTo(float x, float y, float z)
     for (auto& itr : m_members)
     {
         Creature* member = itr.first;
-        if (member == m_leader || !member->isAlive() || member->getVictim() || !member->IsInWorld())
+        if (member == m_leader || !member->IsAlive() || member->getVictim() || !member->IsInWorld())
             continue;
 
         if (member->IsInEvadeMode())

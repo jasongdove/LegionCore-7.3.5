@@ -395,7 +395,7 @@ class npc_neptulon : public CreatureScript
                 Map::PlayerList const &pPlayerList = me->GetMap()->GetPlayers();
                 if (!pPlayerList.isEmpty())
                     for (Map::PlayerList::const_iterator itr = pPlayerList.begin(); itr != pPlayerList.end(); ++itr)
-                        if (itr->getSource()->isAlive())
+                        if (itr->getSource()->IsAlive())
                             AliveList.push_back(itr->getSource());
 
                 if (!AliveList.empty())
@@ -413,7 +413,7 @@ class npc_neptulon : public CreatureScript
 
                 if (!PlayerList.isEmpty())
                     for (Map::PlayerList::const_iterator itr = PlayerList.begin(); itr != PlayerList.end(); ++itr)
-                        if (itr->getSource()->isAlive())
+                        if (itr->getSource()->IsAlive())
                             return true;
 
                 return false;

@@ -175,12 +175,12 @@ Position Eyebeamtargetpos = { 5965.542f, 4512.609f, -2.433161f };
 
 enum CreatureText
 {
-    SAY_ENTERCOMBAT          = 1, //Узрите силу Бездны!                                    35336
-    SAY_KILL_PLAYER          = 2, //Наблюдайте за своей смертью.                           35345
-    SAY_FORCE_OF_WILL        = 3, //Я слежу за вами…                                       35344
-    SAY_COLORBLIND           = 4, //Туманы хранят много секретов, если знать, где искать…  35343
-    SAY_DISINTEGRATION_START = 5, //Смотрите под ноги…                                     35342
-    SAY_DIE                  = 6, //Бездна зовёт меня…                                     35338
+    SAY_ENTERCOMBAT          = 1, //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ!                                    35336
+    SAY_KILL_PLAYER          = 2, //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.                           35345
+    SAY_FORCE_OF_WILL        = 3, //пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ                                       35344
+    SAY_COLORBLIND           = 4, //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ  35343
+    SAY_DISINTEGRATION_START = 5, //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ                                     35342
+    SAY_DIE                  = 6, //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ                                     35338
 };
 
 Position triggerspawnpos[12] =
@@ -2256,7 +2256,7 @@ public:
                 uint32 healcount = dmg * 0.25f; //25% from dmg
                 if (InstanceScript* instance = GetCaster()->GetInstanceScript())
                     if (Creature* durumu = GetCaster()->GetCreature(*GetCaster(), instance->GetGuidData(NPC_DURUMU)))
-                        if (durumu->isAlive())
+                        if (durumu->IsAlive())
                             GetCaster()->CastCustomSpell(SPELL_LIFE_DRAIN_HEAL, SPELLVALUE_BASE_POINT0, healcount, durumu, true);
             }
         }

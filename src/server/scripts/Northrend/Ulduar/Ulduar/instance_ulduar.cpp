@@ -278,7 +278,7 @@ public:
             {
                 if (Player* pPlayer = i->getSource())
                 {
-                    if (pPlayer->isAlive() && pPlayer->GetVehicle())
+                    if (pPlayer->IsAlive() && pPlayer->GetVehicle())
                     {
                         if (Creature* vehicle = pPlayer->GetVehicleBase()->ToCreature())
                         {
@@ -592,7 +592,7 @@ public:
             {
                 // Flame Leviathan's Tower Event triggers
                 Creature* FlameLeviathan = instance->GetCreature(uiLeviathan);
-                if (FlameLeviathan && FlameLeviathan->isAlive()) // No leviathan, no event triggering ;)
+                if (FlameLeviathan && FlameLeviathan->IsAlive()) // No leviathan, no event triggering ;)
                     switch (eventId)
                     {
                         case EVENT_TOWER_OF_STORM_DESTROYED:
@@ -766,7 +766,7 @@ public:
                 if (!player)
                     continue;
                 
-                if (player->isAlive() && !player->isGameMaster())
+                if (player->IsAlive() && !player->isGameMaster())
                     return false;
             }
             return true;

@@ -604,7 +604,7 @@ void BattlegroundStrandOfTheAncients::TeleportPlayers()
             if (player->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
                 player->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT);
 
-            if (!player->isAlive())
+            if (!player->IsAlive())
             {
                 player->ResurrectPlayer(1.0f);
                 player->SpawnCorpseBones();

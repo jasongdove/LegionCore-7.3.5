@@ -150,7 +150,7 @@ struct boss_sha_of_doubt : public BossAI
                 DoCast(SPELL_BOUNDS_OF_REALITY_2);
                 instance->instance->ApplyOnEveryPlayer([&](Player* player)
                 {
-                    if (player->isAlive())
+                    if (player->IsAlive())
                         player->CastSpell(player, SPELL_FIGMENT_OF_DOUBT_3, true);
                 });
 

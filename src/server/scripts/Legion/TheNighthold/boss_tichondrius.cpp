@@ -410,7 +410,7 @@ struct npc_tichonrius_tainted_blood : ScriptedAI
 
                     if (Player* target = Player::GetPlayer(*me, targetGuid))
                     {
-                        if (target->isAlive())
+                        if (target->IsAlive())
                         {
                             DoResetThreat();
                             me->AddThreat(target, 1000.0f);

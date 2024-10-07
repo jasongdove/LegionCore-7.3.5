@@ -174,6 +174,8 @@ namespace WorldPackets
 
             struct SupportTicketMailInfo
             {
+                SupportTicketMailInfo() { } // allows emplace() with clang
+
                 int32 MailID = 0;
                 std::string MailSubject;
                 std::string MailBody;
@@ -200,6 +202,8 @@ namespace WorldPackets
 
             struct SupportTicketLFGListSearchResult
             {
+                SupportTicketLFGListSearchResult() { } // allows emplace() with clang
+
                 LFG::RideTicket RideTicket;
                 ObjectGuid LastTitleAuthorGuid;
                 ObjectGuid LastDescriptionAuthorGuid;

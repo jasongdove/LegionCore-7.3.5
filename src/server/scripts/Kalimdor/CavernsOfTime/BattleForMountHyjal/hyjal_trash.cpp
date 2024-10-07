@@ -452,7 +452,7 @@ public:
                 if (instance->GetData(DATA_ALLIANCE_RETREAT))//2.alliance boss down, attack thrall
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_THRALL));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
             }
@@ -493,7 +493,7 @@ public:
                         if (instance->GetData(DATA_ALLIANCE_RETREAT) && !instance->GetData(DATA_HORDE_RETREAT))
                         {
                             Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_THRALL));
-                            if (target && target->isAlive())
+                            if (target && target->IsAlive())
                                 me->AddThreat(target, 0.0f);
                         } else if (instance->GetData(DATA_ALLIANCE_RETREAT) && instance->GetData(DATA_HORDE_RETREAT)){
                             //do overrun
@@ -574,13 +574,13 @@ public:
                 if (instance->GetData(DATA_ALLIANCE_RETREAT))//2.alliance boss down, attack thrall
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_THRALL));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
                 else
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_JAINAPROUDMOORE));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
             }
@@ -676,13 +676,13 @@ public:
                 if (instance->GetData(DATA_ALLIANCE_RETREAT))//2.alliance boss down, attack thrall
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_THRALL));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
                 else
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_JAINAPROUDMOORE));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
             }
@@ -790,13 +790,13 @@ public:
                 if (instance->GetData(DATA_ALLIANCE_RETREAT))//2.alliance boss down, attack thrall
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_THRALL));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
                 else
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_JAINAPROUDMOORE));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
             }
@@ -906,13 +906,13 @@ public:
                 if (instance->GetData(DATA_ALLIANCE_RETREAT))//2.alliance boss down, attack thrall
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_THRALL));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
                 else
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_JAINAPROUDMOORE));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
             }
@@ -1005,13 +1005,13 @@ public:
                 if (instance->GetData(DATA_ALLIANCE_RETREAT))//2.alliance boss down, attack thrall
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_THRALL));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
                 else
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_JAINAPROUDMOORE));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
             }
@@ -1095,13 +1095,13 @@ public:
                 if (instance->GetData(DATA_ALLIANCE_RETREAT))//2.alliance boss down, attack thrall
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_THRALL));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
                 else
                 {
                     Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_JAINAPROUDMOORE));
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                         me->AddThreat(target, 0.0f);
                 }
             }
@@ -1186,7 +1186,7 @@ public:
             if (waypointId == 2 && instance && !IsOverrun)
             {
                 Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_THRALL));
-                if (target && target->isAlive())
+                if (target && target->IsAlive())
                 {
                     me->AddThreat(target, 0.0f);
                     DoCast(target, SPELL_FROST_BREATH, true);
@@ -1303,7 +1303,7 @@ public:
             if (waypointId == 2 && instance && !IsOverrun)
             {
                 Unit* target = Unit::GetUnit(*me, instance->GetGuidData(DATA_THRALL));
-                if (target && target->isAlive())
+                if (target && target->IsAlive())
                 {
                     me->AddThreat(target, 0.0f);
                     DoCast(target, SPELL_GARGOYLE_STRIKE, true);

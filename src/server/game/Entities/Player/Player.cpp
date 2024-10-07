@@ -181,9 +181,6 @@ m_achievementMgr(sf::safe_ptr<AchievementMgr<Player>>(this))
     m_speakCount = 0;
     CustomMultiDonate = 0;
 
-    m_currentPetNumber = 0;
-    m_currentSummonedSlot = PET_SLOT_HUNTER_FIRST;
-
     m_objectType |= TYPEMASK_PLAYER;
     m_objectTypeId = TYPEID_PLAYER;
 
@@ -298,7 +295,6 @@ m_achievementMgr(sf::safe_ptr<AchievementMgr<Player>>(this))
     //when dying/logging out
     m_oldpetspell = 0;
     m_lastpetnumber = 0;
-    m_LastPetEntry = 0;
 
     //kill honor sistem
     m_flushKills = false;
@@ -401,7 +397,6 @@ m_achievementMgr(sf::safe_ptr<AchievementMgr<Player>>(this))
 
     memset(_voidStorageItems, 0, sizeof(_voidStorageItems));
 
-    m_PetSlots.resize(PET_SLOT_LAST, 0);
     realmTransferid = 0;
     m_scenarioId = 0;
 
@@ -546,7 +541,6 @@ Player::~Player()
     m_itemDuration.clear();
     m_itemSoulboundTradeable.clear();
     m_channels.clear();
-    m_PetSlots.clear();
     _battlePets.clear();
     AllArtifacts.clear();
     _oldPetBattleSpellToMerge.clear();
@@ -638,7 +632,7 @@ bool Player::Create(ObjectGuid::LowType guidlow, WorldPackets::Character::Charac
     bool addArtifact = true;
     uint32 itemIlevel = 0;
     auto charTemplate = static_cast<CharacterTemplate const*>(nullptr);
-    if (createInfo->TemplateSet.is_initialized())
+    if (createInfo->TemplateSet.has_value())
     {
             if (CharacterTemplateData* charTemplateData = GetSession()->GetCharacterTemplateData(*createInfo->TemplateSet))
             {
@@ -831,8 +825,8 @@ bool Player::Create(ObjectGuid::LowType guidlow, WorldPackets::Character::Charac
 
     // original spells
     LearnDefaultSkills();
-    
-    LearnDefaultSpells();
+
+    LearnCustomSpells();
 
     // enable basic auras. ToDo: find the way to do it not by hack.
     switch(getClass())
@@ -1189,7 +1183,7 @@ uint32 Player::EnvironmentalDamage(EnviromentalDamage type, uint32 damage)
 
     uint32 final_damage = DealDamage(this, damage, NULL, SELF_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
 
-    if (!isAlive())
+    if (!IsAlive())
     {
         if (type == DAMAGE_FALL)                               // DealDamage not apply item durability loss at self damage
         {
@@ -1214,14 +1208,14 @@ int32 Player::getMaxTimer(MirrorTimerType timer)
             return MINUTE * IN_MILLISECONDS;
         case BREATH_TIMER:
         {
-            if (!isAlive() || HasAuraType(SPELL_AURA_WATER_BREATHING) || GetSession()->GetSecurity() >= AccountTypes(sWorld->getIntConfig(CONFIG_DISABLE_BREATHING)))
+            if (!IsAlive() || HasAuraType(SPELL_AURA_WATER_BREATHING) || GetSession()->GetSecurity() >= AccountTypes(sWorld->getIntConfig(CONFIG_DISABLE_BREATHING)))
                 return DISABLED_MIRROR_TIMER;
 
             return (3 * MINUTE * IN_MILLISECONDS) * GetTotalAuraMultiplier(SPELL_AURA_MOD_WATER_BREATHING);
         }
         case FIRE_TIMER:
         {
-            if (!isAlive())
+            if (!IsAlive())
                 return DISABLED_MIRROR_TIMER;
             return 1 * IN_MILLISECONDS;
         }
@@ -1289,7 +1283,7 @@ void Player::HandleDrowning(uint32 time_diff)
         int32 UnderWaterTime = getMaxTimer(BREATH_TIMER);
         // Need breath regen
         m_MirrorTimer[BREATH_TIMER]+=10*time_diff;
-        if (m_MirrorTimer[BREATH_TIMER] >= UnderWaterTime || !isAlive())
+        if (m_MirrorTimer[BREATH_TIMER] >= UnderWaterTime || !IsAlive())
             StopMirrorTimer(BREATH_TIMER);
         else if (m_MirrorTimerFlagsLast & UNDERWATER_INWATER)
             SendMirrorTimer(BREATH_TIMER, UnderWaterTime, m_MirrorTimer[BREATH_TIMER], 10);
@@ -1314,7 +1308,7 @@ void Player::HandleDrowning(uint32 time_diff)
             if (m_MirrorTimer[FATIGUE_TIMER] < 0)
             {
                 m_MirrorTimer[FATIGUE_TIMER]+= 1*IN_MILLISECONDS;
-                if (isAlive())                                              // Calculate and deal damage
+                if (IsAlive())                                              // Calculate and deal damage
                 {
                     uint32 damage = GetMaxHealth() / 5 + urand(0, GetEffectiveLevel()-1);
                     EnvironmentalDamage(DAMAGE_EXHAUSTED, damage);
@@ -1330,7 +1324,7 @@ void Player::HandleDrowning(uint32 time_diff)
     {
         int32 DarkWaterTime = getMaxTimer(FATIGUE_TIMER);
         m_MirrorTimer[FATIGUE_TIMER]+=10*time_diff;
-        if (m_MirrorTimer[FATIGUE_TIMER] >= DarkWaterTime || !isAlive())
+        if (m_MirrorTimer[FATIGUE_TIMER] >= DarkWaterTime || !IsAlive())
             StopMirrorTimer(FATIGUE_TIMER);
         else if (m_MirrorTimerFlagsLast & UNDERWARER_INDARKWATER)
             SendMirrorTimer(FATIGUE_TIMER, DarkWaterTime, m_MirrorTimer[FATIGUE_TIMER], 10);
@@ -1482,7 +1476,7 @@ void Player::Update(uint32 p_time)
 
     if (isCharmed())
         if (Unit* charmer = GetCharmer())
-            if (charmer->IsCreature() && charmer->isAlive())
+            if (charmer->IsCreature() && charmer->IsAlive())
                 UpdateCharmedAI();
 
     if (!m_timedquests.empty())
@@ -1688,7 +1682,7 @@ void Player::Update(uint32 p_time)
         m_pvpAuraCheckTimer = 10000;
     }
 
-    if (isAlive())
+    if (IsAlive())
     {
         m_regenTimer += p_time;
         RegenerateAll();
@@ -1958,7 +1952,7 @@ SpellModList& Player::GetSpellModList(SpellModOp op)
 
 void Player::setDeathState(DeathState s)
 {
-    bool oldIsAlive = isAlive();
+    bool oldIsAlive = IsAlive();
 
     if (s == JUST_DIED)
     {
@@ -1982,7 +1976,7 @@ void Player::setDeathState(DeathState s)
         ClearResurrectRequestData();
 
         //FIXME: is pet dismissed at dying or releasing spirit? if second, add setDeathState(DEAD) to HandleRepopRequestOpcode and define pet unsummon here with (s == DEAD)
-        RemovePet(nullptr);
+        RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT, true);
 
         // save value before aura remove in Unit::setDeathState
         InitializeSelfResurrectionSpells();
@@ -1997,7 +1991,7 @@ void Player::setDeathState(DeathState s)
 
     Unit::setDeathState(s);
 
-    if (isAlive() && !oldIsAlive)
+    if (IsAlive() && !oldIsAlive)
     {
         ResummonPetTemporaryUnSummonedIfAny();
         ClearDynamicValue(PLAYER_DYNAMIC_FIELD_SELF_RES_SPELLS);
@@ -2072,7 +2066,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         return false;
     }
 
-    if (IsHasDelayedTeleport() && !isAlive())
+    if (IsHasDelayedTeleport() && !IsAlive())
         return false;
 
     MapEntry const* mEntry = sMapStore.LookupEntry(mapid);
@@ -2336,24 +2330,24 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
                     transferPending.MapID = mapid;
                     if (Transport* transport = GetTransport())
                     {
-                        transferPending.Ship = boost::in_place();
+                        transferPending.Ship.emplace();
                         transferPending.Ship->ID = transport->GetEntry();
                         transferPending.Ship->OriginMapID = GetMapId();
                     }
                     if (spellID)
                     {
-                        transferPending.TransferSpellID = boost::in_place();
+                        transferPending.TransferSpellID.emplace();
                         transferPending.TransferSpellID = spellID;
                     }
 
                     switch (mapid)
                     {
                     case 1460: // Hack for broken Island scenario.
-                        transferPending.Ship = boost::in_place();
+                        transferPending.Ship.emplace();
                         transferPending.Ship->ID = GetTeam() == ALLIANCE ? 251513 : 254124;
                         transferPending.Ship->OriginMapID = GetMapId();
 
-                        transferPending.TransferSpellID = boost::in_place();
+                        transferPending.TransferSpellID.emplace();
                         transferPending.TransferSpellID = GetTeam() == ALLIANCE ? 217273 : 225143;
 
                         SendDirectMessage(WorldPackets::Misc::CustomLoadScreen(GetTeam() == ALLIANCE ? 217273 : 225143, 0).Write());
@@ -2364,7 +2358,7 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
                         if (!bg)
                             break;
 
-                        transferPending.Ship = boost::in_place();
+                        transferPending.Ship.emplace();
                         transferPending.Ship->OriginMapID = -1;
 
                         switch (GetBGTeamId())
@@ -3230,9 +3224,9 @@ bool Player::CanInteractWithQuestGiver(Object* questGiver)
         case TYPEID_GAMEOBJECT:
             return GetGameObjectIfCanInteractWith(questGiver->GetGUID(), GAMEOBJECT_TYPE_QUESTGIVER) != NULL;
         case TYPEID_PLAYER:
-            return isAlive() && questGiver->ToPlayer()->isAlive();
+            return IsAlive() && questGiver->ToPlayer()->IsAlive();
         case TYPEID_ITEM:
-            return isAlive();
+            return IsAlive();
         default:
             break;
     }
@@ -3257,11 +3251,11 @@ Creature* Player::GetNPCIfCanInteractWith(ObjectGuid guid, uint32 npcflagmask, u
         return NULL;
 
     // Deathstate checks
-    if (!isAlive() && !(creature->GetCreatureTemplate()->TypeFlags[0] & CREATURE_TYPEFLAGS_GHOST))
+    if (!IsAlive() && !(creature->GetCreatureTemplate()->TypeFlags[0] & CREATURE_TYPEFLAGS_GHOST))
         return NULL;
 
     // alive or spirit healer
-    if (!creature->isAlive() && !(creature->GetCreatureTemplate()->TypeFlags[0] & CREATURE_TYPEFLAGS_DEAD_INTERACT))
+    if (!creature->IsAlive() && !(creature->GetCreatureTemplate()->TypeFlags[0] & CREATURE_TYPEFLAGS_DEAD_INTERACT))
         return NULL;
 
     // appropriate npc type
@@ -3598,7 +3592,7 @@ void Player::SetSpectate(bool on)
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
 
         if (auto pet = GetPet())
-            RemovePet(pet);
+            RemovePet(pet, PET_SAVE_NOT_IN_SLOT);
 
         UnsummonPetTemporaryIfAny();
         ResetContestedPvP();
@@ -3733,7 +3727,7 @@ void Player::GiveXP(uint32 xp, Unit* victim, float groupRate /*= 1.0f*/)
     if (xp < 1)
         return;
 
-    if (!isAlive() && !GetBattlegroundId())
+    if (!IsAlive() && !GetBattlegroundId())
         return;
 
     if (HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN))
@@ -3888,7 +3882,7 @@ void Player::GiveLevel(uint8 level)
     
     UpdateSkillsForLevel();
     LearnDefaultSkills();
-    LearnDefaultSpells();
+    LearnCustomSpells();
 
     // save base values (bonuses already included in stored stats
     for (uint8 i = STAT_STRENGTH; i < MAX_STATS; ++i)
@@ -5332,8 +5326,7 @@ void Player::learnSpell(uint32 spell_id, bool dependent, uint32 fromSkill, bool 
                 }
                 case 2: //remove pet
                 {
-                    RemovePet(NULL);
-                    m_currentPetNumber = 0;
+                    RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT);
                     m_temporaryUnsummonedPetNumber = 0;
                     break;
                 }
@@ -5509,8 +5502,7 @@ void Player::removeSpell(uint32 spell_id, bool disabled, bool learn_low_rank, bo
                 }
                 case 2: //remove pet
                 {
-                    RemovePet(NULL);
-                    m_currentPetNumber = 0;
+                    RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT);
                     m_temporaryUnsummonedPetNumber = 0;
                     break;
                 }
@@ -6118,7 +6110,7 @@ bool Player::ResetTalents(bool no_cost)
         }
     }
 
-    RemovePet(NULL);
+    RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT, true);
 
     for (TalentEntry const* talentInfo : sTalentStore)
         if (talentInfo->ClassID == getClass() && talentInfo->SpellID)
@@ -6672,7 +6664,7 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
 
             // Unsummon and delete for pets in world is not required: player deleted from CLI or character list with not loaded pet.
             // NOW we can finally clear other DB data related to character
-            stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_PETS);
+            stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_PET_IDS);
             stmt->setUInt64(0, guid);
             PreparedQueryResult resultPets = CharacterDatabase.Query(stmt);
 
@@ -7410,7 +7402,7 @@ void Player::RepopAtGraveyard(bool outInstance /*= false*/)
     AreaTableEntry const* zone = sAreaTableStore.LookupEntry(GetCurrentAreaID());
 
     // Such zones are considered unreachable as a ghost and the player must be automatically revived
-    if ((!isAlive() && zone && zone->Flags[0] & AREA_FLAG_NEED_FLY) || GetTransport() || GetPositionZ() < GetMap()->GetMinHeight(GetPosition()))
+    if ((!IsAlive() && zone && zone->Flags[0] & AREA_FLAG_NEED_FLY) || GetTransport() || GetPositionZ() < GetMap()->GetMinHeight(GetPosition()))
     {
         ResurrectPlayer(0.5f);
         SpawnCorpseBones();
@@ -8654,7 +8646,7 @@ bool Player::HasAreaExplored(uint32 AreaID)
 
 void Player::CheckAreaExploreAndOutdoor()
 {
-    if (!isAlive())
+    if (!IsAlive())
         return;
 
     if (isInFlight())
@@ -10267,7 +10259,7 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
 
     // remove items with area/map limitations (delete only for alive player to allow back in ghost mode)
     // if player resurrected at teleport this will be applied in resurrect code
-    if (isAlive())
+    if (IsAlive())
         DestroyZoneLimitedItem(true, newZone);
 
     // check some item equip limitations (in result lost CanTitanGrip at talent reset, for example)
@@ -10812,7 +10804,7 @@ void Player::_ApplyOrRemoveItemEquipDependentAuras(ObjectGuid const& itemGUID, b
 {
     if (apply)
     {
-        if (!isAlive())
+        if (!IsAlive())
             return;
 
         for (PlayerSpellMap::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
@@ -11245,7 +11237,7 @@ void Player::ApplyArtifactPowerRank(Item* artifact, ArtifactPowerRankEntry const
 
 void Player::CastItemCombatSpell(Unit* target, WeaponAttackType attType, uint32 procVictim, uint32 procEx)
 {
-    if (!target || !target->isAlive() || target == this)
+    if (!target || !target->IsAlive() || target == this)
         return;
 
     for (uint8 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
@@ -11942,7 +11934,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
     {
         Creature* creature = GetMap()->GetCreature(guid);
 
-        if (!creature || creature->isAlive() != (loot_type == LOOT_PICKPOCKETING))
+        if (!creature || creature->IsAlive() != (loot_type == LOOT_PICKPOCKETING))
         {
             SendLootRelease(guid);
             return;
@@ -14880,7 +14872,7 @@ InventoryResult Player::CanUseItem(Item* pItem, bool not_loading) const
     {
         TC_LOG_DEBUG("entities.player.items", "STORAGE: CanUseItem item = %u", pItem->GetEntry());
 
-        if (!isAlive() && not_loading)
+        if (!IsAlive() && not_loading)
             return EQUIP_ERR_PLAYER_DEAD;
 
         if (getLevel() < pItem->GetRequiredLevel())
@@ -15670,7 +15662,7 @@ Item* Player::EquipItem(uint16 pos, Item* pItem, bool update)
     {
         VisualizeItem(slot, pItem);
 
-        if (isAlive())
+        if (IsAlive())
         {
             ItemTemplate const* pProto = pItem->GetTemplate();
 
@@ -16718,7 +16710,7 @@ void Player::SwapItem(uint16 src, uint16 dst)
 
     TC_LOG_DEBUG("entities.player.items", "STORAGE: SwapItem bag = %u, slot = %u, item = %u", dstbag, dstslot, pSrcItem->GetEntry());
 
-    if (!isAlive())
+    if (!IsAlive())
     {
         SendEquipError(EQUIP_ERR_PLAYER_DEAD, pSrcItem, pDstItem);
         return;
@@ -21636,21 +21628,6 @@ void Player::_LoadTransmogOutfits(PreparedQueryResult result)
     } while (result->NextRow());
 }
 
-void Player::_LoadPetData(PreparedQueryResult result)
-{
-    if (!result)
-        return;
-
-    do
-    {
-        Field* fields = result->Fetch();
-        m_petInfo[fields[0].GetUInt32()].UpdateData(fields);
-
-        TC_LOG_ERROR("misc", "_LoadPetData: pet_number %u", fields[0].GetUInt32());
-
-    } while (result->NextRow());
-}
-
 void Player::_LoadBGData(PreparedQueryResult result)
 {
     if (!result)
@@ -21876,10 +21853,10 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     {
         f_guid, f_account, f_name, f_race, f_class, f_level, f_xp, f_money, f_skin, f_face, f_hairstyle, f_haircolor, f_facialhair, f_blindfold, f_gender, f_tattoo, f_horn, f_inventorySlots, f_bankslots, f_drunk, f_playerFlags,
         f_playerFlagsEx, f_position_x, f_position_y, f_position_z, f_map, f_orientation, f_taximask, f_cinematic, f_totaltime, f_leveltime, f_rest_bonus, f_logout_time, f_is_logout_resting,
-        f_trans_x, f_trans_y, f_trans_z, f_trans_o, f_transguid, f_extra_flags, f_at_login, f_zone, f_online, f_death_expire_time, f_taxi_path, f_dungeonDifficulty,
+        f_trans_x, f_trans_y, f_trans_z, f_trans_o, f_transguid, f_extra_flags, f_summonedPetNumber, f_at_login, f_zone, f_online, f_death_expire_time, f_taxi_path, f_dungeonDifficulty,
         f_totalKills, f_todayKills, f_yesterdayKills, f_chosenTitle, f_watchedFaction,
         f_health, f_mana, f_instance_id, f_activespec, f_specialization, f_lootspecialization, f_exploredZones, f_equipmentCache, f_knownTitles, f_actionBars,
-        f_currentpetnumber, f_petslot, f_grantableLevels, f_lfgBonusFaction, f_raidDifficulty, f_legacyRaidDifficulty, f_created_time,
+        f_grantableLevels, f_lfgBonusFaction, f_raidDifficulty, f_legacyRaidDifficulty, f_created_time,
         f_killPoints
     };
 
@@ -21994,9 +21971,6 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
 
     SetByteValue(PLAYER_FIELD_BYTES_4, PLAYER_BYTES_4_ACTION_BAR_TOGGLES, fields[f_actionBars].GetUInt8());
 
-    m_currentPetNumber = fields[f_currentpetnumber].GetInt32();
-    LoadPetSlot(fields[f_petslot].GetCString());
-
     InitDisplayIds();
 
     // cleanup inventory related item value fields (its will be filled correctly in _LoadInventory)
@@ -22064,8 +22038,6 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
 
     _LoadBoundInstances(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADBOUNDINSTANCES));
     _LoadBGData(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADBGDATA));
-
-    _LoadPetData(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_PETS));
 
     GetSession()->SetPlayer(this);
     MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
@@ -22357,6 +22329,9 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     m_taxi.LoadTaxiMask(fields[f_taximask].GetCString());            // must be before InitTaxiNodesForLevel
 
     uint32 extraflags = fields[f_extra_flags].GetUInt16();
+    uint32 summonedPetNumber = fields[f_summonedPetNumber].GetUInt32();
+
+    _LoadPetStable(summonedPetNumber, holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_PET_SLOTS));
 
     // Honor system
     // Update Honor kills data
@@ -22447,7 +22422,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     // after spell and quest load
     InitTalentForLevel();
     LearnDefaultSkills();
-    LearnDefaultSpells();
+    LearnCustomSpells();
 
     // must be before inventory (some items required reputation check)
     m_reputationMgr.LoadFromDB(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADREPUTATION));
@@ -22499,7 +22474,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
 
     // Spell code allow apply any auras to dead character in load time in aura/spell/item loading
     // Do now before stats re-calculation cleanup for ghost state unexpected auras
-    if (!isAlive())
+    if (!IsAlive())
         RemoveAllAurasOnDeath();
     else
         RemoveAllAurasRequiringDeadTarget();
@@ -22940,7 +22915,7 @@ void Player::_LoadGlyphAuras()
 
 void Player::LoadCorpse()
 {
-    if (isAlive())
+    if (IsAlive())
         sObjectAccessor->ConvertCorpseForPlayer(GetGUID());
     else
     {
@@ -23505,7 +23480,7 @@ Item* Player::_LoadItem(CharacterDatabaseTransaction& trans, uint32 zoneId, uint
             CharacterDatabasePreparedStatement* stmt = NULL;
 
             // Do not allow to have item limited to another map/zone in alive state
-            if (isAlive() && item->IsLimitedToAnotherMapOrZone(GetMapId(), zoneId))
+            if (IsAlive() && item->IsLimitedToAnotherMapOrZone(GetMapId(), zoneId))
             {
                 TC_LOG_DEBUG("sql.sql", "Player::_LoadInventory: player (GUID: %u, name: '%s', map: %u) has item (GUID: %u, entry: %u) limited to another map (%u). Deleting item.",
                     GetGUIDLow(), GetName(), GetMapId(), item->GetGUIDLow(), item->GetEntry(), zoneId);
@@ -23793,18 +23768,6 @@ void Player::_LoadMail()
         while (result->NextRow());
     }
     m_mailsLoaded = true;
-}
-
-void Player::LoadPet()
-{
-    //fixme: the pet should still be loaded if the player is not in world
-    // just not added to the map
-    if (m_currentPetNumber && IsInWorld())
-    {
-        Pet* pet = new Pet(this);
-        if (!pet->LoadPetFromDB(this, 0, m_currentPetNumber))
-            delete pet;
-    }
 }
 
 void Player::_LoadQuestStatus(PreparedQueryResult result)
@@ -24828,25 +24791,6 @@ bool Player::CheckInstanceLoginValid()
     return sMapMgr->CanPlayerEnter(GetMap()->GetId(), this, true);
 }
 
-PetInfoData* Player::GetPetInfo(uint32 petentry, uint32 petnumber)
-{
-    if (petnumber)
-        return Trinity::Containers::MapGetValuePtr(m_petInfo, petnumber);
-
-    if (petentry)
-        for (auto itr = m_petInfo.begin(); itr != m_petInfo.end(); ++itr)
-            if (itr->second.entry == petentry)
-                return &itr->second;
-
-    return nullptr;
-}
-
-void Player::AddPetInfo(Pet* pet)
-{
-    m_petInfo[pet->GetCharmInfo()->GetPetNumber()].UpdateData(pet);
-    setPetSlot(pet->GetSlot(), pet->GetCharmInfo()->GetPetNumber());
-}
-
 bool Player::_LoadHomeBind(PreparedQueryResult result)
 {
     PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getRace(), getClass());
@@ -25013,6 +24957,7 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt32(index++, uint32(time(nullptr)));
         stmt->setUInt8(index++,  (HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING) ? 1 : 0));
         stmt->setUInt16(index++, (uint16)m_ExtraFlags);
+        stmt->setUInt32(index++, 0); // summonedPetNumber
         stmt->setUInt16(index++, (uint16)m_atLoginFlags);
         stmt->setUInt16(index++, m_zoneId ? m_zoneId : m_oldZoneId);
         stmt->setUInt32(index++, uint32(m_deathExpireTime));
@@ -25064,13 +25009,6 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setString(index++, ss.str());
 
         stmt->setUInt8(index++, GetActionBarTogglesValue());
-        stmt->setInt32(index++, m_currentPetNumber);
-
-        ss.str("");
-        for (uint32 i = 0; i < PET_SLOT_LAST; ++i)
-            ss << m_PetSlots[i] << ' ';
-
-        stmt->setString(index++, ss.str());
 
         stmt->setUInt32(index++, m_grantableLevels);
         stmt->setUInt32(index++, m_createdtime);
@@ -25146,6 +25084,10 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt8(index++,  (HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING) ? 1 : 0));
 
         stmt->setUInt16(index++, (uint16)m_ExtraFlags);
+        if (PetStable const* petStable = GetPetStable())
+            stmt->setUInt32(index++, petStable->GetCurrentPet() && petStable->GetCurrentPet()->Health > 0 ? petStable->GetCurrentPet()->PetNumber : 0); // summonedPetNumber
+        else
+            stmt->setUInt32(index++, 0); // summonedPetNumber
         stmt->setUInt16(index++, (uint16)m_atLoginFlags);
         stmt->setUInt16(index++, m_zoneId ? m_zoneId : m_oldZoneId);
         stmt->setUInt32(index++, uint32(m_deathExpireTime));
@@ -25199,13 +25141,6 @@ void Player::SaveToDB(bool create /*=false*/)
 
         stmt->setString(index++, ss.str());
         stmt->setUInt8(index++, GetActionBarTogglesValue());
-        stmt->setInt32(index++, m_currentPetNumber);
-
-        ss.str("");
-        for (uint32 i = 0; i < PET_SLOT_LAST; ++i)
-            ss << m_PetSlots[i] << ' ';
-
-        stmt->setString(index++, ss.str());
 
         stmt->setUInt32(index++, m_grantableLevels);
 
@@ -25291,7 +25226,7 @@ void Player::SaveToDB(bool create /*=false*/)
 
     // save pet (hunter pet level and experience and all type pets health/mana).
     if (Pet* pet = GetPet())
-        pet->SavePetToDB();
+        pet->SavePetToDB(PET_SAVE_AS_CURRENT);
 }
 
 bool Player::HandleChangeSlotModel(uint32 newItem, uint16 pos)
@@ -25465,7 +25400,7 @@ void Player::ResurectUsingRequestData()
 
                     WorldPackets::Misc::DisplayGameError display;
                     display.Error = UIErrors::ERR_SPELL_FAILED_S;
-                    display.Arg = boost::in_place();
+                    display.Arg.emplace();
                     display.Arg = 236;
                     SendDirectMessage(display.Write());
 
@@ -26547,6 +26482,50 @@ void Player::UpdateDuelFlag(uint32 diff)
         duel->countdownTimer -= diff;
 }
 
+void Player::_LoadPetStable(uint32 summonedPetNumber, PreparedQueryResult result)
+{
+    if (!result)
+        return;
+
+    m_petStable = std::make_unique<PetStable>();
+
+    //         0      1        2      3    4           5     6     7        8          9       10      11        12              13       14              15
+    // SELECT id, entry, modelid, level, exp, Reactstate, slot, name, renamed, curhealth, curmana, abdata, savetime, CreatedBySpell, PetType, specialization FROM character_pet WHERE owner = ?
+    if (result)
+    {
+        do
+        {
+            Field* fields = result->Fetch();
+            PetStable::PetInfo petInfo;
+            petInfo.PetNumber = fields[0].GetUInt32();
+            petInfo.CreatureId = fields[1].GetUInt32();
+            petInfo.DisplayId = fields[2].GetUInt32();
+            petInfo.Level = fields[3].GetUInt16();
+            petInfo.Experience = fields[4].GetUInt32();
+            petInfo.ReactState = ReactStates(fields[5].GetUInt8());
+            PetSaveMode slot = PetSaveMode(fields[6].GetUInt16());
+            petInfo.Name = fields[7].GetString();
+            petInfo.WasRenamed = fields[8].GetBool();
+            petInfo.Health = fields[9].GetUInt32();
+            petInfo.Mana = fields[10].GetUInt32();
+            petInfo.ActionBar = fields[11].GetString();
+            petInfo.LastSaveTime = fields[12].GetUInt32();
+            petInfo.CreatedBySpellId = fields[13].GetUInt32();
+            petInfo.Type = PetType(fields[14].GetUInt8());
+            petInfo.SpecializationId = fields[15].GetUInt16();
+            if (slot >= PET_SAVE_FIRST_ACTIVE_SLOT && slot < PET_SAVE_LAST_ACTIVE_SLOT)
+                m_petStable->ActivePets[slot] = std::move(petInfo);
+            else if (slot >= PET_SAVE_FIRST_STABLE_SLOT && slot < PET_SAVE_LAST_STABLE_SLOT)
+                m_petStable->StabledPets[slot - PET_SAVE_FIRST_STABLE_SLOT] = std::move(petInfo);
+            else if (slot == PET_SAVE_NOT_IN_SLOT)
+                m_petStable->UnslottedPets.push_back(std::move(petInfo));
+        } while (result->NextRow());
+    }
+
+    if (Pet::GetLoadPetInfo(*m_petStable, 0, summonedPetNumber, {}).first)
+        m_temporaryUnsummonedPetNumber = summonedPetNumber;
+}
+
 Pet* Player::GetPet() const
 {
     ObjectGuid pet_guid = GetPetGUID();
@@ -26572,32 +26551,21 @@ Pet* Player::GetPet() const
 }
 
 
-Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetType petType, uint32 duration, uint32 spellId)
+Pet* Player::SummonPet(uint32 entry, Optional<PetSaveMode> slot, float x, float y, float z, float ang, uint32 duration, bool* isNew /*= nullptr*/)
 {
-    if (getClass() == CLASS_HUNTER)
-        petType = HUNTER_PET;
+    PetStable& petStable = GetOrInitPetStable();
 
-    Pet* pet = new Pet(this, petType);
+    Pet* pet = new Pet(this, SUMMON_PET);
 
-    pet->Relocate(x, y, z, ang);
-
-    //summoned pets always non-curent!
-    if (petType == SUMMON_PET || petType == HUNTER_PET)
+    if (pet->LoadPetFromDB(this, entry, 0, false, slot))
     {
-        // This check done in LoadPetFromDB, but we should not continue this function if pet not alowed
-        if (!CanSummonPet(entry))
-        {
-            delete pet;
-            return NULL;
-        }
+        if (duration > 0)
+            pet->SetDuration(duration);
 
-        if (pet->LoadPetFromDB(this, entry, 0))
-        {
-            if (duration > 0)
-                pet->SetDuration(duration);
+        if (isNew)
+            *isNew = false;
 
-            return pet;
-        }
+        return pet;
     }
 
     // petentry == 0 for hunter "call pet" (current pet summoned if any)
@@ -26605,14 +26573,17 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
     {
         TC_LOG_ERROR("misc", "no such entry %u", entry);
         delete pet;
-        return NULL;
+        return nullptr;
     }
 
+    // only SUMMON_PET are handled here
+
+    pet->Relocate(x, y, z, ang);
     if (!pet->IsPositionValid())
     {
         TC_LOG_ERROR("misc", "Pet (guidlow %d, entry %d) not summoned. Suggested coordinates isn't valid (X: %f Y: %f)", pet->GetGUIDLow(), pet->GetEntry(), pet->GetPositionX(), pet->GetPositionY());
         delete pet;
-        return NULL;
+        return nullptr;
     }
 
     Map* map = GetMap();
@@ -26621,73 +26592,128 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
     {
         TC_LOG_ERROR("misc", "no such creature entry %u", entry);
         delete pet;
-        return NULL;
+        return nullptr;
     }
+
+    if (petStable.GetCurrentPet())
+        RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT);
 
     pet->SetTratsport(GetTransport());
     pet->SetCreatorGUID(GetGUID());
     pet->SetUInt32Value(UNIT_FIELD_FACTION_TEMPLATE, getFaction());
-    pet->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0);
+
+    pet->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
     pet->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
-    pet->SetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL, spellId);
-    pet->InitStatsForLevel(GetEffectiveLevel(), petType != SUMMON_PET);
+
+    pet->InitStatsForLevel(GetEffectiveLevel());
 
     if (IsPlayer())
         pet->AddUnitTypeMask(UNIT_MASK_CREATED_BY_PLAYER);
 
-    if (petType == SUMMON_PET)
-        pet->GetCharmInfo()->SetPetNumber(pet_number, true);
+    // this enables pet details window (Shift+P)
+    pet->GetCharmInfo()->SetPetNumber(pet_number, true);
+    pet->SetByteValue(UNIT_FIELD_BYTES_0, UNIT_BYTES_0_OFFSET_CLASS, CLASS_MAGE);
+    pet->SetUInt32Value(UNIT_FIELD_PET_EXPERIENCE, 0);
+    pet->SetUInt32Value(UNIT_FIELD_PET_NEXT_LEVEL_EXPERIENCE, 1000);
+    pet->SetFullHealth();
+    pet->SetPower(getPowerType(), GetMaxPower(getPowerType()));
+    pet->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(time(nullptr))); // cast can't be helped in this case
 
-    // After SetPetNumber
+    // after SetPetNumber
     SetMinion(pet, true);
 
     map->AddToMap(pet->ToCreature());
 
-    if (petType == SUMMON_PET)
-    {
-        pet->SynchronizeLevelWithOwner();
-        pet->InitPetCreateSpells();
-        pet->SavePetToDB();
-        PetSpellInitialize();
-        SendTalentsInfoData(true);
-    }
+    ASSERT(!petStable.CurrentPetIndex);
+    petStable.SetCurrentUnslottedPetIndex(petStable.UnslottedPets.size());
+    pet->FillPetInfo(&petStable.UnslottedPets.emplace_back());
 
-    if (getClass() == CLASS_WARLOCK)
-        if (HasAura(196099))
-            RemoveAura(196099);
+    pet->InitPetCreateSpells();
+    pet->SavePetToDB(PET_SAVE_AS_CURRENT);
+    PetSpellInitialize();
 
-    if (pet->isControlled() && !pet->isTemporarySummoned())
-        SetLastPetEntry(entry);
+//    if (getClass() == CLASS_WARLOCK)
+//        if (HasAura(196099))
+//            RemoveAura(196099);
 
     if (duration > 0)
         pet->SetDuration(duration);
 
     //TC_LOG_DEBUG("spells", "SummonPet entry %i, petType %i, spellId %i", entry, petType, spellId);
 
-    pet->CastPetAuras(true);
+    if (isNew)
+        *isNew = true;
+
+    //pet->CastPetAuras(true);
     return pet;
 }
 
-void Player::RemovePet(Pet* pet, bool isDelete)
+void Player::RemovePet(Pet* pet, PetSaveMode mode, bool returnreagent)
 {
     if (!pet)
         pet = GetPet();
 
     if (pet)
     {
-        TC_LOG_DEBUG("misc", "RemovePet %u, isDelete %u", pet->GetEntry(), isDelete);
+        TC_LOG_DEBUG("entities.pet", "Player::RemovePet: Player '%s' (%s), Pet (Entry: %u, Mode: %u, ReturnReagent: %u)",
+            GetName(), GetGUID().ToString().c_str(), pet->GetEntry(), mode, returnreagent);
 
         if (pet->m_removed)
             return;
     }
 
-    if (!pet || pet->GetOwnerGUID() != GetGUID())
+    if (returnreagent && (pet || m_temporaryUnsummonedPetNumber) && !InBattleground())
+    {
+        //returning of reagents only for players, so best done here
+        uint32 spellId = pet ? pet->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) : m_oldpetspell;
+        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
+
+        if (spellInfo)
+        {
+            for (uint32 i = 0; i < MAX_SPELL_REAGENTS; ++i)
+            {
+                if (spellInfo->Reagents.Reagent[i] > 0)
+                {
+                    ItemPosCountVec dest; //for succubus, voidwalker, felhunter and felguard credit soulshard when despawn reason other than death (out of range, logout)
+                    InventoryResult msg = CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, spellInfo->Reagents.Reagent[i], spellInfo->Reagents.ReagentCount[i]);
+                    if (msg == EQUIP_ERR_OK)
+                    {
+                        Item* item = StoreNewItem(dest, spellInfo->Reagents.Reagent[i], true);
+                        if (IsInWorld())
+                            SendNewItem(item, spellInfo->Reagents.ReagentCount[i], true, false);
+                    }
+                }
+            }
+        }
+        m_temporaryUnsummonedPetNumber = 0;
+    }
+
+    if (!pet)
+    {
+        // Handle removing pet while it is in "temporarily unsummoned" state, for example on mount
+        if (mode == PET_SAVE_NOT_IN_SLOT && m_petStable && m_petStable->CurrentPetIndex)
+            m_petStable->CurrentPetIndex.reset();
+
         return;
+    }
 
     pet->CastPetAuras(false);
     pet->CombatStop();
+
     // only if current pet in slot
-    pet->SavePetToDB(isDelete);
+    pet->SavePetToDB(mode);
+
+    PetStable::PetInfo const* currentPet = m_petStable->GetCurrentPet();
+    ASSERT(currentPet && currentPet->PetNumber == pet->GetCharmInfo()->GetPetNumber());
+    if (mode == PET_SAVE_NOT_IN_SLOT)
+        m_petStable->CurrentPetIndex.reset();
+    else if (mode == PET_SAVE_AS_DELETED)
+    {
+        m_petStable->ActivePets[*m_petStable->CurrentPetIndex].reset();
+        m_petStable->CurrentPetIndex.reset();
+    }
+    // else if (stable slots) handled in opcode handlers due to required swaps
+    // else (current pet) doesnt need to do anything
 
     SetMinion(pet, false);
 
@@ -26697,7 +26723,9 @@ void Player::RemovePet(Pet* pet, bool isDelete)
     if (pet->isControlled())
     {
         SendRemoveControlBar();
-        SetGroupUpdateFlag(GROUP_UPDATE_FLAG_PET);
+
+        if (GetGroup())
+            SetGroupUpdateFlag(GROUP_UPDATE_FLAG_PET);
     }
 
     WorldPackets::PetPackets::PetDismissSound packet;
@@ -26942,7 +26970,7 @@ void Player::PetSpellInitialize()
     WorldPackets::PetPackets::Spells spellsMessage;
     spellsMessage.PetGUID = pet->GetGUID();
     spellsMessage.CreatureFamily = pet->GetCreatureTemplate()->Family;
-    spellsMessage.Specialization = pet->GetSpecializationId();
+    spellsMessage.Specialization = pet->GetSpecialization();
     spellsMessage.TimeLimit = pet->GetDuration();
     spellsMessage.ReactState = pet->GetReactState();
     spellsMessage.CommandState = charmInfo->GetCommandState();
@@ -28161,7 +28189,7 @@ bool Player::BuyCurrencyFromVendorSlot(ObjectGuid vendorGuid, uint32 vendorSlot,
     // cheating attempt
     if (count < 1 || count > 1) count = 1;
 
-    if (!isAlive())
+    if (!IsAlive())
         return false;
 
     CurrencyTypesEntry const* proto = sCurrencyTypesStore.LookupEntry(currency);
@@ -28322,7 +28350,7 @@ bool Player::BuyItemFromVendorSlot(ObjectGuid vendorguid, uint32 vendorslot, uin
     if (slot > MAX_BAG_SIZE && slot != NULL_SLOT)
         return false;
 
-    if (!isAlive())
+    if (!IsAlive())
         return false;
 
     ItemTemplate const* pProto = sObjectMgr->GetItemTemplate(item);
@@ -29547,8 +29575,8 @@ void BeforeVisibilityDestroy(T* /*t*/, Player* /*p*/)
 template<>
 inline void BeforeVisibilityDestroy<Creature>(Creature* t, Player* p)
 {
-    if (p->GetPetGUID() == t->GetGUID() && t->ToCreature()->isPet())
-        ((Pet*)t)->Remove();
+    if (p->GetPetGUID() == t->GetGUID() && t->isPet())
+        t->ToPet()->Remove(PET_SAVE_NOT_IN_SLOT, true);
 }
 
 void Player::UpdateVisibilityOf(WorldObject* target)
@@ -29662,7 +29690,7 @@ void Player::UpdateCustomField()
 void Player::SendInitialVisiblePackets(Unit* target)
 {
     SendAurasForTarget(target);
-    if (target->isAlive())
+    if (target->IsAlive())
     {
         if (target->HasUnitState(UNIT_STATE_MELEE_ATTACKING) && target->getVictim())
             target->SendMeleeAttackStart(target->getVictim());
@@ -30080,8 +30108,6 @@ void Player::SendInitialPacketsAfterAddToMap(bool login)
     if (getClass() == CLASS_DEATH_KNIGHT)
         SetPower(POWER_RUNIC_POWER, 0);
 
-    GetSession()->SendStablePet();
-
     InstanceMap* inst = GetMap()->ToInstanceMap();
     // send step data when entering scenarios
     if (uint32 instanceId = inst && InInstance() ? inst->GetInstanceId() : 0)
@@ -30252,7 +30278,7 @@ void Player::resetSpells()
     }
 
     LearnDefaultSkills();
-    LearnDefaultSpells();
+    LearnCustomSpells();
     learnQuestRewardedSpells();
     UpdateSkillsForLevel();
 }
@@ -30324,10 +30350,10 @@ void Player::LearnDefaultSkills()
     }
 }
 
-void Player::LearnDefaultSpells()
+void Player::LearnCustomSpells()
 {
     PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getRace(), getClass());
-    for (PlayerCreateInfoSpells::const_iterator itr = info->spell.begin(); itr != info->spell.end(); ++itr)
+    for (PlayerCreateInfoSpells::const_iterator itr = info->customSpells.begin(); itr != info->customSpells.end(); ++itr)
     {
         if (HasSpell(*itr))
             continue;
@@ -30336,7 +30362,7 @@ void Player::LearnDefaultSpells()
     }
     if (PlayerInfo const* allInfo = sObjectMgr->GetPlayerInfo(RACE_NONE, CLASS_NONE))
     {
-        for (PlayerCreateInfoSpells::const_iterator itr = allInfo->spell.begin(); itr != allInfo->spell.end(); ++itr)
+        for (PlayerCreateInfoSpells::const_iterator itr = allInfo->customSpells.begin(); itr != allInfo->customSpells.end(); ++itr)
         {
             if (HasSpell(*itr))
                 continue;
@@ -31382,7 +31408,7 @@ void Player::RewardPlayerAndGroupAtEvent(uint32 creatureID, WorldObject* pReward
                 continue; // member (alive or dead) or his corpse at req. distance
 
             // quest objectives updated only for alive group member or dead but with not released body
-            if (player->isAlive()|| !player->GetCorpse())
+            if (player->IsAlive() || !player->GetCorpse())
                 player->KilledMonsterCredit(creatureID, creatureGUID);
         }
     }
@@ -31396,7 +31422,7 @@ bool Player::IsAtGroupRewardDistance(WorldObject const* pRewardSource) const
         return false;
 
     WorldObject const* player = GetCorpse();
-    if (!player || isAlive())
+    if (!player || IsAlive())
         player = this;
 
     if (!player->GetMap() || player->GetMapId() != pRewardSource->GetMapId() || (InInstance() && player->GetInstanceId() != pRewardSource->GetInstanceId()))
@@ -31413,7 +31439,7 @@ bool Player::IsAtRecruitAFriendDistance(WorldObject const* pOther) const
     if (!pOther)
         return false;
     const WorldObject* player = GetCorpse();
-    if (!player || isAlive())
+    if (!player || IsAlive())
         player = this;
 
     if (player->GetMapId() != pOther->GetMapId() || (InInstance() && player->GetInstanceId() != pOther->GetInstanceId()))
@@ -32075,7 +32101,7 @@ void PetInfoData::UpdateData(Pet* pet)
     savetime = time(NULL);
     CreatedBySpell = pet->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL);
     pet_type = pet->getPetType();
-    specialization = pet->GetSpecializationId();
+    specialization = pet->GetSpecialization();
 }
 
 void Player::StopCastingBindSight()
@@ -32167,13 +32193,13 @@ bool Player::CanUseBattlegroundObject()
              !HasStealthAura() &&                           // not stealthed
              !HasInvisibilityAura() &&                      // not invisible
              !HasAura(SPELL_BG_RECENTLY_DROPPED_FLAG) &&    // can't pickup
-             isAlive()                                      // live player
+                                                            IsAlive()                                      // live player
 );
 }
 
 bool Player::CanCaptureTowerPoint()
 {
-    return (!HasStealthAura() && !HasInvisibilityAura() &&  isAlive());
+    return (!HasStealthAura() && !HasInvisibilityAura() && IsAlive());
 }
 
 uint32 Player::GetBarberShopCost(BarberShopStyleEntry const* newHairStyle, uint8 newHairColor, BarberShopStyleEntry const* newFacialHair, BarberShopStyleEntry const* newSkin, BarberShopStyleEntry const* newFace, std::array<BarberShopStyleEntry const*, PLAYER_CUSTOM_DISPLAY_SIZE> const& newCustomDisplay) const
@@ -33019,7 +33045,7 @@ void Player::HandleFall(MovementInfo const& movementInfo)
                 uint32 final_damage = EnvironmentalDamage(DAMAGE_FALL, damage);
 
                 // recheck alive, might have died of EnvironmentalDamage, avoid cases when player die in fact like Spirit of Redemption case
-                if (isAlive() && final_damage < original_health)
+                if (IsAlive() && final_damage < original_health)
                     UpdateAchievementCriteria(CRITERIA_TYPE_FALL_WITHOUT_DYING, uint32(z_diff*100));
             }
 
@@ -33453,7 +33479,7 @@ void Player::UnsummonPetTemporaryIfAny()
         m_oldpetspell = pet->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL);
     }
 
-    RemovePet(pet);
+    RemovePet(pet, PET_SAVE_AS_CURRENT);
 }
 
 void Player::ResummonPetTemporaryUnSummonedIfAny()
@@ -33468,12 +33494,11 @@ void Player::ResummonPetTemporaryUnSummonedIfAny()
     if (IsPetNeedBeTemporaryUnsummoned())
         return;
 
-    if (GetPetGUID())
+    if (!GetPetGUID().IsEmpty())
         return;
 
     Pet* NewPet = new Pet(this);
-
-    if (!NewPet->LoadPetFromDB(this, 0, m_temporaryUnsummonedPetNumber))
+    if (!NewPet->LoadPetFromDB(this, 0, m_temporaryUnsummonedPetNumber, true))
         delete NewPet;
 
     m_temporaryUnsummonedPetNumber = 0;
@@ -33516,7 +33541,7 @@ void Player::SendTalentsInfoData(bool pet)
     if (pet)
     {
         Pet* pPet = GetPet();
-        SendDirectMessage(WorldPackets::PetPackets::SetPetSpecialization(pPet ? pPet->GetSpecializationId() : 0).Write());
+        SendDirectMessage(WorldPackets::PetPackets::SetPetSpecialization(pPet ? pPet->GetSpecialization() : 0).Write());
         return;
     }
 
@@ -33908,7 +33933,7 @@ void Player::ActivateTalentGroup(ChrSpecializationEntry const* spec)
 
     // TO-DO: We need more research to know what happens with warlock's reagent
     if (Pet* pet = GetPet())
-        RemovePet(pet);
+        RemovePet(pet, PET_SAVE_NOT_IN_SLOT);
 
     ClearAllReactives();
     UnsummonAllTotems();
@@ -33968,8 +33993,7 @@ void Player::ActivateTalentGroup(ChrSpecializationEntry const* spec)
                 }
                 case 2: //remove pet
                 {
-                    RemovePet(NULL);
-                    m_currentPetNumber = 0;
+                    RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT);
                     m_temporaryUnsummonedPetNumber = 0;
                     break;
                 }
@@ -34434,6 +34458,13 @@ bool Player::AddItem(uint32 itemId, uint32 count, uint32* noSpaceForCount, Objec
     return true;
 }
 
+PetStable& Player::GetOrInitPetStable()
+{
+    if (!m_petStable)
+        m_petStable = std::make_unique<PetStable>();
+    return *m_petStable;
+}
+
 void Player::SendItemRefundResult(Item* item, ItemExtendedCostEntry const* iece, uint8 error)
 {
     WorldPackets::Item::ItemPurchaseRefundResult refundResult;
@@ -34441,7 +34472,7 @@ void Player::SendItemRefundResult(Item* item, ItemExtendedCostEntry const* iece,
     refundResult.Result = error;
     if (!error)
     {
-        refundResult.Contents = boost::in_place();
+        refundResult.Contents.emplace();
         refundResult.Contents->Money = item->GetPaidMoney();
         for (uint8 i = 0; i < MAX_ITEM_EXT_COST_ITEMS; ++i)
         {
@@ -34953,7 +34984,8 @@ bool Player::IsInWhisperWhiteList(ObjectGuid guid)
 
 void Player::SendPetTameResult(PetTameResult result)
 {
-    SendDirectMessage(WorldPackets::PetPackets::TameFailure(result).Write());
+    WorldPackets::PetPackets::TameFailure petTameFailure(AsUnderlyingType(result));
+    SendDirectMessage(petTameFailure.Write());
 }
 
 void Player::UnlockVoidStorage()
@@ -35928,126 +35960,6 @@ std::vector<uint32> Player::GetPvPRewardItem(uint32& itemID, uint8 type, uint32 
     }
 
     return sObjectMgr->GetItemBonusTree(itemID, GetMap()->GetDifficultyLootItemContext(), getLevel(), 0, 0, needLevel);
-}
-
-void Player::LoadPetSlot(std::string const &data)
-{
-    Tokenizer tokens(data, ' ');
-
-    uint8 index = 0;
-    for (Tokenizer::const_iterator iter = tokens.begin(); index < PET_SLOT_LAST && iter != tokens.end(); ++iter, ++index)
-        m_PetSlots[index] = uint32(atol(*iter));
-
-    //Clean bug slots
-    for (uint32 i = PET_SLOT_HUNTER_FIRST; i < PET_SLOT_STABLE_LAST; ++i)
-    {
-        for (uint32 j = PET_SLOT_HUNTER_FIRST; j < PET_SLOT_STABLE_LAST; ++j)
-        {
-            if (m_PetSlots[i] && i != j && m_PetSlots[i] == m_PetSlots[j]) //Clear duplicate pet
-                m_PetSlots[j]= 0;
-        }
-    }
-}
-
-void Player::cleanPetSlotForMove(PetSlot slot, uint32 petID)
-{
-    ASSERT(slot < PET_SLOT_LAST);
-
-    // Clean only if we have corrcet Id, for lost link privention
-    if (m_PetSlots[slot] == petID)
-        m_PetSlots[slot] = 0;
-}
-
-void Player::setPetSlot(PetSlot slot, uint32 petID)
-{
-    ASSERT(slot < PET_SLOT_LAST);
-
-    if (m_PetSlots[slot] && m_PetSlots[slot] != petID)
-    {
-        bool find = false;
-        for (uint32 i = PET_SLOT_STABLE_FIRST; i < PET_SLOT_STABLE_LAST; ++i)
-        {
-            if (m_PetSlots[i] == petID)
-            {
-                find = true;
-                SwapPetSlot(slot, (PetSlot)i);
-                break;
-            }
-        }
-        if(!find)
-        {
-            for (uint32 i = PET_SLOT_STABLE_FIRST; i < PET_SLOT_STABLE_LAST; ++i)
-            {
-                if (!m_PetSlots[i])
-                {
-                    m_PetSlots[i] = m_PetSlots[slot];
-                    break;
-                }
-            }
-        }
-    }
-
-    m_PetSlots[slot] = petID;
-}
-
-void Player::SwapPetSlot(PetSlot oldSlot, PetSlot newSlot)
-{
-    std::swap(m_PetSlots[newSlot], m_PetSlots[oldSlot]);
-}
-
-int16 Player::SetOnAnyFreeSlot(uint32 petID)
-{
-    for (uint32 i = PET_SLOT_HUNTER_FIRST; i < PET_SLOT_STABLE_LAST; ++i)
-        if (!m_PetSlots[i])
-        {
-            m_PetSlots[i] = petID;
-            return i;
-        }
-    return PET_SLOT_FULL_LIST;
-}
-
-
-PetSlot Player::getSlotForNewPet(bool full/*=false*/)
-{
-    uint32 last_known = PET_SLOT_OTHER_PET; //check PET_SLOT_STABLE_LAST for last
-    // Call Pet Spells
-    // 883 83242 83243 83244 83245
-    //  1    2     3     4     5
-    if (!full)
-    {
-        if (HasSpell(83245))
-            last_known = 5;
-        else if (HasSpell(83244))
-            last_known = 4;
-        else if (HasSpell(83243))
-            last_known = 3;
-        else if (HasSpell(83242))
-            last_known = 2;
-        else if (HasSpell(883))
-            last_known = 1;
-        else
-            last_known = 0;
-    }
-
-    for (uint32 i = uint32(PET_SLOT_HUNTER_FIRST); i < last_known; ++i)
-        if (!m_PetSlots[i])
-            return PetSlot(i);
-
-    return PET_SLOT_FULL_LIST;
-}
-
-PetSlot Player::GetSlotForPetId(uint32 petID)
-{
-    for (uint32 i = uint32(PET_SLOT_HUNTER_FIRST); i < uint32(PET_SLOT_STABLE_LAST); ++i)
-        if (m_PetSlots[i] == petID)
-            return PetSlot(i);
-
-    return PET_SLOT_FULL_LIST;
-}
-
-PetSlot Player::GetMaxCurentPetSlot() const
-{
-    return PET_SLOT_HUNTER_LAST;
 }
 
 uint8 Player::GetClassFamily() const
@@ -38189,7 +38101,7 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
 
         if (playerChoiceResponseTemplate.Reward)
         {
-            playerChoiceResponse.Reward = boost::in_place();
+            playerChoiceResponse.Reward.emplace();
             playerChoiceResponse.Reward->TitleID = playerChoiceResponseTemplate.Reward->TitleId;
             playerChoiceResponse.Reward->PackageID = playerChoiceResponseTemplate.Reward->PackageId;
             playerChoiceResponse.Reward->SkillLineID = playerChoiceResponseTemplate.Reward->SkillLineId;
@@ -38207,7 +38119,7 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
                 rewardEntry.Quantity = item.Quantity;
                 if (!item.BonusListIDs.empty())
                 {
-                    rewardEntry.Item.ItemBonus = boost::in_place();
+                    rewardEntry.Item.ItemBonus.emplace();
                     rewardEntry.Item.ItemBonus->BonusListIDs = item.BonusListIDs;
                 }
             }
@@ -38571,7 +38483,6 @@ void Player::Clear()
     m_itemDuration.clear();
     m_itemSoulboundTradeable.clear();
     m_channels.clear();
-    m_PetSlots.clear();
     _battlePets.clear();
     AllArtifacts.clear();
     _oldPetBattleSpellToMerge.clear();
@@ -38661,7 +38572,6 @@ void Player::PrintPlayerSize()
     size += m_itemDuration.size() * sizeof(ItemDurationList);
     size += m_itemSoulboundTradeable.size() * sizeof(ItemDurationList);
     size += m_channels.size() * sizeof(JoinedChannelsList);
-    size += m_PetSlots.size() * sizeof(PlayerPetSlotList);
     size += _battlePets.size() * sizeof(BattlePetMap);
     size += AllArtifacts.size() * sizeof(std::set<std::pair<ObjectGuid, uint32>>);
     size += _oldPetBattleSpellToMerge.size() * sizeof(std::set<std::pair<uint32, uint32>>);
@@ -38779,93 +38689,6 @@ void Player::ApplyDotMod(uint32 spellId, SpellModOp op, float& basemod, float& b
             baseadd += mod->value;
         else if (mod->type == SPELLMOD_PCT)
             AddPct(basemod, mod->value);
-    }
-}
-
-void Player::CreateDefaultPet()
-{
-    if (getClass() == CLASS_WARLOCK)
-        CastSpell(this, 688, true);
-
-    if (getClass() == CLASS_HUNTER)
-    {
-        uint32 spellID = 13481;
-        uint32 creatureEntry = 0;
-        switch (getRace())
-        {
-            case RACE_HUMAN:
-                creatureEntry = 299;
-                break;
-            case RACE_DWARF:
-                creatureEntry = 42713;
-                break;
-            case RACE_ORC:
-                creatureEntry = 42719;
-                break;
-            case RACE_NIGHTELF:
-                creatureEntry = 42718;
-                break;
-            case RACE_UNDEAD_PLAYER:
-                creatureEntry = 51107;
-                break;
-            case RACE_TAUREN:
-                creatureEntry = 42720;
-                break;
-            case RACE_TROLL:
-                creatureEntry = 42721;
-                break;
-            case RACE_GOBLIN:
-                creatureEntry = 42715;
-                break;
-            case RACE_BLOODELF:
-                creatureEntry = 42710;
-                break;
-            case RACE_DRAENEI:
-                creatureEntry = 42712;
-                break;
-            case RACE_WORGEN:
-                creatureEntry = 42722;
-                break;
-            case RACE_PANDAREN_NEUTRAL:
-                creatureEntry = 57239;
-                break;
-            case RACE_GNOME:
-                creatureEntry = 76199;
-                break;
-            case RACE_NIGHTBORNE:
-                creatureEntry = 131069;
-                break;
-            case RACE_HIGHMOUNTAIN_TAUREN:
-                creatureEntry = 131076;
-                break;
-            case RACE_VOID_ELF:
-                creatureEntry = 131072;
-                break;
-            case RACE_LIGHTFORGED_DRAENEI:
-                creatureEntry = 131074;
-                break;
-            default:
-                break;
-        }
-
-        if (creatureEntry)
-        {
-            PetSlot slot = getSlotForNewPet();
-            Pet* pet = CreateTamedPetFrom(creatureEntry, spellID);
-            if (!pet)
-                return;
-
-            // add to world
-            pet->GetMap()->AddToMap(pet->ToCreature());
-            pet->SetSlot(slot);
-
-            SetMinion(pet, true);
-
-            pet->SavePetToDB();
-            ToPlayer()->PetSpellInitialize();
-
-            ToPlayer()->GetSession()->SendStablePet();
-        }
     }
 }
 

@@ -108,13 +108,13 @@ public:
 
         void Reset() override
         {
-            if (me->isAlive())
+            if (me->IsAlive())
             {
                 _Reset();
                 achievecomplete = false;
 
                 if (Creature* elder = instance->instance->GetCreature(instance->GetGuidData(NPC_ELDER)))
-                    if (!elder->isAlive())
+                    if (!elder->IsAlive())
                         elder->Respawn();                
             } 
 
@@ -303,7 +303,7 @@ public:
                                 for (const auto& guid : eggs[i])
                                     if (Creature* egg = instance->instance->GetCreature(guid))
                                     {
-                                        if (!egg->isAlive())
+                                        if (!egg->IsAlive())
                                             egg->Respawn(true);
                                         egg->AI()->EnterCombat(me->getVictim());
                                         egg->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
@@ -314,7 +314,7 @@ public:
                             else
                                 if (Creature* egg = instance->instance->GetCreature(eggs[i][urand(0, eggs[i].size())]))
                                 {
-                                    if (!egg->isAlive())
+                                    if (!egg->IsAlive())
                                         egg->Respawn(true);
                                     egg->AI()->EnterCombat(me->getVictim());
                                     egg->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
@@ -332,7 +332,7 @@ public:
                             for (const auto& guid : vector.second)
                                 if (Creature* egg = instance->instance->GetCreature(guid))
                                 {
-                                    if (!egg->isAlive())
+                                    if (!egg->IsAlive())
                                         egg->Respawn(true);
                                     else
                                         egg->SetHealth(egg->GetMaxHealth());
@@ -419,7 +419,7 @@ public:
 
                 for (auto id : { NPC_EVENT_1, NPC_EVENT_2 })
                     if (Creature* add = instance->instance->GetCreature(instance->GetGuidData(id)))
-                        if (add->isAlive())
+                        if (add->IsAlive())
                             ++introAdds;
 
                 if (introAdds)

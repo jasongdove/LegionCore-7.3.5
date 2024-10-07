@@ -163,7 +163,7 @@ void BattlegroundIsleOfConquest::PostUpdateImpl(uint32 diff)
                     {
                         if (Creature* catapult = GetBGCreature(u))
                         {
-                            if (!catapult->isAlive())
+                            if (!catapult->IsAlive())
                                 catapult->Respawn(true);
                         }
                     }
@@ -173,7 +173,7 @@ void BattlegroundIsleOfConquest::PostUpdateImpl(uint32 diff)
                     {
                         if (Creature* glaiveThrower = GetBGCreature(u))
                         {
-                            if (!glaiveThrower->isAlive())
+                            if (!glaiveThrower->IsAlive())
                                 glaiveThrower->Respawn(true);
                         }
                     }
@@ -194,7 +194,7 @@ void BattlegroundIsleOfConquest::PostUpdateImpl(uint32 diff)
 
                     if (Creature* siege = GetBGCreature(siegeType)) // this always should be true
                     {
-                        if (siege->isAlive())
+                        if (siege->IsAlive())
                         {
                             if (siege->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE| UNIT_FLAG_CANNOT_SWIM |UNIT_FLAG_IMMUNE_TO_PC))
                                 // following sniffs the vehicle always has UNIT_FLAG_CANNOT_SWIM
@@ -211,7 +211,7 @@ void BattlegroundIsleOfConquest::PostUpdateImpl(uint32 diff)
                     {
                         if (Creature* demolisher = GetBGCreature(u))
                         {
-                            if (!demolisher->isAlive())
+                            if (!demolisher->IsAlive())
                                 demolisher->Respawn(true);
                         }
                     }
@@ -793,7 +793,7 @@ void BattlegroundIsleOfConquest::HandleCapturedNodes(ICNodePoint* nodePoint, boo
             {
                 uint8 type = (nodePoint->faction == TEAM_ALLIANCE ? BG_IC_NPC_GLAIVE_THROWER_1_A : BG_IC_NPC_GLAIVE_THROWER_1_H)+i;
 
-                if (GetBGCreature(type) && GetBGCreature(type)->isAlive())
+                if (GetBGCreature(type) && GetBGCreature(type)->IsAlive())
                     continue;
 
                 if (AddCreature(nodePoint->faction == TEAM_ALLIANCE ? NPC_GLAIVE_THROWER_A : NPC_GLAIVE_THROWER_H, type, nodePoint->faction,
@@ -808,7 +808,7 @@ void BattlegroundIsleOfConquest::HandleCapturedNodes(ICNodePoint* nodePoint, boo
             {
                 uint8 type = (nodePoint->faction == TEAM_ALLIANCE ? BG_IC_NPC_CATAPULT_1_A : BG_IC_NPC_CATAPULT_1_H)+i;
 
-                if (GetBGCreature(type) && GetBGCreature(type)->isAlive())
+                if (GetBGCreature(type) && GetBGCreature(type)->IsAlive())
                     continue;
 
                 if (AddCreature(NPC_CATAPULT, type, nodePoint->faction,
@@ -843,7 +843,7 @@ void BattlegroundIsleOfConquest::HandleCapturedNodes(ICNodePoint* nodePoint, boo
                     {
                         uint8 type = (nodePoint->faction == TEAM_ALLIANCE ? BG_IC_NPC_DEMOLISHER_1_A : BG_IC_NPC_DEMOLISHER_1_H)+i;
 
-                        if (GetBGCreature(type) && GetBGCreature(type)->isAlive())
+                        if (GetBGCreature(type) && GetBGCreature(type)->IsAlive())
                             continue;
 
                         if (AddCreature(NPC_DEMOLISHER, type, nodePoint->faction,
@@ -867,7 +867,7 @@ void BattlegroundIsleOfConquest::HandleCapturedNodes(ICNodePoint* nodePoint, boo
                     }
 
                     uint8 siegeType = (nodePoint->faction == TEAM_ALLIANCE ? BG_IC_NPC_SIEGE_ENGINE_A : BG_IC_NPC_SIEGE_ENGINE_H);
-                    if (!GetBGCreature(siegeType) || !GetBGCreature(siegeType)->isAlive())
+                    if (!GetBGCreature(siegeType) || !GetBGCreature(siegeType)->IsAlive())
                     {
                         AddCreature((nodePoint->faction == TEAM_ALLIANCE ? NPC_SIEGE_ENGINE_A : NPC_SIEGE_ENGINE_H), siegeType, nodePoint->faction,
                             BG_IC_WorkshopVehicles[4].GetPositionX(), BG_IC_WorkshopVehicles[4].GetPositionY(),

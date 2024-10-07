@@ -156,7 +156,7 @@ class boss_murmur : public CreatureScript
                     std::list<HostileReference*>& m_threatlist = me->getThreatManager().getThreatList();
                     for (std::list<HostileReference*>::const_iterator i = m_threatlist.begin(); i != m_threatlist.end(); ++i)
                         if (Unit* target = Unit::GetUnit(*me, (*i)->getUnitGuid()))
-                            if (target->isAlive() && me->IsWithinMeleeRange(target))
+                            if (target->IsAlive() && me->IsWithinMeleeRange(target))
                             {
                                 me->TauntApply(target);
                                 break;

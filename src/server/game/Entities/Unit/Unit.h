@@ -983,7 +983,7 @@ enum ActiveStates
     ACT_DECIDE   = 0x00                                     // custom
 };
 
-enum ReactStates
+enum ReactStates : uint8
 {
     REACT_PASSIVE    = 0,
     REACT_DEFENSIVE  = 1,
@@ -1349,6 +1349,8 @@ class Unit : public WorldObject
         uint8 GetMiscStandValue() const { return GetByteValue(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_ANIM_TIER); }
         void  RemoveMiscStandFlags(uint8 flags) { RemoveByteFlag(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_ANIM_TIER, flags); }
 
+        void SetCreatedBySpell(uint32 spellId) { SetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL, spellId); }
+
         bool IsMounted() const { return HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNT); }
         uint32 GetMountID() const { return GetUInt32Value(UNIT_FIELD_MOUNT_DISPLAY_ID); }
         void Mount(uint32 mount, uint32 vehicleId = 0, uint32 creatureEntry = 0);
@@ -1574,7 +1576,7 @@ class Unit : public WorldObject
 
         void SendBreakTarget(Unit* victim);
 
-        bool isAlive() const { return m_deathState == ALIVE; };
+        bool IsAlive() const { return m_deathState == ALIVE; };
         bool isDying() const { return m_deathState == JUST_DIED; };
         bool isDead(bool withFeign = true) const;
         DeathState getDeathState() { return m_deathState; };
@@ -1661,7 +1663,7 @@ class Unit : public WorldObject
 
         Pet* CreateTamedPetFrom(Creature* creatureTarget, uint32 spell_id = 0);
         Pet* CreateTamedPetFrom(uint32 creatureEntry, uint32 spell_id = 0);
-        bool InitTamedPet(Pet* pet, uint32 spell_id);
+        bool InitTamedPet(Pet* pet, uint8 level, uint32 spell_id);
 
         // aura apply/remove helpers - you should better not use these
         Aura* _TryStackingOrRefreshingExistingAura(SpellInfo const* newAura, uint32 effMask, Unit* caster, float* baseAmount = nullptr, Item* castItem = nullptr, ObjectGuid casterGUID = ObjectGuid::Empty);

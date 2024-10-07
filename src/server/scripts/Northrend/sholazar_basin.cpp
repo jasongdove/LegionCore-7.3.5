@@ -555,7 +555,7 @@ struct npc_artruis_Q12581 : public ScriptedAI
         {
             if (!creList.empty())
             {
-                if (!adds->isAlive())
+                if (!adds->IsAlive())
                 {
                     adds->Respawn(true);
                 }
@@ -634,7 +634,7 @@ struct npc_artruis_Q12581 : public ScriptedAI
         {
             if (!creList.empty())
             {
-                if (adds->isAlive())
+                if (adds->IsAlive())
                 {
                     adds->CombatStop();
                     adds->NearTeleportTo(adds->GetHomePosition());
@@ -746,7 +746,7 @@ struct npc_jaloot_Q12581 : public ScriptedAI
         }
         case ACTION_2:
         {
-            if (me->isAlive())
+            if (me->IsAlive())
             {
                 Talk(SAY_ZEPH_DIE);
                 me->AttackStop();
@@ -893,7 +893,7 @@ struct npc_zephik_Q12581 : public ScriptedAI
         }
         case ACTION_2:
         {
-            if (me->isAlive())
+            if (me->IsAlive())
             {
                 Talk(SAY_JAL_DIE);
                 me->AttackStop();
@@ -1056,7 +1056,7 @@ public:
                     std::list<Creature*> saboteurs;
                     caster->GetCreatureListWithEntryInGrid(saboteurs, NPC_SABOTEUR, 200.0f);
                     for (std::list<Creature*>::iterator itr = saboteurs.begin(); itr != saboteurs.end(); ++itr)
-                        if ((*itr)->isAlive())
+                        if ((*itr)->IsAlive())
                             // Lifeforce has a cast duration, it should be cast at all saboteurs one by one
                             presence->CastSpell((*itr), SPELL_LIFEFORCE, false);
                 }

@@ -78,7 +78,7 @@ struct boss_temple_vonjin : public ScriptedAI
     void Skull()
     {
         if (auto skull = me->FindNearestGameObject(go_hazorn_skull_1, 50.f))
-            if (me->isAlive())
+            if (me->IsAlive())
                 skull->SetFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE);
             else
                 skull->RemoveFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE);
@@ -254,7 +254,7 @@ struct boss_temple_lessar : public ScriptedAI
     void Blood()
     {
         if (auto blood = me->FindNearestGameObject(go_ritual_blood_1, 50.f))
-            if (me->isAlive())
+            if (me->IsAlive())
                 blood->SetFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE);
             else
                 blood->RemoveFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE);
@@ -430,7 +430,7 @@ struct boss_hex_lord_hadorn : public ScriptedAI
 
     void RitualReset()
     {
-        if (!ritual && me->isAlive())
+        if (!ritual && me->IsAlive())
         {
             me->SummonCreature(npc_circle_sum_eff, summonCircle);
             me->SummonCreature(npc_skull_place, summonSkull);
@@ -2533,7 +2533,7 @@ public:
                 evala->GetCreatureListWithEntryInGrid(creatures, npc_evala_shard, 20.f);
                 for (auto cre : creatures)
                 {
-                    if (!cre->isAlive())
+                    if (!cre->IsAlive())
                         cre->Respawn(true);
                 }
             }
@@ -3275,7 +3275,7 @@ struct boss_new_year_2019_evala : public ScriptedAI
         {
             for (auto const& sh : creList)
             {
-                if (!sh->isAlive())
+                if (!sh->IsAlive())
                     sh->Respawn(true);
             }
         }
@@ -5299,7 +5299,7 @@ public:
 
     void ResAndTeleDalaran(Player* player, uint32 castAtFirst)
     {
-        if (!player->isAlive())
+        if (!player->IsAlive())
             player->ResurrectPlayer(0.5f);
 
         if (castAtFirst)

@@ -167,7 +167,7 @@ struct boss_yalnu : public BossAI
             {
                 if (Player* plr = i->getSource())
                 {
-                    if (!plr->isAlive() || plr->isGameMaster())
+                    if (!plr->IsAlive() || plr->isGameMaster())
                         break;
 
                     if (plr->GetCurrentAreaID() == 7330)

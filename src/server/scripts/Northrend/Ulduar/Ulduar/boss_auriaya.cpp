@@ -447,7 +447,7 @@ public:
                     if (!Sentry)
                         continue;
 
-                    if (Sentry->isAlive() && me != Sentry)
+                    if (Sentry->IsAlive() && me != Sentry)
                         aura++;
                 }
 

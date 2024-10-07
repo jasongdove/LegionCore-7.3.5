@@ -1132,7 +1132,7 @@ public:
                         bool checkPassed = true;
                         Player* player = ObjectAccessor::FindPlayer(playerGuid);
 
-                        if (!player || !player->isAlive())
+                        if (!player || !player->IsAlive())
                         {
                             me->DespawnOrUnsummon(1000);
                             playerGuid.Clear();
@@ -3013,7 +3013,7 @@ public:
             {
                 Player* player = *itr;
                 if (player->GetQuestStatus(QIEST_BATTLE_FOR_SKIES) == QUEST_STATUS_INCOMPLETE)
-                    if (player->isAlive())
+                    if (player->IsAlive())
                         return true;
             }
 
@@ -3072,7 +3072,7 @@ public:
             {
                 Player* player = *itr;
                 if (player->GetQuestStatus(QIEST_BATTLE_FOR_SKIES) == QUEST_STATUS_INCOMPLETE)
-                    if (player->isAlive())
+                    if (player->IsAlive())
                         player->KilledMonsterCredit(me->GetEntry());
             }
         }
@@ -4323,7 +4323,7 @@ public:
             {
                 Player* player = *itr;
                 if (player->GetQuestStatus(QUEST_ANCIEN_MAL) == QUEST_STATUS_INCOMPLETE)
-                    if (player->isAlive())
+                    if (player->IsAlive())
                         player->KilledMonsterCredit(me->GetEntry());
             }
         }
@@ -4436,7 +4436,7 @@ public:
             if (Creature* boss = me->FindNearestCreature(NPC_NIGHMIRE, 100.0f, true))
             {
                 bossGUID = boss->GetGUID();
-                if (!boss->isAlive())
+                if (!boss->IsAlive())
                     boss->Respawn(true);
                 AttackStart(boss);
 
@@ -4814,7 +4814,7 @@ public:
         {
             for (GuidSet::iterator itr = m_player_for_event.begin(); itr != m_player_for_event.end(); ++itr)
                 if (Player* player = sObjectAccessor->FindPlayer(*itr))
-                    if (player->isAlive())
+                    if (player->IsAlive())
                         return true;
 
             return false;
@@ -4826,7 +4826,7 @@ public:
             for (GuidSet::iterator itr = m_player_for_event.begin(); itr != m_player_for_event.end(); ++itr)
                 if (Player* player = sObjectAccessor->FindPlayer(*itr))
                 {
-                    if (player->isAlive())
+                    if (player->IsAlive())
                     {
                         if (actualPower < 700) // IN_PROGRESS
                         {
@@ -5191,7 +5191,7 @@ public:
             events.RescheduleEvent(EVENT_6, t += 1000);            //18:12:55.000
             events.RescheduleEvent(EVENT_7, t += 2000);            //18:12:57.000
             events.RescheduleEvent(EVENT_8, t += 9000);            //18:13:06.000
-            events.RescheduleEvent(EVENT_CZI_0, t += 3000);        //18:13:09.000 Message: Да, вождь.
+            events.RescheduleEvent(EVENT_CZI_0, t += 3000);        //18:13:09.000 Message: пїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ.
             events.RescheduleEvent(EVENT_9, t += 3000);            //18:13:12.000
             events.RescheduleEvent(EVENT_10, t += 3000);           //18:13:15.000
             events.RescheduleEvent(EVENT_11, t += 8000);           //18:13:23.000
@@ -5200,7 +5200,7 @@ public:
             events.RescheduleEvent(EVENT_14, t += 13000);          //18:13:47.000
             events.RescheduleEvent(EVENT_15, t += 5000);           //18:13:52.000 
             events.RescheduleEvent(EVENT_16, t += 11000);          //18:14:03.000
-            events.RescheduleEvent(EVENT_CZI_1, t += 3000);        //18:14:06.000 Message: Да... Да, конечно...
+            events.RescheduleEvent(EVENT_CZI_1, t += 3000);        //18:14:06.000 Message: пїЅпїЅ... пїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ...
             events.RescheduleEvent(EVENT_17, t += 4000);           //18:14:10.000
             events.RescheduleEvent(EVENT_18, t += 1000);           //18:14:11.000
             events.RescheduleEvent(EVENT_19, t += 2000);           //18:14:13.000

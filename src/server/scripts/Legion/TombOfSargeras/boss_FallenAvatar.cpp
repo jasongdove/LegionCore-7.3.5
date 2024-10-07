@@ -260,7 +260,7 @@ struct boss_fallen_avatar : BossAI
 
         pilones.clear(); // just despawned, i think
 
-        if (me->isAlive())
+        if (me->IsAlive())
             if (Creature* maiden = me->SummonCreature(NPC_AVATARA_MAIDEN, 6583.50f, -771.65f, 1663.67f, 3.04f, TEMPSUMMON_MANUAL_DESPAWN))
                 for (const auto pos : pilonesPos)
                     me->SummonCreature(NPC_PILONES, pos, maiden->GetGUID(), TEMPSUMMON_MANUAL_DESPAWN, 0);
@@ -475,7 +475,7 @@ struct boss_fallen_avatar : BossAI
         if (!who->IsPlayer())
             return;
 
-        if (me->isAlive() && !me->isInCombat() && who->GetDistance(me) <= 19.0f)
+        if (me->IsAlive() && !me->isInCombat() && who->GetDistance(me) <= 19.0f)
             AttackStart(who);
 
         if (me->GetDistance(who) < 100.0f && !IntroDone)
@@ -732,8 +732,10 @@ struct boss_fallen_avatar : BossAI
 
                     me->SetPower(me->getPowerType(), me->GetPower(me->getPowerType()) + 1);
 
-                    if ((me->GetPower(me->getPowerType()) >= 100 && summons.GetCreature(NPC_AVATARA_MAIDEN) && summons.GetCreature(NPC_AVATARA_MAIDEN)->isAlive())
-                        || (summons.GetCreature(NPC_AVATARA_MAIDEN) && !summons.GetCreature(NPC_AVATARA_MAIDEN)->isAlive()))
+                    if ((me->GetPower(me->getPowerType()) >= 100 && summons.GetCreature(NPC_AVATARA_MAIDEN) &&
+                            summons.GetCreature(NPC_AVATARA_MAIDEN)->IsAlive())
+                        || (summons.GetCreature(NPC_AVATARA_MAIDEN) && !summons.GetCreature(
+                            NPC_AVATARA_MAIDEN)->IsAlive()))
                     {
                         isSecondPhase = true;
                         events.Reset();

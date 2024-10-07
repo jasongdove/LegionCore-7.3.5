@@ -524,7 +524,7 @@ public:
 
             if (checkTimer <= diff)
             {
-                if (me->getVictim() && me->getVictim()->isAlive())
+                if (me->getVictim() && me->getVictim()->IsAlive())
                     me->GetMotionMaster()->MovePoint(0,me->getVictim()->GetPositionX(),me->getVictim()->GetPositionY(),me->getVictim()->GetPositionZ());
             
                 checkTimer = 500;
@@ -682,7 +682,7 @@ public:
                 {
                     for (uint8 n = 0; n < RAID_MODE(1, 3); ++n)
                     {
-                        if (me->GetVehicleKit()->GetPassenger(n) && me->GetVehicleKit()->GetPassenger(n)->isAlive())
+                        if (me->GetVehicleKit()->GetPassenger(n) && me->GetVehicleKit()->GetPassenger(n)->IsAlive())
                             me->Kill(me->GetVehicleKit()->GetPassenger(n), true);
                     }
                     ArmDamage = 0;
@@ -708,7 +708,7 @@ public:
                     {
                         if (Unit* GripTarget = Unit::GetUnit(*me, GripTargetGUID[n]))
                         {
-                            if (GripTarget && GripTarget->isAlive() && !GripTarget->GetVehicle())
+                            if (GripTarget && GripTarget->IsAlive() && !GripTarget->GetVehicle())
                             {
                                 GripTarget->EnterVehicle(me, n);
                                 me->AddAura(SPELL_STONE_GRIP_STUN, GripTarget);
@@ -737,7 +737,7 @@ public:
                 for (uint8 n = 0; n < RAID_MODE(1, 3); ++n)
                 {
                     Unit* pGripTarget = me->GetVehicleKit()->GetPassenger(n);
-                    if (pGripTarget && pGripTarget->isAlive())
+                    if (pGripTarget && pGripTarget->IsAlive())
                     {
                         pGripTarget->RemoveAurasDueToSpell(SPELL_STONE_GRIP);
                         pGripTarget->RemoveAurasDueToSpell(SPELL_STONE_GRIP_STUN);
@@ -776,7 +776,7 @@ public:
                 for (uint8 n = 0; n < RAID_MODE(1, 3); ++n)
                 {
                     Unit* pGripTarget = me->GetVehicleKit()->GetPassenger(n);
-                    if (pGripTarget && pGripTarget->isAlive())
+                    if (pGripTarget && pGripTarget->IsAlive())
                     {
                         pGripTarget->RemoveAurasDueToSpell(SPELL_STONE_GRIP_STUN);
                         pGripTarget->ExitVehicle();

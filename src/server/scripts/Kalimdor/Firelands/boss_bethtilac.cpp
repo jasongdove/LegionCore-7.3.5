@@ -751,7 +751,7 @@ class npc_bethtilac_cinderweb_spiderling : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_CHECK_DRONE:
-                            if (!pDrone || !pDrone->isAlive())
+                            if (!pDrone || !pDrone->IsAlive())
                             {
                                 if (Creature* pTarget = me->FindNearestCreature(NPC_CINDERWEB_DRONE, 500.0f))
                                 {

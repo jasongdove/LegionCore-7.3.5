@@ -125,7 +125,7 @@ enum Spells
     //spirit of anvilrage
     SPELL_BESTOWAL_OF_ANVILRAGE         = 80874,
     SPELL_SPIRIT_OF_ANVILRAGE           = 80768,
-    SPELL_STORMBOLT                     = 80648, //править
+    SPELL_STORMBOLT                     = 80648, //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     SPELL_STORMBOLT_25                  = 91890,
 
     //spirit of moltenfist
@@ -136,7 +136,7 @@ enum Spells
     //spirit of shadowforge
     SPELL_BESTOWAL_OF_SHADOWFORGE       = 80873,
     SPELL_SPIRIT_OF_SHADOWFORGE         = 80769,
-    SPELL_DWARVEN_CHAIN_LIGHTNING       = 80646, //править
+    SPELL_DWARVEN_CHAIN_LIGHTNING       = 80646, //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     SPELL_DWARVEN_CHAIN_LIGHTNING_25    = 91891,
 
     //lord victor nefarius
@@ -608,7 +608,7 @@ public:
                     std::list<Creature*> _drudges;
                     GetCreatureListWithEntryInGrid(_drudges, me, NPC_GOLEM_SENTRY, 200.0f);
                     for (std::list<Creature*>::iterator itr = _drudges.begin(); itr != _drudges.end(); ++itr)
-                        if ((*itr)->GetGUID() != me->GetGUID() && (*itr)->isAlive())
+                        if ((*itr)->GetGUID() != me->GetGUID() && (*itr)->IsAlive())
                             if (Unit* target = (*itr)->AI()->SelectTarget(SELECT_TARGET_TOPAGGRO))
                                 DoCast(target, SPELL_DRAKONID_RUSH);                    
                     events.RescheduleEvent(EVENT_DRAKONID_RUSH, 20000);

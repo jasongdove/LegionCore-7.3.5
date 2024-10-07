@@ -235,7 +235,7 @@ public:
             if (DorotheeGUID)
             {
                 Creature* Dorothee = (Unit::GetCreature((*me), DorotheeGUID));
-                if (Dorothee && Dorothee->isAlive())
+                if (Dorothee && Dorothee->IsAlive())
                 {
                     CAST_AI(boss_dorothee::boss_dorotheeAI, Dorothee->AI())->TitoDied = true;
                     Talk(2);
@@ -1485,7 +1485,7 @@ void boss_julianne::boss_julianneAI::UpdateAI(const uint32 diff)
         if (urand(0, 1) && SummonedRomulo)
         {
             Creature* Romulo = (Unit::GetCreature((*me), RomuloGUID));
-            if (Romulo && Romulo->isAlive() && !RomuloDead)
+            if (Romulo && Romulo->IsAlive() && !RomuloDead)
                 DoCast(Romulo, SPELL_ETERNAL_AFFECTION, false);
         }
         else

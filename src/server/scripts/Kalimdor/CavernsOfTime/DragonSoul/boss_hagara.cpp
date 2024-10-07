@@ -2107,7 +2107,7 @@ class spell_hagara_the_stormbinder_lightning_conduit : public SpellScriptLoader
                         if (u->HasAura(SPELL_LIGHTNING_CONDUIT_DUMMY_1))
                             return false;
 
-                        if (!u->isAlive())
+                        if (!u->IsAlive())
                             return false;
 
                         if (!_obj->IsWithinDistInMap(u, _range))

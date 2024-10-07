@@ -590,7 +590,7 @@ public:
                     if (!PlayerList.isEmpty())
                         for (Map::PlayerList::const_iterator Itr = PlayerList.begin(); Itr != PlayerList.end(); ++Itr)
                             if (Player* player = Itr->getSource())
-                                if (player->isAlive())
+                                if (player->IsAlive())
                                     me->Kill(player, true);
                 }
                 else
@@ -633,7 +633,7 @@ public:
                         {
                             if (Player* pl = me->GetPlayer(*me, *itr))
                             {
-                                if (pl->isAlive() && me->GetExactDist(pl) >= 15.0f)
+                                if (pl->IsAlive() && me->GetExactDist(pl) >= 15.0f)
                                 {
                                     havetarget = true;
                                     Talk(SAY_SAWBLADE);
@@ -648,7 +648,7 @@ public:
                             {
                                 if (Player* pl = me->GetPlayer(*me, *itr))
                                 {
-                                    if (pl->isAlive())
+                                    if (pl->IsAlive())
                                     {
                                         Talk(SAY_SAWBLADE);
                                         DoCast(pl, SPELL_LAUNCH_SAWBLADE);
@@ -997,7 +997,7 @@ public:
                 break;
             case NPC_BLACKFUSE_CRAWLER_MINE:
                 if (Player* pl = me->GetPlayer(*me, targetGuid))
-                    if (pl->isAlive())
+                    if (pl->IsAlive())
                         pl->RemoveAurasDueToSpell(SPELL_CRAWLER_MINE_FIXATE_PL);
 
                 if (me->HasAura(SPELL_SUPERHEATED_CRAWLER_MINE))
@@ -1372,7 +1372,7 @@ public:
                 case EVENT_PURSUE:
                 {
                     if (Player* pl = me->GetPlayer(*me, targetGuid))
-                        if (pl->isAlive())
+                        if (pl->IsAlive())
                             pl->RemoveAurasDueToSpell(SPELL_CRAWLER_MINE_FIXATE_PL);
 
                     std::list<Player*>pllist;
@@ -1406,7 +1406,7 @@ public:
                 case EVENT_CHECK_DISTANCE:
                 {
                     Player* pl = me->GetPlayer(*me, targetGuid);
-                    if (pl && pl->isAlive() && !pl->HasAura(SPELL_ON_CONVEYOR))
+                    if (pl && pl->IsAlive() && !pl->HasAura(SPELL_ON_CONVEYOR))
                     {
                         if (IsInControl())
                         {

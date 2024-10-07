@@ -99,7 +99,7 @@ public:
                     if (!trashGUIDconteiner.empty())
                         for (auto trash : trashGUIDconteiner)
                         {
-                            if (trash && trash->IsInWorld() && trash->isAlive())
+                            if (trash && trash->IsInWorld() && trash->IsAlive())
                             {
                                 if (!trash->isInCombat())
                                     trash->AI()->DoZoneInCombat(trash, 100.0f);
@@ -118,7 +118,7 @@ public:
                     if (!trashGUIDconteiner.empty())
                         for (std::list<Creature*>::iterator itr = trashGUIDconteiner.begin(); itr != trashGUIDconteiner.end(); ++itr)
                         {
-                            if (!(*itr) || !(*itr)->IsInWorld() || !(*itr)->isAlive())
+                            if (!(*itr) || !(*itr)->IsInWorld() || !(*itr)->IsAlive())
                                 continue;
 
                             (*itr)->Kill(*itr);

@@ -962,7 +962,7 @@ public:
                 return false;
         }
 
-        if (target->isAlive())
+        if (target->IsAlive())
         {
             handler->GetSession()->GetPlayer()->DealDamage(target, target->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
         }
@@ -2496,7 +2496,7 @@ public:
                 return false;
         }
 
-        if (!target->isAlive())
+        if (!target->IsAlive())
             return true;
 
         char* damageStr = strtok((char*)args, " ");
@@ -2928,7 +2928,7 @@ public:
         pet->SetEffectiveLevel(creatureTarget->GetEffectiveLevel());
 
         player->SetMinion(pet, true);
-        pet->SavePetToDB();
+        pet->SavePetToDB(PET_SAVE_AS_CURRENT);
         player->PetSpellInitialize();
 
         return true;
@@ -3057,10 +3057,10 @@ public:
             {
                 if (Pet* pet = player->GetPet())
                 {
-                    pet->SavePetToDB();
+                    pet->SavePetToDB(PET_SAVE_AS_CURRENT);
                  // not let dismiss dead pet
-                 if (pet && pet->isAlive())
-                    player->RemovePet(pet);
+                 if (pet && pet->IsAlive())
+                    player->RemovePet(pet, PET_SAVE_AS_CURRENT, true);
                 }
             }
 

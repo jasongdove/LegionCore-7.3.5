@@ -366,7 +366,7 @@ public:
                     {
                         case EVENT_STORMHAMMER:
                             if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 80, true))
-                                if (pTarget->isAlive() && IN_ARENA(pTarget))
+                                if (pTarget->IsAlive() && IN_ARENA(pTarget))
                                     DoCast(pTarget, SPELL_STORMHAMMER);
                             events.ScheduleEvent(EVENT_STORMHAMMER, urand(15000, 20000), 0, PHASE_1);
                             break;
@@ -406,7 +406,7 @@ public:
                             break;
                         case EVENT_CHAIN_LIGHTNING:
                             if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                                if (pTarget->isAlive())
+                                if (pTarget->IsAlive())
                                     DoCast(pTarget, SPELL_CHAIN_LIGHTNING);
                             events.ScheduleEvent(EVENT_CHAIN_LIGHTNING, urand(15000, 20000), 0, PHASE_2);
                             break;
@@ -700,7 +700,7 @@ public:
                     {
                         for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                         {
-                            if (i->getSource() && i->getSource()->isAlive() && isOnSameSide(i->getSource()))
+                            if (i->getSource() && i->getSource()->IsAlive() && isOnSameSide(i->getSource()))
                                 me->getThreatManager().addThreat(i->getSource(), 150.0f);
                         }
                     }
@@ -962,7 +962,7 @@ public:
                 return;
 
             if (Unit * Thorim = me->ToTempSummon()->GetSummoner())
-                if (Thorim && !Thorim->isAlive())
+                if (Thorim && !Thorim->IsAlive())
                     me->DespawnOrUnsummon();
             
             if (FrostTimer <= diff)

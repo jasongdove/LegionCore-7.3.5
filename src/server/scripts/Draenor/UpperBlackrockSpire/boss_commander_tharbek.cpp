@@ -189,7 +189,7 @@ struct boss_commander_tharbek : public BossAI
             {
                 if (Player* plr = i->getSource())
                 {
-                    if (!plr->isAlive() || plr->isGameMaster())
+                    if (!plr->IsAlive() || plr->isGameMaster())
                         break;
 
                     if (plr->GetPositionX() > MIN_X && plr->GetPositionX() < MAX_X && plr->GetPositionY() > MIN_Y && plr->GetPositionY() < MAX_Y && plr->GetPositionZ() > MIN_Z && plr->GetPositionZ() < MAX_Z)

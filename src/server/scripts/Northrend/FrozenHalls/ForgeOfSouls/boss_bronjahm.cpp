@@ -229,7 +229,7 @@ class mob_corrupted_soul_fragment : public CreatureScript
             {
                 if (Creature* Br = me->ToTempSummon()->GetSummoner()->ToCreature())
                 {
-                    if (Br && Br->isAlive())
+                    if (Br && Br->IsAlive())
                     {
                         me->GetMotionMaster()->MoveFollow(Br, 0.0f, 0.0f);
                         CheckDist = 1000;
@@ -245,7 +245,7 @@ class mob_corrupted_soul_fragment : public CreatureScript
                     {
                         if (Creature* Br = me->ToTempSummon()->GetSummoner()->ToCreature())
                         {
-                            if (Br && Br->isAlive())
+                            if (Br && Br->IsAlive())
                             {
                                 if (me->GetDistance(Br) <= 1.0f)
                                 {
@@ -271,7 +271,7 @@ class mob_corrupted_soul_fragment : public CreatureScript
             {
                 if (Creature* Br = me->ToTempSummon()->GetSummoner()->ToCreature())
                 {
-                    if (Br && Br->isAlive())
+                    if (Br && Br->IsAlive())
                         Br->AI()->DoAction(ACTION_DESPAWN_SOUL);
                 }
             }

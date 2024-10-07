@@ -1349,7 +1349,7 @@ struct spell_pal_at_aura_of_sacrifice : public AreaTriggerAI
                     {
                         if (Player* player = itr->getSource())
                         {
-                            if (player->isAlive())
+                            if (player->IsAlive())
                                 unitList.push_back(player);
                         }
                     }
@@ -1380,7 +1380,7 @@ struct spell_pal_at_aura_of_sacrifice : public AreaTriggerAI
 
     bool IsValidTarget(Unit* caster, Unit* target, AreaTriggerActionMoment /*actionM*/) override
     {
-        if (!caster || !target || !caster->isAlive() || !CheckTarget(caster, target))
+        if (!caster || !target || !caster->IsAlive() || !CheckTarget(caster, target))
             return false;
 
         return true;
@@ -1439,7 +1439,7 @@ struct spell_pal_at_aura_of_sacrifice : public AreaTriggerAI
 
             if (Unit* caster = at->GetCaster())
             {
-                if (!caster->isAlive())
+                if (!caster->IsAlive())
                 {
                     RemoveAuras(caster, true);
                     return;

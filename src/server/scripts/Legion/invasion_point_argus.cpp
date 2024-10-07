@@ -2845,7 +2845,7 @@ struct npc_decimax : ScriptedAI
             return;
 
         use = true;
-        //me->SetReactState(REACT_PASSIVE); // вызывает проблемы с уроном АТ от 250242.
+        //me->SetReactState(REACT_PASSIVE); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ 250242.
         DoCast(250242);
         me->AddDelayedEvent(3000, [=]() -> void
         {
@@ -4218,7 +4218,7 @@ public:
         if (player->IsMounted())
             player->Dismount();
 
-        if (!player->isAlive())
+        if (!player->IsAlive())
         {
             player->ResurrectPlayer(!AccountMgr::IsPlayerAccount(player->GetSession()->GetSecurity()) ? 1.0f : 0.5f);
             player->SpawnCorpseBones();
@@ -4788,7 +4788,7 @@ public:
                     {
                         if (!player->isGameMaster())
                         {
-                            if (!player->isAlive())
+                            if (!player->IsAlive())
                             {
                                 player->ResurrectPlayer(!AccountMgr::IsPlayerAccount(player->GetSession()->GetSecurity()) ? 1.0f : 0.5f);
                                 player->SpawnCorpseBones();

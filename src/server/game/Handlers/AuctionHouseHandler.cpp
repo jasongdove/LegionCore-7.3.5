@@ -609,7 +609,7 @@ void WorldSession::HandleAuctionListItems(WorldPackets::AuctionHouse::AuctionLis
     WorldPackets::AuctionHouse::AuctionListItemsResult result;
     if (!packet.ClassFilters.empty())
     {
-        filters = boost::in_place();
+        filters.emplace();
 
         for (auto const& classFilter : packet.ClassFilters)
         {

@@ -272,7 +272,7 @@ struct npc_dargrul_molten_charskin : public ScriptedAI
                 case EVENT_1:
                 {
                     Unit* player = Unit::GetUnit(*me, playerGuid);
-                    if (!player || !player->isAlive() || !player->HasAura(SPELL_FIXATE_PLR))
+                    if (!player || !player->IsAlive() || !player->HasAura(SPELL_FIXATE_PLR))
                     {
                         if (me->GetAnyOwner())
                             if (Creature* summoner = me->GetAnyOwner()->ToCreature())
@@ -438,7 +438,7 @@ struct npc_nl_understone_demolisher : public ScriptedAI
                 {
                     me->SetReactState(REACT_AGGRESSIVE);
                     Unit* player = Unit::GetUnit(*me, playerGuid);
-                    if (!player || !player->isAlive() || !player->HasAura(SPELL_FIXATE_PLR))
+                    if (!player || !player->IsAlive() || !player->HasAura(SPELL_FIXATE_PLR))
                     {
                         if (Unit* plrTarget = SelectTarget(SELECT_TARGET_RANDOM, checkPlayers(), 80.0f, true))
                         {

@@ -479,7 +479,7 @@ void WorldSession::HandlePetCancelAura(WorldPackets::PetPackets::PetCancelAura& 
         return;
     }
 
-    if (!pet->isAlive())
+    if (!pet->IsAlive())
     {
         pet->SendPetActionFeedback(packet.SpellID, FEEDBACK_PET_DEAD);
         return;

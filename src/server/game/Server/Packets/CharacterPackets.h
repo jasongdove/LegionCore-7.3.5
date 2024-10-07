@@ -249,6 +249,8 @@ namespace WorldPackets
         public:
             struct CharFactionChangeDisplayInfo
             {
+                CharFactionChangeDisplayInfo() { } // allows emplace() with clang
+
                 std::array<uint8, PLAYER_CUSTOM_DISPLAY_SIZE> CustomDisplay;
                 std::string Name;
                 uint8 SexID = 0;

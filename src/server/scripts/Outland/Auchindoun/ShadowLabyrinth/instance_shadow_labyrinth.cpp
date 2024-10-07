@@ -55,7 +55,7 @@ class instance_shadow_labyrinth : public InstanceMapScript
                         GrandmasterVorpilGUID = creature->GetGUID();
                         break;
                     case NPC_FEL_OVERSEER:
-                        if (creature->isAlive())
+                        if (creature->IsAlive())
                         {
                             ++FelOverseerCount;
                             if (Creature* hellmaw = instance->GetCreature(AmbassadorHellmawGUID))

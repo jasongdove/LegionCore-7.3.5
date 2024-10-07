@@ -107,7 +107,7 @@ public:
                 DoScriptText(YELL_SKARVALD_AGGRO, me);
 
                 Unit* dalronn = Unit::GetUnit(*me, instance->GetGuidData(DATA_DALRONN));
-                if (dalronn && dalronn->isAlive() && !dalronn->getVictim())
+                if (dalronn && dalronn->IsAlive() && !dalronn->getVictim())
                     dalronn->getThreatManager().addThreat(who, 0.0f);
 
                 instance->SetData(DATA_SKARVALD_DALRONN_EVENT, IN_PROGRESS);
@@ -263,7 +263,7 @@ public:
             if (!ghost && instance)
             {
                 Unit* skarvald = Unit::GetUnit(*me, instance->GetGuidData(DATA_SKARVALD));
-                if (skarvald && skarvald->isAlive() && !skarvald->getVictim())
+                if (skarvald && skarvald->IsAlive() && !skarvald->getVictim())
                     skarvald->getThreatManager().addThreat(who, 0.0f);
 
                 AggroYell_Timer = 5000;

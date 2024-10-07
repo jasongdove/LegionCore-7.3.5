@@ -103,7 +103,7 @@ public:
                         tresh->DespawnOrUnsummon();
                     else
                     {
-                        if (!tresh->isAlive())
+                        if (!tresh->IsAlive())
                         {
                             tresh->RemoveCorpse();
                             tresh->Respawn();

@@ -85,7 +85,7 @@ struct boss_encounter_ancient_protectors : public BossAI
 
         for (uint8 i = 0; i < 3; i++)
             if (auto enfor = ObjectAccessor::GetCreature(*me, instance->GetGuidData(protectors[i])))
-                if (!enfor->isAlive())
+                if (!enfor->IsAlive())
                     bossDiedCount++;
 
         if (bossDiedCount == 3)
@@ -171,12 +171,12 @@ public:
                         if (!targetA || !targetB)
                             return;
 
-                        if (targetA->isAlive() && targetB->isAlive())
+                        if (targetA->IsAlive() && targetB->IsAlive())
                             targetGUID = targetA->GetHealthPct() < targetB->GetHealthPct() ? targetA->GetGUID() : targetB->GetGUID();
-                        else if (!targetA->isAlive() && !targetB->isAlive())
+                        else if (!targetA->IsAlive() && !targetB->IsAlive())
                             targetGUID = me->GetGUID();
-                        else if (!targetA->isAlive() || !targetB->isAlive())
-                            targetGUID = targetA->isAlive() ? targetA->GetGUID() : targetB->GetGUID();
+                        else if (!targetA->IsAlive() || !targetB->IsAlive())
+                            targetGUID = targetA->IsAlive() ? targetA->GetGUID() : targetB->GetGUID();
 
                         if (auto target = ObjectAccessor::GetCreature(*me, targetGUID))
                             DoCast(target, SPELL_REVITALIZING_WATERS, false);
@@ -294,12 +294,12 @@ public:
                         if (!targetA || !targetB)
                             return;
 
-                        if (targetA->isAlive() && targetB->isAlive())
+                        if (targetA->IsAlive() && targetB->IsAlive())
                             targetGUID = targetA->GetHealthPct() < targetB->GetHealthPct() ? targetA->GetGUID() : targetB->GetGUID();
-                        else if (!targetA->isAlive() && !targetB->isAlive())
+                        else if (!targetA->IsAlive() && !targetB->IsAlive())
                             targetGUID = me->GetGUID();
-                        else if (!targetA->isAlive() || !targetB->isAlive())
-                            targetGUID = targetA->isAlive() ? targetA->GetGUID() : targetB->GetGUID();
+                        else if (!targetA->IsAlive() || !targetB->IsAlive())
+                            targetGUID = targetA->IsAlive() ? targetA->GetGUID() : targetB->GetGUID();
 
                         if (auto target = ObjectAccessor::GetCreature(*me, targetGUID))
                             DoCast(target, SPELL_BRIARSKIN);

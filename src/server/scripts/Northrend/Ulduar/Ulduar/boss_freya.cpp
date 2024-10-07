@@ -240,7 +240,7 @@ public:
                 {
                     if (Creature *pCreature = Creature::GetCreature((*me), instance->GetGuidData(data)))
                     {
-                        if (pCreature->isAlive())
+                        if (pCreature->IsAlive())
                             pCreature->AI()->EnterEvadeMode();
                     }
                 }
@@ -329,7 +329,7 @@ public:
             {
                 // Freya hard mode can be triggered simply by letting the elders alive
                 if (Creature* Brightleaf = me->GetCreature(*me, instance->GetGuidData(DATA_BRIGHTLEAF)))
-                    if (Brightleaf && Brightleaf->isAlive())
+                    if (Brightleaf && Brightleaf->IsAlive())
                     {
                         EldersCount++;
                         Brightleaf->SetInCombatWithZone();
@@ -339,7 +339,7 @@ public:
                     }
             
                 if (Creature* Ironbranch = me->GetCreature(*me, instance->GetGuidData(DATA_IRONBRANCH)))
-                    if (Ironbranch && Ironbranch->isAlive())
+                    if (Ironbranch && Ironbranch->IsAlive())
                     {
                         EldersCount++;
                         Ironbranch->SetInCombatWithZone();
@@ -349,7 +349,7 @@ public:
                     }
             
                 if (Creature* Stonebark = me->GetCreature(*me, instance->GetGuidData(DATA_STONEBARK)))
-                    if (Stonebark && Stonebark->isAlive())
+                    if (Stonebark && Stonebark->IsAlive())
                     {
                         EldersCount++;
                         Stonebark->SetInCombatWithZone();
@@ -409,7 +409,7 @@ public:
                 {
                     for (uint32 i = 0; i < 3; i++)
                     {
-                        if (Elemental[i]->isAlive())
+                        if (Elemental[i]->IsAlive())
                             Elemental[i]->SetHealth(Elemental[i]->GetMaxHealth());
                         else
                             Elemental[i]->Respawn();
@@ -443,7 +443,7 @@ public:
                 {
                     case EVENT_SUNBEAM:
                         if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                            if (pTarget->isAlive())
+                            if (pTarget->IsAlive())
                                 DoCast(pTarget, SPELL_SUNBEAM);
                         events.ScheduleEvent(EVENT_SUNBEAM, urand(10000, 15000));
                         break;
@@ -670,8 +670,8 @@ public:
                 instance->DoStartTimedAchievement(CRITERIA_TIMED_TYPE_EVENT2, ACHIEV_LUMBERJACKED);
                 if (Creature* IR = me->GetCreature(*me, instance->GetGuidData(DATA_IRONBRANCH)))
                     if (Creature* ST = me->GetCreature(*me, instance->GetGuidData(DATA_STONEBARK)))
-                        if (!IR->isAlive()) 
-                            if (!ST->isAlive())
+                        if (!IR->IsAlive())
+                            if (!ST->IsAlive())
                                 instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_LUMBERJACKED_ACHIEVEMENT_CHECK);
              }
         }
@@ -687,7 +687,7 @@ public:
             if (uiUnstableSunbeamTimer <= diff)
             {
                 if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                    if (pTarget->isAlive())
+                    if (pTarget->IsAlive())
                         me->SummonCreature(NPC_UNSTABLE_SUN_BEAM, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 10000);
                 uiUnstableSunbeamTimer = 8000;
             }
@@ -821,8 +821,8 @@ public:
                 instance->DoStartTimedAchievement(CRITERIA_TIMED_TYPE_EVENT2, ACHIEV_LUMBERJACKED);
                 if (Creature* BR = me->GetCreature(*me, instance->GetGuidData(DATA_BRIGHTLEAF)))
                     if (Creature* ST = me->GetCreature(*me, instance->GetGuidData(DATA_STONEBARK)))
-                        if (!BR->isAlive())
-                            if (!ST->isAlive())
+                        if (!BR->IsAlive())
+                            if (!ST->IsAlive())
                                 instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_LUMBERJACKED_ACHIEVEMENT_CHECK);
              }
         }
@@ -946,8 +946,8 @@ public:
                 instance->DoStartTimedAchievement(CRITERIA_TIMED_TYPE_EVENT2, ACHIEV_LUMBERJACKED);
                 if (Creature* BR = me->GetCreature(*me, instance->GetGuidData(DATA_BRIGHTLEAF)))
                     if (Creature* IR = me->GetCreature(*me, instance->GetGuidData(DATA_IRONBRANCH)))
-                        if (!BR->isAlive())
-                            if (!IR->isAlive())
+                        if (!BR->IsAlive())
+                            if (!IR->IsAlive())
                                 instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_LUMBERJACKED_ACHIEVEMENT_CHECK);
              }
         }

@@ -233,7 +233,7 @@ struct boss_naraxas : public BossAI
 
     void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override
     {
-        if (!who || !me->isInCombat() || !who->isAlive())
+        if (!who || !me->isInCombat() || !who->IsAlive())
             return;
 
         if (apply)

@@ -298,7 +298,7 @@ public:
                     me->StopAttack();
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
                     DoCast(SPELL_FEIGN_DEATH);
-                    if (me->isAlive())
+                    if (me->IsAlive())
                         me->RemoveAurasAllDots();
 
                     if (!sayDeath)

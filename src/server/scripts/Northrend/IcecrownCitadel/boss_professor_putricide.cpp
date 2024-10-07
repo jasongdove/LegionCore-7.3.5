@@ -754,7 +754,7 @@ class npc_volatile_ooze : public CreatureScript
                 {
                     Unit * target = ObjectAccessor::GetPlayer(*me, m_uiTargetGUID);
                     
-                    if (!target || !target->isAlive() || !target->HasAura(SPELL_VOLATILE_OOZE_HELPER, me->GetGUID()) || target->HasAura(SPELL_GASEOUS_BLOAT_HELPER))
+                    if (!target || !target->IsAlive() || !target->HasAura(SPELL_VOLATILE_OOZE_HELPER, me->GetGUID()) || target->HasAura(SPELL_GASEOUS_BLOAT_HELPER))
                     {
                         me->GetMotionMaster()->Initialize();
                         m_uiGetTargetTimer = 6000;
@@ -905,7 +905,7 @@ class npc_gas_cloud : public CreatureScript
                 {
                     Unit * target = ObjectAccessor::GetPlayer(*me, m_uiTargetGUID);
                     
-                    if (!target || !target->isAlive() || !target->HasAura(SPELL_GASEOUS_BLOAT_HELPER, me->GetGUID()) || target->HasAura(SPELL_VOLATILE_OOZE_HELPER))
+                    if (!target || !target->IsAlive() || !target->HasAura(SPELL_GASEOUS_BLOAT_HELPER, me->GetGUID()) || target->HasAura(SPELL_VOLATILE_OOZE_HELPER))
                     {
                         me->GetMotionMaster()->Initialize();
                         m_uiGetTargetTimer = 6000;
@@ -1374,7 +1374,7 @@ class spell_putricide_mutation_init : public SpellScriptLoader
                 if (!professor)
                     return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
-                if (professor->AI()->GetModifyedData(DATA_PHASE) == PHASE_COMBAT_3 || !professor->isAlive())
+                if (professor->AI()->GetModifyedData(DATA_PHASE) == PHASE_COMBAT_3 || !professor->IsAlive())
                 {
                     extendedError = SPELL_CUSTOM_ERROR_ALL_POTIONS_USED;
                     return SPELL_FAILED_CUSTOM_ERROR;

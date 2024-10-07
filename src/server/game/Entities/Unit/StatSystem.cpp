@@ -117,7 +117,7 @@ void Player::UpdateStatsByMask()
     }
 
     if (m_operationsAfterDelayMask & OAD_LOAD_PET)
-        LoadPet();
+        ResummonPetTemporaryUnSummonedIfAny();
 
     if ((m_operationsAfterDelayMask & OAD_UPDATE_RUNES_REGEN) && getClass() == CLASS_DEATH_KNIGHT)
         UpdatePowerRegen(POWER_RUNES);
@@ -2077,7 +2077,7 @@ bool Guardian::UpdateStats(Stats stat)
 
                 if (isPet())
                 {
-                    switch (ToPet()->GetSpecializationId())
+                    switch (ToPet()->GetSpecialization())
                     {
                         case SPEC_PET_ADAPTATION_FEROCITY:
                         case SPEC_PET_FEROCITY: mod = 0.67f; break;
@@ -2461,7 +2461,8 @@ void Player::UpdateCRSpeed()
     SetFloatValue(PLAYER_FIELD_SPEED, std::max(0.0f, val));
 
     for (uint8 i = 0; i < MAX_MOVE_TYPE; ++i)
-        UpdateSpeed(UnitMoveType(i), true);
+        if (i != MOVE_TURN_RATE && i != MOVE_PITCH_RATE) // unsupported in UpdateSpeed
+            UpdateSpeed(UnitMoveType(i), true);
 }
 
 void Player::UpdateLifesteal()

@@ -54,7 +54,7 @@ void HostileRefManager::threatAssist(Unit* victim, float baseThreat, SpellInfo c
             if (Unit* owner = ref->getSource()->getOwner())
             {
                 volatile uint32 entryorguid = owner->IsPlayer() ? owner->GetGUIDLow() : owner->GetEntry();
-                if (owner->isAlive() && !owner->IsDelete() && owner->IsInWorld())
+                if (owner->IsAlive() && !owner->IsDelete() && owner->IsInWorld())
                     if (ThreatCalcHelper::isValidProcess(victim, owner, threatSpell))
                         ref->getSource()->doAddThreat(victim, threat, schoolMask, threatSpell);
             }

@@ -203,7 +203,7 @@ WorldPacket const* WorldPackets::Character::EnumCharactersResult::Write()
     _worldPacket.WriteBit(IsDemonHunterCreationAllowed);
     _worldPacket.WriteBit(HasDemonHunterOnRealm);
     _worldPacket.WriteBit(Unknown7x);
-    _worldPacket.WriteBit(DisabledClassesMask.is_initialized());
+    _worldPacket.WriteBit(DisabledClassesMask.has_value());
     _worldPacket.WriteBit(IsAlliedRacesCreationAllowed);
     _worldPacket << uint32(Characters.size());
     _worldPacket << int32(MaxCharacterLevel);
@@ -270,7 +270,7 @@ void WorldPackets::Character::CharacterRenameRequest::Read()
 WorldPacket const* WorldPackets::Character::CharacterRenameResult::Write()
 {
     _worldPacket << uint8(Result);
-    _worldPacket.WriteBit(Guid.is_initialized());
+    _worldPacket.WriteBit(Guid.has_value());
     _worldPacket.WriteBits(Name.length(), 6);
 
     if (Guid)
@@ -305,7 +305,7 @@ WorldPacket const* WorldPackets::Character::CharFactionChangeResult::Write()
 {
     _worldPacket << uint8(Result);
     _worldPacket << Guid;
-    _worldPacket.WriteBit(Display.is_initialized());
+    _worldPacket.WriteBit(Display.has_value());
     _worldPacket.FlushBits();
 
     if (Display)
@@ -652,9 +652,9 @@ WorldPacket const* WorldPackets::Character::CooldownCheat::Write()
 WorldPacket const* WorldPackets::Character::UpdateCharacterFlags::Write()
 {
     _worldPacket << Character;
-    _worldPacket.WriteBit(Flags.is_initialized());
-    _worldPacket.WriteBit(Flags2.is_initialized());
-    _worldPacket.WriteBit(Flags3.is_initialized());
+    _worldPacket.WriteBit(Flags.has_value());
+    _worldPacket.WriteBit(Flags2.has_value());
+    _worldPacket.WriteBit(Flags3.has_value());
     _worldPacket.FlushBits();
 
     if (Flags)

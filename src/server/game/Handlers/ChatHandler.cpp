@@ -740,7 +740,7 @@ void WorldSession::HandleChatAddonMessage(ChatMsg type, std::string const& prefi
 
 void WorldSession::HandleEmote(WorldPackets::Character::EmoteClient& /*packet*/)
 {
-    if (!GetPlayer()->isAlive() || GetPlayer()->HasUnitState(UNIT_STATE_DIED))
+    if (!GetPlayer()->IsAlive() || GetPlayer()->HasUnitState(UNIT_STATE_DIED))
         return;
 
     sScriptMgr->OnPlayerClearEmote(GetPlayer());
@@ -752,7 +752,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPackets::Chat::CTextEmote& packet)
     if (!player)
         return;
 
-    if (!player->isAlive())
+    if (!player->IsAlive())
         return;
 
     if (player->IsSpectator())

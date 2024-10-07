@@ -142,7 +142,7 @@ void TempSummon::Update(uint32 diff)
                 return;
             }
 
-            if (!isInCombat() && isAlive())
+            if (!isInCombat() && IsAlive())
             {
                 if (m_timer <= diff)
                 {
@@ -451,11 +451,10 @@ void TempSummon::UnSummon(uint32 msTime)
 
     onUnload = true;
 
-    CastPetAuras(false);
     //ASSERT(!isPet());
     if (isPet())
     {
-        ToPet()->Remove();
+        ToPet()->Remove(PET_SAVE_NOT_IN_SLOT);
         ASSERT(!IsInWorld());
         return;
     }
@@ -667,7 +666,7 @@ void Puppet::Update(uint32 time)
     //check if caster is channelling?
     if (IsInWorld())
     {
-        if (!isAlive())
+        if (!IsAlive())
         {
             UnSummon();
             // TODO: why long distance .die does not remove it

@@ -418,7 +418,7 @@ public:
                     DoCast(me, SPELL_FLAME_ENRAGE, true);
                     DoResetThreat();
                     Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0);
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                     {
                         me->AddThreat(me->getVictim(), 5000000.0f);
                         AttackStart(me->getVictim());
@@ -724,7 +724,7 @@ public:
             if (MaievGUID)
             {
                 GETCRE(Maiev, MaievGUID);
-                if (Maiev && Maiev->isAlive())
+                if (Maiev && Maiev->IsAlive())
                     Maiev->AI()->DoAction(NextPhase);
             }
             Phase = NextPhase;
@@ -1860,7 +1860,7 @@ void boss_illidan_stormrage::boss_illidan_stormrageAI::Reset()
     {
         if (GETCRE(Akama, AkamaGUID))
         {
-            if (!Akama->isAlive())
+            if (!Akama->IsAlive())
                 Akama->Respawn();
             else
             {

@@ -577,7 +577,7 @@ class boss_sindragosa : public CreatureScript
 
                             for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
                                 if (Player* pPlayer = i->getSource())
-                                    if(pPlayer->isAlive())
+                                    if(pPlayer->IsAlive())
                                         return;
 
                             EnterEvadeMode();
@@ -1130,7 +1130,7 @@ class spell_sindragosa_s_fury : public SpellScriptLoader
             {
                 PreventHitDefaultEffect(effIndex);
 
-                if (!GetHitUnit()->isAlive() || !_targetCount)
+                if (!GetHitUnit()->IsAlive() || !_targetCount)
                     return;
 
                 float resistance = float(GetHitUnit()->GetResistance(SpellSchoolMask(GetSpellInfo()->Misc.MiscData.SchoolMask)));

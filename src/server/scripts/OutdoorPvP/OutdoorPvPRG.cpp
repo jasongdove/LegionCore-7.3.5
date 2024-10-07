@@ -66,7 +66,7 @@ void OutdoorPvPRG::HandleKill(Player* killer, Unit* killed)
             continue;
 
         if (Player* player = ObjectAccessor::GetObjectInMap((*itr), m_map, (Player*)nullptr))
-            if (player->isAlive())
+            if (player->IsAlive())
                 player->KilledMonsterCredit(RG_KILL_CREDIT);
     }
 

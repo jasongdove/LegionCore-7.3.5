@@ -259,7 +259,7 @@ public:
                 {
                     if (auto wiseMari = Unit::GetUnit(*player, wiseMariGUID))
                     {
-                        if (wiseMari->isAlive() || wiseMari->isInCombat())
+                        if (wiseMari->IsAlive() || wiseMari->isInCombat())
                         {
                             Position pos;
                             player->GetPosition(&pos);

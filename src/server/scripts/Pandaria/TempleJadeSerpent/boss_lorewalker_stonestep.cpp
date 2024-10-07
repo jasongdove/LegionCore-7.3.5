@@ -171,13 +171,13 @@ struct boss_lorewalker_stonestep : public BossAI
 
                 if (auto strife = ObjectAccessor::GetCreature(*me, strifeGUID))
                 {
-                    if (strife->isAlive())
+                    if (strife->IsAlive())
                         me->Kill(strife);
                 }
 
                 if (auto peril = ObjectAccessor::GetCreature(*me, perilGUID))
                 {
-                    if (peril->isAlive())
+                    if (peril->IsAlive())
                         me->Kill(peril);
                 }
             }

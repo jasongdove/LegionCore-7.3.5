@@ -177,7 +177,7 @@ void WorldSession::HandleLFGuildGetGuildPost(WorldPackets::Guild::LFGuildGetGuil
     {
         LFGuildSettings settings = sGuildFinderMgr->GetGuildSettings(ObjectGuid::Create<HighGuid::Guild>(player->GetGuildId()));
 
-        post.Post = boost::in_place();
+        post.Post.emplace();
         post.Post->PlayStyle = settings.GetPlayStyle();
         post.Post->Availability = settings.GetAvailability();
         post.Post->ClassRoles = settings.GetClassRoles();

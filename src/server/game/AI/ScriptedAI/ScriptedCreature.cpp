@@ -500,7 +500,7 @@ void ScriptedAI::DoTeleportAll(float x, float y, float z, float o)
 
     map->ApplyOnEveryPlayer([&](Player* player)
     {
-        if (player->isAlive())
+        if (player->IsAlive())
             player->TeleportTo(me->GetMapId(), x, y, z, o, TELE_TO_NOT_LEAVE_COMBAT);
     });
 }
@@ -781,7 +781,7 @@ void BossAI::_Reset()
     summons.DespawnAll();
     me->SetHealth(me->GetMaxHealth());
 
-    if (instance && me->isAlive())
+    if (instance && me->IsAlive())
     {
         instance->SetBossState(_bossId, NOT_STARTED);
         instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
@@ -977,7 +977,7 @@ void BossAI::UpdateAI(uint32 diff)
 
 bool BossAI::_EnterEvadeMode()
 {
-    if (!me->isAlive())
+    if (!me->IsAlive())
         return false;
 
     TC_LOG_DEBUG("network", "BossAI::_EnterEvadeMode %u enters evade mode.", me->GetEntry());
@@ -1013,7 +1013,7 @@ WorldBossAI::WorldBossAI(Creature* creature) :
 
 void WorldBossAI::_Reset()
 {
-    if (!me->isAlive())
+    if (!me->IsAlive())
         return;
 
     events.Reset();
@@ -1083,7 +1083,7 @@ void BrawlersBossAI::_WinRound()
         Player* player = me->GetAnyOwner()->ToPlayer();
         player->AddDelayedEvent(700, [player]() -> void
         {
-            if (player && player->isAlive())
+            if (player && player->IsAlive())
                 if (BrawlersGuild* brawlerGuild = player->GetBrawlerGuild())
                     brawlerGuild->BossReport(player->GetGUID(), true);
         });

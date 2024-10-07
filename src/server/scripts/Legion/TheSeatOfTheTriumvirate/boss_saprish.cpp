@@ -382,7 +382,7 @@ public:
             portsummoned = 0;
             me->SetDisableGravity(true);
             eventact = false;
-            if (!me->isAlive())
+            if (!me->IsAlive())
                 if (Creature* saprish = instance->instance->GetCreature(instance->GetGuidData(NPC_SAPRISH)))
                     saprish->SetVisible(true);
             if (instance->GetBossState(DATA_SAPRISH) == DONE || instance->GetData(SAPRISH_PORTALS) == DONE)

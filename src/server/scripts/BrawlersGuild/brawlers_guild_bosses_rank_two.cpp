@@ -615,7 +615,7 @@ public:
                     Player* player = me->GetAnyOwner()->ToPlayer();
                     player->AddDelayedEvent(700, [player] () -> void
                     {
-                        if (player && player->isAlive())
+                        if (player && player->IsAlive())
                             if (BrawlersGuild* brawlerGuild = player->GetBrawlerGuild())
                                 brawlerGuild->BossReport(player->GetGUID(), true);
                     });
@@ -631,7 +631,7 @@ public:
                 {
                     if (Unit* owner = me->GetAnyOwner())
                     {
-                        if (!owner->isAlive())
+                        if (!owner->IsAlive())
                             KilledUnit(owner);
                     }
                     else

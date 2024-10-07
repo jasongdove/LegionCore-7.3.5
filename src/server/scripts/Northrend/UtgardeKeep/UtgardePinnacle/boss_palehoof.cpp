@@ -120,7 +120,7 @@ public:
 
             for (uint8 i = DATA_MOB_FRENZIED_WORGEN; i <= DATA_MOB_FEROCIOUS_RHINO; ++i)
                 if (Creature* temp = ObjectAccessor::GetCreature(*me, instance->GetGuidData(i)))
-                    if (!temp->isAlive())
+                    if (!temp->IsAlive())
                         temp->Respawn();
 
             if (GameObject* go = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_GORTOK_PALEHOOF_SPHERE)))
@@ -217,7 +217,7 @@ public:
 
             // send orb to summon spot
             if (Creature* orb = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_MOB_ORB)))
-                if (orb->isAlive())
+                if (orb->IsAlive())
                     orb->GetMotionMaster()->MovePoint(move, moveLocs[move]);
 
             currentPhase = move;
@@ -286,7 +286,7 @@ public:
             if (instance->GetBossState(DATA_GORTOK_PALEHOOF) == IN_PROGRESS)
             {
                 Creature* palehoof = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_GORTOK_PALEHOOF));
-                if (palehoof && palehoof->isAlive())
+                if (palehoof && palehoof->IsAlive())
                     palehoof->AI()->Reset();
             }
         }
@@ -403,7 +403,7 @@ public:
             if (instance->GetBossState(DATA_GORTOK_PALEHOOF) == IN_PROGRESS)
             {
                 Creature* palehoof = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_GORTOK_PALEHOOF));
-                if (palehoof && palehoof->isAlive())
+                if (palehoof && palehoof->IsAlive())
                     palehoof->AI()->Reset();
             }
         }
@@ -522,7 +522,7 @@ public:
             if (instance->GetBossState(DATA_GORTOK_PALEHOOF) == IN_PROGRESS)
             {
                 Creature* palehoof = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_GORTOK_PALEHOOF));
-                if (palehoof && palehoof->isAlive())
+                if (palehoof && palehoof->IsAlive())
                     palehoof->AI()->Reset();
             }
         }
@@ -646,7 +646,7 @@ public:
             if (instance->GetBossState(DATA_GORTOK_PALEHOOF) == IN_PROGRESS)
             {
                 Creature* palehoof = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_GORTOK_PALEHOOF));
-                if (palehoof && palehoof->isAlive())
+                if (palehoof && palehoof->IsAlive())
                     palehoof->AI()->Reset();
             }
         }
@@ -847,7 +847,7 @@ public:
             return false;
 
         Creature* palehoof = ObjectAccessor::GetCreature(*go, instance->GetGuidData(DATA_GORTOK_PALEHOOF));
-        if (palehoof && palehoof->isAlive())
+        if (palehoof && palehoof->IsAlive())
         {
             go->SetFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE);
             go->SetGoState(GO_STATE_ACTIVE);

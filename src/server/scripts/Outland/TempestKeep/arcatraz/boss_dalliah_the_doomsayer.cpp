@@ -155,7 +155,7 @@ public:
                     break;
                 case EVENT_ME_FIRST:
                     if (Creature* soccothrates = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_SOCCOTHRATES)))
-                        if (soccothrates->isAlive() && !soccothrates->isInCombat())
+                        if (soccothrates->IsAlive() && !soccothrates->isInCombat())
                             soccothrates->AI()->Talk(SAY_AGGRO_DALLIAH_FIRST);
                     break;
                 default:

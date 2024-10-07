@@ -171,7 +171,7 @@ class boss_lord_tayak : public CreatureScript
             {
                 if (Player* pl = me->GetPlayer(*me, striketarget))
                 {
-                    if (pl->isAlive())
+                    if (pl->IsAlive())
                     {
                         float x, y, z;
                         pl->GetPosition(x, y, z);

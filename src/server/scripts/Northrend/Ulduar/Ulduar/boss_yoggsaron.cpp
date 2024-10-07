@@ -1279,7 +1279,7 @@ class npc_guardian_yoggsaron : public CreatureScript
             {
                 if (Unit* sara = instance->instance->GetCreature(instance->GetGuidData(DATA_SARA)))
                 {
-                    if (sara->isAlive())
+                    if (sara->IsAlive())
                     {
                         if (me->GetMap()->Is25ManRaid())
                             sara->DealDamage(sara, 27000);

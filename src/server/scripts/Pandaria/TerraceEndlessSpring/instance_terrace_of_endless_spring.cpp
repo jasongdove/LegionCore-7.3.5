@@ -250,7 +250,7 @@ class instance_terrace_of_endless_spring : public InstanceMapScript
                     if (!player)
                         continue;
 
-                    if (player->isAlive() && !player->isGameMaster() && !player->HasAura(115877)) // Aura 115877 = Totally Petrified
+                    if (player->IsAlive() && !player->isGameMaster() && !player->HasAura(115877)) // Aura 115877 = Totally Petrified
                         return false;
                 }
 

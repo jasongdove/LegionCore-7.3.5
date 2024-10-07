@@ -82,12 +82,12 @@ public:
 
             if (Creature* pGuard1 = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_EREKEM_GUARD_1)))
             {
-                if (!pGuard1->isAlive())
+                if (!pGuard1->IsAlive())
                     pGuard1->Respawn();
             }
             if (Creature* pGuard2 = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_EREKEM_GUARD_2)))
             {
-                if (!pGuard2->isAlive())
+                if (!pGuard2->IsAlive())
                     pGuard2->Respawn();
             }
         }
@@ -156,7 +156,7 @@ public:
                 {
                     if (Creature* pGuard2 = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_EREKEM_GUARD_2)))
                     {
-                        if (!pGuard1->isAlive() && !pGuard2->isAlive())
+                        if (!pGuard1->IsAlive() && !pGuard2->IsAlive())
                             DoCastVictim(SPELL_STORMSTRIKE);
                     }
                 }
@@ -178,7 +178,7 @@ public:
                     //If one of the adds is dead spawn heals faster
                     Creature* pGuard1 = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_EREKEM_GUARD_1));
                     Creature* pGuard2 = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_EREKEM_GUARD_2));
-                    uiChainHealTimer = ((pGuard1 && !pGuard1->isAlive()) || (pGuard2 && !pGuard2->isAlive()) ? 3000 : 8000) + rand()%3000;
+                    uiChainHealTimer = ((pGuard1 && !pGuard1->IsAlive()) || (pGuard2 && !pGuard2->IsAlive()) ? 3000 : 8000) + rand() % 3000;
                 }
             } else uiChainHealTimer -= diff;
 
@@ -237,11 +237,11 @@ public:
                 return me->GetGUID();
 
             Creature* pGuard1 = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_EREKEM_GUARD_1));
-            if (pGuard1 && pGuard1->isAlive() && !pGuard1->HealthAbovePct(75))
+            if (pGuard1 && pGuard1->IsAlive() && !pGuard1->HealthAbovePct(75))
                 return pGuard1->GetGUID();
 
             Creature* pGuard2 = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_EREKEM_GUARD_2));
-            if (pGuard2 && pGuard2->isAlive() && !pGuard2->HealthAbovePct(75))
+            if (pGuard2 && pGuard2->IsAlive() && !pGuard2->HealthAbovePct(75))
                 return pGuard2->GetGUID();
 
             return ObjectGuid::Empty;

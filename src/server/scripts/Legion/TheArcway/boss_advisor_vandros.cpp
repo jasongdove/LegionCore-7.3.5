@@ -145,7 +145,7 @@ public:
                 Map::PlayerList const& players = me->GetMap()->GetPlayers();
                 for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
                     if (Player* player = itr->getSource())
-                        if (player->isAlive())
+                        if (player->IsAlive())
                         {
                             player->CastSpell(player, SPELL_BANISH_IN_TIME_TP, true);
                             player->CastSpell(player, SPELL_BANISH_IN_TIME_TIMER, true);

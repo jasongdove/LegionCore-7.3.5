@@ -445,7 +445,7 @@ public:
             
             me->AddDelayedEvent(12 * MINUTE*IN_MILLISECONDS, [this]() -> void
             {
-                if (me->isAlive() && me->isInCombat())
+                if (me->IsAlive() && me->isInCombat())
                     me->CastSpell(me, SPELL_BERSERK);
 
             });

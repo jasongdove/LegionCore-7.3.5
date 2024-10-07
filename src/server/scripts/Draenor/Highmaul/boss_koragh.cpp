@@ -164,21 +164,21 @@ struct boss_koragh : public BossAI
                 me->GetCreatureListWithEntryInGrid(breakerList, BreakerOfFel, 30.0f);
 
                 for (Creature* breaker : breakerList)
-                    if (breaker->isAlive())
+                    if (breaker->IsAlive())
                         m_RitualistGuids.insert(breaker->GetGUID());
 
                 breakerList.clear();
                 me->GetCreatureListWithEntryInGrid(breakerList, BreakerOfFire, 30.0f);
 
                 for (Creature* breaker : breakerList)
-                    if (breaker->isAlive())
+                    if (breaker->IsAlive())
                         m_RitualistGuids.insert(breaker->GetGUID());
 
                 breakerList.clear();
                 me->GetCreatureListWithEntryInGrid(breakerList, BreakerOfFrost, 30.0f);
 
                 for (Creature* breaker : breakerList)
-                    if (breaker->isAlive())
+                    if (breaker->IsAlive())
                         m_RitualistGuids.insert(breaker->GetGUID());
 
                 m_Init = true;

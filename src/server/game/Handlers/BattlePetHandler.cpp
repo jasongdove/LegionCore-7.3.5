@@ -83,7 +83,7 @@ void WorldSession::HandleModifyName(WorldPackets::BattlePet::ModifyName& packet)
     auto nameInvalidReason = sCharacterDataStore->CheckPetName(packet.Name);
     if (nameInvalidReason != PET_NAME_SUCCESS)
     {
-        SendPetNameInvalid(nameInvalidReason, packet.BattlePetGUID, packet.Name, &packet.DeclinedNames);
+        SendPetNameInvalid(nameInvalidReason, packet.BattlePetGUID, packet.Name, packet.DeclinedNames);
         return;
     }
 
@@ -270,7 +270,7 @@ void WorldSession::HandlePetBattleRequestWild(WorldPackets::BattlePet::RequestWi
         if (wildsPetCount >= MAX_PETBATTLE_SLOTS)
             break;
 
-        if (!current->isAlive() || current->GetGUID() == wildBattlePet->GetGUID() || !sWildBattlePetMgr->IsWildPet(current))
+        if (!current->IsAlive() || current->GetGUID() == wildBattlePet->GetGUID() || !sWildBattlePetMgr->IsWildPet(current))
             continue;
 
         if (sWildBattlePetMgr->GetWildBattlePet(current) != nullptr && roll_chance_i(80))

@@ -490,7 +490,7 @@ void AreaTrigger::UpdateAffectedList(uint32 /*p_time*/, AreaTriggerActionMoment 
             ++next;
 
             Unit* unit = ObjectAccessor::GetUnit(*this, *itr);
-            if (!unit || !unit->isAlive())
+            if (!unit || !unit->IsAlive())
             {
                 AffectUnitLeave(AT_ACTION_MOMENT_LEAVE);
 
@@ -555,7 +555,7 @@ void AreaTrigger::UpdateAffectedList(uint32 /*p_time*/, AreaTriggerActionMoment 
             if (unit && actionM == AT_ACTION_MOMENT_REMOVE)
                 _ai->BeforeRemove(unit);
 
-            if (!unit || !unit->isAlive())
+            if (!unit || !unit->IsAlive())
             {
                 AffectUnitLeave(AT_ACTION_MOMENT_LEAVE);
                 affectedPlayers.erase(itr);
@@ -1651,7 +1651,7 @@ void AreaTrigger::InitSplines()
 
         WorldPackets::Spells::AreaTriggerReShape reshape;
         reshape.TriggerGUID = GetGUID();
-        reshape.Spline = boost::in_place();
+        reshape.Spline.emplace();
         reshape.Spline = _spline;
         SendMessageToSet(reshape.Write(), true);
     }
@@ -2236,7 +2236,7 @@ void AreaTrigger::SendReShape(Position const* pos)
 
     WorldPackets::Spells::AreaTriggerReShape rePath;
     rePath.TriggerGUID = GetGUID();
-    rePath.Spline = boost::in_place();
+    rePath.Spline.emplace();
     rePath.Spline = _splineTemp;
     _caster->SendMessageToSet(rePath.Write(), true);
 
@@ -2827,7 +2827,7 @@ void AreaTrigger::CalculateCyclicPosition(Position const& pos, Position const& /
         float startAngle = caster->GetAngle(&pos);
         _spline.VerticesPoints.emplace_back(atInfo.circleTemplate.Radius * std::cos(startAngle), atInfo.circleTemplate.Radius * std::sin(startAngle), 0.0f);
         _CircleData->InitialAngle = startAngle;
-        _CircleData->PathTarget = boost::in_place();
+        _CircleData->PathTarget.emplace();
         _CircleData->PathTarget = caster->GetGUID();
         return;
     }
@@ -2892,12 +2892,12 @@ void AreaTrigger::CalculateCyclicPosition(Position const& pos, Position const& /
 
     if (atInfo.circleTemplate.HasTarget)
     {
-        _CircleData->PathTarget = boost::in_place();
+        _CircleData->PathTarget.emplace();
         _CircleData->PathTarget = target->GetGUID();
     }
     if (atInfo.circleTemplate.HasCenterPoint)
     {
-        _CircleData->Center = boost::in_place();
+        _CircleData->Center.emplace();
         _CircleData->Center = Position(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
     }
     InitSplines();

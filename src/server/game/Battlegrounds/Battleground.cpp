@@ -696,7 +696,7 @@ void Battleground::EndBattleground(uint32 winner)
         if (player->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
             player->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT);
 
-        if (!player->isAlive())
+        if (!player->IsAlive())
         {
             player->ResurrectPlayer(1.0f);
             player->SpawnCorpseBones();
@@ -1225,7 +1225,7 @@ void Battleground::RemovePlayerAtLeave(ObjectGuid guid, bool Transport, bool Sen
         player->RemoveAurasByType(SPELL_AURA_SWITCH_TEAM);
         player->RemoveAurasByType(SPELL_AURA_MOD_FACTION);
 
-        if (!player->isAlive())
+        if (!player->IsAlive())
         {
             player->ResurrectPlayer(1.0f);
             player->SpawnCorpseBones();
@@ -1268,7 +1268,7 @@ void Battleground::RemovePlayerAtLeave(ObjectGuid guid, bool Transport, bool Sen
             if (IsArena() || IsRBG())
             {
                 bgTypeId = IsArena() ? MS::Battlegrounds::BattlegroundTypeId::ArenaAll : MS::Battlegrounds::BattlegroundTypeId::RatedBattleground;
-                player->RemovePet(nullptr);
+                player->RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT);
                 player->ResummonPetTemporaryUnSummonedIfAny();
 
                 if (IsRated() && GetStatus() == STATUS_IN_PROGRESS)
@@ -1736,7 +1736,7 @@ void Battleground::BuildPvPLogDataPacket(WorldPackets::Battleground::PVPLogData&
         playerData.Faction = score.second->TeamID;
         if (score.second->HonorableKills || score.second->Deaths || score.second->BonusHonor)
         {
-            playerData.Honor = boost::in_place();
+            playerData.Honor.emplace();
             playerData.Honor->HonorKills = score.second->HonorableKills;
             playerData.Honor->Deaths = score.second->Deaths;
             playerData.Honor->ContributionPoints = score.second->BonusHonor;
@@ -1777,7 +1777,7 @@ void Battleground::BuildPvPLogDataPacket(WorldPackets::Battleground::PVPLogData&
 
     if (IsRated())
     {
-        packet.Ratings = boost::in_place();
+        packet.Ratings.emplace();
 
         for (uint8 i = TEAM_ALLIANCE; i < MAX_TEAMS; ++i)
         {
@@ -2239,7 +2239,7 @@ uint32 Battleground::GetAlivePlayersCountByTeam(uint32 Team) const
     for (auto const& itr : GetPlayers())
         if (itr.second.Team == Team)
             if (Player* player = ObjectAccessor::FindPlayer(itr.first))
-                if (player->isAlive() && player->GetShapeshiftForm() != FORM_SPIRITOFREDEMPTION && (player->InArena() || (IsBrawl() && player->InBattleground())))
+                if (player->IsAlive() && player->GetShapeshiftForm() != FORM_SPIRITOFREDEMPTION && (player->InArena() || (IsBrawl() && player->InBattleground())))
                     ++count;
 
     return count;

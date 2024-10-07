@@ -273,7 +273,7 @@ public:
                     case EVENT_ICICLE:
                         if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
                         {
-                            if (pTarget->isAlive())
+                            if (pTarget->IsAlive())
                                 DoCast(pTarget, SPELL_ICICLE);
                         }
                         events.ScheduleEvent(EVENT_ICICLE,urand(6000, 8000));
@@ -284,7 +284,7 @@ public:
                         for (uint8 i = 0; i < RAID_MODE(2,3); ++i)
                         {
                             if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                                if (pTarget->isAlive())
+                                if (pTarget->IsAlive())
                                     pTarget->CastSpell(pTarget, SPELL_ICICLE_SNOWDRIFT, true);
                         }
                         DoCast(SPELL_FLASH_FREEZE);
@@ -944,7 +944,7 @@ public:
             }
 
             auto owner = me->GetAnyOwner();
-            if (!owner || !owner->isAlive())
+            if (!owner || !owner->IsAlive())
             {
                 me->DespawnOrUnsummon();
                 return;

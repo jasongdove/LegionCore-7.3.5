@@ -357,7 +357,7 @@ struct boss_argus : BossAI
         //Repop ghost players
         instance->instance->ApplyOnEveryPlayer([&](Player* player)
         {
-            if (!player->isAlive() && player->HasAura(8326))
+            if (!player->IsAlive() && player->HasAura(8326))
                 player->RepopAtGraveyard();
         });
     }
@@ -623,7 +623,7 @@ struct boss_argus : BossAI
         {
             instance->instance->ApplyOnEveryPlayer([&](Player* player)
             {
-                if (!player->isAlive())
+                if (!player->IsAlive())
                 {
                     player->ResurrectPlayer(1.0f);
                     player->SpawnCorpseBones();
@@ -697,7 +697,7 @@ struct boss_argus : BossAI
 
                 instance->instance->ApplyOnEveryPlayer([&](Player* player)
                 {
-                    if ((prePhaseFour || player->isAlive()) && player->GetDistance(centrPos) < 50.0f)
+                    if ((prePhaseFour || player->IsAlive()) && player->GetDistance(centrPos) < 50.0f)
                         checkAliveTimer = 1000;
                 });
 
@@ -1325,7 +1325,7 @@ struct npc_argus_gift_of_the_lifebinder : ScriptedAI
     {
         if (spell->Id == SPELL_GIFT_OF_THE_LIFEBINDER_SCRIPT)
         {
-            if (!target->isAlive())
+            if (!target->IsAlive())
             {
                 target->ToPlayer()->ResurrectPlayer(1.0f);
                 target->ToPlayer()->SpawnCorpseBones();
@@ -1529,7 +1529,7 @@ struct npc_argus_mote_of_titanic_power : ScriptedAI
 
     void OnAreaTriggerCast(Unit* caster, Unit* target, uint32 spellId, uint32 createATSpellId) override
     {
-        if (energize || target->isAlive())
+        if (energize || target->IsAlive())
             return;
 
         if (spellId == SPELL_MOTE_OF_TITANIC_POWER_ENERGIZE)

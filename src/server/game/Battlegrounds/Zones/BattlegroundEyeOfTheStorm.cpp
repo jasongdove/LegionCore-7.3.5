@@ -107,7 +107,7 @@ void BattlegroundEyeOfTheStorm::PostUpdateImpl(uint32 diff)
     {
         GetBgMap()->ApplyOnEveryPlayer([](Player* player)
         {
-            if (player->isAlive())
+            if (player->IsAlive())
                 player->CastSpell(player, BG_EY_BRAWL_GRAVITY_LAPSE, true);
         });
 

@@ -276,7 +276,7 @@ public:
             {
                 if (Unit* pInfernal = Unit::GetUnit(*me, *itr))
                 {
-                    if (pInfernal->isAlive())
+                    if (pInfernal->IsAlive())
                     {
                         pInfernal->SetVisible(false);
                         pInfernal->setDeathState(JUST_DIED);
@@ -292,7 +292,7 @@ public:
             for (uint8 i = 0; i < 2; ++i)
             {
                 if (Unit* axe = Unit::GetUnit(*me, axes[i]))
-                    if (axe->isAlive())
+                    if (axe->IsAlive())
                         axe->Kill(axe);
 
                 axes[i].Clear();
@@ -321,7 +321,7 @@ public:
             std::advance(itr, 1);
             for (; itr != t_list.end(); ++itr) //store the threat list in a different container
                 if (Unit* target = Unit::GetUnit(*me, (*itr)->getUnitGuid()))
-                    if (target->isAlive() && target->GetTypeId() == TYPEID_PLAYER)
+                    if (target->IsAlive() && target->GetTypeId() == TYPEID_PLAYER)
                         targets.push_back(target);
 
             //cut down to size if we have more than 5 targets
@@ -345,7 +345,7 @@ public:
             for (uint8 i = 0; i < 5; ++i)
             {
                 Unit* target = Unit::GetUnit(*me, enfeeble_targets[i]);
-                if (target && target->isAlive())
+                if (target && target->IsAlive())
                     target->SetHealth(enfeeble_health[i]);
                 enfeeble_targets[i].Clear();
                 enfeeble_health[i] = 0;
@@ -615,7 +615,7 @@ void netherspite_infernal::netherspite_infernalAI::Cleanup()
 {
     Unit* pMalchezaar = Unit::GetUnit(*me, malchezaar);
 
-    if (pMalchezaar && pMalchezaar->isAlive())
+    if (pMalchezaar && pMalchezaar->IsAlive())
         CAST_AI(boss_malchezaar::boss_malchezaarAI, CAST_CRE(pMalchezaar)->AI())->Cleanup(me, point);
 }
 

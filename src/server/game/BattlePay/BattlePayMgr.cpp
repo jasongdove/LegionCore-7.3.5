@@ -405,7 +405,7 @@ void BattlepayManager::SendProductList()
         auto data = WriteDisplayInfo(itr.DisplayInfoID, localeIndex);
         if (std::get<0>(data))
         {
-            sEntry.DisplayInfo = boost::in_place();
+            sEntry.DisplayInfo.emplace();
             sEntry.DisplayInfo = std::get<1>(data);
         }
 
@@ -441,13 +441,13 @@ void BattlepayManager::SendProductList()
         auto dataPI = WriteDisplayInfo(product.DisplayInfoID, localeIndex);
         if (std::get<0>(dataPI))
         {
-            pInfo.DisplayInfo = boost::in_place();
+            pInfo.DisplayInfo.emplace();
             pInfo.DisplayInfo = std::get<1>(dataPI);
         }
 
         bool hideProductPrice = false;
-        if (pInfo.DisplayInfo.is_initialized() && pInfo.DisplayInfo->Flags.is_initialized())
-            hideProductPrice = pInfo.DisplayInfo->Flags.get() & BattlepayDisplayInfoFlag::HidePrice;
+        if (pInfo.DisplayInfo.has_value() && pInfo.DisplayInfo->Flags.has_value())
+            hideProductPrice = *pInfo.DisplayInfo->Flags & BattlepayDisplayInfoFlag::HidePrice;
         bool hasEnoughTokens = tokenBalance >= product.CurrentPriceFixedPoint;
 
         response.ProductList.ProductInfo.emplace_back(pInfo);
@@ -484,7 +484,7 @@ void BattlepayManager::SendProductList()
             auto dataP = WriteDisplayInfo(item.DisplayInfoID, localeIndex);
             if (std::get<0>(dataP))
             {
-                pItem.DisplayInfo = boost::in_place();
+                pItem.DisplayInfo.emplace();
                 pItem.DisplayInfo = std::get<1>(dataP);
             }
 
@@ -494,7 +494,7 @@ void BattlepayManager::SendProductList()
         auto dataP = WriteDisplayInfo(product.DisplayInfoID, localeIndex);
         if (std::get<0>(dataP))
         {
-            pProduct.DisplayInfo = boost::in_place();
+            pProduct.DisplayInfo.emplace();
             pProduct.DisplayInfo = std::get<1>(dataP);
         }
 
@@ -647,7 +647,7 @@ void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status,
         auto dataP = WriteDisplayInfo(item.DisplayInfoID, localeIndex);
         if (std::get<0>(dataP))
         {
-            productItem.DisplayInfo = boost::in_place();
+            productItem.DisplayInfo.emplace();
             productItem.DisplayInfo = std::get<1>(dataP);
         }
 
@@ -665,7 +665,7 @@ void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status,
     auto dataP = WriteDisplayInfo(product->DisplayInfoID, localeIndex);
     if (std::get<0>(dataP))
     {
-        productData.DisplayInfo = boost::in_place();
+        productData.DisplayInfo.emplace();
         productData.DisplayInfo = std::get<1>(dataP);
     }
 

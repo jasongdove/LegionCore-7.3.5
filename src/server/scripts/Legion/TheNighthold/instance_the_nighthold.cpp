@@ -106,7 +106,7 @@ public:
         {
             if (player)
             {
-                if (GetBossState(DATA_KROSUS) != IN_PROGRESS && player->isAlive() && player->IsWithinBox({ -61.94f, 2814.45f, 3.16f }, 60.f, 60.f, 5.0f))
+                if (GetBossState(DATA_KROSUS) != IN_PROGRESS && player->IsAlive() && player->IsWithinBox({-61.94f, 2814.45f, 3.16f }, 60.f, 60.f, 5.0f))
                 {
                     player->AddDelayedEvent(500, [player]() -> void
                     {

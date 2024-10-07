@@ -349,7 +349,7 @@ struct npc_gravity_well : public ScriptedAI
 
     void SpellHitTarget(Unit* target, const SpellInfo* spell) override
     {
-        if (target->isAlive() && spell->Id == SPELL_GRAVITY_WELL_SCRIPT)
+        if (target->IsAlive() && spell->Id == SPELL_GRAVITY_WELL_SCRIPT)
         {
             float bp = IsHeroic() ? 20000 : 10000;
             uint32 distFkt = uint32(me->GetDistance(target)) * 5;

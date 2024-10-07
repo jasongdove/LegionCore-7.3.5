@@ -124,11 +124,11 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Battleground::PVPLogData:
 
     data.WriteBit(playerData.Faction);
     data.WriteBit(playerData.IsInWorld);
-    data.WriteBit(playerData.Honor.is_initialized());
-    data.WriteBit(playerData.PreMatchRating.is_initialized());
-    data.WriteBit(playerData.RatingChange.is_initialized());
-    data.WriteBit(playerData.PreMatchMMR.is_initialized());
-    data.WriteBit(playerData.MmrChange.is_initialized());
+    data.WriteBit(playerData.Honor.has_value());
+    data.WriteBit(playerData.PreMatchRating.has_value());
+    data.WriteBit(playerData.RatingChange.has_value());
+    data.WriteBit(playerData.PreMatchMMR.has_value());
+    data.WriteBit(playerData.MmrChange.has_value());
     data.FlushBits();
 
     if (playerData.Honor)
@@ -153,8 +153,8 @@ WorldPacket const* WorldPackets::Battleground::PVPLogData::Write()
 {
     _worldPacket.reserve(Players.size() * sizeof(PlayerData) + sizeof(PVPLogData));
 
-    _worldPacket.WriteBit(Ratings.is_initialized());
-    _worldPacket.WriteBit(Winner.is_initialized());
+    _worldPacket.WriteBit(Ratings.has_value());
+    _worldPacket.WriteBit(Winner.has_value());
     _worldPacket << static_cast<uint32>(Players.size());
     _worldPacket.append(PlayerCount, 2);
 
@@ -511,14 +511,14 @@ WorldPacket const* WorldPackets::Battleground::CheckWargameEntry::Write()
 WorldPacket const* WorldPackets::Battleground::WargameRequestSuccessfullySentToOpponent::Write()
 {
     _worldPacket << UnkInt;
-    _worldPacket.WriteBit(UnkInt2.is_initialized());
-    _worldPacket.WriteBit(UnkInt3.is_initialized());
+    _worldPacket.WriteBit(UnkInt2.has_value());
+    _worldPacket.WriteBit(UnkInt3.has_value());
     _worldPacket.FlushBits();
 
-    if (UnkInt2.is_initialized())
+    if (UnkInt2.has_value())
         _worldPacket << *UnkInt2;
 
-    if (UnkInt3.is_initialized())
+    if (UnkInt3.has_value())
         _worldPacket << *UnkInt3;
 
     return &_worldPacket;

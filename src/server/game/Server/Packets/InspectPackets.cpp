@@ -108,7 +108,7 @@ WorldPacket const* WorldPackets::Inspect::InspectResult::Write()
         _worldPacket << talent;
 
     _worldPacket.FlushBits();
-    _worldPacket.WriteBit(GuildData.is_initialized());
+    _worldPacket.WriteBit(GuildData.has_value());
 
     for (auto const& item : Items)
         _worldPacket << item;

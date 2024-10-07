@@ -120,7 +120,7 @@ public:
                         for (Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)
                         {
                             if (Player* pl = i->getSource())
-                                if (pl->isAlive())
+                                if (pl->IsAlive())
                                 {
                                     if (!pl->HasAura(SPELL_BURN))
                                     {

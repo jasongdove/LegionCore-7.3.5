@@ -438,7 +438,7 @@ public:
             {
                 if (Player* pl = i->getSource())
                 {
-                    if (pl->isAlive() && state)
+                    if (pl->IsAlive() && state)
                         pl->AddAura(SPELL_CORRUPTION, pl);
                     else
                         pl->RemoveAurasDueToSpell(SPELL_CORRUPTION);
@@ -833,7 +833,7 @@ public:
         void JustDied(Unit* killer)
         {
             if (Player* plr = me->GetPlayer(*me, targetGuid))
-                if (plr->isAlive())
+                if (plr->IsAlive())
                     plr->CastSpell(plr, SPELL_CLEANSE_15, true);
 
             if (Creature* amalgam = me->GetCreature(*me, instance->GetGuidData(NPC_AMALGAM_OF_CORRUPTION)))
@@ -926,7 +926,7 @@ public:
         void JustDied(Unit* killer)
         {
             if (Player* plr = me->GetPlayer(*me, targetGuid))
-                if (plr->isAlive())
+                if (plr->IsAlive())
                     plr->CastSpell(plr, SPELL_CLEANSE_40, true);
 
             if (Creature* amalgam = me->GetCreature(*me, instance->GetGuidData(NPC_AMALGAM_OF_CORRUPTION)))
@@ -1183,7 +1183,7 @@ public:
         void JustDied(Unit* killer)
         {
             if (Player* pl = me->GetPlayer(*me, targetGuid))
-                if (pl->isAlive())
+                if (pl->IsAlive())
                     pl->CastSpell(pl, SPELL_CLEANSE_100, true);
             me->DespawnOrUnsummon();
         }
@@ -1320,7 +1320,7 @@ public:
         void JustDied(Unit* killer)
         {
             if (Player* plr = me->GetPlayer(*me, targetGuid))
-                if (plr->isAlive())
+                if (plr->IsAlive())
                     plr->CastSpell(plr, SPELL_CLEANSE_100, true);
             me->DespawnOrUnsummon();
         }

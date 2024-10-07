@@ -20,6 +20,7 @@
 
 #include "Random.h"
 #include "Optional.h"
+#include <functional>
 #include <chrono>
 #include <vector>
 #include <queue>

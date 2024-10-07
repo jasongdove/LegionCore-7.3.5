@@ -2674,7 +2674,7 @@ void AuraEffect::HandleSpiritOfRedemption(AuraApplication const* aurApp, uint8 m
             target->SetHealth(1);
     }
     // die at aura end
-    else if (target->isAlive())
+    else if (target->IsAlive())
     {
         if(AuraEffect const* aurEff = target->GetAuraEffect(211336, EFFECT_0)) // Need calculate percete for ressurect
         {
@@ -3960,11 +3960,11 @@ void AuraEffect::HandleAuraModTotalThreat(AuraApplication const* aurApp, uint8 m
 
     Unit* target = aurApp->GetTarget();
 
-    if (!target->isAlive() || !target->IsPlayer())
+    if (!target->IsAlive() || !target->IsPlayer())
         return;
 
     Unit* caster = GetCaster();
-    if (caster && caster->isAlive())
+    if (caster && caster->IsAlive())
         target->getHostileRefManager().addTempThreat(GetAmount(), apply);
 }
 
@@ -3975,11 +3975,11 @@ void AuraEffect::HandleModTaunt(AuraApplication const* aurApp, uint8 mode, bool 
 
     Unit* target = aurApp->GetTarget();
 
-    if (!target->isAlive() || !target->CanHaveThreatList())
+    if (!target->IsAlive() || !target->CanHaveThreatList())
         return;
 
     Unit* caster = GetCaster();
-    if (!caster || !caster->isAlive())
+    if (!caster || !caster->IsAlive())
         return;
 
     if (apply)
@@ -5321,7 +5321,7 @@ void AuraEffect::HandleAuraModIncreaseHealthOrPercent(AuraApplication const* aur
                 break;
         }
 
-        if (target->isAlive())
+        if (target->IsAlive())
         {
             if (apply && otherLogick)
                 target->ModifyHealth(heal, nullptr, GetId());
@@ -5360,7 +5360,7 @@ void AuraEffect::HandleAuraModIncreaseHealthPercent(AuraApplication const* aurAp
 
     target->HandleStatModifier(UNIT_MOD_HEALTH, TOTAL_PCT, GetAmount(), apply);
 
-    if (target->isAlive())
+    if (target->IsAlive())
     {
         if (apply && otherLogick)
             target->ModifyHealth(heal, nullptr, GetId());
@@ -6039,7 +6039,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
         // AT REMOVE
         else
         {
-            if ((GetSpellInfo()->IsQuestTame()) && caster && caster->isAlive() && target->isAlive())
+            if ((GetSpellInfo()->IsQuestTame()) && caster && caster->IsAlive() && target->IsAlive())
             {
                 uint32 finalSpelId = 0;
                 switch (GetId())
@@ -7796,7 +7796,7 @@ void AuraEffect::HandlePeriodicTriggerSpellWithValueAuraTick(Unit* target, Unit*
 
 void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster, SpellEffIndex effIndex, bool lastTick) const
 {
-    if (!caster || !target->isAlive())
+    if (!caster || !target->IsAlive())
         return;
 
     if (lastTick && !GetBase()->HasAuraAttribute(AURA_ATTR_REAPPLIED_AURA) &&
@@ -8031,7 +8031,7 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster, Spell
 
 void AuraEffect::HandlePeriodicWeaponPercentDamageAurasTick(Unit* target, Unit* caster, SpellEffIndex effIndex) const
 {
-    if (!caster || !target->isAlive())
+    if (!caster || !target->IsAlive())
         return;
 
     if (target->HasUnitState(UNIT_STATE_ISOLATED) || target->IsImmunedToDamage(GetSpellInfo()))
@@ -8123,7 +8123,7 @@ void AuraEffect::HandlePeriodicWeaponPercentDamageAurasTick(Unit* target, Unit* 
 
 void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster, SpellEffIndex effIndex) const
 {
-    if (!caster || !target->isAlive())
+    if (!caster || !target->IsAlive())
         return;
 
     if (target->HasUnitState(UNIT_STATE_ISOLATED) || target->IsImmunedToDamage(GetSpellInfo()))
@@ -8205,13 +8205,13 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster, S
     if (damage)
         procVictim |= PROC_FLAG_TAKEN_DAMAGE;
 
-    if (caster->isAlive())
+    if (caster->IsAlive())
         caster->ProcDamageAndSpell(target, procAttacker, procVictim, procEx, &dmgInfoProc, BASE_ATTACK, GetSpellInfo());
 
     caster->SendSpellNonMeleeDamageLog(target, GetId(), damage, GetSpellInfo()->GetSchoolMask(), absorb, resist, false, 0, m_spellInfo->GetSpellXSpellVisualId(caster, target), crit);
     caster->DealDamage(target, damage, &cleanDamage, DOT, GetSpellInfo()->GetSchoolMask(), GetSpellInfo(), false);
 
-    if (caster->isAlive())
+    if (caster->IsAlive())
     {
         float gainMultiplier = GetSpellInfo()->GetEffect(GetEffIndex(), m_diffMode)->CalcValueMultiplier(caster);
 
@@ -8225,7 +8225,7 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster, S
 
 void AuraEffect::HandlePeriodicHealthFunnelAuraTick(Unit* target, Unit* caster, SpellEffIndex /*effIndex*/) const
 {
-    if (!caster || !caster->isAlive() || !target->isAlive())
+    if (!caster || !caster->IsAlive() || !target->IsAlive())
         return;
 
     if (target->HasUnitState(UNIT_STATE_ISOLATED))
@@ -8255,7 +8255,7 @@ void AuraEffect::HandlePeriodicHealthFunnelAuraTick(Unit* target, Unit* caster, 
 
 void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster, SpellEffIndex effIndex, bool lastTick) const
 {
-    if (!caster || !target->isAlive())
+    if (!caster || !target->IsAlive())
         return;
 
     if (lastTick && !GetBase()->HasAuraAttribute(AURA_ATTR_REAPPLIED_AURA) && 
@@ -8269,7 +8269,7 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster, SpellEf
     }
 
     // heal for caster damage (must be alive)
-    if (target != caster && GetSpellInfo()->HasAttribute(SPELL_ATTR2_HEALTH_FUNNEL) && !caster->isAlive())
+    if (target != caster && GetSpellInfo()->HasAttribute(SPELL_ATTR2_HEALTH_FUNNEL) && !caster->IsAlive())
         return;
 
     // don't regen when permanent aura target has full power
@@ -8328,7 +8328,7 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster, SpellEf
                                 case 106550:
                                 case 106551:
                                 {
-                                    if (creature->isAlive())
+                                    if (creature->IsAlive())
                                     {
                                         uint32 _heal = damage;
                                         uint32 _absorb = 0;
@@ -8502,7 +8502,7 @@ void AuraEffect::HandlePeriodicManaLeechAuraTick(Unit* target, Unit* caster, Spe
 {
     auto powerType = Powers(GetMiscValue());
 
-    if (!caster || !caster->isAlive() || !target->isAlive() || target->getPowerType() != powerType)
+    if (!caster || !caster->IsAlive() || !target->IsAlive() || target->getPowerType() != powerType)
         return;
 
     if (target->HasUnitState(UNIT_STATE_ISOLATED) || target->IsImmunedToDamage(GetSpellInfo()))
@@ -8583,7 +8583,7 @@ void AuraEffect::HandleObsModPowerAuraTick(Unit* target, Unit* caster, SpellEffI
     else
         powerType = Powers(GetMiscValue());
 
-    if (!target->isAlive() || !target->GetMaxPower(powerType))
+    if (!target->IsAlive() || !target->GetMaxPower(powerType))
         return;
 
     if (target->HasUnitState(UNIT_STATE_ISOLATED))
@@ -8627,7 +8627,7 @@ void AuraEffect::HandleObsModPowerAuraTick(Unit* target, Unit* caster, SpellEffI
 void AuraEffect::HandlePeriodicEnergizeAuraTick(Unit* target, Unit* caster, SpellEffIndex /*effIndex*/) const
 {
     auto powerType = Powers(GetMiscValue());
-    if (!target->isAlive() || !target->GetMaxPower(powerType))
+    if (!target->IsAlive() || !target->GetMaxPower(powerType))
         return;
 
     if (target->HasUnitState(UNIT_STATE_ISOLATED))
@@ -8688,7 +8688,7 @@ void AuraEffect::HandlePeriodicPowerBurnAuraTick(Unit* target, Unit* caster, Spe
 {
     auto powerType = Powers(GetMiscValue());
 
-    if (!caster || !target->isAlive() || target->getPowerType() != powerType)
+    if (!caster || !target->IsAlive() || target->getPowerType() != powerType)
         return;
 
     if (target->HasUnitState(UNIT_STATE_ISOLATED) || target->IsImmunedToDamage(GetSpellInfo()))

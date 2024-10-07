@@ -137,7 +137,7 @@ struct boss_sisters_of_the_moon : BossAI
 {
     explicit boss_sisters_of_the_moon(Creature* creature) : BossAI(creature, DATA_SISTERS_OF_THEMOON)
     {
-        if (me->isAlive())
+        if (me->IsAlive())
         {
             me->SetReactState(REACT_PASSIVE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_IMMUNE_TO_PC);
@@ -225,7 +225,7 @@ struct boss_sisters_of_the_moon : BossAI
                     for (auto const& guid : sistersVector)
                     {
                         if (auto sister = Creature::GetCreature(*me, guid))
-                            if (sister->isAlive() && !sister->isInCombat())
+                            if (sister->IsAlive() && !sister->isInCombat())
                                 sister->AI()->DoZoneInCombat(sister, 100.0f);
                     }
                 }

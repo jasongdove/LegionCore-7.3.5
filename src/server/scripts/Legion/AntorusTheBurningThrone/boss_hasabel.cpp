@@ -446,7 +446,7 @@ struct boss_hasabel : BossAI
 
                 instance->instance->ApplyOnEveryPlayer([&](Player* player)
                 {
-                    if (player && player->isAlive())
+                    if (player && player->IsAlive())
                     {
                         if (player->GetDistance(platformPos[0]) <= 40.0f)
                         {
@@ -852,7 +852,7 @@ struct npc_hasabel_guards : public ScriptedAI
 
                 instance->instance->ApplyOnEveryPlayer([&](Player* player)
                 {
-                    if (player && player->isAlive() && player->HasAura(platformAura[1]))
+                    if (player && player->IsAlive() && player->HasAura(platformAura[1]))
                         hasPlayerPlatform = true;
                 });
 
@@ -1037,7 +1037,7 @@ struct npc_hasabel_portal_summon : public ScriptedAI
 
                 instance->instance->ApplyOnEveryPlayer([&](Player* player)
                 {
-                    if (player && player->isAlive())
+                    if (player && player->IsAlive())
                     {
                         if (player->GetDistance(platformPos[0]) <= 40.0f)
                             hasPlayerNexusPlatform = true;
@@ -1344,7 +1344,7 @@ class spell_hasabel_felsilk_wrap : public AuraScript
 
     void HandlePeriodic(AuraEffect const* aurEff)
     {
-        if (!GetCaster() || !GetCaster()->isAlive())
+        if (!GetCaster() || !GetCaster()->IsAlive())
             aurEff->GetBase()->Remove();
 
         if (GetUnitOwner() && !(aurEff->GetTickNumber() % 4))

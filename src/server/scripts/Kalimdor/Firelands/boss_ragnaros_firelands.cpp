@@ -275,7 +275,7 @@ class CloudburstCheck
             CloudburstCheck(WorldObject const* obj) : i_obj(obj) {}
             bool operator()(Unit* u)
             {
-                if (u->isAlive() && i_obj->GetDistance(u) <= 3.0f && u->HasAura(SPELL_DELUGE_AURA))
+                if (u->IsAlive() && i_obj->GetDistance(u) <= 3.0f && u->HasAura(SPELL_DELUGE_AURA))
                     return true;
 
                 return false;

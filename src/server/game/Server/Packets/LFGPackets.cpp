@@ -22,7 +22,7 @@ void WorldPackets::LFG::BlackList::Initialize(std::map<uint32, lfg::LockData> co
 {
     if (guid)
     {
-        PlayerGuid = boost::in_place();
+        PlayerGuid.emplace();
         PlayerGuid = guid;
     }
 
@@ -48,7 +48,7 @@ WorldPackets::LFG::BlackList::BlackListInfo::BlackListInfo(uint32 slot, uint32 r
 
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::LFG::BlackList const& blackList)
 {
-    data.WriteBit(blackList.PlayerGuid.is_initialized());
+    data.WriteBit(blackList.PlayerGuid.has_value());
     data << static_cast<uint32>(blackList.Slots.size());
 
     if (blackList.PlayerGuid)
@@ -141,10 +141,10 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::LFG::ShortageReward const
         data << bonusCurrencyreward.Quantity;
     }
 
-    data.WriteBit(reward.RewardSpellID.is_initialized());
-    data.WriteBit(reward.UnkInt2.is_initialized());
-    data.WriteBit(reward.UnkInt3.is_initialized());
-    data.WriteBit(reward.RewardHonor.is_initialized());
+    data.WriteBit(reward.RewardSpellID.has_value());
+    data.WriteBit(reward.UnkInt2.has_value());
+    data.WriteBit(reward.UnkInt3.has_value());
+    data.WriteBit(reward.RewardHonor.has_value());
     data.FlushBits();
 
     if (reward.RewardSpellID)

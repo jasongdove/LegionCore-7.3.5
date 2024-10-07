@@ -624,7 +624,7 @@ public:
                 switch (eventId)
                 {
                     case EVENT_1:
-                        if (!me->GetAnyOwner() || !me->GetAnyOwner()->isAlive())
+                        if (!me->GetAnyOwner() || !me->GetAnyOwner()->IsAlive())
                             me->DespawnOrUnsummon();
                         else
                             DoCast(SPELL_FUSE[urand(0, 2)]);

@@ -285,7 +285,7 @@ public:
                 case NPC_EVENT_1:
                 case NPC_EVENT_2:
                     if (Creature* event = instance->GetCreature(GetGuidData(NPC_SASSZINE_MISC)))
-                        if (event->isAlive() && event->IsInWorld())
+                        if (event->IsAlive() && event->IsInWorld())
                             event->AI()->DoAction(1);
                     break;
                 default:
@@ -541,7 +541,7 @@ public:
                     else if (player->HasAura(240249))
                         player->RemoveAurasDueToSpell(240249);
 
-                    if (player->isAlive())
+                    if (player->IsAlive())
                         if (GetBossState(DATA_MAIDEN_OF_VIGILANCE) == IN_PROGRESS || GetBossState(DATA_MAIDEN_OF_VIGILANCE) == NOT_STARTED)
                             if (player->GetDistance2d(6348.49f, -796.72f) <= 21.0f)
                                 if (player->GetPositionZ() <= 2855.0f)
@@ -561,7 +561,7 @@ public:
                     {
                         if (player->IsWithinBox({ 4500.0f, -1510.0f, 5330.0f }, 200.0f, 200.0f, 20.0f))
                         {
-                            if (player->isAlive())
+                            if (player->IsAlive())
                                 player->Kill(player);
 
                             player->NearTeleportTo(4500.18f, -1484.60f, 5385.64f, player->GetOrientation());
@@ -569,7 +569,7 @@ public:
 
                         if (player->GetDistance(6437.81f, -1089.29f, 2881.52f) < 100.0f && player->GetPositionZ() < 2870.0f)
                         {
-                            if (player->isAlive())
+                            if (player->IsAlive())
                                 player->Kill(player);
 
                             player->NearTeleportTo(6402.37f, -1064.89f, 2881.05f, player->GetOrientation());

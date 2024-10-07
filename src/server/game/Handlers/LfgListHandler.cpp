@@ -109,7 +109,7 @@ void WorldSession::HandleLfgListJoin(WorldPackets::LfgList::LfgListJoin& packet)
     list->Comment = packet.Request.Comment;
     list->VoiceChat = packet.Request.VoiceChat;
     list->HonorLevel = packet.Request.HonorLevel;
-    if (packet.Request.QuestID.is_initialized())
+    if (packet.Request.QuestID.has_value())
         list->QuestID = *packet.Request.QuestID;
     list->ApplicationGroup = nullptr;
     list->PrivateGroup = packet.Request.PrivateGroup;
@@ -184,7 +184,7 @@ void WorldSession::HandleLfgListUpdateRequest(WorldPackets::LfgList::LfgListUpda
     entry->Comment = packet.UpdateRequest.Comment;
     entry->VoiceChat = packet.UpdateRequest.VoiceChat;
     entry->HonorLevel = packet.UpdateRequest.HonorLevel;
-    if (packet.UpdateRequest.QuestID.is_initialized())
+    if (packet.UpdateRequest.QuestID.has_value())
         entry->QuestID = *packet.UpdateRequest.QuestID;
 
     if (packet.UpdateRequest.ItemLevel < sLFGListMgr->GetPlayerItemLevelForActivity(entry->GroupFinderActivityData, _player))

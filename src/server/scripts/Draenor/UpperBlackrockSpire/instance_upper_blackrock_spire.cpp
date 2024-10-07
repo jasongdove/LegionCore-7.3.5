@@ -74,7 +74,7 @@ public:
             switch (creature->GetEntry())
             {
                 case NPC_RUNE_GLOW:
-                    if (creature->isAlive())
+                    if (creature->IsAlive())
                     {
                         runeglow_count++;
 

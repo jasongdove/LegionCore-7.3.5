@@ -361,7 +361,7 @@ public:
             switch (action)
             {
                 case ACTION_1:
-                    if (me->isAlive())
+                    if (me->IsAlive())
                         Talk(SAY_RIDERLESS);
                     ride = false;
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -376,11 +376,11 @@ public:
                         DoCast(owner, 46598, true); //Ride veh
                     break;
                 case ACTION_3:
-                    if (me->isAlive())
+                    if (me->IsAlive())
                         Talk(SAY_INTANGIBLE_PRESENCE);
                     break;
                 case ACTION_4:
-                    if (me->isAlive())
+                    if (me->IsAlive())
                         Talk(SAY_MIGHTY_STOMP);
                     break;
                 case ACTION_5:
@@ -413,7 +413,7 @@ public:
 
                     if (auto owner = me->GetAnyOwner())
                     {
-                        if (owner->isAlive())
+                        if (owner->IsAlive())
                             owner->GetAI()->DoAction(ACTION_1);
                     }
                 }

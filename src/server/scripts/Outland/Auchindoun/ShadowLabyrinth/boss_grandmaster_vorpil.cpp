@@ -180,7 +180,7 @@ class boss_grandmaster_vorpil : public CreatureScript
                                 Map::PlayerList const &PlayerList = map->GetPlayers();
                                 for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                                     if (Player* i_pl = i->getSource())
-                                        if (i_pl->isAlive() && !i_pl->HasAura(SPELL_BANISH))
+                                        if (i_pl->IsAlive() && !i_pl->HasAura(SPELL_BANISH))
                                             i_pl->TeleportTo(me->GetMapId(), VorpilPosition.GetPositionX(), VorpilPosition.GetPositionY(), VorpilPosition.GetPositionZ(), VorpilPosition.GetOrientation(), TELE_TO_NOT_LEAVE_COMBAT);
 
                                 me->SetPosition(VorpilPosition);

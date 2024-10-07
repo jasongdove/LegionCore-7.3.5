@@ -109,7 +109,7 @@ public:
                     Unit* unit = Unit::GetUnit(*me, *itr);
                     if (unit)
                     {
-                        if (!unit->isAlive())
+                        if (!unit->IsAlive())
                             CAST_CRE(unit)->Respawn();
 
                         unit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -146,7 +146,7 @@ public:
             {
                 pCrystal = NULL;
                 pCrystal = Unit::GetUnit(*me, *itr);
-                if (pCrystal && pCrystal->isAlive())
+                if (pCrystal && pCrystal->IsAlive())
                 {
                     if (!CrystalChosen || me->GetDistanceOrder(pCrystal, CrystalChosen, false))
                     {
@@ -183,7 +183,7 @@ public:
             for (GuidList::const_iterator itr = Crystals.begin(); itr != Crystals.end(); ++itr)
             {
                 Creature* pCrystal = Unit::GetCreature(*me, *itr);
-                if (pCrystal && pCrystal->isAlive())
+                if (pCrystal && pCrystal->IsAlive())
                     pCrystal->Kill(pCrystal);
             }
         }
@@ -207,7 +207,7 @@ public:
             if (type == POINT_MOTION_TYPE && id == 1)
             {
                 Unit* CrystalChosen = Unit::GetUnit(*me, CrystalGUID);
-                if (CrystalChosen && CrystalChosen->isAlive())
+                if (CrystalChosen && CrystalChosen->IsAlive())
                 {
                     CrystalChosen->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE + UNIT_FLAG_NOT_SELECTABLE);
                     CrystalChosen->CastSpell(me, SPELL_MANA_RAGE, true);
@@ -296,7 +296,7 @@ public:
                         Talk(SAY_EMPOWERED);
 
                         Unit* CrystalChosen = Unit::GetUnit(*me, CrystalGUID);
-                        if (CrystalChosen && CrystalChosen->isAlive())
+                        if (CrystalChosen && CrystalChosen->IsAlive())
                             CrystalChosen->Kill(CrystalChosen);
 
                         CrystalGUID.Clear();
@@ -338,7 +338,7 @@ public:
             if (InstanceScript* instance = me->GetInstanceScript())
             {
                 Creature* Selin = (Unit::GetCreature(*me, instance->GetGuidData(DATA_SELIN)));
-                if (Selin && Selin->isAlive())
+                if (Selin && Selin->IsAlive())
                 {
                     if (CAST_AI(boss_selin_fireheart::boss_selin_fireheartAI, Selin->AI())->CrystalGUID == me->GetGUID())
                     {

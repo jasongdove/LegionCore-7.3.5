@@ -734,15 +734,15 @@ struct boss_tectus : public BossAI
             return false;
 
         if (Creature* rokka = m_Instance->GetCreature((Rokka)))
-            if (rokka->isAlive())
+            if (rokka->IsAlive())
                 return false;
 
         if (Creature* lokk = m_Instance->GetCreature((Lokk)))
-            if (lokk->isAlive())
+            if (lokk->IsAlive())
                 return false;
 
         if (Creature* oro = m_Instance->GetCreature((Oro)))
-            if (oro->isAlive())
+            if (oro->IsAlive())
                 return false;
 
         return true;

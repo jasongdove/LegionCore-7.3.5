@@ -262,7 +262,7 @@ class boss_valithria_dreamwalker : public CreatureScript
 
                 DoCast(me, SPELL_COPY_DAMAGE);
 
-                if (instance && me->isAlive())
+                if (instance && me->IsAlive())
                     instance->SetBossState(DATA_VALITHRIA_DREAMWALKER, NOT_STARTED);
 
                 summons.DespawnAll();
@@ -427,7 +427,7 @@ class boss_valithria_dreamwalker : public CreatureScript
 
                                 for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
                                     if (Player* pPlayer = i->getSource())
-                                        if(pPlayer->isAlive() && pPlayer->IsWithinDistInMap(me, 60.0f,true))
+                                        if(pPlayer->IsAlive() && pPlayer->IsWithinDistInMap(me, 60.0f, true))
                                             return;
 
                                 EnterEvadeMode();

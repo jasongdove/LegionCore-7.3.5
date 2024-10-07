@@ -81,7 +81,7 @@ public:
     {
         boss_god_king_skovaldAI(Creature* creature) : BossAI(creature, DATA_SKOVALD) 
         {
-            if (me->isAlive())
+            if (me->IsAlive())
             {
                 me->SetVisible(false);
                 intro = true;
@@ -675,7 +675,7 @@ public:
             {
                 if (moveTimer <= diff)
                 {
-                    if (!owner || !owner->IsInWorld() || !owner->isAlive())
+                    if (!owner || !owner->IsInWorld() || !owner->IsAlive())
                     {
                         me->DespawnOrUnsummon();
                         return;

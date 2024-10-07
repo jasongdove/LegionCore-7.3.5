@@ -259,7 +259,7 @@ struct boss_xavius : public BossAI
 
                 for (auto const& player : playerList)
                 {
-                    if (!player || !player->isAlive() || player->isGameMaster())
+                    if (!player || !player->IsAlive() || player->isGameMaster())
                         continue;
 
                     player->CastSpell(player, SPELL_THE_DREAMING_SUM_CLONE, true);
@@ -400,7 +400,7 @@ struct boss_xavius : public BossAI
                 {
                     instance->instance->ApplyOnEveryPlayer([&](Player* player)
                     {
-                        if (player->isAlive() && !player->isGameMaster() && !player->HasAura(SPELL_NIGHTMARE_TORMENT_ALT_POWER))
+                        if (player->IsAlive() && !player->isGameMaster() && !player->HasAura(SPELL_NIGHTMARE_TORMENT_ALT_POWER))
                             player->CastSpell(player, SPELL_NIGHTMARE_TORMENT_ALT_POWER, true);
                     });
                     events.RescheduleEvent(EVENT_CHECK_ALT_POWER, 2000);

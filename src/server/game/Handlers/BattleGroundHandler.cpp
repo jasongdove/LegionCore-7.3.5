@@ -352,7 +352,7 @@ void WorldSession::HandleBattleFieldPort(WorldPackets::Battleground::Port& packe
         if (!player->InBattleground())
             player->SetBattlegroundEntryPoint();
 
-        if (!player->isAlive())
+        if (!player->IsAlive())
         {
             player->ResurrectPlayer(1.0f);
             player->SpawnCorpseBones();
@@ -798,7 +798,7 @@ void WorldSession::HandleJoinSkirmish(WorldPackets::Battleground::JoinSkirmish& 
             return;
         }
 
-        if (!player->isAlive())
+        if (!player->IsAlive())
         {
             WorldPackets::Battleground::BattlefieldStatusFailed battlefieldStatus;
             sBattlegroundMgr->BuildBattlegroundStatusFailed(&battlefieldStatus, bg, player, 0, MS::Battlegrounds::GroupJoinBattlegroundResult::ERR_GROUP_JOIN_BATTLEGROUND_DEAD);
@@ -861,7 +861,7 @@ void WorldSession::HandleJoinSkirmish(WorldPackets::Battleground::JoinSkirmish& 
                 return;
             }
 
-            if (!member->isAlive())
+            if (!member->IsAlive())
             {
                 WorldPackets::Battleground::BattlefieldStatusFailed battlefieldStatus;
                 sBattlegroundMgr->BuildBattlegroundStatusFailed(&battlefieldStatus, bg, member, 0, MS::Battlegrounds::GroupJoinBattlegroundResult::ERR_GROUP_JOIN_BATTLEGROUND_DEAD);

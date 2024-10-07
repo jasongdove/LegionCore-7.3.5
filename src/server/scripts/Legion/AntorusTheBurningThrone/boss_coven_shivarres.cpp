@@ -224,7 +224,7 @@ struct boss_coven_shivarres : BossAI
 {
     explicit boss_coven_shivarres(Creature* creature) : BossAI(creature, DATA_COVEN)
     {
-        if (me->isAlive())
+        if (me->IsAlive())
         {
             me->SetReactState(REACT_PASSIVE);
             me->SetDisplayId(27823);
@@ -319,7 +319,7 @@ struct boss_coven_shivarres : BossAI
                             coven->CastSpell(coven, SPELL_SHARED_HEALTH, true);
                             coven->CastSpell(coven, SPELL_SHIVAN_PACT_AT, true);
 
-                            if (coven->isAlive() && !coven->isInCombat())
+                            if (coven->IsAlive() && !coven->isInCombat())
                                 coven->AI()->DoZoneInCombat(coven, 100.0f);
                         }
                     }

@@ -209,7 +209,7 @@ struct megaera_headAI : public ScriptedAI
         for (uint8 i = 0; i < 6; i++)
             if (Creature* megaerahead = me->GetCreature(*me, instance->GetGuidData(megaeraheads[i])))
                 if (me->GetEntry() != megaerahead->GetEntry())
-                    if (megaerahead->isAlive() && !megaerahead->isInCombat())
+                    if (megaerahead->IsAlive() && !megaerahead->isInCombat())
                         DoZoneInCombat(megaerahead, 150.0f);
 
         if (instance->GetBossState(DATA_MEGAERA != IN_PROGRESS))
@@ -882,7 +882,7 @@ public:
             targetGuid = guid;
             if (Player* pl = me->GetPlayer(*me, guid))
             {
-                if (pl->isAlive())
+                if (pl->IsAlive())
                 {
                     DoCast(pl, SPELL_TORRENT_OF_ICE_T, true);
                     events.RescheduleEvent(EVENT_ACTIVE_PURSUIT, 1000);
@@ -913,7 +913,7 @@ public:
                 case EVENT_ACTIVE_PURSUIT:
                     if (Player* player = me->GetPlayer(*me, targetGuid))
                     {
-                        if (player->isAlive())
+                        if (player->IsAlive())
                         {
                             DoCast(me, SPELL_TORRENT_OF_ICE_AURA, true);
                             me->AddThreat(player, 50000000.0f);
@@ -926,7 +926,7 @@ public:
                     break;
                 case EVENT_DESPAWN:
                     if (Player* player = me->GetPlayer(*me, targetGuid))
-                        if (player->isAlive())
+                        if (player->IsAlive())
                             player->RemoveAurasDueToSpell(SPELL_TORRENT_OF_ICE_T);
                     me->DespawnOrUnsummon();
                     break;   

@@ -81,7 +81,7 @@ struct boss_the_amalgam_of_souls : public BossAI
 {
     boss_the_amalgam_of_souls(Creature* creature) : BossAI(creature, DATA_AMALGAM) 
     {
-        if (me->isAlive())
+        if (me->IsAlive())
             instance->SetData(DATA_AMALGAM_OUTRO, IN_PROGRESS);   
     }
 

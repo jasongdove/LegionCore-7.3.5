@@ -159,7 +159,7 @@ void WorldSession::HandleStartChallengeMode(WorldPackets::ChallengeMode::StartCh
             return;
         }
 
-        if (!_player->isAlive())
+        if (!_player->IsAlive())
         {
             ChatHandler(_player).PSendSysMessage("Error: Player not found or die.");
             return;
@@ -176,7 +176,7 @@ void WorldSession::HandleStartChallengeMode(WorldPackets::ChallengeMode::StartCh
             for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
             {
                 Player* player = itr->getSource();
-                if (!player || !player->isAlive())
+                if (!player || !player->IsAlive())
                 {
                     ChatHandler(_player).PSendSysMessage("Error: Player not found or die.");
                     return;

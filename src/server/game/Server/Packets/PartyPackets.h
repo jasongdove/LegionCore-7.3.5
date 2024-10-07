@@ -200,6 +200,8 @@ namespace WorldPackets
         {
             struct MemberStatePosition
             {
+                MemberStatePosition() { } // allows emplace() with clang
+
                 int16 PositionX = 0;
                 int16 PositionY = 0;
                 int16 PositionZ = 0;

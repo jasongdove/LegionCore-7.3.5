@@ -283,7 +283,7 @@ public:
 
                     if (!PlayerList.isEmpty())
                         for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
-                            if (i->getSource()->isAlive())
+                            if (i->getSource()->IsAlive())
                                 DoTeleportPlayer(i->getSource(), me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), i->getSource()->GetOrientation());
                 }
 

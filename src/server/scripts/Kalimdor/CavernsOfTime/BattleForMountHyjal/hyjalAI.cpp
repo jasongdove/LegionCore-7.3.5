@@ -421,7 +421,7 @@ void hyjalAI::EnterEvadeMode()
     me->CombatStop(true);
     me->LoadCreaturesAddon();
 
-    if (me->isAlive())
+    if (me->IsAlive())
         me->GetMotionMaster()->MoveTargetedHome();
 
     me->SetLootRecipient(NULL);
@@ -861,7 +861,7 @@ void hyjalAI::UpdateAI(const uint32 diff)
             if (BossGUID[i])
             {
                 Unit* unit = Unit::GetUnit(*me, BossGUID[i]);
-                if (unit && (!unit->isAlive()))
+                if (unit && (!unit->IsAlive()))
                 {
                     if (BossGUID[i] == BossGUID[0])
                     {
@@ -914,7 +914,7 @@ void hyjalAI::UpdateAI(const uint32 diff)
                         break;
                 }
 
-                if (target && target->isAlive())
+                if (target && target->IsAlive())
                 {
                     DoCast(target, Spells[i].SpellId);
                     SpellTimer[i] = Spells[i].Cooldown;
@@ -1020,7 +1020,7 @@ void hyjalAI::WaypointReached(uint32 waypointId)
         {
             for (std::list<Creature*>::const_iterator itr = creatures.begin(); itr != creatures.end(); ++itr)
             {
-                if ((*itr) && (*itr)->isAlive() && (*itr) != me && (*itr)->GetEntry() != JAINA)
+                if ((*itr) && (*itr)->IsAlive() && (*itr) != me && (*itr)->GetEntry() != JAINA)
                 {
                     if (!(*itr)->IsWithinDist(me, 60))
                         (*itr)->SetWalk(false);
@@ -1057,7 +1057,7 @@ void hyjalAI::DoOverrun(uint32 faction, const uint32 diff)
             {
                 for (std::list<Creature*>::const_iterator itr = creatures.begin(); itr != creatures.end(); ++itr)
                 {
-                    if ((*itr) && (*itr)->isAlive())
+                    if ((*itr) && (*itr)->IsAlive())
                     {
                         (*itr)->CastSpell(*itr, SPELL_TELEPORT_VISUAL, true);
                         (*itr)->setFaction(35);//make them friendly so mobs won't attack them

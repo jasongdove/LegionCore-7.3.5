@@ -1434,7 +1434,8 @@ class npc_dragon_soul_thrall : public CreatureScript
                                 {
                                     if (Player* player = itr->getSource())
                                     {
-                                        if (player->IsInWorld() && player->GetMapId() == me->GetMapId() && player->isAlive())
+                                        if (player->IsInWorld() && player->GetMapId() == me->GetMapId() &&
+                                                player->IsAlive())
                                         {
                                             wipe = false;
                                             break;

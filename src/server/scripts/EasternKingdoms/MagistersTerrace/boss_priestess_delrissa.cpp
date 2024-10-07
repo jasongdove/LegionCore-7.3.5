@@ -167,7 +167,7 @@ public:
 
         void InitializeLackeys()
         {
-            if (!me->isAlive())
+            if (!me->IsAlive())
                 return;
 
             uint8 j = 0;
@@ -259,7 +259,7 @@ public:
                 {
                     if (Unit* pAdd = Unit::GetUnit(*me, m_auiLackeyGUID[i]))
                     {
-                        if (pAdd->isAlive() && pAdd->GetHealth() < health)
+                        if (pAdd->IsAlive() && pAdd->GetHealth() < health)
                             target = pAdd;
                     }
                 }
@@ -274,7 +274,7 @@ public:
 
                 if (urand(0, 1))
                     if (Unit* pAdd = Unit::GetUnit(*me, m_auiLackeyGUID[rand()%MAX_ACTIVE_LACKEY]))
-                        if (pAdd->isAlive())
+                        if (pAdd->IsAlive())
                             target = pAdd;
 
                 DoCast(target, SPELL_RENEW_NORMAL);
@@ -287,7 +287,7 @@ public:
 
                 if (urand(0, 1))
                     if (Unit* pAdd = Unit::GetUnit(*me, m_auiLackeyGUID[rand()%MAX_ACTIVE_LACKEY]))
-                        if (pAdd->isAlive() && !pAdd->HasAura(SPELL_SHIELD))
+                        if (pAdd->IsAlive() && !pAdd->HasAura(SPELL_SHIELD))
                             target = pAdd;
 
                 DoCast(target, SPELL_SHIELD);
@@ -306,7 +306,7 @@ public:
                         target = me;
                     else
                         if (Unit* pAdd = Unit::GetUnit(*me, m_auiLackeyGUID[rand()%MAX_ACTIVE_LACKEY]))
-                            if (pAdd->isAlive())
+                            if (pAdd->IsAlive())
                                 target = pAdd;
                 }
 
@@ -368,7 +368,7 @@ struct boss_priestess_lackey_commonAI : public ScriptedAI
         // in case she is not alive and Reset was for some reason called, respawn her (most likely party wipe after killing her)
         if (Creature* pDelrissa = Unit::GetCreature(*me, instance->GetGuidData(DATA_DELRISSA)))
         {
-            if (!pDelrissa->isAlive())
+            if (!pDelrissa->IsAlive())
                 pDelrissa->Respawn();
         }
     }
@@ -394,7 +394,7 @@ struct boss_priestess_lackey_commonAI : public ScriptedAI
 
             if (Creature* pDelrissa = Unit::GetCreature(*me, instance->GetGuidData(DATA_DELRISSA)))
             {
-                if (pDelrissa->isAlive() && !pDelrissa->getVictim())
+                if (pDelrissa->IsAlive() && !pDelrissa->getVictim())
                 {
                     who->SetInCombatWith(pDelrissa);
                     pDelrissa->AddThreat(who, 0.0f);
@@ -414,7 +414,7 @@ struct boss_priestess_lackey_commonAI : public ScriptedAI
         if (!pDelrissa)
             return;
 
-        if (pDelrissa->isAlive())
+        if (pDelrissa->IsAlive())
             pDelrissa->AI()->Talk(LackeyDeath[uiLackeyDeathCount].id);
 
         instance->SetData(DATA_DELRISSA_DEATH_COUNT, SPECIAL);
@@ -423,7 +423,7 @@ struct boss_priestess_lackey_commonAI : public ScriptedAI
 
         if (uiLackeyDeathCount == MAX_ACTIVE_LACKEY)
         {
-            if (!pDelrissa->isAlive())
+            if (!pDelrissa->IsAlive())
             {
                 if (!pDelrissa->HasFlag(OBJECT_FIELD_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE))
                     pDelrissa->SetFlag(OBJECT_FIELD_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);

@@ -159,25 +159,25 @@ void CharacterDatabaseCleaner::CleanCharacterQuestStatus()
     CharacterDatabase.DirectExecute("DELETE FROM character_queststatus WHERE status = 0");
 }
 
-uint8 CheckSlot(PlayerPetSlotList &list, uint8 slot, uint32 id)
-{
-    uint32 index = 0;
-    for(PlayerPetSlotList::iterator itr = list.begin(); itr != list.end(); ++itr, ++index)
-    {
-        if ((*itr) == id)
-        {
-            TC_LOG_ERROR("misc", "Warning! CheckSlot. Pet Id:%u with Slot: %u already on slot %u", id, slot, index);
-            return 1;
-        }
-
-        if (slot == index && (*itr) > 0 && (*itr) != id)
-        {
-            TC_LOG_ERROR("misc", "Warning! CheckSlot. Pet Id:%u with Slot: %u has another pet %u", id, slot, *itr);
-            return 2;
-        }
-    }
-    return 0;
-}
+//uint8 CheckSlot(PlayerPetSlotList &list, uint8 slot, uint32 id)
+//{
+//    uint32 index = 0;
+//    for(PlayerPetSlotList::iterator itr = list.begin(); itr != list.end(); ++itr, ++index)
+//    {
+//        if ((*itr) == id)
+//        {
+//            TC_LOG_ERROR("misc", "Warning! CheckSlot. Pet Id:%u with Slot: %u already on slot %u", id, slot, index);
+//            return 1;
+//        }
+//
+//        if (slot == index && (*itr) > 0 && (*itr) != id)
+//        {
+//            TC_LOG_ERROR("misc", "Warning! CheckSlot. Pet Id:%u with Slot: %u has another pet %u", id, slot, *itr);
+//            return 2;
+//        }
+//    }
+//    return 0;
+//}
 
 void CharacterDatabaseCleaner::CleanPetSlots()
 {

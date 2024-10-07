@@ -1414,7 +1414,7 @@ class spell_dk_corpse_shield : public AuraScript
 
         if (Pet* pet = target->GetPet())
         {
-            if (!pet->isAlive())
+            if (!pet->IsAlive())
                 return;
 
             int32 absorbPerc = GetSpellInfo()->Effects[EFFECT_0]->CalcValue(target);

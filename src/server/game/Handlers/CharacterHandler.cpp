@@ -325,7 +325,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CreateChar& c
         {
             bool haveSameRace = false;
             uint32 demonHunterReqLevel = sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_MIN_LEVEL_FOR_DEMON_HUNTER);
-            bool hasDemonHunterReqLevel = (demonHunterReqLevel != 0) && !createInfo->TemplateSet.is_initialized();
+            bool hasDemonHunterReqLevel = (demonHunterReqLevel != 0) && !createInfo->TemplateSet.has_value();
             bool allowTwoSideAccounts = !sWorld->IsPvPRealm();
             uint32 skipCinematics = sWorld->getIntConfig(CONFIG_SKIP_CINEMATICS);
             bool checkDemonHunterReqs = createInfo->Class == CLASS_DEMON_HUNTER;
@@ -738,7 +738,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
         features.CompetitiveModeEnabled = false;
         features.TokenBalanceEnabled = true;
 
-        features.EuropaTicketSystemStatus = boost::in_place();
+        features.EuropaTicketSystemStatus.emplace();
         features.EuropaTicketSystemStatus->ThrottleState.MaxTries = 10;
         features.EuropaTicketSystemStatus->ThrottleState.PerMilliseconds = 60000;
         features.EuropaTicketSystemStatus->ThrottleState.TryCount = 1;
@@ -806,6 +806,10 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
         pCurrChar->SetGuildLevel(0);
     }
 
+    // Send stable contents to display icons on Call Pet spells
+    if (pCurrChar->HasSpell(CALL_PET_SPELL_ID))
+        SendStablePet(ObjectGuid::Empty);
+
     WorldPackets::Battleground::PVPSeason season;
     season.PreviousSeason = sWorld->getIntConfig(CONFIG_ARENA_SEASON_ID) - 1;
     if (sWorld->getBoolConfig(CONFIG_ARENA_SEASON_IN_PROGRESS))
@@ -836,7 +840,6 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
         SendPacket(artifactKnowledgeFishingPole.Write());
 
         //Show cinematic at the first time that player login
-        bool firstLogin = !player->getCinematic(); // it's needed below
         if (!player->getCinematic())
         {
             player->setCinematic(1);
@@ -966,10 +969,14 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
             SendNotification(LANG_RESET_TALENTS);
         }
 
-        if (player->HasAtLoginFlag(AT_LOGIN_FIRST))
+        bool firstLogin = pCurrChar->HasAtLoginFlag(AT_LOGIN_FIRST);
+        if (firstLogin)
         {
-            player->RemoveAtLoginFlag(AT_LOGIN_FIRST);
-            player->CreateDefaultPet();
+            pCurrChar->RemoveAtLoginFlag(AT_LOGIN_FIRST);
+
+            PlayerInfo const* info = sObjectMgr->GetPlayerInfo(pCurrChar->getRace(), pCurrChar->getClass());
+            for (uint32 spellId : info->castSpells)
+                pCurrChar->CastSpell(pCurrChar, spellId, true);
         }
 
         // show time before shutdown if shutdown planned.
@@ -1381,7 +1388,7 @@ void WorldSession::HandleCharRaceOrFactionChange(WorldPackets::Character::CharRa
 
         if (result == RESPONSE_SUCCESS)
         {
-            packet.Display = boost::in_place();
+            packet.Display.emplace();
             packet.Display->Name = factionChangeInfo->Name;
             packet.Display->SexID = factionChangeInfo->SexID;
             packet.Display->SkinID = factionChangeInfo->SkinID;

@@ -943,7 +943,7 @@ class spell_sha_earthen_shield : public SpellScriptLoader
                     return;
 
                 Unit* owner = caster->GetAnyOwner();
-                if (caster->isAlive() && owner)
+                if (caster->IsAlive() && owner)
                 {
                     float bp = owner->GetSpellPowerDamage(SPELL_SCHOOL_MASK_NATURE);
                     absorbAmount = bp;

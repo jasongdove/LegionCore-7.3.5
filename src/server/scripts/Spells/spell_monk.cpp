@@ -152,7 +152,7 @@ class areatrigger_at_windwalking : public AreaTriggerScript
 
         bool IsValidTarget(Unit* caster, Unit* target, AreaTriggerActionMoment actionM) override
         {
-            if (caster && !caster->isAlive())
+            if (caster && !caster->IsAlive())
                 return false;
 
             if (target->GetGUID() == at->GetCasterGUID())
@@ -202,7 +202,7 @@ class areatrigger_at_windwalking : public AreaTriggerScript
         {
             if (Unit* caster = at->GetCaster())
             {
-                if (!caster->isAlive())
+                if (!caster->IsAlive())
                     return;
 
                 for (GuidList::iterator itr = affectedPlayers.begin(), next; itr != affectedPlayers.end(); itr = next)
@@ -2263,7 +2263,7 @@ class spell_monk_renewing_mist_main : public SpellScriptLoader
                                             if (player->GetGUID() == target->GetGUID())
                                                 continue;
 
-                                            if (!player->IsInWorld() || !player->isAlive())
+                                            if (!player->IsInWorld() || !player->IsAlive())
                                                 continue;
 
                                             if (!player->IsWithinDistInMap(target, 50.f))
@@ -2359,7 +2359,7 @@ class spell_monk_renewing_mist : public SpellScriptLoader
                                         if (player->GetGUID() == target->GetGUID())
                                             continue;
 
-                                        if (!player->IsInWorld() || !player->isAlive())
+                                        if (!player->IsInWorld() || !player->IsAlive())
                                             continue;
 
                                         if (player->IsFullHealth())

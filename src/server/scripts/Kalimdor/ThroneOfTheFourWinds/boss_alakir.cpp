@@ -193,7 +193,7 @@ public:
             for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)                            
             {
                 Player* plr = i->getSource();
-                if (plr->isAlive())
+                if (plr->IsAlive())
                 {
                     plr->RemoveAurasDueToSpell(SPELL_EYE_OFTHE_STORM);
                 }
@@ -281,7 +281,7 @@ public:
             for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)                            
             {
                 Player* plr = i->getSource();
-                if (plr->isAlive())
+                if (plr->IsAlive())
                 {
                     plr->CastSpell(plr, SPELL_EYE_OFTHE_STORM, false);
                 }
@@ -486,7 +486,7 @@ public:
 
         void UpdateAI(uint32 diff)
         {
-            if (GetAlakir() && GetAlakir()->isAlive())
+            if (GetAlakir() && GetAlakir()->IsAlive())
             {
                 float distanceX = GetAlakir()->GetPositionX() > me->GetPositionX() ? GetAlakir()->GetPositionX() - me->GetPositionX() : me->GetPositionX() - GetAlakir()->GetPositionX();
                 float distanceY = GetAlakir()->GetPositionY() > me->GetPositionY() ? GetAlakir()->GetPositionY() - me->GetPositionY() : me->GetPositionY() - GetAlakir()->GetPositionY();

@@ -135,7 +135,7 @@ public:
                     for (GuidSet::const_iterator itr = HorsemanAdds.begin(); itr != HorsemanAdds.end(); ++itr)
                     {
                         Creature* add = instance->GetCreature(*itr);
-                        if (add && add->isAlive())
+                        if (add && add->IsAlive())
                             add->Kill(add);
                     }
                     HorsemanAdds.clear();

@@ -1277,7 +1277,7 @@ public:
         {
             if (GetCaster() && GetCaster()->ToCreature())
             {
-                if (GetCaster()->isAlive() && GetCaster()->isInCombat())
+                if (GetCaster()->IsAlive() && GetCaster()->isInCombat())
                 {
                     GetCaster()->RemoveAurasDueToSpell(SPELL_SWIRL_AURA_DUMMY);
                     GetCaster()->ToCreature()->AI()->DoAction(ACTION_RE_ATTACK_SWIRL);
@@ -1498,7 +1498,7 @@ public:
         void HandleScript(SpellEffIndex effIndex)
         {
             if (GetCaster() && GetCaster()->ToCreature())
-                if (GetCaster()->isAlive() && GetCaster()->isInCombat())
+                if (GetCaster()->IsAlive() && GetCaster()->isInCombat())
                     GetCaster()->ToCreature()->AI()->DoAction(ACTION_SPAWN_WAVE);
         }
 

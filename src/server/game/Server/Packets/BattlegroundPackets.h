@@ -133,6 +133,8 @@ namespace WorldPackets
 
             struct RatingData
             {
+                RatingData() { } // allows emplace() with clang
+
                 int32 Prematch[MAX_TEAMS] = { };
                 int32 Postmatch[MAX_TEAMS] = { };
                 int32 PrematchMMR[MAX_TEAMS] = { };
@@ -140,6 +142,8 @@ namespace WorldPackets
 
             struct HonorData
             {
+                HonorData() { } // allows emplace() with clang
+
                 uint32 HonorKills = 0;
                 uint32 Deaths = 0;
                 uint32 ContributionPoints = 0;

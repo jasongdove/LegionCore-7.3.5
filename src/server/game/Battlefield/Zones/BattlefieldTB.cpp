@@ -234,7 +234,7 @@ void BattlefieldTB::OnPlayerJoinWar(Player* player)
 
     bool onTb = player->GetZoneId() == m_AreaID; 
     // resurect dead plr
-    if(!player->isAlive())
+    if(!player->IsAlive())
         player->ResurrectPlayer(1.0f);
 
     if (player->GetTeamId() == GetDefenderTeam())

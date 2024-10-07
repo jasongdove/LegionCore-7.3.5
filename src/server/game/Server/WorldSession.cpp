@@ -663,10 +663,7 @@ void WorldSession::LogoutPlayer(bool Save)
         _player->UnsummonCurrentBattlePetIfAny(true);
 
         ///- Remove pet
-        if (_player->getClass() != CLASS_WARLOCK)
-            _player->RemovePet(nullptr);
-        else if (Pet* _pet = _player->GetPet())
-            _pet->SavePetToDB();
+        _player->RemovePet(nullptr, PET_SAVE_AS_CURRENT, true);
 
         ///- empty buyback items and save the player in the database
         // some save parts only correctly work in case player present in map/player_lists (pets, etc)

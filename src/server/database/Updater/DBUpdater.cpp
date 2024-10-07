@@ -424,7 +424,7 @@ void DBUpdater<T>::ApplyFile(DatabaseWorkerPool<T>& pool, std::string const& hos
 
     // Invokes a mysql process which doesn't leak credentials to logs
     int32 const ret = Trinity::StartProcess(DBUpdaterUtil::GetCorrectedMySQLExecutable(), std::move(args),
-                                 "sql.updates", "", false);
+                                 "sql.updates", "", true);
 
     if (ret != EXIT_SUCCESS)
     {

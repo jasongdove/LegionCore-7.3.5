@@ -327,7 +327,7 @@ public:
                 {
                     for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                     {
-                        if (i->getSource() && i->getSource()->isAlive() &&
+                        if (i->getSource() && i->getSource()->IsAlive() &&
                             i->getSource()->GetPositionX() <= POS_X_NORTH &&
                             i->getSource()->GetPositionX() >= POS_X_SOUTH &&
                             i->getSource()->GetPositionY() <= POS_Y_GATE &&
@@ -335,7 +335,7 @@ public:
                         {
                             checklife = true;
                         }
-                        else if (i->getSource() && i->getSource()->isAlive() &&
+                        else if (i->getSource() && i->getSource()->IsAlive() &&
                             i->getSource()->GetPositionX() <= POS_X_NORTH &&
                             i->getSource()->GetPositionX() >= POS_X_SOUTH &&
                             i->getSource()->GetPositionY() >= POS_Y_GATE &&
@@ -576,7 +576,7 @@ public:
                 {
                     for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
                     {
-                        if (i->getSource() && i->getSource()->isAlive() && isOnSameSide(i->getSource()))
+                        if (i->getSource() && i->getSource()->IsAlive() && isOnSameSide(i->getSource()))
                         {
                             AttackStart(i->getSource());
                             return;

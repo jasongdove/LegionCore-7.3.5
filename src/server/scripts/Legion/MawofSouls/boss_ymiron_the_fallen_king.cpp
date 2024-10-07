@@ -203,7 +203,7 @@ struct boss_ymiron_the_fallen_king : public BossAI
                 {
                     instance->instance->ApplyOnEveryPlayer([&](Player* player)
                     {
-                        if (player->isAlive() && player->getHostileRefManager().HasTarget(me))
+                        if (player->IsAlive() && player->getHostileRefManager().HasTarget(me))
                         {
                             if (listAT.empty())
                                 return;
@@ -394,7 +394,7 @@ struct npc_ymiron_risen_warrior : public ScriptedAI
 
         AddDelayedEvent(3000, [=] () -> void
         {
-            if (me && me->isAlive() && me->isInCombat())
+            if (me && me->IsAlive() && me->isInCombat())
             {
                 me->SetReactState(REACT_AGGRESSIVE);
                 DoZoneInCombat(me, 100.0f);
@@ -416,7 +416,7 @@ struct npc_ymiron_risen_warrior : public ScriptedAI
 
     void DoAction(int32 const actionId)
     {
-        if (me->isAlive())
+        if (me->IsAlive())
             me->Kill(me);
     }
 
@@ -549,7 +549,7 @@ struct npc_ymiron_seacursed_slaver : public ScriptedAI
 
             if (auto prisoner = Creature::GetCreature(*me, prisonerGUID))
             {
-                if (prisoner->isAlive() && !prisoner->isInCombat() && me->GetDistance(prisoner) < 30.0f)
+                if (prisoner->IsAlive() && !prisoner->isInCombat() && me->GetDistance(prisoner) < 30.0f)
                 {
                     Talk(1);
                     me->StopAttack();
@@ -559,13 +559,13 @@ struct npc_ymiron_seacursed_slaver : public ScriptedAI
 
                     AddDelayedEvent(2000, [this, prisoner] () -> void
                     {
-                        if (me && me->isAlive())
+                        if (me && me->IsAlive())
                         {
                             me->SetReactState(REACT_AGGRESSIVE);
                             me->AI()->DoZoneInCombat(me, 30.0f);
                         }
 
-                        if (prisoner && prisoner->isAlive() && !prisoner->isInCombat())
+                        if (prisoner && prisoner->IsAlive() && !prisoner->isInCombat())
                         {
                             if (auto go = prisoner->FindNearestGameObject(245064, 20.0f))
                                 go->SetGoState(GO_STATE_ACTIVE);

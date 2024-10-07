@@ -112,7 +112,7 @@ struct boss_void_reaver : public BossAI
                         if (!target)
                             continue;
                         // exclude pets & totems, 18 yard radius minimum
-                        if (target->GetTypeId() == TYPEID_PLAYER && target->isAlive() && !target->IsWithinDist(me, 18, false))
+                        if (target->GetTypeId() == TYPEID_PLAYER && target->IsAlive() && !target->IsWithinDist(me, 18, false))
                             target_list.push_back(target);
                         target = NULL;
                     }

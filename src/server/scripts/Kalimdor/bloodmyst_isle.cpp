@@ -870,7 +870,7 @@ public:
 
                     if (sironas)
                     {
-                        if (!sironas->isAlive())
+                        if (!sironas->IsAlive())
                             sironas->Respawn(true);
 
                         sironas->AI()->DoAction(ACTION_SIRONAS_CHANNEL_START);

@@ -1399,7 +1399,7 @@ public:
             {
                 if (Creature* m_Azzakel = m_Instance->instance->GetCreature(m_Instance->GetGuidData(DataBossAzzakael)))
                 {
-                    if (m_Azzakel->isAlive())
+                    if (m_Azzakel->IsAlive())
                         return false;
 
                     if (boss_teronogor::boss_teronogorAI* l_LinkAI = CAST_AI(boss_teronogor::boss_teronogorAI, m_Teronogor->GetAI()))

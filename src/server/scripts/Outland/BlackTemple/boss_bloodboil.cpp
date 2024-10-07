@@ -148,7 +148,7 @@ public:
             {
                 Unit* target = Unit::GetUnit(*me, (*itr)->getUnitGuid());
                                                                 //only on alive players
-                if (target && target->isAlive() && target->GetTypeId() == TYPEID_PLAYER)
+                if (target && target->IsAlive() && target->GetTypeId() == TYPEID_PLAYER)
                     targets.push_back(target);
             }
 
@@ -273,7 +273,7 @@ public:
                 if (Phase1)
                 {
                     Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0);
-                    if (target && target->isAlive())
+                    if (target && target->IsAlive())
                     {
                         Phase1 = false;
 

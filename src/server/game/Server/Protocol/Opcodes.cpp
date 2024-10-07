@@ -831,7 +831,7 @@ void OpcodeTable::Initialize()
     DEFINE_HANDLER(CMSG_SET_LOOT_SPECIALIZATION,                            STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleSetLootSpecialization);
     DEFINE_HANDLER(CMSG_SET_PARTY_ASSIGNMENT,                               STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleSetPartyAssignment);
     DEFINE_HANDLER(CMSG_SET_PARTY_LEADER,                                   STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleSetPartyLeader);
-    DEFINE_HANDLER(CMSG_SET_PET_SLOT,                                       STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HanleSetPetSlot);
+    DEFINE_HANDLER(CMSG_SET_PET_SLOT,                                       STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleSetPetSlot);
     DEFINE_HANDLER(CMSG_SET_PLAYER_DECLINED_NAMES,                          STATUS_AUTHED,    PROCESS_THREADUNSAFE, &WorldSession::HandleSetPlayerDeclinedNames);
     DEFINE_HANDLER(CMSG_SET_PREFERRED_CEMETERY,                             STATUS_LOGGEDIN,  PROCESS_INPLACE,      &WorldSession::HandleSetCemetryPreferrence);
     DEFINE_HANDLER(CMSG_SET_PVP,                                            STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleSetPvP);

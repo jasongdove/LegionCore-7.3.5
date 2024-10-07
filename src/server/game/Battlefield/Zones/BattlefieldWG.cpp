@@ -869,7 +869,7 @@ void BattlefieldWG::OnPlayerJoinWar(Player* player)
     player->PlayDirectSound(BG_SOUND_START); // START Battle
 
     // resurect dead plr
-    if(!player->isAlive())
+    if(!player->IsAlive())
         player->ResurrectPlayer(1.0f);
 
     if (player->GetTeamId() == GetDefenderTeam())

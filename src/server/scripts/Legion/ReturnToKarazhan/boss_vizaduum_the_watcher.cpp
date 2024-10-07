@@ -743,7 +743,7 @@ class spell_vizaduum_demonic_portal : public SpellScriptLoader
                     {
                         if (Creature* boss = instance->instance->GetCreature(instance->GetGuidData(NPC_VIZADUUM_THE_WATCHER)))
                         {
-                            if (boss->isAlive())
+                            if (boss->IsAlive())
                                 eventPhaseHP = boss->GetAI()->GetData(DATA_VIZADUUM_HP_PHASE);
                             else
                                 alive = false;

@@ -63,7 +63,7 @@ public:
             else GlobalCooldown = 0;
 
             //Buff timer (only buff when we are alive and not in combat
-            if (!me->isInCombat() && me->isAlive())
+            if (!me->isInCombat() && me->IsAlive())
             {
                 if (BuffTimer <= diff)
                 {

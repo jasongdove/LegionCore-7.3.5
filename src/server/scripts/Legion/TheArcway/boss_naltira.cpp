@@ -315,7 +315,7 @@ public:
         {
             if (Player* player = ObjectAccessor::GetPlayer(*me, playerGUID))
             {
-                if (player->isAlive() && player->HasAura(SPELL_DEVOUR, me->GetGUID()))
+                if (player->IsAlive() && player->HasAura(SPELL_DEVOUR, me->GetGUID()))
                 {
                     playerGUID = ObjectGuid::Empty;
                     player->RemoveAurasDueToSpell(SPELL_DEVOUR, me->GetGUID());
@@ -449,7 +449,7 @@ public:
             std::list<WorldObject*> tempTargets;
 
             for (auto const& target : targets)
-                if (target && target->ToPlayer() && target->ToPlayer()->isAlive())
+                if (target && target->ToPlayer() && target->ToPlayer()->IsAlive())
                     tempTargets.push_back(target);
 
             targets = tempTargets;

@@ -462,7 +462,7 @@ class PrideCheck
         {
             if (!obj->ToCreature())
                 return true;
-            return ((obj->ToCreature()->GetEntry() != NPC_PRIDE_OF_BETHEKK) || !obj->ToCreature()->isAlive() || obj->ToCreature()->HasAura(SPELL_DARK_SLUMBER) || obj->ToCreature()->HasAura(SPELL_BLOOD_FRENZY));
+            return ((obj->ToCreature()->GetEntry() != NPC_PRIDE_OF_BETHEKK) || !obj->ToCreature()->IsAlive() || obj->ToCreature()->HasAura(SPELL_DARK_SLUMBER) || obj->ToCreature()->HasAura(SPELL_BLOOD_FRENZY));
         }
 };
 

@@ -568,7 +568,7 @@ void Battlefield::ShowNpc(Creature* creature, bool aggressive)
     creature->SetPhaseMask(305, true);
     creature->SetVisible(true);
     creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-    if (!creature->isAlive())
+    if (!creature->IsAlive())
         creature->Respawn(true);
     if (aggressive)
         creature->SetReactState(REACT_AGGRESSIVE);

@@ -573,7 +573,7 @@ void Map::ScriptsProcess()
                 }
 
                 // quest id and flags checked at script loading
-                if ((!worldObject->IsCreature() || worldObject->ToUnit()->isAlive()) &&
+                if ((!worldObject->IsCreature() || worldObject->ToUnit()->IsAlive()) &&
                     (step.script->QuestExplored.Distance == 0 || worldObject->IsWithinDistInMap(player, float(step.script->QuestExplored.Distance))))
                     player->AreaExploredOrEventHappens(step.script->QuestExplored.QuestID);
                 else

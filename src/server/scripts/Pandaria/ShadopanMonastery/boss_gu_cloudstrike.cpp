@@ -70,7 +70,7 @@ struct boss_gu_cloudstrike : public BossAI
             events.RescheduleEvent(EVENT_OVERCHARGED_SOUL, 2500, PHASE_TWO);
             DoCast(SPELL_CHARGING_SOUL);
             if (auto azureSerpent = instance->instance->GetCreature(instance->GetGuidData(NPC_AZURE_SERPENT)))
-                if (azureSerpent->isAlive())
+                if (azureSerpent->IsAlive())
                     azureSerpent->AI()->DoAction(ACTION_AZURE_SERPENT_P_2);
         }
     }

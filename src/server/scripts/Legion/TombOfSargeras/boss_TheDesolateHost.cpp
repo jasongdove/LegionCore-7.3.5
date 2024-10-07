@@ -153,7 +153,7 @@ struct boss_the_desolate_host_generic : BossAI
 {
     explicit boss_the_desolate_host_generic(Creature* creature) : BossAI(creature, DATA_THE_DESOLATE_HOST), summons(me)
     {
-        if (me->isAlive())
+        if (me->IsAlive())
         {
             me->SetReactState(REACT_PASSIVE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
@@ -1292,7 +1292,7 @@ struct npc_tos_soul_residue : ScriptedAI
                 if (!targetGUID.IsEmpty())
                 {
                     auto player = Player::GetPlayer(*me, targetGUID);
-                    if (!player || !player->isAlive() || (!mirror && !player->HasAura(SPELL_SPIRIT_REALM)) || (mirror && player->HasAura(SPELL_SPIRIT_REALM)))
+                    if (!player || !player->IsAlive() || (!mirror && !player->HasAura(SPELL_SPIRIT_REALM)) || (mirror && player->HasAura(SPELL_SPIRIT_REALM)))
                     {
                         targetGUID.Clear();
                         me->StopAttack(true);
@@ -1371,7 +1371,7 @@ class spell_tos_quietus_filter : public SpellScript
                 for (auto const& target : targets)
                 {
                     if (auto player = target->ToPlayer())
-                        if (player->isAlive() && !player->HasAura(SPELL_SPIRIT_REALM))
+                        if (player->IsAlive() && !player->HasAura(SPELL_SPIRIT_REALM))
                             tempTargets.push_back(target);
                 }
             }
@@ -1380,7 +1380,7 @@ class spell_tos_quietus_filter : public SpellScript
                 for (auto const& target : targets)
                 {
                     if (auto player = target->ToPlayer())
-                        if (player->isAlive() && player->HasAura(SPELL_SPIRIT_REALM))
+                        if (player->IsAlive() && player->HasAura(SPELL_SPIRIT_REALM))
                             tempTargets.push_back(target);
                 }
             }
@@ -1911,7 +1911,7 @@ class spell_tos_spiritual_barrier_dissonance : public AuraScript
             {
                 tickTimer = 3000;
 
-                if (GetUnitOwner() && GetUnitOwner()->GetMap()->IsHeroicPlusRaid() && GetUnitOwner()->isAlive())
+                if (GetUnitOwner() && GetUnitOwner()->GetMap()->IsHeroicPlusRaid() && GetUnitOwner()->IsAlive())
                 {
                     if (auto instance = GetUnitOwner()->GetInstanceScript())
                         if (instance->GetBossState(DATA_THE_DESOLATE_HOST) != IN_PROGRESS)

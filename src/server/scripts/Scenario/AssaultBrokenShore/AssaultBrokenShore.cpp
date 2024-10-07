@@ -288,7 +288,7 @@ public:
             GetCreatureListWithEntryInGrid(trash, me, 118653, 40.0f);
             for (std::list<Creature*>::iterator itr = trash.begin(); itr != trash.end(); ++itr)
             {
-                if ((*itr)->isAlive())
+                if ((*itr)->IsAlive())
                 {
                     AttackStart((*itr));
                     return true;

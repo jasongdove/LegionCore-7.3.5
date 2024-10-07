@@ -344,7 +344,7 @@ public:
 
             if (Creature* oAdd = me->FindNearestCreature((me->GetEntry() == 92990 ? 92990 : 97632), 100.0f, true))
             {
-                if (oAdd->isAlive())
+                if (oAdd->IsAlive())
                     return oAdd;
             }
             

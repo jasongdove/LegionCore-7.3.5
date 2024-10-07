@@ -450,7 +450,7 @@ void WorldSession::HandleBinderActivate(WorldPackets::NPC::Hello& packet)
     if (!player)
         return;
 
-    if (!player->IsInWorld() || !player->isAlive())
+    if (!player->IsInWorld() || !player->IsAlive())
         return;
 
     Creature* unit = player->GetNPCIfCanInteractWith(packet.Unit, UNIT_NPC_FLAG_INNKEEPER);
@@ -496,7 +496,7 @@ void WorldSession::SendBindPoint(Creature* npc)
 
 void WorldSession::HandleListInventory(WorldPackets::NPC::Hello& packet)
 {
-    if (GetPlayer()->isAlive())
+    if (GetPlayer()->IsAlive())
         SendListInventory(packet.Unit);
 }
 
@@ -703,9 +703,11 @@ void WorldSession::HandleRequestStabledPets(WorldPackets::NPC::RequestStabledPet
         return;
     }
 
+    // remove fake death
     if (GetPlayer()->HasUnitState(UNIT_STATE_DIED))
         GetPlayer()->RemoveAurasByType(SPELL_AURA_FEIGN_DEATH);
 
+    // remove mounts this fix bug where getting pet from stable while mounted deletes pet.
     if (GetPlayer()->IsMounted())
         GetPlayer()->RemoveAurasByType(SPELL_AURA_MOUNTED);
 

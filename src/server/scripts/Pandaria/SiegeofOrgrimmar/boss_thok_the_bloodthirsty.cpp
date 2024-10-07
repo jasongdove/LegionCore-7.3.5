@@ -594,7 +594,7 @@ class boss_thok_the_bloodthirsty : public CreatureScript
             ObjectGuid GetJailerVictimGuid()
             {
                 if (Creature* kj = me->GetCreature(*me, jGuid))
-                    if (kj->isAlive() && kj->isInCombat())
+                    if (kj->IsAlive() && kj->isInCombat())
                         return kj->getVictim() ? kj->getVictim()->GetGUID() : ObjectGuid::Empty;
                 return ObjectGuid::Empty;
             }
@@ -829,7 +829,7 @@ public:
                 {
                     if (Player* pl = me->GetPlayer(*me, sGuid))
                     {
-                        if (!pl->isAlive())
+                        if (!pl->IsAlive())
                         {
                             if (GameObject* it = me->FindNearestGameObject(GO_ICE_TOMB, 10.0f))
                                 it->Delete();
@@ -1170,7 +1170,7 @@ public:
         void HandleEffectRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes mode)
         {
             if (GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
-                if (GetCaster() && GetCaster()->ToCreature() && GetCaster()->isAlive() && GetCaster()->HasAura(SPELL_BLOOD_FRENZY))
+                if (GetCaster() && GetCaster()->ToCreature() && GetCaster()->IsAlive() && GetCaster()->HasAura(SPELL_BLOOD_FRENZY))
                     GetCaster()->ToCreature()->AI()->DoAction(ACTION_FIXATE);
         }
 
@@ -1327,7 +1327,7 @@ public:
                             if (!PlayerList.isEmpty())
                                 for (Map::PlayerList::const_iterator Itr = PlayerList.begin(); Itr != PlayerList.end(); ++Itr)
                                     if (Player* player = Itr->getSource())
-                                        if (player->isAlive())
+                                        if (player->IsAlive())
                                             player->Kill(player, true);
                         }
                         break;

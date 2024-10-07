@@ -67,7 +67,7 @@ class boss_ambassador_hellmaw : public CreatureScript
 
             void Reset()
             {
-                if (!me->isAlive())
+                if (!me->IsAlive())
                     return;
 
                 _events.Reset();

@@ -447,7 +447,7 @@ class npc_air_force_bots : public CreatureScript
             {
                 Creature* creature = Unit::GetCreature(*me, SpawnedGUID);
 
-                if (creature && creature->isAlive())
+                if (creature && creature->IsAlive())
                     return creature;
 
                 return NULL;
@@ -466,7 +466,7 @@ class npc_air_force_bots : public CreatureScript
                     if (!playerTarget)
                         return;
 
-                    if (!playerTarget->isAlive())
+                    if (!playerTarget->IsAlive())
                         return;
 
                     Creature* lastSpawnedGuard = !SpawnedGUID ? NULL : GetSummonedGuard();
@@ -1022,7 +1022,7 @@ class npc_injured_patient : public CreatureScript
 
             void SpellHit(Unit* caster, SpellInfo const* spell) override
             {
-                if (caster->GetTypeId() == TYPEID_PLAYER && me->isAlive() && spell->Id == 20804)
+                if (caster->GetTypeId() == TYPEID_PLAYER && me->IsAlive() && spell->Id == 20804)
                 {
                     if ((CAST_PLR(caster)->GetQuestStatus(6624) == QUEST_STATUS_INCOMPLETE) || (CAST_PLR(caster)->GetQuestStatus(6622) == QUEST_STATUS_INCOMPLETE))
                         if (DoctorGUID)
@@ -1066,10 +1066,10 @@ class npc_injured_patient : public CreatureScript
                 }
 
                 //lower HP on every world tick makes it a useful counter, not officlone though
-                if (me->isAlive() && me->GetHealth() > 6)
+                if (me->IsAlive() && me->GetHealth() > 6)
                     me->ModifyHealth(-5);
 
-                if (me->isAlive() && me->GetHealth() <= 6)
+                if (me->IsAlive() && me->GetHealth() <= 6)
                 {
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     me->setDeathState(JUST_DIED);
@@ -3081,7 +3081,7 @@ class npc_ebon_gargoyle : public CreatureScript
             // Fly away when dismissed
             void SpellHit(Unit* source, SpellInfo const* spell) override
             {
-                if (spell->Id != 50515 || !me->isAlive())
+                if (spell->Id != 50515 || !me->IsAlive())
                     return;
 
                 Unit* owner = me->GetOwner();
@@ -3220,7 +3220,7 @@ class npc_lightwell : public CreatureScript
 
             void EnterEvadeMode() override
             {
-                if (!me->isAlive())
+                if (!me->IsAlive())
                     return;
 
                 me->DeleteThreatList();
@@ -3260,7 +3260,7 @@ class npc_lightwell_mop : public CreatureScript
 
             void EnterEvadeMode() override
             {
-                if (!me->isAlive())
+                if (!me->IsAlive())
                     return;
 
                 me->DeleteThreatList();
@@ -4927,7 +4927,7 @@ class npc_past_self : public CreatureScript
                         {
                             if (m_owner->ToPlayer())
                             {
-                                if (!m_owner->isAlive())
+                                if (!m_owner->IsAlive())
                                     return;
 
                                 //m_owner->RemoveNonPassivesAuras();

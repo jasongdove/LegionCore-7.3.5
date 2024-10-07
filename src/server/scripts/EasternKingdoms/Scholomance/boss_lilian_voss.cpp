@@ -177,7 +177,7 @@ class spell_death_grasp : public SpellScriptLoader
                         {
                             if (Player* pPlayer = i->getSource())
                             {
-                                if (pPlayer->isAlive())
+                                if (pPlayer->IsAlive())
                                 {
                                     pPlayer->CastSpell(x, y, z, spell, true);
                                     GetCaster()->CastSpell(pPlayer, SPELL_DARK_BLAZE_S);

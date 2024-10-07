@@ -705,7 +705,7 @@ public:
         Player* GetPlayerTarget()
         {
             if (Player* pl = me->GetPlayer(*me, plGuid))
-                if (pl->isAlive())
+                if (pl->IsAlive())
                     return pl;
 
             return NULL;
@@ -926,7 +926,7 @@ public:
         Unit* GetTarget()
         {
             if (Unit* target = me->GetUnit(*me, targetGuid))
-                if (target->isAlive())
+                if (target->IsAlive())
                     return target;
             return 0;
         }
@@ -937,7 +937,7 @@ public:
             {
                 if (Unit* target = me->GetUnit(*me, guid))
                 {
-                    if (target->isAlive())
+                    if (target->IsAlive())
                     {
                         targetGuid = guid;
                         me->AddAura(SPELL_HUNTERS_MARK, target);
@@ -1150,7 +1150,7 @@ public:
             {
                 if (Unit* gn = me->ToTempSummon()->GetSummoner())
                 {
-                    if (gn->isAlive() && gn->isInCombat())
+                    if (gn->IsAlive() && gn->isInCombat())
                         return gn;
                 }
             }

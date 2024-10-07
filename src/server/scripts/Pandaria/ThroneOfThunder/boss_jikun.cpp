@@ -342,7 +342,7 @@ public:
                 {
                     for (std::list<Creature*>::const_iterator itr = egglist.begin(); itr != egglist.end(); itr++)
                     {
-                        if (!(*itr)->isAlive())
+                        if (!(*itr)->IsAlive())
                             (*itr)->Respawn();
                         else
                         {
@@ -443,7 +443,7 @@ public:
                     {
                         for (std::list<Creature*>::const_iterator itr = egglist.begin(); itr != egglist.end(); itr++)
                         {
-                            if (!(*itr)->isAlive())
+                            if (!(*itr)->IsAlive())
                                 (*itr)->Respawn();
                             else
                                 (*itr)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);

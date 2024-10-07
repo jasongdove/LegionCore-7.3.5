@@ -103,7 +103,7 @@ void Arena::AddPlayer(Player* player)
 
     if (Pet* pet = player->GetPet())
     {
-        if (!pet->isAlive())
+        if (!pet->IsAlive())
             pet->setDeathState(ALIVE);
 
         pet->SetHealth(pet->GetMaxHealth());
@@ -111,7 +111,7 @@ void Arena::AddPlayer(Player* player)
 
         if (player->HasSpell(155228) || player->HasSpell(205024) || player->GetSpecializationId() == SPEC_MAGE_FIRE &&
             player->GetSpecializationId() == SPEC_MAGE_ARCANE || player->GetSpecializationId() == SPEC_DK_BLOOD || player->GetSpecializationId() == SPEC_DK_FROST)
-            player->RemovePet(pet);
+            player->RemovePet(pet, PET_SAVE_NOT_IN_SLOT);
     }
 
     player->RemoveArenaEnchantments(TEMP_ENCHANTMENT_SLOT);
@@ -210,7 +210,7 @@ void Arena::StartingEventOpenDoors()
     _logData = {};
     _logData.RealmID = realm.Id.Realm;
     _logData.MapID = GetMapId();
-    _logData.Arena = boost::in_place();
+    _logData.Arena.emplace();
     _logData.Arena->JoinType = GetJoinType();
 
     for (const auto& itr : GetPlayers())
@@ -222,7 +222,7 @@ void Arena::StartingEventOpenDoors()
                 if (!player->GetGuild() || !group->IsGuildGroup())
                     continue;
 
-                _logData.Guild = boost::in_place();
+                _logData.Guild.emplace();
                 _logData.Guild->GuildID = player->GetGuildId();
                 _logData.Guild->GuildFaction = player->GetTeamId();
                 _logData.Guild->GuildName = player->GetGuildName();

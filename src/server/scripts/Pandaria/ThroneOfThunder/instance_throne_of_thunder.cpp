@@ -292,7 +292,7 @@ public:
             //Megaera
             case NPC_MEGAERA:
                 megaeraGuid = creature->GetGUID();
-                if (!creature->isAlive()) //Megaera done, unsummon heads
+                if (!creature->IsAlive()) //Megaera done, unsummon heads
                 {
                     if (!megaeralist.empty())
                         for (GuidVector::const_iterator itr = megaeralist.begin(); itr != megaeralist.end(); itr++)
@@ -407,7 +407,7 @@ public:
             }
             //Patch 5.4
             if (IsRaidBoss(creature->GetEntry()))
-                if (creature->isAlive())
+                if (creature->IsAlive())
                     creature->CastSpell(creature, SPELL_SHADO_PAN_ONSLAUGHT, true);
         }
 
@@ -785,9 +785,9 @@ public:
                         {
                             if (Creature* mag = instance->GetCreature(*guid))
                             {
-                                if (mag->isAlive() && mag->isInCombat())
+                                if (mag->IsAlive() && mag->isInCombat())
                                     mag->AI()->EnterEvadeMode();
-                                else if (!mag->isAlive())
+                                else if (!mag->IsAlive())
                                 {
                                     mag->Respawn();
                                     mag->GetMotionMaster()->MoveTargetedHome();
@@ -799,7 +799,7 @@ public:
                     case IN_PROGRESS:
                         if (Creature* animus = instance->GetCreature(darkanimusGuid))
                         {
-                            if (animus->isAlive() && !animus->isInCombat())
+                            if (animus->IsAlive() && !animus->isInCombat())
                                 animus->AI()->DoZoneInCombat(animus, 150.0f);
                         }
 
@@ -807,7 +807,7 @@ public:
                         {
                             if (Creature* mag = instance->GetCreature(*guid))
                             {
-                                if (mag->isAlive() && !mag->isInCombat())
+                                if (mag->IsAlive() && !mag->isInCombat())
                                     mag->AI()->DoZoneInCombat(mag, 150.0f);
                             }
                         }
@@ -1075,7 +1075,7 @@ public:
                 {
                     for (GuidVector::const_iterator itr = councilGuids.begin(); itr != councilGuids.end(); itr++)
                         if (Creature* council = instance->GetCreature(*itr))
-                            if (council->isAlive())
+                            if (council->IsAlive())
                                 return 1;
                     return 0;
                 }
@@ -1126,7 +1126,7 @@ public:
                 {
                     for (GuidVector::const_iterator itr = councilGuids.begin(); itr != councilGuids.end(); itr++)
                         if (Creature* council = instance->GetCreature(*itr))
-                            if (council->isAlive())
+                            if (council->IsAlive())
                                 return;
 
                     SetBossState(DATA_COUNCIL_OF_ELDERS, DONE);
@@ -1138,7 +1138,7 @@ public:
                     uint8 alivecount = 0;
                     for (GuidVector::const_iterator itr = crimsonfogGuids.begin(); itr != crimsonfogGuids.end(); itr++)
                         if (Creature* cfog = instance->GetCreature(*itr))
-                            if (cfog->isAlive())
+                            if (cfog->IsAlive())
                                 alivecount++;
 
                     if (alivecount)
@@ -1150,7 +1150,7 @@ public:
                     DoUpdateWorldState(WorldStates::WORLD_STATE_ALIVE_FOG_COUNT, 0);
                     crimsonfogGuids.clear();
                     if (Creature* durumu = instance->GetCreature(durumuGuid))
-                        if (durumu->isAlive() && durumu->isInCombat())
+                        if (durumu->IsAlive() && durumu->isInCombat())
                             durumu->AI()->DoAction(ACTION_COLORBLIND_PHASE_DONE);
                 }
                 break;
@@ -1268,7 +1268,7 @@ public:
                 if (!player)
                     continue;
 
-                if (player->isAlive() && !player->isGameMaster() && !player->HasAura(115877)) // Aura 115877 = Totaly Petrified
+                if (player->IsAlive() && !player->isGameMaster() && !player->HasAura(115877)) // Aura 115877 = Totaly Petrified
                     return false;
             }
 

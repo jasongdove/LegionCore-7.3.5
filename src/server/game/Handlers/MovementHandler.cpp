@@ -304,12 +304,12 @@ void WorldSession::HandleMovementOpcode(OpcodeClient opcode, MovementInfo& movem
         {
             if (!(plrMover->GetBattleground() && plrMover->GetBattleground()->HandlePlayerUnderMap(_player)))
             {
-                if (plrMover->isAlive())
+                if (plrMover->IsAlive())
                 {
                     //! Client Crash.
                     //plrMover->SetFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_IS_OUT_OF_BOUNDS);
                     plrMover->EnvironmentalDamage(DAMAGE_FALL_TO_VOID, GetPlayer()->GetMaxHealth());
-                    if (!plrMover->isAlive())
+                    if (!plrMover->IsAlive())
                         plrMover->KillPlayer();
                 }
             }

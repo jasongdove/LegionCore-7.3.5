@@ -2500,7 +2500,7 @@ class spell_item_goren_gas_extractor : public SpellScriptLoader
             {
                 if (Player* player = GetCaster()->ToPlayer())
                     if (Unit* target = player->GetSelectedUnit())
-                        if (!target->isAlive() && (target->GetEntry() == 79190 || target->GetEntry() == 80345))
+                        if (!target->IsAlive() && (target->GetEntry() == 79190 || target->GetEntry() == 80345))
                             return SPELL_CAST_OK;
 
                 return SPELL_FAILED_BAD_TARGETS;

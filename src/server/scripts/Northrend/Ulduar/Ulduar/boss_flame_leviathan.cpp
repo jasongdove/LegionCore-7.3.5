@@ -240,7 +240,7 @@ public:
             towerOfFrost = true;
             
             // Summon Ulduar Colossus
-            if (me->isAlive())
+            if (me->IsAlive())
                 for (uint32 i = 0; i < 2; ++i)
                     DoSummon(NPC_ULDUAR_COLOSSUS, PosColossus[i], 7000, TEMPSUMMON_CORPSE_TIMED_DESPAWN);
         }
@@ -489,7 +489,7 @@ public:
                             else
                                 pTarget = me->getVictim();
                                 
-                            if (pTarget && pTarget->isAlive())
+                            if (pTarget && pTarget->IsAlive())
                             {
                                 DoResetThreat();
                                 me->AddThreat(pTarget, 5000000.0f);

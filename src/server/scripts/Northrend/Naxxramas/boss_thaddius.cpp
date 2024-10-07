@@ -142,11 +142,11 @@ public:
             // and each mob will send its status at reset (meaning that it is alive)
             checkFeugenAlive = false;
             if (Creature *pFeugen = me->GetCreature(*me, instance->GetGuidData(DATA_FEUGEN)))
-                checkFeugenAlive = pFeugen->isAlive();
+                checkFeugenAlive = pFeugen->IsAlive();
 
             checkStalaggAlive = false;
             if (Creature *pStalagg = me->GetCreature(*me, instance->GetGuidData(DATA_STALAGG)))
-                checkStalaggAlive = pStalagg->isAlive();
+                checkStalaggAlive = pStalagg->IsAlive();
 
             if (!checkFeugenAlive && !checkStalaggAlive)
             {

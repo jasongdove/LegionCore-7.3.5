@@ -181,7 +181,7 @@ public:
             {
                 if (Creature* temp = Unit::GetCreature(*me, *itr))
                 {
-                    if (temp->isAlive())
+                    if (temp->IsAlive())
                         temp->DespawnOrUnsummon();
                 }
             }
@@ -199,7 +199,7 @@ public:
                 if (Creature* temp = Unit::GetCreature(*me, *itr))
                 {
                     // Only shatter brittle golems
-                    if (temp->isAlive() && temp->GetEntry() == NPC_BRITTLE_GOLEM)
+                    if (temp->IsAlive() && temp->GetEntry() == NPC_BRITTLE_GOLEM)
                     {
                         temp->CastSpell(temp, DUNGEON_MODE(SPELL_SHATTER_N, SPELL_SHATTER_H), false);
                         GolemsShattered += 1;

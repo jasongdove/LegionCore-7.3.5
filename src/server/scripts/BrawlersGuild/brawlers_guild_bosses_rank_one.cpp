@@ -88,7 +88,7 @@ public:
                         //>>>Hack
                         me->AddDelayedEvent(2400, [this]() -> void
                         {
-                            if (me && me->isAlive())
+                            if (me && me->IsAlive())
                                 me->ClearUnitState(UNIT_STATE_ROOT);
                         });
                         //<<<Hack
@@ -408,7 +408,7 @@ public:
 
             if (Unit* unit = me->GetAnyOwner())
                 if (Creature* owner = unit->ToCreature())
-                    if (owner->isAlive())
+                    if (owner->IsAlive())
                         owner->Kill(owner);
             
             _WinRound();

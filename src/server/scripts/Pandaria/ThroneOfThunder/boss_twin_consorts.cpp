@@ -67,12 +67,12 @@ public:
                 {
                     if (callerEntry != twinEntry[n])
                     {
-                        if (!twin->isAlive())
+                        if (!twin->IsAlive())
                         {
                             twin->Respawn();
                             twin->GetMotionMaster()->MoveTargetedHome();
                         }
-                        else if (twin->isAlive() && twin->isInCombat())
+                        else if (twin->IsAlive() && twin->isInCombat())
                             twin->AI()->EnterEvadeMode();
                     }
                 }
@@ -95,7 +95,7 @@ public:
                     caller->SetVisible(false);
                 if (Creature* l = caller->GetCreature(*caller, instance->GetGuidData(NPC_LULIN)))
                 {
-                    if (l->isAlive() && !l->isInCombat())
+                    if (l->IsAlive() && !l->isInCombat())
                         l->AI()->DoZoneInCombat(l, 150.0f);
                 }
             }
@@ -104,7 +104,7 @@ public:
             {
                 if (Creature* s = caller->GetCreature(*caller, instance->GetGuidData(NPC_SULIN)))
                 {
-                    if (s->isAlive() && !s->isInCombat())
+                    if (s->IsAlive() && !s->isInCombat())
                     {
                         s->AI()->DoZoneInCombat(s, 150.0f);
                         s->AttackStop();
@@ -128,7 +128,7 @@ public:
             {
                 if (Creature* twin = caller->GetCreature(*caller, instance->GetGuidData(twinEntry[n])))
                 {
-                    if (!twin->isAlive())
+                    if (!twin->IsAlive())
                         donecount++;
                 }
             }
@@ -242,7 +242,7 @@ class boss_twin_consorts : public CreatureScript
                         {
                             if (Creature* s = me->GetCreature(*me, instance->GetGuidData(NPC_SULIN)))
                             {
-                                if (s->isAlive())
+                                if (s->IsAlive())
                                 {
                                     events.Reset();
                                     me->AttackStop();

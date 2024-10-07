@@ -26,7 +26,7 @@ enum Spells
 
     SPELL_VOID_BLAST                = 152792,
     SPELL_PLANAR_SHIFT              = 153623,
-    SPELL_VOID_VORTEX               = 152801, //поправить притЯгивалку ат и настройки в дате
+    SPELL_VOID_VORTEX               = 152801, //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
     SPELL_SOUL_STEAL                = 152962,
     SPELL_TEMPORAL_DISTORTION       = 158382,
     SPELL_TEMPORAL_DISTORTION_STUN  = 158372,
@@ -157,7 +157,7 @@ struct boss_nhallish : public BossAI
             {
                 if (Player* plr = i->getSource())
                 {
-                    if (!plr->isAlive() || plr->isGameMaster())
+                    if (!plr->IsAlive() || plr->isGameMaster())
                         return;
 
                     if (!plr->HasAura(SPELL_SOULLESS_SCREAN))

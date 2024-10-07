@@ -98,7 +98,7 @@ bool CreatureAI::IsInControl()
 
 bool CreatureAI::_EnterEvadeMode()
 {
-    if (!me->isAlive())
+    if (!me->IsAlive())
         return false;
 
     // dont remove vehicle auras, passengers arent supposed to drop off the vehicle
@@ -187,7 +187,7 @@ void CreatureAI::DelayTalk(uint32 delayTimer, uint8 id, ObjectGuid WhisperGuid)
 
     me->AddDelayedEvent(delayTimer, [this, id, WhisperGuid]() -> void
     {
-        if (me && me->isAlive())
+        if (me && me->IsAlive())
             Talk(id, WhisperGuid);
     });
 }
@@ -240,7 +240,7 @@ void CreatureAI::DoZoneInCombat(Creature* creature /*= NULL*/, float maxRangeToN
         if (player->isGameMaster())
             return;
 
-        if (player->isAlive())
+        if (player->IsAlive())
         {
             creature->SetInCombatWith(player);
             player->SetInCombatWith(creature);
@@ -274,7 +274,7 @@ void CreatureAI::DoAttackerAreaInCombat(Unit* attacker, float range, Unit* pUnit
 
     map->ApplyOnEveryPlayer([&](Player* player)
     {
-        if (player->isAlive() && attacker->GetDistance(player) <= range)
+        if (player->IsAlive() && attacker->GetDistance(player) <= range)
         {
             pUnit->SetInCombatWith(player);
             player->SetInCombatWith(pUnit);
@@ -293,7 +293,7 @@ void CreatureAI::DoAttackerGroupInCombat(Player* attacker)
             {
                 Player* player = itr->getSource();
 
-                if (player && player->isAlive() && !player->isInCombat() && player->GetMapId() == me->GetMapId())
+                if (player && player->IsAlive() && !player->isInCombat() && player->GetMapId() == me->GetMapId())
                 {
                     me->SetInCombatWith(player);
                     player->SetInCombatWith(me);
@@ -315,7 +315,7 @@ void CreatureAI::DoAggroPulse(uint32 diff)
             {
                 if (auto player = Player::GetPlayer(*me, (*itr)->getUnitGuid()))
                 {
-                    if (player->isAlive())
+                    if (player->IsAlive())
                     {
                         me->SetInCombatWithZone();
                         break;

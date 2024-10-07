@@ -235,7 +235,7 @@ public:
                                     me->ClearUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED);
                             }
                         }
-                        else if (!me->getVictim() || !me->getVictim()->isAlive())
+                        else if (!me->getVictim() || !me->getVictim()->IsAlive())
                             events.RescheduleEvent(EVENT_1, 1000);
                         events.RescheduleEvent(EVENT_2, 500);
                         break;

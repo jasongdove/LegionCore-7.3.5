@@ -795,7 +795,7 @@ class boss_madness_of_deathwing : public CreatureScript
                     if (!creatures.empty())
                     {
                         for (std::list<Creature*>::const_iterator itr = creatures.begin(); itr != creatures.end(); ++itr)
-                            if ((*itr)->isAlive())
+                            if ((*itr)->IsAlive())
                             {
                                 if (platform == 1 && (*itr)->GetPositionY() > 12200.0f)
                                     return (*itr);
@@ -1248,7 +1248,7 @@ class npc_dragon_soul_thrall_1 : public CreatureScript
                     AnyLivePlayerNoGmCheck(WorldObject const* obj, float range) : _obj(obj), _range(range) {}
                     bool operator()(Player* u)
                     {
-                        if (!u->isAlive())
+                        if (!u->IsAlive())
                             return false;
 
                         if (!_obj->IsWithinDistInMap(u, _range))
@@ -2646,7 +2646,7 @@ class npc_madness_of_deathwing_jump_pad : public CreatureScript
                     PlayerCheck(WorldObject const* obj, uint32 spellEx1, uint32 spellEx2) : _obj(obj), _spellEx1(spellEx2), _spellEx2(spellEx2) {}
                     bool operator()(Player* u)
                     {
-                        if (!u->isAlive())
+                        if (!u->IsAlive())
                             return false;
 
                         if (!u->IsFalling() || _obj->GetPositionZ() < (u->GetPositionZ() + 3.0f))

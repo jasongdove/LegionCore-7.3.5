@@ -398,7 +398,7 @@ void SpellCastTargets::Write(WorldPackets::Spells::SpellTargetData& data)
 
     if (m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
     {
-        data.SrcLocation = boost::in_place();
+        data.SrcLocation.emplace();
         data.SrcLocation->Transport = m_src._transportGUID;
         if (m_src._transportGUID.IsEmpty())
             data.SrcLocation->Location = static_cast<Position>(m_src._position);
@@ -408,7 +408,7 @@ void SpellCastTargets::Write(WorldPackets::Spells::SpellTargetData& data)
 
     if (m_targetMask & TARGET_FLAG_DEST_LOCATION)
     {
-        data.DstLocation = boost::in_place();
+        data.DstLocation.emplace();
         data.DstLocation->Transport = m_dst._transportGUID;
         if (m_dst._transportGUID.IsEmpty())
             data.DstLocation->Location = static_cast<Position>(m_dst._position);

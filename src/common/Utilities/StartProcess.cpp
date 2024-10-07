@@ -96,7 +96,7 @@ public:
         }
         else
         {
-            TC_LOG_INFO(logger, R"(Starting process "%s" with arguments: "%s".)",
+            TC_LOG_TRACE(logger, R"(Starting process "%s" with arguments: "%s".)",
                 executable.c_str(), fmt::to_string(fmt::join(args, " ")).c_str());
         }
 

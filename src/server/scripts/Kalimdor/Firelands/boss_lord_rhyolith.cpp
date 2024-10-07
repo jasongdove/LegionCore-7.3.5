@@ -664,7 +664,7 @@ class npc_lord_rhyolith_right_foot : public CreatureScript
 
             void DamageTaken(Unit* who, uint32 &damage, DamageEffectType dmgType)
             {
-                if (!me || !me->isAlive())
+                if (!me || !me->IsAlive())
                     return;
 
                 if (who->GetGUID() == me->GetGUID())
@@ -767,7 +767,7 @@ class npc_lord_rhyolith_left_foot : public CreatureScript
 
             void DamageTaken(Unit* who, uint32 &damage, DamageEffectType dmgType)
             {
-                if (!me || !me->isAlive())
+                if (!me || !me->IsAlive())
                     return;
 
                 if (who->GetGUID() == me->GetGUID())

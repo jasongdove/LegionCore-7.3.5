@@ -1064,7 +1064,7 @@ struct npc_cenarius_nightmare_brambles : public ScriptedAI
                     events.RescheduleEvent(EVENT_2, 2000);
 
                     if (auto player = Player::GetPlayer(*me, playerGUID))
-                        if (player->isAlive() && (player->GetDistance(me) < 100.0f))
+                        if (player->IsAlive() && (player->GetDistance(me) < 100.0f))
                             break;
 
                     if (auto owner = me->GetAnyOwner())

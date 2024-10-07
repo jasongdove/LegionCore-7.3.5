@@ -288,7 +288,7 @@ public:
                     {
                         instance->ApplyOnEveryPlayer([&](Player* player)
                         {
-                            if (player->isAlive() && !player->isGameMaster() && !player->HasAura(197134)) //Shelter
+                            if (player->IsAlive() && !player->isGameMaster() && !player->HasAura(197134)) //Shelter
                                 player->CastSpell(player, 191797, true); //Violent Winds
                         });
 

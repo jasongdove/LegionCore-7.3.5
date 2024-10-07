@@ -129,7 +129,7 @@ class boss_kelidan_the_breaker : public CreatureScript
                 for (uint8 i=0; i<5; ++i)
                 {
                     Creature* channeler = ObjectAccessor::GetCreature(*me, Channelers[i]);
-                    if (channeler && channeler->isAlive())
+                    if (channeler && channeler->IsAlive())
                         return;
                 }
                 me->SetReactState(REACT_AGGRESSIVE);

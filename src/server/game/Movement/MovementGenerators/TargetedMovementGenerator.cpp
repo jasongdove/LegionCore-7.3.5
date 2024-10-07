@@ -184,7 +184,7 @@ bool TargetedMovementGeneratorMedium<T,D>::DoUpdate(T &owner, const uint32 & tim
         return true;
     }
 
-    if (!owner.isAlive() || !i_target->isAlive())
+    if (!owner.IsAlive() || !i_target->IsAlive())
         return false;
 
     if (owner.HasUnitState(UNIT_STATE_NOT_MOVE))
@@ -264,7 +264,7 @@ bool TargetedMovementGeneratorMedium<T,D>::DoUpdate(T &owner, const uint32 & tim
 
         if (targetIsVictim && owner.IsCreature() && !((Creature*)&owner)->isPet())
         {
-            if ((!owner.getVictim() || !owner.getVictim()->isAlive()) && owner.movespline->Finalized())
+            if ((!owner.getVictim() || !owner.getVictim()->IsAlive()) && owner.movespline->Finalized())
                 return false;
 
             if (!i_offset && owner.movespline->Finalized() && !owner.IsWithinMeleeRange(owner.getVictim())
@@ -346,7 +346,7 @@ template<class T>
 void ChaseMovementGenerator<T>::DoFinalize(T &owner)
 {
     owner.ClearUnitState(UNIT_STATE_CHASE | UNIT_STATE_CHASE_MOVE);
-    if (owner.IsCreature() && !((Creature*)&owner)->isPet() && owner.isAlive())
+    if (owner.IsCreature() && !((Creature*)&owner)->isPet() && owner.IsAlive())
     {
         if (!owner.isInCombat() || ( this->i_target.getTarget() && !this->i_target.getTarget()->isInAccessiblePlaceFor(((Creature*)&owner))))
         {
@@ -575,7 +575,7 @@ bool FollowMovementGenerator<T>::DoUpdate(T& owner, uint32 time_diff)
     if (!this->i_target.isValid() || !this->i_target->IsInWorld() || !owner.IsInMap(this->i_target.getTarget()))
         return false;
 
-    if (!owner.ToCreature() || !owner.isAlive())
+    if (!owner.ToCreature() || !owner.IsAlive())
         return false;
 
     Creature* cOwner = owner.ToCreature();

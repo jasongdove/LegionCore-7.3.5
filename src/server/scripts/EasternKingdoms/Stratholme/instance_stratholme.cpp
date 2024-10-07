@@ -290,7 +290,7 @@ class instance_stratholme : public InstanceMapScript
                             for (GuidSet::const_iterator i = abomnationGUID.begin(); i != abomnationGUID.end(); ++i)
                             {
                                 if (Creature* pAbom = instance->GetCreature(*i))
-                                    if (!pAbom->isAlive())
+                                    if (!pAbom->IsAlive())
                                         --count;
                             }
 

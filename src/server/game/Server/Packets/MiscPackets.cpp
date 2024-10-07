@@ -60,10 +60,10 @@ WorldPacket const* WorldPackets::Misc::SetupCurrency::Write()
         _worldPacket << uint32(data.Type);
         _worldPacket << uint32(data.Quantity);
 
-        _worldPacket.WriteBit(data.WeeklyQuantity.is_initialized());
-        _worldPacket.WriteBit(data.MaxWeeklyQuantity.is_initialized());
-        _worldPacket.WriteBit(data.TrackedQuantity.is_initialized());
-        _worldPacket.WriteBit(data.MaxQuantity.is_initialized());
+        _worldPacket.WriteBit(data.WeeklyQuantity.has_value());
+        _worldPacket.WriteBit(data.MaxWeeklyQuantity.has_value());
+        _worldPacket.WriteBit(data.TrackedQuantity.has_value());
+        _worldPacket.WriteBit(data.MaxQuantity.has_value());
         _worldPacket.WriteBits(data.Flags, 5);
         _worldPacket.FlushBits();
 
@@ -128,9 +128,9 @@ WorldPacket const* WorldPackets::Misc::WorldServerInfo::Write()
     _worldPacket << uint32(DifficultyID);
     _worldPacket << uint8(IsTournamentRealm);
     _worldPacket.WriteBit(XRealmPvpAlert);
-    _worldPacket.WriteBit(RestrictedAccountMaxLevel.is_initialized());
-    _worldPacket.WriteBit(RestrictedAccountMaxMoney.is_initialized());
-    _worldPacket.WriteBit(InstanceGroupSize.is_initialized());
+    _worldPacket.WriteBit(RestrictedAccountMaxLevel.has_value());
+    _worldPacket.WriteBit(RestrictedAccountMaxMoney.has_value());
+    _worldPacket.WriteBit(InstanceGroupSize.has_value());
 
     if (RestrictedAccountMaxLevel)
         _worldPacket << uint32(*RestrictedAccountMaxLevel);
@@ -619,8 +619,8 @@ WorldPacket const* WorldPackets::Misc::MountResult::Write()
 WorldPacket const* WorldPackets::Misc::DisplayGameError::Write()
 {
     _worldPacket << AsUnderlyingType(Error);
-    _worldPacket.WriteBit(Arg.is_initialized());
-    _worldPacket.WriteBit(Arg2.is_initialized());
+    _worldPacket.WriteBit(Arg.has_value());
+    _worldPacket.WriteBit(Arg2.has_value());
 
     if (Arg)
         _worldPacket << *Arg;
@@ -778,9 +778,9 @@ WorldPacket const* WorldPackets::Misc::SetCurrency::Write()
     _worldPacket << Type;
     _worldPacket << Quantity;
     _worldPacket << Flags;
-    _worldPacket.WriteBit(WeeklyQuantity.is_initialized());
-    _worldPacket.WriteBit(TrackedQuantity.is_initialized());
-    _worldPacket.WriteBit(MaxQuantity.is_initialized());
+    _worldPacket.WriteBit(WeeklyQuantity.has_value());
+    _worldPacket.WriteBit(TrackedQuantity.has_value());
+    _worldPacket.WriteBit(MaxQuantity.has_value());
     _worldPacket.WriteBit(SuppressChatLog);
     _worldPacket.FlushBits();
 

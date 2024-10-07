@@ -426,7 +426,7 @@ public:
             Map::PlayerList const &players = me->GetMap()->GetPlayers();
             for (Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)
                 if (Player* pl = i->getSource())
-                    if (pl->isAlive())
+                    if (pl->IsAlive())
                         pl->SendUpdateWorldState(8431, 0);
             instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_UNSTABLE_DEFENSE_SYSTEMS);
         }
@@ -439,7 +439,7 @@ public:
                 Map::PlayerList const &players = me->GetMap()->GetPlayers();
                 for (Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)
                     if (Player* pl = i->getSource())
-                        if (pl->isAlive())
+                        if (pl->IsAlive())
                             pl->Kill(pl, true);
 
                 DespawnAllAT();
@@ -2497,7 +2497,7 @@ public:
             {
                 if (GetCaster() && GetTarget())
                 {
-                    if (GetCaster()->isAlive())
+                    if (GetCaster()->IsAlive())
                     {
                         float dist = 5.0f;
                         std::list<Player*>pllist;

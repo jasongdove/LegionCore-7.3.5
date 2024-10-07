@@ -522,38 +522,6 @@ struct TrainerSpellData
 
 typedef std::map<uint32, time_t> CreatureSpellCooldowns;
 
-enum PetSpellState
-{
-    PETSPELL_UNCHANGED = 0,
-    PETSPELL_CHANGED   = 1,
-    PETSPELL_NEW       = 2,
-    PETSPELL_REMOVED   = 3
-};
-
-enum PetSpellType
-{
-    PETSPELL_NORMAL = 0,
-    PETSPELL_FAMILY = 1,
-    PETSPELL_TALENT = 2,
-};
-
-enum PetType
-{
-    SUMMON_PET              = 0,
-    HUNTER_PET              = 1,
-    MAX_PET_TYPE            = 4,
-};
-
-struct PetSpell
-{
-    ActiveStates active;
-    PetSpellState state;
-    PetSpellType type;
-};
-
-typedef std::unordered_map<uint32, PetSpell> PetSpellMap;
-typedef std::vector<uint32> AutoSpellList;
-
 // max different by z coordinate for creature aggro reaction
 #define CREATURE_Z_ATTACK_RANGE 3
 
@@ -786,11 +754,8 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
 
         bool isRegeneratingHealth() { return m_regenHealth; }
         void setRegeneratingHealth(bool regenHealth) { m_regenHealth = regenHealth; }
-        uint8 GetPetAutoSpellSize() const;
-        uint32 GetPetAutoSpellOnPos(uint8 pos) const;
-        uint8 GetPetCastSpellSize() const;
-        void AddPetCastSpell(uint32 spellid);
-        uint32 GetPetCastSpellOnPos(uint8 pos) const;
+        virtual uint8 GetPetAutoSpellSize() const { return MAX_SPELL_CHARM; }
+        virtual uint32 GetPetAutoSpellOnPos(uint8 pos) const;
 
         void SetPosition(float x, float y, float z, float o);
         void SetPosition(const Position& pos);
@@ -850,9 +815,6 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
 
         void SetLockAI(bool lock) { m_AI_locked = lock; }
 
-        AutoSpellList   m_autospells;
-        AutoSpellList   m_castspells;
-        PetSpellMap     m_spells;
         bool m_despawn;
         bool m_isHati;
         uint32 m_IfUpdateTimer;
