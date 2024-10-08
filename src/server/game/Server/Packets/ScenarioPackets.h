@@ -23,6 +23,8 @@
 
 #define MAX_ALLOWED_SCENARIO_POI_QUERY_SIZE 40
 
+struct ScenarioPOI;
+
 namespace WorldPackets
 {
     namespace Scenario
@@ -46,27 +48,8 @@ namespace WorldPackets
 
             struct POIData
             {
-                struct BlobData
-                {
-                    struct POIPointData
-                    {
-                        uint32 X = 0;
-                        uint32 Y = 0;
-                    };
-
-                    uint32 BlobID = 0;
-                    uint32 MapID = 0;
-                    uint32 WorldMapAreaID = 0;
-                    uint32 Floor = 0;
-                    uint32 Priority = 0;
-                    uint32 Flags = 0;
-                    uint32 WorldEffectID = 0;
-                    uint32 PlayerConditionID = 0;
-                    std::vector<POIPointData> Points;
-                };
-
                 uint32 CriteriaTreeID = 0;
-                std::vector<BlobData> BlobDatas;
+                std::vector<ScenarioPOI> const* ScenarioPOIs = nullptr;
             };
 
             std::vector<POIData> PoiInfos;

@@ -35,27 +35,8 @@ void WorldSession::HandleQueryScenarioPOI(WorldPackets::Scenario::QueryScenarioP
         {
             WorldPackets::Scenario::ScenarioPOIs::POIData data;
             data.CriteriaTreeID = criteriaTreeId;
-            WorldPackets::Scenario::ScenarioPOIs::POIData::BlobData &blobData = data.BlobDatas[poi->size()];
-
-            for (const auto& itr : *poi)
-            {
-                blobData.BlobID            = itr.BlobID;
-                blobData.MapID             = itr.MapID;
-                blobData.WorldMapAreaID    = itr.WorldMapAreaID;
-                blobData.Floor             = itr.Floor;
-                blobData.Priority          = itr.Priority;
-                blobData.Flags             = itr.Flags;
-                blobData.WorldEffectID     = itr.WorldEffectID;
-                blobData.PlayerConditionID = itr.PlayerConditionID;
-
-                WorldPackets::Scenario::ScenarioPOIs::POIData::BlobData::POIPointData &points = blobData.Points[itr.points.size()];
-
-                for (auto point : itr.points)
-                {
-                    points.X = point.x;
-                    points.Y = point.y;
-                }
-            }
+            data.ScenarioPOIs = poi;
+            response.PoiInfos.push_back(data);
         }
     }
 
