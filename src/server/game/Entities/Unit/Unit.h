@@ -1217,8 +1217,8 @@ class Unit : public WorldObject
         bool CanVehicleAI() const;
 
         uint8 getLevel() const;
+        uint8 GetLevelForTarget(WorldObject const* /*target*/) const override { return getLevel(); }
         uint8 GetEffectiveLevel() const;
-        uint8 getLevelForTarget(WorldObject const* target) const override;
         uint8 getLevelForXPReward(Player const* player) const;
         float getScaleForTarget(int32 delta) const;
         uint32 GetDamageFromLevelScale(Unit* target, uint32 damage);
@@ -1370,7 +1370,7 @@ class Unit : public WorldObject
         void SetMeleeAnimKitId(uint16 animKitID);
         uint16 GetMeleeAnimKitId() const override { return _meleeAnimKitId; }
 
-        uint16 GetMaxSkillValueForLevel(Unit const* target = nullptr) const { return (target ? getLevelForTarget(target) : getLevel()) * 5; }
+        uint16 GetMaxSkillValueForLevel(Unit const* target = nullptr) const { return (target ? GetLevelForTarget(target) : getLevel()) * 5; }
         void DealDamageMods(Unit* victim, uint32 &damage, uint32* absorb, SpellInfo const* spellProto = nullptr, bool addMythicMod = false);
         uint32 DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDamage = nullptr, DamageEffectType damagetype = DIRECT_DAMAGE, SpellSchoolMask damageSchoolMask = SPELL_SCHOOL_MASK_NORMAL, SpellInfo const* spellProto = nullptr, bool durabilityLoss = true);
         uint32 CalcStaggerDamage(uint32 damage, SpellSchoolMask damageSchoolMask, SpellInfo const* spellInfo = nullptr, bool full = false);

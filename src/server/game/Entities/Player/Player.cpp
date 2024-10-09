@@ -8869,7 +8869,7 @@ void Player::RewardReputation(Unit* victim, float rate, bool killer)
     {
         if (Rep->RepFaction)
         {
-            int32 donerep = CalculateReputationGain(victim->getLevelForTarget(this), Rep->RepValue, ChampioningFaction ? ChampioningFaction : Rep->RepFaction, nullptr);
+            int32 donerep = CalculateReputationGain(victim->GetLevelForTarget(this), Rep->RepValue, ChampioningFaction ? ChampioningFaction : Rep->RepFaction, nullptr);
             donerep = int32(donerep*(rate + favored_rep_mult));
 
             if (recruitAFriend)
@@ -8892,7 +8892,7 @@ void Player::RewardReputation(Unit* victim, float rate, bool killer)
         }
         else if (ChampioningFaction) // Implementation for cataclysm with empty default faction
         {
-            int32 donerep = CalculateReputationGain(victim->getLevelForTarget(this), Rep->RepValue, ChampioningFaction, nullptr);
+            int32 donerep = CalculateReputationGain(victim->GetLevelForTarget(this), Rep->RepValue, ChampioningFaction, nullptr);
             donerep = int32(donerep*(rate + favored_rep_mult));
 
             if (recruitAFriend)
@@ -9085,9 +9085,9 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
             if (GetTeam() == plrVictim->GetTeam() && (!sWorld->IsFFAPvPRealm() && !(InBattleground() && sWorld->getBoolConfig(CONFIG_CROSSFACTIONBG))))
                 return false;
 
-            uint8 k_level = getLevelForTarget(victim);
+            uint8 k_level = GetLevelForTarget(victim);
             uint8 k_grey = Trinity::XP::GetGrayLevel(k_level);
-            uint8 v_level = victim->getLevelForTarget(this);
+            uint8 v_level = victim->GetLevelForTarget(this);
 
             if (v_level <= k_grey)
                 return false;
@@ -11967,8 +11967,8 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
                 if (!IsFriendlyTo(creature))
                 {
                     // Generate extra money for pick pocket loot
-                    const uint32 a = urand(0, creature->getLevelForTarget(this)/2);
-                    const uint32 b = urand(0, getLevelForTarget(creature)/2);
+                    const uint32 a = urand(0, creature->GetLevelForTarget(this)/2);
+                    const uint32 b = urand(0, GetLevelForTarget(creature)/2);
                     lootPesonal->gold = uint32(10 * (a + b) * (GetMap()->IsDungeon() && sWorld->getBoolConfig(CONFIG_DROP_DUNGEON_ONLY_X1)  ? 1.0f : sWorld->getRate(RATE_DROP_MONEY)));
                     sLootMgr->AddLoot(lootPesonal);
                 }
@@ -31316,8 +31316,8 @@ void Player::InitializeSelfResurrectionSpells()
 // Used in triggers for check "Only to targets that grant experience or honor" req
 bool Player::isHonorOrXPTarget(Unit* victim)
 {
-    uint8 v_level = victim->getLevelForTarget(this);
-    uint8 k_grey  = Trinity::XP::GetGrayLevel(getLevelForTarget(victim));
+    uint8 v_level = victim->GetLevelForTarget(this);
+    uint8 k_grey  = Trinity::XP::GetGrayLevel(GetLevelForTarget(victim));
 
     // Victim level less gray level
     if (v_level < k_grey)

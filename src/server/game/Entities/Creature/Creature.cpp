@@ -2425,8 +2425,8 @@ float Creature::GetAttackDistance(Unit const* target) const
     if (aggroRate == 0)
         return 0.0f;
 
-    uint32 targetLevel = target->getLevelForTarget(this);
-    uint32 creatureLevel = getLevelForTarget(target);
+    uint32 targetLevel = target->GetLevelForTarget(this);
+    uint32 creatureLevel = GetLevelForTarget(target);
 
     int32 leveldif = int32(targetLevel) - int32(creatureLevel);
 
@@ -3465,6 +3465,12 @@ void Creature::AllLootRemovedFromCorpse()
     }
 }
 
+bool Creature::HasScalableLevels() const
+{
+    CreatureTemplate const* cinfo = GetCreatureTemplate();
+    return cinfo->ScaleLevelMin && cinfo->ScaleLevelMax;
+}
+
 std::string Creature::GetAIName() const
 {
     return sObjectMgr->GetCreatureTemplate(GetEntry())->AIName;
@@ -3681,6 +3687,35 @@ void Creature::CalculateMoney(uint32& mingold, uint32& maxgold)
         mingold /= GetMap()->GetMapMaxPlayers();
         maxgold /= GetMap()->GetMapMaxPlayers();
     }
+}
+
+uint8 Creature::GetLevelForTarget(WorldObject const* target) const
+{
+    if (!target)
+        return Unit::GetLevelForTarget(target);
+
+    if (Unit const *unitTarget = target->ToUnit())
+    {
+        if (isWorldBoss())
+        {
+            uint8 level = unitTarget->getLevel() + sWorld->getIntConfig(CONFIG_WORLD_BOSS_LEVEL_DIFF);
+            return RoundToInterval<uint8>(level, 1u, 255u);
+        }
+
+        // If this creature should scale level, adapt level depending of target level
+        // between UNIT_FIELD_SCALING_LEVEL_MIN and UNIT_FIELD_SCALING_LEVEL_MAX
+        if (HasScalableLevels())
+        {
+            uint8 targetLevelWithDelta = unitTarget->getLevel() + GetInt32Value(UNIT_FIELD_SCALING_LEVEL_DELTA);
+
+            if (target->IsPlayer())
+                targetLevelWithDelta += target->GetUInt32Value(PLAYER_FIELD_SCALING_PLAYER_LEVEL_DELTA);
+
+            return RoundToInterval<uint8>(targetLevelWithDelta, GetUInt32Value(UNIT_FIELD_SCALING_LEVEL_MIN), GetUInt32Value(UNIT_FIELD_SCALING_LEVEL_MAX));
+        }
+    }
+
+    return Unit::GetLevelForTarget(target);
 }
 
 void Creature::ClearLootList()

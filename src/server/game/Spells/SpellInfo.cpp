@@ -506,9 +506,9 @@ float SpellEffectInfo::CalcValue(Unit const* caster, float const* bp, Unit const
     {
         uint32 level = _spellInfo->SpellLevel;
         if (target && _spellInfo->IsPositiveEffect(EffectIndex) && Effect == SPELL_EFFECT_APPLY_AURA)
-            level = target->getLevelForTarget(caster);
+            level = target->GetLevelForTarget(caster);
         else if (caster)
-            level = caster->getLevelForTarget(target);
+            level = caster->GetLevelForTarget(target);
 
         if (!_spellInfo->HasAttribute(SPELL_ATTR11_SEND_ITEM_LEVEL) && _spellInfo->HasAttribute(SPELL_ATTR10_USE_SPELL_BASE_LEVEL_FOR_SCALING) && _spellInfo->BaseLevel)
             level = _spellInfo->BaseLevel;
@@ -568,7 +568,7 @@ float SpellEffectInfo::CalcValue(Unit const* caster, float const* bp, Unit const
     {
         if (caster)
         {
-            auto level = int32(caster->getLevelForTarget(target));
+            auto level = int32(caster->GetLevelForTarget(target));
             if (level > int32(_spellInfo->MaxLevel) && _spellInfo->MaxLevel > 0)
                 level = int32(_spellInfo->MaxLevel);
             else if (level < int32(_spellInfo->BaseLevel))
@@ -614,7 +614,7 @@ float SpellEffectInfo::CalcValue(Unit const* caster, float const* bp, Unit const
         // amount multiplication based on caster's level
         if (!basePointsPerLevel && _spellInfo->HasAttribute(SPELL_ATTR0_LEVEL_DAMAGE_CALCULATION))
         {
-            auto level = int32(caster->getLevelForTarget(target));
+            auto level = int32(caster->GetLevelForTarget(target));
             if (level > int32(_spellInfo->MaxLevel) && _spellInfo->MaxLevel > 0)
                 level = int32(_spellInfo->MaxLevel);
             else if (level < int32(_spellInfo->BaseLevel))
@@ -662,7 +662,7 @@ float SpellEffectInfo::CalcValue(Unit const* caster, float const* bp, Unit const
             }
 
             if (canEffectScale)
-                value = int32(value * 0.25f * exp(caster->getLevelForTarget(target) * (60 - _spellInfo->SpellLevel) / 1000.0f));
+                value = int32(value * 0.25f * exp(caster->GetLevelForTarget(target) * (60 - _spellInfo->SpellLevel) / 1000.0f));
         }
 
         switch (_spellInfo->Id)

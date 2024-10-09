@@ -1014,12 +1014,12 @@ float AuraEffect::CalculateAmount(Unit* caster)
             {
                 // Arcane Shroud
                 case 26400:
-                    level_diff = target->getLevelForTarget(caster) - 60;
+                    level_diff = target->GetLevelForTarget(caster) - 60;
                     multiplier = 2;
                     break;
                 // The Eye of Diminution
                 case 28862:
-                    level_diff = target->getLevelForTarget(caster) - 60;
+                    level_diff = target->GetLevelForTarget(caster) - 60;
                     multiplier = 1;
                     break;
             }

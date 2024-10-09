@@ -13,6 +13,16 @@ static const DoorData doordata[] =
     {0, 0, DOOR_TYPE_ROOM, BOUNDARY_NONE},
 };
 
+DungeonEncounterData const encounters[] =
+{
+    { DATA_GLUBTOK,   {{ 1064 }} },
+    { DATA_HELIX,     {{ 1065 }} },
+    { DATA_FOEREAPER, {{ 1063 }} },
+    { DATA_ADMIRAL,   {{ 1062 }} },
+    { DATA_CAPTAIN,   {{ 1060 }} },
+    { DATA_VANESSA,   {{ 1081 }} }
+};
+
 class instance_deadmines : public InstanceMapScript
 {
     public:
@@ -29,6 +39,7 @@ class instance_deadmines : public InstanceMapScript
             {
                 SetBossNumber(MAX_ENCOUNTER);
                 LoadDoorData(doordata);
+                LoadDungeonEncounterData(encounters);
                 
                 uiGlubtokGUID.Clear();
                 uiHelixGUID.Clear();

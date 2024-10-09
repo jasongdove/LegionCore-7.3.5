@@ -790,7 +790,7 @@ void Aura::CalculateDurationFromDummy(int32 &duration)
 
 Aura::Aura(SpellInfo const* spellproto, WorldObject* owner, Unit* caster, Item* castItem, ObjectGuid casterGUID, uint16 stackAmount, SpellPowerCost* powerCost) :
 m_damage_amount(0), TimeMod(1.0f), m_spellInfo(spellproto), m_casterGuid(!casterGUID.IsEmpty() ? casterGUID : caster->GetGUID()), m_castItemGuid(castItem ? castItem->GetGUID() : ObjectGuid::Empty),
-m_applyTime(time(nullptr)), m_applyMSTime(getMSTime()), m_owner(owner), m_SpellVisual(0), m_timeCla(0), m_updateTargetMapInterval(0), m_casterLevel(caster ? caster->getLevelForTarget(owner) : m_spellInfo->SpellLevel),
+m_applyTime(time(nullptr)), m_applyMSTime(getMSTime()), m_owner(owner), m_SpellVisual(0), m_timeCla(0), m_updateTargetMapInterval(0), m_casterLevel(caster ? caster->GetLevelForTarget(owner) : m_spellInfo->SpellLevel),
 m_procCharges(0), m_stackAmount(stackAmount ? stackAmount: 1), m_diffMode(caster ? caster->GetSpawnMode() : 0), m_customData(0), m_isRemoved(0), m_auraId(spellproto->Id), _triggeredCastFlags(0)
 {
     m_powerCost.assign(MAX_POWERS + 1, 0);
@@ -851,7 +851,7 @@ m_procCharges(0), m_stackAmount(stackAmount ? stackAmount: 1), m_diffMode(caster
     if (m_spellInfo->Scaling.ScalesFromItemLevel && castItem)
         m_casterLevel = castItem->GetItemLevel(_level);
 
-    if (m_spellInfo->Scaling.MaxScalingLevel && caster && caster->getLevelForTarget(m_owner) > m_spellInfo->Scaling.MaxScalingLevel)
+    if (m_spellInfo->Scaling.MaxScalingLevel && caster && caster->GetLevelForTarget(m_owner) > m_spellInfo->Scaling.MaxScalingLevel)
         m_casterLevel = m_spellInfo->Scaling.MaxScalingLevel;
 
     //For info fishing

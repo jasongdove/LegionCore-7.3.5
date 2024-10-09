@@ -34,8 +34,14 @@
 #include "ScriptMgr.h"
 #include "EasyJSon.hpp"
 
-BossInfo::BossInfo(): state(TO_BE_DECIDED)
+DungeonEncounterEntry const* BossInfo::GetDungeonEncounterForDifficulty(Difficulty difficulty) const
 {
+    auto itr = std::find_if(DungeonEncounters.begin(), DungeonEncounters.end(), [difficulty](DungeonEncounterEntry const* dungeonEncounter)
+    {
+        return dungeonEncounter && (dungeonEncounter->DifficultyID == 0 || Difficulty(dungeonEncounter->DifficultyID) == difficulty);
+    });
+
+    return itr != DungeonEncounters.end() ? *itr : nullptr;
 }
 
 DoorInfo::DoorInfo(BossInfo* _bossInfo, DoorType _type, BoundaryType _boundary): bossInfo(_bossInfo), type(_type), boundary(_boundary)
@@ -283,6 +289,7 @@ bool InstanceScript::SetBossState(uint32 id, EncounterState state)
         if (bossInfo->state == state)
             return false;
 
+        DungeonEncounterEntry const* dungeonEncounter = nullptr;
         switch (state)
         {
             case IN_PROGRESS:
@@ -318,6 +325,11 @@ bool InstanceScript::SetBossState(uint32 id, EncounterState state)
                         }
                     }
                 }
+
+                dungeonEncounter = bossInfo->GetDungeonEncounterForDifficulty(instance->GetDifficultyID());
+                if (dungeonEncounter)
+                    instance->SendToPlayers(WorldPackets::Instance::BossKillCredit(dungeonEncounter->ID).Write());
+
                 break;
             }
             default:
@@ -707,8 +719,8 @@ void InstanceScript::SendEncounterUnit(uint32 type, Unit* unit /*= nullptr*/, ui
                 end.Success = param1 ? param1 : !unit->IsAlive();
                 instance->SendToPlayers(end.Write());
 
-                if (param2)
-                    instance->SendToPlayers(WorldPackets::Instance::BossKillCredit(encounterId).Write());
+//                if (param2)
+//                    instance->SendToPlayers(WorldPackets::Instance::BossKillCredit(encounterId).Write());
 
                 LogCompletedEncounter(true);
             }
@@ -911,6 +923,13 @@ void InstanceScript::LoadObjectData(ObjectData const* creatureData, ObjectData c
 
     if (gameObjectData)
         LoadObjectData(gameObjectData, _gameObjectInfo);
+}
+
+void InstanceScript::LoadDungeonEncounterData(uint32 bossId, std::array<uint32, MAX_DUNGEON_ENCOUNTERS_PER_BOSS> const& dungeonEncounterIds)
+{
+    if (bossId < bosses.size())
+        for (std::size_t i = 0; i < MAX_DUNGEON_ENCOUNTERS_PER_BOSS; ++i)
+            bosses[bossId].DungeonEncounters[i] = sDungeonEncounterStore.LookupEntry(dungeonEncounterIds[i]);
 }
 
 void InstanceScript::AddDelayedEvent(uint64 timeOffset, std::function<void()>&& function)

@@ -1353,10 +1353,10 @@ bool GameObject::IsNeverVisible(WorldObject const* obj) const
     return WorldObject::IsNeverVisible();
 }
 
-uint8 GameObject::getLevelForTarget(WorldObject const* target) const
+uint8 GameObject::GetLevelForTarget(WorldObject const* target) const
 {
     if (Unit* owner = GetOwner())
-        return owner->getLevelForTarget(target);
+        return owner->GetLevelForTarget(target);
 
     return 1;
 }

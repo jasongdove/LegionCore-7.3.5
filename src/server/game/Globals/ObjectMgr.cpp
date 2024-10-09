@@ -822,7 +822,7 @@ void ObjectMgr::LoadCreatureTemplates()
         creatureTemplate.ScriptID           = GetScriptId(fields[index++].GetCString());
         creatureTemplate.ScaleLevelMin      = std::min(fields[index++].GetUInt8(), CREATURE_MAX_LEVEL);
         creatureTemplate.ScaleLevelMax      = std::min(fields[index++].GetUInt8(), CREATURE_MAX_LEVEL);
-        creatureTemplate.ScaleLevelDelta    = std::min(fields[index++].GetUInt16(), uint16(CREATURE_MAX_LEVEL));
+        creatureTemplate.ScaleLevelDelta    = std::min(fields[index++].GetInt16(), int16(CREATURE_MAX_LEVEL));
         creatureTemplate.ScaleLevelDuration = std::min(fields[index++].GetUInt16(), std::numeric_limits<uint16>::max());
         creatureTemplate.ControllerID       = fields[index++].GetInt32();
         Tokenizer WorldEffects(fields[index++].GetString(), ' ');

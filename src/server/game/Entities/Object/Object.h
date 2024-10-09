@@ -567,8 +567,6 @@ class WorldObject : public Object, public WorldLocation
         virtual void SendMessageToSetInRange(WorldPacket const* data, float dist, bool self, GuidUnorderedSet const& ignoredList = GuidUnorderedSet());
         virtual void SendMessageToSet(WorldPacket const* data, Player const* skipped_rcvr, GuidUnorderedSet const& ignoredList = GuidUnorderedSet());
 
-        virtual uint8 getLevelForTarget(WorldObject const* /*target*/) const { return 1; }
-
         void Talk(std::string const& text, ChatMsg msgType, Language language, float textRange, WorldObject const* target);
         void Talk(uint32 textId, ChatMsg msgType, float textRange, WorldObject const* target);
         void MonsterSay(const char* text, uint32 language, ObjectGuid TargetGuid);
@@ -580,6 +578,8 @@ class WorldObject : public Object, public WorldLocation
         void MonsterTextEmote(int32 textId, ObjectGuid TargetGuid, bool IsBossEmote = false);
         void MonsterWhisper(int32 textId, ObjectGuid receiver, bool IsBossWhisper = false);
         void MonsterYellToZone(int32 textId, uint32 language, ObjectGuid TargetGuid);
+
+        virtual uint8 GetLevelForTarget(WorldObject const* /*target*/) const { return 1; }
 
         void PlayDistanceSound(uint32 soundID, Player* target = nullptr);
         void PlayDirectSound(uint32 sound_id, Player* target = nullptr);

@@ -74,6 +74,14 @@ enum EncounterState
     TO_BE_DECIDED = 5,
 };
 
+static constexpr uint32 MAX_DUNGEON_ENCOUNTERS_PER_BOSS = 4;
+
+struct DungeonEncounterData
+{
+    uint32 BossId;
+    std::array<uint32, MAX_DUNGEON_ENCOUNTERS_PER_BOSS> DungeonEncounterId;
+};
+
 struct MinionData
 {
     uint32 entry, bossId;
@@ -81,11 +89,15 @@ struct MinionData
 
 struct BossInfo
 {
-    BossInfo();
+    BossInfo() : state(TO_BE_DECIDED) { DungeonEncounters.fill(nullptr); }
+
+    DungeonEncounterEntry const* GetDungeonEncounterForDifficulty(Difficulty difficulty) const;
+
     EncounterState state;
     DoorSet door[MAX_DOOR_TYPES];
     MinionSet minion;
     BossBoundaryMap boundary;
+    std::array<DungeonEncounterEntry const*, MAX_DUNGEON_ENCOUNTERS_PER_BOSS> DungeonEncounters;
 };
 
 struct DoorInfo
@@ -324,6 +336,13 @@ class InstanceScript : public ZoneScript
     protected:
         static void LoadObjectData(ObjectData const* creatureData, ObjectInfoMap& objectInfo);
         void LoadObjectData(ObjectData const* creatureData, ObjectData const* gameObjectData);
+        template<typename T>
+        void LoadDungeonEncounterData(T const& encounters)
+        {
+            for (DungeonEncounterData const& encounter : encounters)
+                LoadDungeonEncounterData(encounter.BossId, encounter.DungeonEncounterId);
+        }
+
         void AddObject(Creature* obj, bool add);
         void AddObject(GameObject* obj, bool add);
         void AddObject(WorldObject* obj, uint32 type, bool add);
@@ -340,6 +359,7 @@ class InstanceScript : public ZoneScript
         std::string GetBossSaveData();
 
     private:
+        void LoadDungeonEncounterData(uint32 bossId, std::array<uint32, MAX_DUNGEON_ENCOUNTERS_PER_BOSS> const& dungeonEncounterIds);
 
         Challenge* _challenge;
         std::vector<BossInfo> bosses;

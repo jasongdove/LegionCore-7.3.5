@@ -2317,7 +2317,7 @@ void Unit::CalculateMeleeDamage(Unit* victim, uint32 damage, CalcDamageInfo* dam
             damageInfo->HitInfo     |= HITINFO_GLANCING;
             damageInfo->TargetState  = VICTIMSTATE_HIT;
             damageInfo->procEx      |= PROC_EX_NORMAL_HIT;
-            int32 leveldif = int32(victim->getLevelForTarget(this)) - int32(getLevelForTarget(victim));
+            int32 leveldif = int32(victim->GetLevelForTarget(this)) - int32(GetLevelForTarget(victim));
             if (leveldif > 3)
                 leveldif = 3;
             float reducePercent = 1 - leveldif * 0.1f;
@@ -2434,8 +2434,8 @@ void Unit::DealMeleeDamage(CalcDamageInfo* damageInfo, bool durabilityLoss)
         float Probability = 20.0f;
 
         // there is a newbie protection, at level 10 just 7% base chance; assuming linear function
-        if (victim->getLevelForTarget(this) < 30)
-            Probability = 0.65f * victim->getLevelForTarget(this) + 0.5f;
+        if (victim->GetLevelForTarget(this) < 30)
+            Probability = 0.65f * victim->GetLevelForTarget(this) + 0.5f;
 
         if (Probability > 40.0f)
             Probability = 40.0f;
@@ -2599,7 +2599,7 @@ void Unit::CalcAbsorbResist(Unit* victim, SpellSchoolMask schoolMask, DamageEffe
 
         static uint32 const BOSS_LEVEL = 83;
         static float const BOSS_RESISTANCE_CONSTANT = 510.0f;
-        uint32 level = victim->getLevelForTarget(this);
+        uint32 level = victim->GetLevelForTarget(this);
         float resistanceConstant = 0.0f;
 
         if (level == BOSS_LEVEL)
@@ -3071,8 +3071,8 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst(Unit const* victim, WeaponAttackTy
     float roll_chance = (float)rand_chance();
     float base_chance = 0.0f;
 
-    int32 attackerLevel = getLevelForTarget(victim);
-    int32 victimLevel = getLevelForTarget(this);
+    int32 attackerLevel = GetLevelForTarget(victim);
+    int32 victimLevel = victim->GetLevelForTarget(this);
 
     // check if attack comes from behind, nobody can parry or block if attacker is behind
     bool canParryOrBlock = victim->HasInArc(float(M_PI), this) || victim->HasAuraType(SPELL_AURA_IGNORE_HIT_DIRECTION);
@@ -3269,7 +3269,7 @@ uint32 Unit::CalculateDamage(WeaponAttackType attType, bool normalized, bool add
         float weapon_mindamage = 0;
         float weapon_maxdamage = 0;
 
-        uint8 level = getLevelForTarget(victim);
+        uint8 level = GetLevelForTarget(victim);
         CreatureLevelStat const* scaleStat = creature->GetScaleLevelStat(level);
         if (!CanUseAttackType(attType))
         {
@@ -3736,8 +3736,8 @@ SpellMissInfo Unit::SpellHitResult(Unit* victim, SpellInfo const* spellInfo, boo
 
 float Unit::GetUnitMissChance(Unit const* attacker, uint32 spellId /*=0*/) const
 {
-    uint8 thisLevel = attacker->getLevelForTarget(this);
-    uint8 targetLevel = getLevelForTarget(attacker);
+    uint8 thisLevel = attacker->GetLevelForTarget(this);
+    uint8 targetLevel = GetLevelForTarget(attacker);
     int32 leveldif = 0;
     float miss_chance = 0.0f;
 
@@ -3764,7 +3764,7 @@ float Unit::GetUnitDodgeChance(WeaponAttackType attType, Unit const* victim) con
     if (!victim->HasAuraWithAttribute(10, SPELL_ATTR10_CAN_DODGE_ON_CAST) && (victim->IsNonMeleeSpellCast(false) || victim->HasUnitState(UNIT_STATE_CONTROLLED)))
         return 0.0f;
 
-    int32 const levelDiff = victim->getLevelForTarget(this) - getLevelForTarget(victim);
+    int32 const levelDiff = victim->GetLevelForTarget(this) - GetLevelForTarget(victim);
 
     float chance = 0.0f;
     float levelBonus = 0.0f;
@@ -3801,7 +3801,7 @@ float Unit::GetUnitParryChance(WeaponAttackType attType, Unit const* victim) con
     if (!victim->HasAuraWithAttribute(10, SPELL_ATTR10_CAN_PARRY_ON_CAST) && (victim->IsNonMeleeSpellCast(false) || victim->HasUnitState(UNIT_STATE_CONTROLLED)))
         return 0.0f;
 
-    int32 const levelDiff = victim->getLevelForTarget(this) - getLevelForTarget(victim);
+    int32 const levelDiff = victim->GetLevelForTarget(this) - GetLevelForTarget(victim);
 
     float chance = 0.0f;
     float levelBonus = 0.0f;
@@ -3845,7 +3845,7 @@ float Unit::GetUnitBlockChance(WeaponAttackType /*attType*/, Unit const* victim)
     if (!victim->HasAuraWithAttribute(10, SPELL_ATTR10_CAN_PARRY_ON_CAST) && (victim->IsNonMeleeSpellCast(false) || victim->HasUnitState(UNIT_STATE_CONTROLLED)))
         return 0.0f;
 
-    int32 const levelDiff = victim->getLevelForTarget(this) - getLevelForTarget(victim);
+    int32 const levelDiff = victim->GetLevelForTarget(this) - GetLevelForTarget(victim);
 
     float chance = 0.0f;
     float levelBonus = 0.0f;
@@ -19196,7 +19196,7 @@ Pet* Unit::CreateTamedPetFrom(Creature* creatureTarget, uint32 spellID)
         return nullptr;
     }
 
-    uint8 level = creatureTarget->getLevelForTarget(this) + 5 < getLevel() ? (getLevel() - 5) : creatureTarget->getLevelForTarget(this);
+    uint8 level = creatureTarget->GetLevelForTarget(this) + 5 < getLevel() ? (getLevel() - 5) : creatureTarget->GetLevelForTarget(this);
 
     if (!InitTamedPet(pet, level, spellID))
     {
@@ -27431,49 +27431,6 @@ uint8 Unit::GetEffectiveLevel() const
     return uint8(GetUInt32Value(UNIT_FIELD_EFFECTIVE_LEVEL) ? GetUInt32Value(UNIT_FIELD_EFFECTIVE_LEVEL) : GetUInt32Value(UNIT_FIELD_LEVEL));
 }
 
-uint8 Unit::getLevelForTarget(WorldObject const* target) const
-{
-    Unit const* unit = target ? target->ToUnit() : nullptr;
-    Creature const* creature = ToCreature();
-    if (!unit || !creature)
-        return GetEffectiveLevel();
-
-    int32 level = GetEffectiveLevel();
-    int32 levelTarget = unit->GetEffectiveLevel();
-    int32 levelMin = creature->ScaleLevelMin;
-    int32 levelMax = creature->ScaleLevelMax;
-
-    // if (creature->isWorldBoss())
-        // level = unit->GetEffectiveLevel() + sWorld->getIntConfig(CONFIG_WORLD_BOSS_LEVEL_DIFF);
-    // else 
-    if (levelMin && levelMax)
-    {
-        if (levelMin <= levelTarget && levelTarget <= levelMax)
-        {
-            level = levelTarget;
-            if (creature->isWorldBoss())
-                level += 1;
-        }
-        else if(levelMin >= levelTarget)
-        {
-            level = levelMin;
-            if (creature->isWorldBoss())
-                level += 1;
-        }
-        else if(levelMax <= levelTarget)
-            level = levelMax;
-    }
-
-    if (CreatureTemplate const* cInfo = creature->GetCreatureTemplate())
-        level += cInfo->ScaleLevelDelta;
-
-    if (level < 1)
-        return 1;
-    if (level > 123)
-        return 123;
-    return uint8(level);
-}
-
 uint8 Unit::getLevelForXPReward(Player const* player) const
 {
     Creature const* creature = ToCreature();
@@ -27533,7 +27490,7 @@ uint64 Unit::GetHealth(Unit* victim) const
     if (!creature->ScaleLevelMin || !creature->ScaleLevelMax)
         return GetHealth();
 
-    uint8 level = getLevelForTarget(victim);
+    uint8 level = GetLevelForTarget(victim);
     CreatureLevelStat const* scaleStat = const_cast<Creature*>(creature)->GetScaleLevelStat(level);
     if (!scaleStat)
         return GetHealth();
@@ -27554,7 +27511,7 @@ uint64 Unit::GetMaxHealth(Unit* victim) const
     if (!creature->ScaleLevelMin || !creature->ScaleLevelMax)
         return GetMaxHealth();
 
-    uint8 level = getLevelForTarget(victim);
+    uint8 level = GetLevelForTarget(victim);
     CreatureLevelStat const* scaleStat = const_cast<Creature*>(creature)->GetScaleLevelStat(level);
     if (!scaleStat)
         return GetMaxHealth();
@@ -27571,7 +27528,7 @@ uint32 Unit::GetArmor(Unit* victim) const
     if (!creature->ScaleLevelMin || !creature->ScaleLevelMax)
         return GetArmor();
 
-    uint8 level = getLevelForTarget(victim);
+    uint8 level = GetLevelForTarget(victim);
     CreatureLevelStat const* scaleStat = const_cast<Creature*>(creature)->GetScaleLevelStat(level);
     if (!scaleStat)
         return GetArmor();
@@ -27594,7 +27551,7 @@ void Unit::SetHealthScal(uint64 val, Unit* victim, uint32 spellId)
         return;
     }
 
-    CreatureLevelStat const* scaleStat = const_cast<Creature*>(creature)->GetScaleLevelStat(getLevelForTarget(victim));
+    CreatureLevelStat const* scaleStat = const_cast<Creature*>(creature)->GetScaleLevelStat(GetLevelForTarget(victim));
     if (!scaleStat)
     {
         SetHealth(val, spellId);
@@ -27641,12 +27598,12 @@ uint32 Unit::GetDamageFromLevelScale(Unit* target, uint32 damage)
         if (tapgetPlayer)
         {
             plrlvl = target->GetEffectiveLevel();
-            targlvl = getLevelForTarget(target);
+            targlvl = GetLevelForTarget(target);
         }
         else if (casterPlayer)
         {
             plrlvl = GetEffectiveLevel();
-            targlvl = target->getLevelForTarget(this);
+            targlvl = target->GetLevelForTarget(this);
         }
         int32 lvlCalc = plrlvl - targlvl;
 

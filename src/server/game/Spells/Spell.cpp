@@ -2355,7 +2355,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
             if (m_auraScaleMask && ihit->effectMask == m_auraScaleMask && m_caster != target)
             {
                 SpellInfo const* auraSpell = sSpellMgr->GetSpellInfo(sSpellMgr->GetFirstSpellInChain(m_spellInfo->Id));
-                if (uint32(target->getLevelForTarget(m_caster) + 10) >= auraSpell->SpellLevel)
+                if (uint32(target->GetLevelForTarget(m_caster) + 10) >= auraSpell->SpellLevel)
                     ihit->scaleAura = true;
             }
             return;
@@ -2376,7 +2376,7 @@ void Spell::AddUnitTarget(Unit* target, uint32 effectMask, bool checkIfValid /*=
     if (m_auraScaleMask && targetInfo->effectMask == m_auraScaleMask && m_caster != target)
     {
         SpellInfo const* auraSpell = sSpellMgr->GetSpellInfo(sSpellMgr->GetFirstSpellInChain(m_spellInfo->Id));
-        if (uint32(target->getLevelForTarget(m_caster) + 10) >= auraSpell->SpellLevel)
+        if (uint32(target->GetLevelForTarget(m_caster) + 10) >= auraSpell->SpellLevel)
             targetInfo->scaleAura = true;
     }
 
@@ -3245,7 +3245,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
         float basePoints[MAX_SPELL_EFFECTS];
         if (scaleAura)
         {
-            aurSpellInfo = m_spellInfo->GetAuraRankForLevel(unitTarget->getLevelForTarget(m_caster));
+            aurSpellInfo = m_spellInfo->GetAuraRankForLevel(unitTarget->GetLevelForTarget(m_caster));
             ASSERT(aurSpellInfo);
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
@@ -7954,7 +7954,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                         return SPELL_FAILED_CHARMED;
 
                     int32 damage = CalculateDamage(i, target);
-                    if (damage && int32(target->getLevelForTarget(m_caster)) > damage)
+                    if (damage && int32(target->GetLevelForTarget(m_caster)) > damage)
                         return SPELL_FAILED_HIGHLEVEL;
                 }
 
@@ -9198,7 +9198,7 @@ bool Spell::CheckEffectTarget(Unit const* target, uint32 eff) const
             if (target->GetCharmerGUID())
                 return false;
             if (int32 damage = CalculateDamage(eff, target))
-                if ((int32)target->getLevelForTarget(m_caster) > damage)
+                if ((int32)target->GetLevelForTarget(m_caster) > damage)
                     return false;
             break;
         default:
@@ -10749,7 +10749,7 @@ bool WorldObjectSpellTargetCheck::operator()(WorldObject* target)
 
     if (unitTarget)
     {
-        if (_spellInfo->TargetRestrictions.MaxTargetLevel && _spellInfo->TargetRestrictions.MaxTargetLevel < unitTarget->getLevelForTarget(_caster))
+        if (_spellInfo->TargetRestrictions.MaxTargetLevel && _spellInfo->TargetRestrictions.MaxTargetLevel < unitTarget->GetLevelForTarget(_caster))
             return false;
 
         if (_caster->IsRWVisibility() && _caster->GetDistance(*unitTarget) > _caster->GetRWVisibility())

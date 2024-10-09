@@ -167,7 +167,7 @@ struct CreatureTemplate
     uint8 minlevel = 1;
     uint8 ScaleLevelMin = 0;
     uint8 ScaleLevelMax = 0;
-    uint16 ScaleLevelDelta = 0;
+    int16 ScaleLevelDelta = 0;
     int8 ControllerID = 0;
     float dmg_multiplier = 1.0f;
     float HoverHeight = 1.0f;
@@ -587,6 +587,9 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         bool IsEventCreature() const;
         bool IsPersonalForQuest(Player const* player) const;
         void CalculateMoney(uint32& mingold, uint32& maxgold);
+
+        bool HasScalableLevels() const;
+        uint8 GetLevelForTarget(WorldObject const* target) const override;
 
         bool IsInEvadeMode() const { return HasUnitState(UNIT_STATE_EVADE); }
 

@@ -67,7 +67,7 @@ AchievementCache::AchievementCache(Player* _player, Unit* _target, CriteriaTypes
     RaceID = player->getRace();
     Gender = player->getGender();
     HealthPct = player->GetHealthPct();
-    Level = player->getLevelForTarget(_target);
+    Level = player->GetLevelForTarget(_target);
     MapID = player->GetMapId();
     ZoneID = player->GetCurrentZoneID();
     AreaID = player->GetCurrentAreaID();
@@ -140,7 +140,7 @@ AchievementCache::AchievementCache(Player* _player, Unit* _target, CriteriaTypes
         target.Entry = _target->GetEntry();
         target.ClassID = _target->getClass();
         target.RaceID = _target->getRace();
-        target.Level = _target->getLevelForTarget(player);
+        target.Level = _target->GetLevelForTarget(player);
         target.Gender = _target->getGender();
         target.HealthPct = _target->GetHealthPct();
         target.isAlive = _target->IsAlive();

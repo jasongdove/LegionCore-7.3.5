@@ -226,7 +226,7 @@ class GameObject : public WorldObject, public GridObject<GameObject>, public Map
         bool IsInvisibleDueToDespawn() const override;
         bool IsNeverVisible(WorldObject const* obj) const override;
 
-        uint8 getLevelForTarget(WorldObject const* target) const override;
+        uint8 GetLevelForTarget(WorldObject const* target) const override;
 
         GameObject* LookupFishingHoleAround(float range);
 
