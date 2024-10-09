@@ -22,6 +22,7 @@
 #include "ScriptMgr.h"
 #include "Unit.h"
 #include "ObjectAccessor.h"
+#include "LFGMgr.h"
 #include "Player.h"
 #include "Pet.h"
 #include "Map.h"
@@ -86,122 +87,12 @@ class SolocraftConfig
             SolocraftLevelDiff = sConfigMgr->GetIntDefault("Solocraft.Max.Level.Diff", 10);
             SolocraftDungeonLevel = sConfigMgr->GetIntDefault("Solocraft.Dungeon.Level", 90);
 
-            dungeons =
-            {
-                /// VANILLA
-                {34, sConfigMgr->GetIntDefault("Solocraft.Stockades.Level", 22) },
-                {43, sConfigMgr->GetIntDefault("Solocraft.WailingCaverns.Level", 17) },
-                {47, sConfigMgr->GetIntDefault("Solocraft.RazorfenKraul.Level", 30) },
-                {48, sConfigMgr->GetIntDefault("Solocraft.BlackfathomDeeps.Level", 20) },
-                {70, sConfigMgr->GetIntDefault("Solocraft.Uldaman.Level", 40) },
-                {90, sConfigMgr->GetIntDefault("Solocraft.Gnomeregan.Level", 24) },
-                {109, sConfigMgr->GetIntDefault("Solocraft.SunkenTemple.Level", 50) },
-                {129, sConfigMgr->GetIntDefault("Solocraft.RazorfenDowns.Level", 40) },
-                {209, sConfigMgr->GetIntDefault("Solocraft.ZulFarrak.Level", 44) },
-                {229, sConfigMgr->GetIntDefault("Solocraft.BlackRockSpire.Level", 55) },
-                {230, sConfigMgr->GetIntDefault("Solocraft.BlackrockDepths.Level", 50) },
-                {249, sConfigMgr->GetIntDefault("Solocraft.OnyxiaLair.Level", 60) },
-                {329, sConfigMgr->GetIntDefault("Solocraft.Stratholme.Level", 55) },
-                {349, sConfigMgr->GetIntDefault("Solocraft.Mauradon.Level", 48) },
-                {389, sConfigMgr->GetIntDefault("Solocraft.RagefireChasm.Level", 15) },
-                {409, sConfigMgr->GetIntDefault("Solocraft.MoltenCore.Level", 60) },
-                {429, sConfigMgr->GetIntDefault("Solocraft.DireMaul.Level", 48) },
-                {469, sConfigMgr->GetIntDefault("Solocraft.BlackwingLair.Level", 40) },
-                {509, sConfigMgr->GetIntDefault("Solocraft.RuinsOfAhnQiraj.Level", 60) },
-                {531, sConfigMgr->GetIntDefault("Solocraft.TempleOfAhnQiraj.Level", 60) },
-                /// BURNING CRUSADE
-                {269, sConfigMgr->GetIntDefault("Solocraft.TheBlackMorass.Level", 68) },
-                {532, sConfigMgr->GetIntDefault("Solocraft.Karazahn.Level", 68) },
-                {534, sConfigMgr->GetIntDefault("Solocraft.TheBattleForMountHyjal.Level", 70) },
-                {540, sConfigMgr->GetIntDefault("Solocraft.TheShatteredHalls.Level", 68) },
-                {542, sConfigMgr->GetIntDefault("Solocraft.TheBloodFurnace.Level", 68) },
-                {543, sConfigMgr->GetIntDefault("Solocraft.HellfireRampart.Level", 68) },
-                {544, sConfigMgr->GetIntDefault("Solocraft.MagtheridonsLair.Level", 68) },
-                {545, sConfigMgr->GetIntDefault("Solocraft.TheSteamVault.Level", 68) },
-                {546, sConfigMgr->GetIntDefault("Solocraft.TheUnderbog.Level", 68) },
-                {547, sConfigMgr->GetIntDefault("Solocraft.TheSlavePens.Level", 68) },
-                {548, sConfigMgr->GetIntDefault("Solocraft.SerpentshrineCavern.Level", 70) },
-                {550, sConfigMgr->GetIntDefault("Solocraft.TheEye.Level", 70) },
-                {552, sConfigMgr->GetIntDefault("Solocraft.TheArcatraz.Level", 68) },
-                {553, sConfigMgr->GetIntDefault("Solocraft.TheBotanica.Level", 68) },
-                {554, sConfigMgr->GetIntDefault("Solocraft.TheMechanar.Level", 68) },
-                {555, sConfigMgr->GetIntDefault("Solocraft.ShadowLabyrinth.Level", 68) },
-                {556, sConfigMgr->GetIntDefault("Solocraft.SethekkHalls.Level", 68) },
-                {557, sConfigMgr->GetIntDefault("Solocraft.ManaTombs.Level", 68) },
-                {558, sConfigMgr->GetIntDefault("Solocraft.AuchenaiCrypts.Level", 68) },
-                {560, sConfigMgr->GetIntDefault("Solocraft.OldHillsbradFoothills.Level", 68) },
-                {564, sConfigMgr->GetIntDefault("Solocraft.BlackTemple.Level", 70) },
-                {565, sConfigMgr->GetIntDefault("Solocraft.GruulsLair.Level", 70) },
-                {580, sConfigMgr->GetIntDefault("Solocraft.SunwellPlateau.Level", 70) },
-                {585, sConfigMgr->GetIntDefault("Solocraft.MagistersTerrace.Level", 68) },
-                /// WRATH OF THE LICH KING
-                {533, sConfigMgr->GetIntDefault("Solocraft.Naxxramas.Level", 78) },
-                {574, sConfigMgr->GetIntDefault("Solocraft.UtgardeKeep.Level", 78) },
-                {575, sConfigMgr->GetIntDefault("Solocraft.UtgardePinnacle.Level", 78) },
-                {578, sConfigMgr->GetIntDefault("Solocraft.Oculus.Level", 78) },
-                {595, sConfigMgr->GetIntDefault("Solocraft.TheCullingOfStratholme.Level", 78) },
-                {599, sConfigMgr->GetIntDefault("Solocraft.HallsOfStone.Level", 78) },
-                {600, sConfigMgr->GetIntDefault("Solocraft.DrakTharonKeep.Level", 78) },
-                {601, sConfigMgr->GetIntDefault("Solocraft.AzjolNerub.Level", 78) },
-                {602, sConfigMgr->GetIntDefault("Solocraft.HallsOfLighting.Level", 78) },
-                {603, sConfigMgr->GetIntDefault("Solocraft.Ulduar.Level", 80) },
-                {604, sConfigMgr->GetIntDefault("Solocraft.GunDrak.Level", 78) },
-                {608, sConfigMgr->GetIntDefault("Solocraft.VioletHold.Level", 78) },
-                {615, sConfigMgr->GetIntDefault("Solocraft.TheObsidianSanctum.Level", 80) },
-                {616, sConfigMgr->GetIntDefault("Solocraft.TheEyeOfEternity.Level", 80) },
-                {619, sConfigMgr->GetIntDefault("Solocraft.AhnkahetTheOldKingdom.Level", 78) },
-                {631, sConfigMgr->GetIntDefault("Solocraft.IcecrownCitadel.Level", 80) },
-                {632, sConfigMgr->GetIntDefault("Solocraft.TheForgeOfSouls.Level", 78) },
-                {649, sConfigMgr->GetIntDefault("Solocraft.TrialOfTheCrusader.Level", 80) },
-                {650, sConfigMgr->GetIntDefault("Solocraft.TrialOfTheChampion.Level", 80) },
-                {658, sConfigMgr->GetIntDefault("Solocraft.PitOfSaron.Level", 78) },
-                {668, sConfigMgr->GetIntDefault("Solocraft.HallsOfReflection.Level", 78) },
-                {724, sConfigMgr->GetIntDefault("Solocraft.TheRubySanctum.Level", 80) },
-                /// CATACLYSM
-                {33, sConfigMgr->GetIntDefault("Solocraft.ShadowfangKeep.Level", 85) },
-                {36, sConfigMgr->GetIntDefault("Solocraft.DeadMines.Level", 85) },
-                {645, sConfigMgr->GetIntDefault("Solocraft.BlackrockCaverns.Level", 85) },
-                {643, sConfigMgr->GetIntDefault("Solocraft.ThroneOfTheTides.Level", 85) },
-                {657, sConfigMgr->GetIntDefault("Solocraft.TheVortexPinnacle.Level", 85) },
-                {725, sConfigMgr->GetIntDefault("Solocraft.TheStonecore.Level", 85) },
-                {755, sConfigMgr->GetIntDefault("Solocraft.LostCityOfTheTol'vir.Level", 85) },
-                {644, sConfigMgr->GetIntDefault("Solocraft.HallsOfOrigination.Level", 85) },
-                {670, sConfigMgr->GetIntDefault("Solocraft.GrimBatol.Level", 85) },
-                {669, sConfigMgr->GetIntDefault("Solocraft.BlackwingDescent.Level", 85) },
-                {671, sConfigMgr->GetIntDefault("Solocraft.TheBastionOfTwilight.Level", 85) },
-                {754, sConfigMgr->GetIntDefault("Solocraft.ThroneOfTheFourWinds.Level", 85) },
-                {757, sConfigMgr->GetIntDefault("Solocraft.BaradinHold.Level", 85) },
-                {720, sConfigMgr->GetIntDefault("Solocraft.Firelands.Level", 85) },
-                {967, sConfigMgr->GetIntDefault("Solocraft.DragonSoul.Level", 85) },
-                {938, sConfigMgr->GetIntDefault("Solocraft.EndTime.Level", 85) },
-                {939, sConfigMgr->GetIntDefault("Solocraft.WellOfEternity.Level", 85) },
-                {940, sConfigMgr->GetIntDefault("Solocraft.HourOfTwilight.Level", 85) },
-                {859, sConfigMgr->GetIntDefault("Solocraft.Zul'gurub.Level", 85) },
-                {568, sConfigMgr->GetIntDefault("Solocraft.ZulAman.Level", 85) },
-                {576, sConfigMgr->GetIntDefault("Solocraft.Nexus.Level", 85) },
-                /// MISTS OF PANDARIA
-                {959, sConfigMgr->GetIntDefault("Solocraft.ShadoPanMonastery.Level", 90) },
-                {1007, sConfigMgr->GetIntDefault("Solocraft.Scholomance.Level", 90) },
-                {1004, sConfigMgr->GetIntDefault("Solocraft.ScarletMonastery.Level", 90) },
-                {994, sConfigMgr->GetIntDefault("Solocraft.Mogu'shanPalace.Level", 90) },
-                {1008, sConfigMgr->GetIntDefault("Solocraft.Mogu'shanVaults.Level", 90) },
-                {1136, sConfigMgr->GetIntDefault("Solocraft.SiegeOfOrgrimmar.Level", 90) },
-                {1098, sConfigMgr->GetIntDefault("Solocraft.ThroneOfThunder.Level", 90) },
-                {1009, sConfigMgr->GetIntDefault("Solocraft.HeartOfFear.Level", 90) },
-                {996, sConfigMgr->GetIntDefault("Solocraft.TerraceOfEndlessSpring.Level", 90) },
-                {1001, sConfigMgr->GetIntDefault("Solocraft.ScarletHalls.Level", 90) },
-                {962, sConfigMgr->GetIntDefault("Solocraft.GateOfTheSettingSun.Level", 90) },
-                {1011, sConfigMgr->GetIntDefault("Solocraft.SiegeOfNiuzaoTemple.Level", 90) },
-                {960, sConfigMgr->GetIntDefault("Solocraft.TempleOfTheJadeSerpent.Level", 90) },
-                {961, sConfigMgr->GetIntDefault("Solocraft.StormstoutBrewery.Level", 90) },
-            };
-
             // Dungeon difficulty
             D5 = sConfigMgr->GetFloatDefault("Solocraft.Dungeon", 5.0);
             D10 = sConfigMgr->GetFloatDefault("Solocraft.Heroic", 10.0);
             D25 = sConfigMgr->GetFloatDefault("Solocraft.Raid25", 25.0);
             D40 = sConfigMgr->GetFloatDefault("Solocraft.Raid40", 40.0);
-            // Множитель (обычный)
+
             diff_Multiplier =
             {
                 /// VANILLA
@@ -411,7 +302,6 @@ class SolocraftConfig
         uint32 SolocraftLevelDiff = 1;
         uint32 SolocraftDungeonLevel = 1;
 
-        std::unordered_map<uint32, uint32> dungeons;
         std::unordered_map<uint32, float> diff_Multiplier;
         std::unordered_map<uint32, float> diff_Multiplier_Heroics;
         std::unordered_map<uint8, uint32> classes;
@@ -558,14 +448,22 @@ protected:
         return 0;
     }
 
-    int CalculateDungeonLevel(Map* map, Player* /*player*/)
+    int CalculateDungeonLevel(Map* map, Player* player)
     {
-        if (solocraftConfig.dungeons.find(map->GetId()) == solocraftConfig.dungeons.end())
+        if (auto lfgDungeonData = sLFGMgr->GetLFGDungeon(map->GetId(), map->GetDifficultyID(), player->GetTeam()))
         {
-            return solocraftConfig.SolocraftDungeonLevel;
+            auto playerLevel = player->getLevel();
+
+            if (playerLevel < lfgDungeonData->minlevel)
+                return lfgDungeonData->minlevel;
+
+            if (playerLevel > lfgDungeonData->maxlevel)
+                return lfgDungeonData->maxlevel;
+
+            return playerLevel;
         }
-        else
-            return solocraftConfig.dungeons[map->GetId()];
+
+        return solocraftConfig.SolocraftDungeonLevel;
     }
 
     int GetNumInGroup(Player* player)
