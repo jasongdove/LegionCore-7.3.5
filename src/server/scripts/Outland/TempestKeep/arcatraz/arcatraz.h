@@ -3,6 +3,7 @@
 
 #include "CreatureAIImpl.h"
 
+#define DataHeader "ARC"
 #define ArcatrazScriptName "instance_arcatraz"
 
 uint32 const EncounterCount = 4;

@@ -47,7 +47,7 @@ public:
 
     struct instance_army_training_InstanceMapScript : public InstanceScript
     {
-        instance_army_training_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_army_training_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         std::map<uint32, ObjectGuid> chestsGuids{};
         std::vector<ObjectGuid> spectralChests{};

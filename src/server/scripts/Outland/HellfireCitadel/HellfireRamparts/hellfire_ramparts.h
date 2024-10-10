@@ -19,6 +19,8 @@
 #ifndef DEF_RAMPARTS_H
 #define DEF_RAMPARTS_H
 
+#define DataHeader "HFR"
+
 uint32 const EncounterCount       = 4;
 
 enum HRDataTypes

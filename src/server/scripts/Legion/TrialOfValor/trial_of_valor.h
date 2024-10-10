@@ -1,6 +1,8 @@
 #ifndef TrialOfValorH_
 #define TrialOfValorH_
 
+#define DataHeader "TOV"
+
 namespace Data
 {
     enum BossIDs

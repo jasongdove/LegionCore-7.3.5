@@ -1,6 +1,7 @@
 #ifndef DEF_HALLS_OF_ORIGINATION_H
 #define DEF_HALLS_OF_ORIGINATION_H
 
+#define DataHeader "HOO"
 #define HOScriptName "instance_halls_of_origination"
 
 enum Data

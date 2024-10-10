@@ -64,7 +64,7 @@ enum MiscChallengeData : uint32
 class Challenge : public InstanceScript
 {
 public:
-    Challenge(Map* map, Player* player, uint32 instanceID, Scenario* scenario);
+    Challenge(InstanceMap* map, Player* player, uint32 instanceID, Scenario* scenario);
     ~Challenge();
 
     void OnPlayerEnterForScript(Player* player) override;

@@ -5,6 +5,8 @@
 #ifndef UPPER_BLACKROCK_SPIRE_H_
 #define UPPER_BLACKROCK_SPIRE_H_
 
+#define DataHeader "UBRS"
+
 enum eData
 {
     DATA_GORASHAN   = 0,

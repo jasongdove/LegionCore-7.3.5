@@ -24,6 +24,8 @@
 #ifndef HIGHMAUL_HPP
 #define HIGHMAUL_HPP
 
+#define DataHeader "HM"
+
 Position const g_PlayScenePos = { 3448.069f, 7573.542f, 55.30419f, 0.3921495f };
 
 static void CastSpellToPlayers(Map* map, Unit* caster, uint32 spellID, bool triggered)

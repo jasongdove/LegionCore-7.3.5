@@ -40,7 +40,7 @@ class instance_shattered_halls : public InstanceMapScript
         }
         struct instance_shattered_halls_InstanceMapScript : public InstanceScript
         {
-            instance_shattered_halls_InstanceMapScript(Map* map) : InstanceScript(map) {}
+            instance_shattered_halls_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
             uint32 m_auiEncounter[MAX_ENCOUNTER];
             ObjectGuid nethekurseGUID;
@@ -48,6 +48,7 @@ class instance_shattered_halls : public InstanceMapScript
 
             void Initialize()
             {
+                SetHeaders(DataHeader);
                 memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
                 nethekurseGUID.Clear();

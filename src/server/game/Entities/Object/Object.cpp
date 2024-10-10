@@ -1891,7 +1891,7 @@ void WorldObject::GetZoneAndAreaId(uint32& zoneid, uint32& areaid) const
     map->GetZoneAndAreaId(zoneid, areaid, m_positionX, m_positionY, m_positionZ);
 }
 
-InstanceScript* WorldObject::GetInstanceScript()
+InstanceScript* WorldObject::GetInstanceScript() const
 {
     Map* map = GetMap();
     if (!map)

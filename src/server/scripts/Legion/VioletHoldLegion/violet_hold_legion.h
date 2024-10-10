@@ -5,6 +5,8 @@
 #ifndef VIOLET_HOLD_LEGION_H_
 #define VIOLET_HOLD_LEGION_H_
 
+#define DataHeader "VHL"
+
 enum eData
 {
     DATA_KAAHRJ             = 0,

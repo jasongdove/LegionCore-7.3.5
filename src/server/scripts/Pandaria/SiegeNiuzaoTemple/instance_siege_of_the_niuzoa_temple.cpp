@@ -20,10 +20,11 @@ public:
         ObjectGuid pavalakGuid;
         ObjectGuid neronokGuid;
 
-        instance_siege_of_the_niuzoa_temple_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_siege_of_the_niuzoa_temple_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         void Initialize() override
         {
+            SetHeaders(DataHeader);
             jinbakGuid.Clear();
             vojakGuid.Clear();
             pavalakGuid.Clear();

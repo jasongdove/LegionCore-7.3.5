@@ -18,6 +18,7 @@
 #ifndef BLOOD_FURNACE_H_
 #define BLOOD_FURNACE_H_
 
+#define DataHeader "BF"
 #define BFScriptName "instance_blood_furnace"
 uint32 const EncounterCount = 3;
 

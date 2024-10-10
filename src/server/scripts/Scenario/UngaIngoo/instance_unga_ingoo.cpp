@@ -32,7 +32,7 @@ public:
 
     struct instance_unga_ingoo_InstanceMapScript : public InstanceScript
     {
-        instance_unga_ingoo_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_unga_ingoo_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

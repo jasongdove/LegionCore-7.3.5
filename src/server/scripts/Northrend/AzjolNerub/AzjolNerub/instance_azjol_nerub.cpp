@@ -30,11 +30,13 @@
 class instance_azjol_nerub : public InstanceMapScript
 {
 public:
-    instance_azjol_nerub() : InstanceMapScript("instance_azjol_nerub", 601) { }
+    instance_azjol_nerub() : InstanceMapScript("instance_azjol_nerub", 601)
+    {}
 
     struct instance_azjol_nerub_InstanceScript : public InstanceScript
     {
-        instance_azjol_nerub_InstanceScript(Map* map) : InstanceScript(map) {}
+        instance_azjol_nerub_InstanceScript(InstanceMap *map) : InstanceScript(map)
+        {}
 
         ObjectGuid uiKrikthir;
         ObjectGuid uiHadronox;
@@ -48,8 +50,9 @@ public:
 
         uint32 auiEncounter[MAX_ENCOUNTER];
 
-       void Initialize() override
-       {
+        void Initialize() override
+        {
+            SetHeaders(DataHeader);
             memset(&auiEncounter, 0, sizeof(auiEncounter));
             memset(&uiAnubarakDoor, 0, sizeof(uiAnubarakDoor));
 
@@ -71,20 +74,32 @@ public:
             return false;
         }
 
-        void OnCreatureCreate(Creature* creature) override
+        void OnCreatureCreate(Creature *creature) override
         {
             switch (creature->GetEntry())
             {
-                case 28684:    uiKrikthir = creature->GetGUID();        break;
-                case 28921:    uiHadronox = creature->GetGUID();        break;
-                case 29120:    uiAnubarak = creature->GetGUID();        break;
-                case 28730:    uiWatcherGashra = creature->GetGUID();   break;
-                case 28731:    uiWatcherSilthik = creature->GetGUID();  break;
-                case 28729:    uiWatcherNarjil = creature->GetGUID();   break;
+                case 28684:
+                    uiKrikthir = creature->GetGUID();
+                    break;
+                case 28921:
+                    uiHadronox = creature->GetGUID();
+                    break;
+                case 29120:
+                    uiAnubarak = creature->GetGUID();
+                    break;
+                case 28730:
+                    uiWatcherGashra = creature->GetGUID();
+                    break;
+                case 28731:
+                    uiWatcherSilthik = creature->GetGUID();
+                    break;
+                case 28729:
+                    uiWatcherNarjil = creature->GetGUID();
+                    break;
             }
         }
 
-        void OnGameObjectCreate(GameObject* go) override
+        void OnGameObjectCreate(GameObject *go) override
         {
             switch (go->GetEntry())
             {
@@ -109,12 +124,18 @@ public:
         {
             switch (identifier)
             {
-                case DATA_KRIKTHIR_THE_GATEWATCHER:     return uiKrikthir;
-                case DATA_HADRONOX:                     return uiHadronox;
-                case DATA_ANUBARAK:                     return uiAnubarak;
-                case DATA_WATCHER_GASHRA:               return uiWatcherGashra;
-                case DATA_WATCHER_SILTHIK:              return uiWatcherSilthik;
-                case DATA_WATCHER_NARJIL:               return uiWatcherNarjil;
+                case DATA_KRIKTHIR_THE_GATEWATCHER:
+                    return uiKrikthir;
+                case DATA_HADRONOX:
+                    return uiHadronox;
+                case DATA_ANUBARAK:
+                    return uiAnubarak;
+                case DATA_WATCHER_GASHRA:
+                    return uiWatcherGashra;
+                case DATA_WATCHER_SILTHIK:
+                    return uiWatcherSilthik;
+                case DATA_WATCHER_NARJIL:
+                    return uiWatcherNarjil;
             }
 
             return ObjectGuid::Empty;
@@ -124,23 +145,23 @@ public:
         {
             switch (type)
             {
-            case DATA_KRIKTHIR_THE_GATEWATCHER_EVENT:
-                auiEncounter[0] = data;
-                if (data == DONE)
-                    HandleGameObject(uiKrikthirDoor, true);
-                break;
-            case DATA_HADRONOX_EVENT:
-                auiEncounter[1] = data;
-                break;
-            case DATA_ANUBARAK_EVENT:
-                auiEncounter[2] = data;
-                if (data == IN_PROGRESS)
-                    for (uint8 i = 0; i < 3; ++i)
-                        HandleGameObject(uiAnubarakDoor[i], false);
-                else if (data == NOT_STARTED || data == DONE)
-                    for (uint8 i = 0; i < 3; ++i)
-                        HandleGameObject(uiAnubarakDoor[i], true);
-                break;
+                case DATA_KRIKTHIR_THE_GATEWATCHER_EVENT:
+                    auiEncounter[0] = data;
+                    if (data == DONE)
+                        HandleGameObject(uiKrikthirDoor, true);
+                    break;
+                case DATA_HADRONOX_EVENT:
+                    auiEncounter[1] = data;
+                    break;
+                case DATA_ANUBARAK_EVENT:
+                    auiEncounter[2]  = data;
+                    if (data == IN_PROGRESS)
+                        for (uint8 i = 0; i < 3; ++i)
+                            HandleGameObject(uiAnubarakDoor[i], false);
+                    else if (data == NOT_STARTED || data == DONE)
+                        for (uint8 i = 0; i < 3; ++i)
+                            HandleGameObject(uiAnubarakDoor[i], true);
+                    break;
             }
 
             if (data == DONE)
@@ -153,27 +174,30 @@ public:
         {
             switch (type)
             {
-                case DATA_KRIKTHIR_THE_GATEWATCHER_EVENT:   return auiEncounter[0];
-                case DATA_HADRONOX_EVENT:                   return auiEncounter[1];
-                case DATA_ANUBARAK_EVENT:                   return auiEncounter[2];
+                case DATA_KRIKTHIR_THE_GATEWATCHER_EVENT:
+                    return auiEncounter[0];
+                case DATA_HADRONOX_EVENT:
+                    return auiEncounter[1];
+                case DATA_ANUBARAK_EVENT:
+                    return auiEncounter[2];
             }
 
             return 0;
         }
 
-       std::string GetSaveData() override
-       {
+        std::string GetSaveData() override
+        {
             OUT_SAVE_INST_DATA;
 
             std::ostringstream saveStream;
             saveStream << "A N " << auiEncounter[0] << ' ' << auiEncounter[1] << ' '
-                << auiEncounter[2];
+                       << auiEncounter[2];
 
             OUT_SAVE_INST_DATA_COMPLETE;
             return saveStream.str();
         }
 
-        void Load(const char* in) override
+        void Load(const char *in) override
         {
             if (!in)
             {
@@ -183,7 +207,7 @@ public:
 
             OUT_LOAD_INST_DATA(in);
 
-            char dataHead1, dataHead2;
+            char   dataHead1, dataHead2;
             uint16 data0, data1, data2;
 
             std::istringstream loadStream(in);
@@ -199,13 +223,14 @@ public:
                     if (auiEncounter[i] == IN_PROGRESS)
                         auiEncounter[i] = NOT_STARTED;
 
-            } else OUT_LOAD_INST_DATA_FAIL;
+            } else
+                OUT_LOAD_INST_DATA_FAIL;
 
             OUT_LOAD_INST_DATA_COMPLETE;
         }
     };
 
-    InstanceScript* GetInstanceScript(InstanceMap* map) const override
+    InstanceScript *GetInstanceScript(InstanceMap *map) const override
     {
         return new instance_azjol_nerub_InstanceScript(map);
     }

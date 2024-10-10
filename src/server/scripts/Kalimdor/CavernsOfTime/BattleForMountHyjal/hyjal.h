@@ -21,6 +21,8 @@
 
 #define ERROR_INST_DATA     "TSCR: Instance data not set properly for Mount Hyjal. Encounters will be buggy."
 
+#define DataHeader "HJ"
+
 enum Types
 {
     DATA_ANETHERON            = 1,

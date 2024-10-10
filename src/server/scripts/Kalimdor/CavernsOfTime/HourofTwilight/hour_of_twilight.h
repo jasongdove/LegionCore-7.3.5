@@ -1,6 +1,8 @@
 #ifndef DEF_HOUROFTWILIGHT_H
 #define DEF_HOUROFTWILIGHT_H
 
+#define DataHeader "HOT"
+
 const Position drakePos = {4292.110840f, 577.053528f, -6.63f, 3.54f};
 const Position teleportPos = {3938.491211f, 274.222351f, 13.97f, 3.26f};
 

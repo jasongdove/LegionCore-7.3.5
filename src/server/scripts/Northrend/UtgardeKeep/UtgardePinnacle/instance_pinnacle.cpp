@@ -47,7 +47,7 @@ public:
 
     struct instance_pinnacle : public InstanceScript
     {
-        instance_pinnacle(Map* map) : InstanceScript(map) {}
+        instance_pinnacle(InstanceMap* map) : InstanceScript(map) { }
 
         ObjectGuid uiSvalaSorrowgrave;
         ObjectGuid uiGortokPalehoof;
@@ -73,6 +73,8 @@ public:
 
         void Initialize() override
         {
+            SetHeaders(DataHeader);
+
             for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
                m_auiEncounter[i] = NOT_STARTED;
 

@@ -19,6 +19,8 @@
 #ifndef DEF_GRUULS_LAIR_H
 #define DEF_GRUULS_LAIR_H
 
+#define DataHeader "GL"
+
 #define DATA_BLINDEYETHESEER           1
 #define DATA_GRUULEVENT                2
 #define DATA_KIGGLERTHECRAZED          3

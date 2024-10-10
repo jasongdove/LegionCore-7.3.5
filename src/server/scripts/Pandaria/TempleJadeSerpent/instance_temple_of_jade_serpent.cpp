@@ -1,6 +1,8 @@
 /*==============
 ==============*/
 
+#include "temple_of_jade_serpent.h"
+
 enum eSpells
 {
     SPELL_CORRUPTED_WATERS      = 115167,
@@ -163,8 +165,10 @@ public:
         uint8 countTank;
         uint8 countFigments;
 
-        instance_temple_of_jade_serpent_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_temple_of_jade_serpent_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
+
             // Wise Mari script
             doorWiseMari.Clear();
             roomCenter.m_positionX = 1046.941f;

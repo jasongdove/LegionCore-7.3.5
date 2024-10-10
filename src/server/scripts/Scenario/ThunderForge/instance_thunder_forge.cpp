@@ -32,7 +32,7 @@ public:
 
     struct instance_thunder_forge_InstanceMapScript : public InstanceScript
     {
-        instance_thunder_forge_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_thunder_forge_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

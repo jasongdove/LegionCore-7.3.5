@@ -50,8 +50,9 @@ public:
 
     struct instance_ulduar_InstanceMapScript : public InstanceScript
     {
-        instance_ulduar_InstanceMapScript(Map* pMap) : InstanceScript(pMap)
+        instance_ulduar_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_BOSS_NUMBER);
             LoadDoorData(doorData);
             ShieldCheck = 0;
@@ -789,21 +790,15 @@ public:
                 }
             }
         }
-        
-        std::string GetSaveData() override
+
+        void WriteSaveDataMore(std::ostringstream& data) override
         {
-            std::ostringstream saveStream;
-            saveStream << GetBossSaveData() << " " << Immortal;
-            return saveStream.str();
+            data << Immortal;
         }
 
-        void Load(const char * data) override
+        void ReadSaveDataMore(std::istringstream& data) override
         {
-            std::istringstream loadStream(LoadBossState(data));
-            uint32 buff;
-            for (uint32 i=0; i<MAX_BOSS_NUMBER; ++i)
-                loadStream >> buff;
-            loadStream >> Immortal;
+            data >> Immortal;
         }
         
         bool CheckRequiredBosses(uint32 bossId, uint32 entry, Player const* player = NULL) const override

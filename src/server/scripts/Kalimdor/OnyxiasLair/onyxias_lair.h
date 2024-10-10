@@ -18,6 +18,8 @@
 #ifndef DEF_ONYXIAS_LAIR_H
 #define DEF_ONYXIAS_LAIR_H
 
+#define DataHeader "OL"
+
 enum Data64
 {
     DATA_ONYXIA_GUID,

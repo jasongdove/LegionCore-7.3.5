@@ -41,7 +41,7 @@ public:
 
     struct instance_wailing_caverns_InstanceMapScript : public InstanceScript
     {
-        instance_wailing_caverns_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_wailing_caverns_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         uint32 m_auiEncounter[MAX_ENCOUNTER];
 
@@ -50,6 +50,7 @@ public:
 
         void Initialize()
         {
+            SetHeaders(DataHeader);
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
             yelled = false;

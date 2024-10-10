@@ -23,8 +23,9 @@ public:
 
     struct instance_the_everbloom_InstanceMapScript : public InstanceScript
     {
-        instance_the_everbloom_InstanceMapScript(Map* map) : InstanceScript(map) 
+        instance_the_everbloom_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 

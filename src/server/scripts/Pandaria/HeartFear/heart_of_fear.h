@@ -4,6 +4,8 @@
 #ifndef HEARTOFFEAR
 #define HEARTOFFEAR
 
+#define DataHeader "HOF"
+
 #include "SpellScript.h"
 #include "Map.h"
 #include "Creature.h"

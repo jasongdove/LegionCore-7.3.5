@@ -39,7 +39,7 @@ namespace WorldPackets
 #define OUT_LOAD_INST_DATA_COMPLETE    TC_LOG_DEBUG("scripts", "Instance Data Load for Instance %s (Map %d, Instance Id: %d) is complete.", instance->GetMapName(), instance->GetId(), instance->GetInstanceId())
 #define OUT_LOAD_INST_DATA_FAIL        TC_LOG_ERROR("scripts", "Unable to load Instance Data for Instance %s (Map %d, Instance Id: %d).", instance->GetMapName(), instance->GetId(), instance->GetInstanceId())
 
-class Map;
+class InstanceMap;
 class Unit;
 class Player;
 class GameObject;
@@ -74,6 +74,21 @@ enum EncounterState
     TO_BE_DECIDED = 5,
 };
 
+enum DoorType
+{
+    DOOR_TYPE_ROOM          = 0,    // Door can open if encounter is not in progress
+    DOOR_TYPE_PASSAGE       = 1,    // Door can open if encounter is done
+    DOOR_TYPE_SPAWN_HOLE    = 2,    // Door can open if encounter is in progress, typically used for spawning places
+    MAX_DOOR_TYPES
+};
+
+struct DoorData
+{
+    uint32 entry, bossId;
+    DoorType type;
+    uint32 boundary;
+};
+
 static constexpr uint32 MAX_DUNGEON_ENCOUNTERS_PER_BOSS = 4;
 
 struct DungeonEncounterData
@@ -85,6 +100,19 @@ struct DungeonEncounterData
 struct MinionData
 {
     uint32 entry, bossId;
+};
+
+struct DamageManager
+{
+    uint32 entry;
+    Creature* creature;
+    ObjectGuid guid;
+};
+
+struct ObjectData
+{
+    uint32 entry;
+    uint32 type;
 };
 
 struct BossInfo
@@ -102,7 +130,8 @@ struct BossInfo
 
 struct DoorInfo
 {
-    explicit DoorInfo(BossInfo* _bossInfo, DoorType _type, BoundaryType _boundary);
+    explicit DoorInfo(BossInfo* _bossInfo, DoorType _type, BoundaryType _boundary)
+            : bossInfo(_bossInfo), type(_type), boundary(_boundary) { }
     BossInfo* bossInfo;
     DoorType type;
     BoundaryType boundary;
@@ -110,21 +139,8 @@ struct DoorInfo
 
 struct MinionInfo
 {
-    explicit MinionInfo(BossInfo* _bossInfo) : bossInfo(_bossInfo) {}
+    explicit MinionInfo(BossInfo* _bossInfo) : bossInfo(_bossInfo) { }
     BossInfo* bossInfo;
-};
-
-struct DamageManager
-{
-    uint32 entry;
-    Creature* creature;
-    ObjectGuid guid;
-};
-
-struct ObjectData
-{
-    uint32 entry;
-    uint32 type;
 };
 
 typedef std::multimap<uint32 /*entry*/, DoorInfo> DoorInfoMap;
@@ -142,23 +158,28 @@ static uint32 const ChallengeModeDoor = 239323;
 class InstanceScript : public ZoneScript
 {
     public:
-        explicit InstanceScript(Map* map);
+        explicit InstanceScript(InstanceMap* map);
 
         ~InstanceScript() override;
 
-        Map* instance;
+        InstanceMap* instance;
 
-        //On creation, NOT load.
-        virtual void Initialize() {}
+        // On creation, NOT load.
+        // PLEASE INITIALIZE FIELDS IN THE CONSTRUCTOR INSTEAD !!!
+        // KEEPING THIS METHOD ONLY FOR BACKWARD COMPATIBILITY !!!
+        virtual void Initialize() { }
 
-        //On delete InstanceScript
+        // On delete InstanceScript
         static void DestroyInstance();
         void CreateInstance();
 
-        //On load
+        // On instance load, exactly ONE of these methods will ALWAYS be called:
+        // if we're starting without any saved instance data
+        virtual void Create();
+        // if we're loading existing instance save data
         virtual void Load(char const* data);
 
-        //When save is needed, this function generates the data
+        // When save is needed, this function generates the data
         virtual std::string GetSaveData();
 
         void SaveToDB();
@@ -174,11 +195,11 @@ class InstanceScript : public ZoneScript
         Creature* GetCreatureByEntry(uint32 entry);
         GameObject* GetGameObjectByEntry(uint32 entry);
 
-        //Used by the map's CanEnter function.
-        //This is to prevent players from entering during boss encounters.
+        // Used by the map's CanEnter function.
+        // This is to prevent players from entering during boss encounters.
         virtual bool IsEncounterInProgress() const;
 
-        //Called when a player successfully enters the instance.
+        // Called when a player successfully enters the instance.
         virtual void OnPlayerEnter(Player* /*player*/) {}
         virtual void OnPlayerLeave(Player* /*player*/) {}
         virtual void OnPlayerDies(Player* /*player*/) {}
@@ -211,16 +232,16 @@ class InstanceScript : public ZoneScript
         void OnUnitCharmed(Unit* unit, Unit* charmer) override;
         void OnUnitRemoveCharmed(Unit* unit, Unit* charmer) override;
 
-        //Handle open / close objects
+        // Handle open / close objects
         void HandleGameObject(ObjectGuid guid, bool open, GameObject* go = nullptr);
 
-        //change active state of doors or buttons
+        // change active state of doors or buttons
         void DoUseDoorOrButton(ObjectGuid guid, uint32 withRestoreTime = 0, bool useAlternativeState = false);
 
-        //Respawns a GO having negative spawntimesecs in gameobject-table
+        // Respawns a GO having negative spawntimesecs in gameobject-table
         void DoRespawnGameObject(ObjectGuid guid, uint32 timeToDespawn = MINUTE);
 
-        //sends world state update to all players in instance
+        // sends world state update to all players in instance
         void DoUpdateWorldState(WorldStates variableID, uint32 value);
 
         // Send Notify to all players in instance
@@ -278,7 +299,14 @@ class InstanceScript : public ZoneScript
         void SetCompletedEncountersMask(uint32 newMask);
         uint32 GetCompletedEncounterMask() const;
 
+        // Only used by areatriggers that inherit from OnlyOnceAreaTriggerScript
+        void MarkAreaTriggerDone(uint32 id) { _activatedAreaTriggers.insert(id); }
+        void ResetAreaTriggerDone(uint32 id) { _activatedAreaTriggers.erase(id); }
+        bool IsAreaTriggerDone(uint32 id) const { return _activatedAreaTriggers.find(id) != _activatedAreaTriggers.end(); }
+
         void SendEncounterUnit(uint32 type, Unit* unit = nullptr, uint8 param1 = 0, uint8 param2 = 0);
+
+        void SendBossKillCredit(uint32 encounterId);
 
         bool IsAllowingRelease;
 
@@ -334,6 +362,7 @@ class InstanceScript : public ZoneScript
         void SetDisabledBosses(uint32 p_DisableMask);
         BossInfo* GetBossInfo(uint32 id);
     protected:
+        void SetHeaders(std::string const& dataHeaders);
         static void LoadObjectData(ObjectData const* creatureData, ObjectInfoMap& objectInfo);
         void LoadObjectData(ObjectData const* creatureData, ObjectData const* gameObjectData);
         template<typename T>
@@ -355,12 +384,18 @@ class InstanceScript : public ZoneScript
         void UpdateDoorState(GameObject* door);
         static void UpdateMinionState(Creature* minion, EncounterState state);
 
-        std::string LoadBossState(char const* data);
-        std::string GetBossSaveData();
+        // Instance Load and Save
+        bool ReadSaveDataHeaders(std::istringstream& data);
+        void ReadSaveDataBossStates(std::istringstream& data);
+        virtual void ReadSaveDataMore(std::istringstream& /*data*/) { }
+        void WriteSaveDataHeaders(std::ostringstream& data);
+        void WriteSaveDataBossStates(std::ostringstream& data);
+        virtual void WriteSaveDataMore(std::ostringstream& /*data*/) { }
 
     private:
         void LoadDungeonEncounterData(uint32 bossId, std::array<uint32, MAX_DUNGEON_ENCOUNTERS_PER_BOSS> const& dungeonEncounterIds);
 
+        std::vector<char> headers;
         Challenge* _challenge;
         std::vector<BossInfo> bosses;
         DoorInfoMap doors;
@@ -377,6 +412,7 @@ class InstanceScript : public ZoneScript
         ObjectInfoMap _creatureInfo;
         ObjectInfoMap _gameObjectInfo;
         ObjectGuidMap _objectGuids;
+        std::unordered_set<uint32> _activatedAreaTriggers;
         WorldObjectMap _creatureData; // Now is only one object peer entry, if need all object in this entry, change guid to vector<guid>
         WorldObjectMap _gameObjectData; // Now is only one object peer entry, if need all object in this entry, change guid to vector<guid>
         LogsSystem::MainData _logData;

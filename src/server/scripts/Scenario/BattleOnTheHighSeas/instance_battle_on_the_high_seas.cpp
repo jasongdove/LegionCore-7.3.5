@@ -32,7 +32,7 @@ public:
 
     struct instance_battle_on_the_high_seas_InstanceMapScript : public InstanceScript
     {
-        instance_battle_on_the_high_seas_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_battle_on_the_high_seas_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

@@ -29,6 +29,7 @@
 #include "EventObject.h"
 #include "GameObject.h"
 #include "GossipDef.h"
+#include "InstanceScript.h"
 #include "Item.h"
 #include "LFGScripts.h"
 #include "Log.h"
@@ -1550,10 +1551,29 @@ WorldStateScript::WorldStateScript(std::string name) : ScriptObject(name)
     ScriptRegistry<WorldStateScript>::AddScript(this);
 }
 
+AreaTriggerScript::~AreaTriggerScript() = default;
+
 AreaTriggerScript::AreaTriggerScript(std::string name) : ScriptObject(name)
 {
     ScriptRegistry<AreaTriggerScript>::AddScript(this);
 }
+
+OnlyOnceAreaTriggerScript::~OnlyOnceAreaTriggerScript() = default;
+
+bool OnlyOnceAreaTriggerScript::OnTrigger(Player* player, AreaTriggerEntry const* trigger, bool /*enter*/)
+{
+    uint32 const triggerId = trigger->ID;
+    InstanceScript* instance = player->GetInstanceScript();
+    if (instance && instance->IsAreaTriggerDone(triggerId))
+        return true;
+
+    if (TryHandleOnce(player, trigger) && instance)
+        instance->MarkAreaTriggerDone(triggerId);
+
+    return true;
+}
+void OnlyOnceAreaTriggerScript::ResetAreaTriggerDone(InstanceScript* instance, uint32 triggerId) { instance->ResetAreaTriggerDone(triggerId); }
+void OnlyOnceAreaTriggerScript::ResetAreaTriggerDone(Player const* player, AreaTriggerEntry const* trigger) { if (InstanceScript* instance = player->GetInstanceScript()) ResetAreaTriggerDone(instance, trigger->ID); }
 
 SceneTriggerScript::SceneTriggerScript(std::string name) : ScriptObject(name)
 {

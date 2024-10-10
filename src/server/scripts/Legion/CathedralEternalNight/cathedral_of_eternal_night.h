@@ -4,6 +4,8 @@
 #ifndef CATHEDRAL_OF_ETERNAL_NIGHT_H_
 #define CATHEDRAL_OF_ETERNAL_NIGHT_H_
 
+#define DataHeader "CEN"
+
 enum eData
 {
     DATA_AGRONOX            = 0,

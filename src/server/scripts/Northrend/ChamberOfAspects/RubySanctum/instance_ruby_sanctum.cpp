@@ -37,6 +37,7 @@ class instance_ruby_sanctum : public InstanceMapScript
         {
             instance_ruby_sanctum_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
             {
+                SetHeaders(DataHeader);
                 SetBossNumber(EncounterCount);
                 LoadDoorData(doorData);
                 BaltharusTheWarbornGUID.Clear();
@@ -294,55 +295,11 @@ class instance_ruby_sanctum : public InstanceMapScript
                 return BaltharusSharedHealth;
             }
 
-            std::string GetSaveData() override
-            {
-                OUT_SAVE_INST_DATA;
-
-                std::ostringstream saveStream;
-                saveStream << "R S " << GetBossSaveData();
-
-                OUT_SAVE_INST_DATA_COMPLETE;
-                return saveStream.str();
-            }
-
             void FillInitialWorldStates(WorldPackets::WorldState::InitWorldStates& packet) override
             {
                 packet.Worldstates.emplace_back(WorldStates::WORLDSTATE_CORPOREALITY_MATERIAL, 50);
                 packet.Worldstates.emplace_back(WorldStates::WORLDSTATE_CORPOREALITY_TWILIGHT, 50);
                 packet.Worldstates.emplace_back(WorldStates::WORLDSTATE_CORPOREALITY_TOGGLE, 0);
-            }
-
-            void Load(char const* str) override
-            {
-                if (!str)
-                {
-                    OUT_LOAD_INST_DATA_FAIL;
-                    return;
-                }
-
-                OUT_LOAD_INST_DATA(str);
-
-                char dataHead1, dataHead2;
-
-                std::istringstream loadStream(str);
-                loadStream >> dataHead1 >> dataHead2;
-
-                if (dataHead1 == 'R' && dataHead2 == 'S')
-                {
-                    for (uint8 i = 0; i < EncounterCount; ++i)
-                    {
-                        uint32 tmpState;
-                        loadStream >> tmpState;
-                        if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                            tmpState = NOT_STARTED;
-
-                        SetBossState(i, EncounterState(tmpState));
-                    }
-                }
-                else
-                    OUT_LOAD_INST_DATA_FAIL;
-
-                OUT_LOAD_INST_DATA_COMPLETE;
             }
 
         protected:

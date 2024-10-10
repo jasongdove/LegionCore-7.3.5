@@ -19,6 +19,8 @@
 #ifndef DEF_WAILING_CAVERNS_H
 #define DEF_WAILING_CAVERNS_H
 
+#define DataHeader "WC"
+
 enum eTypes
 {
     TYPE_LORD_COBRAHN         = 1,

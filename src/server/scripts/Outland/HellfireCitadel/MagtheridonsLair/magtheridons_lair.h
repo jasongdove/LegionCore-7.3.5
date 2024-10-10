@@ -19,6 +19,8 @@
 #ifndef DEF_MAGTHERIDONS_LAIR_H
 #define DEF_MAGTHERIDONS_LAIR_H
 
+#define DataHeader "MAG"
+
 #define DATA_MAGTHERIDON_EVENT          1
 #define DATA_MAGTHERIDON                3
 #define DATA_CHANNELER_EVENT            2

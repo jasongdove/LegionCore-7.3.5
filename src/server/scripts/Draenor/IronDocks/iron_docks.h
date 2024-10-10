@@ -5,6 +5,8 @@
 #ifndef IRON_DOCKS_H_
 #define IRON_DOCKS_H_
 
+#define DataHeader "ID"
+
 enum eData
 {
     DATA_NOKGAR         = 0,

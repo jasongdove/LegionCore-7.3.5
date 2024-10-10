@@ -59,7 +59,7 @@ public:
 
     struct instance_utgarde_keep_InstanceMapScript : public InstanceScript
     {
-        instance_utgarde_keep_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_utgarde_keep_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         ObjectGuid Keleseth;
         ObjectGuid Skarvald;
@@ -77,6 +77,7 @@ public:
 
        void Initialize() override
        {
+           SetHeaders(DataHeader);
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
             Keleseth.Clear();

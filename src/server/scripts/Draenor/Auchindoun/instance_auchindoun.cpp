@@ -18,8 +18,9 @@ public:
 
     struct instance_auchindoun_InstanceMapScript : InstanceScript
     {
-        instance_auchindoun_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_auchindoun_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             m_KaatharDied = false;
             m_TuulaniSummoned = true;
         }

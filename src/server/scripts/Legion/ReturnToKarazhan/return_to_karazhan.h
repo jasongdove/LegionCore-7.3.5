@@ -3,6 +3,8 @@
 
 #include "PrecompiledHeaders/ScriptPCH.h"
 
+#define DataHeader "RKZ"
+
 enum eData
 {
     DATA_OPERA_HALL                 = 0,

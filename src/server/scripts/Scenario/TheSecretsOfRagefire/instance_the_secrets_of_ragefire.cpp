@@ -32,7 +32,7 @@ public:
 
     struct instance_the_secrets_of_ragefire_InstanceMapScript : public InstanceScript
     {
-        instance_the_secrets_of_ragefire_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_the_secrets_of_ragefire_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

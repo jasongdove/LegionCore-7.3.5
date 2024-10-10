@@ -19,6 +19,8 @@
 #ifndef DEF_SCARLET_M
 #define DEF_SCARLET_M
 
+#define DataHeader "SM"
+
 enum eEnums
 {
     DATA_THALNOS                = 1,

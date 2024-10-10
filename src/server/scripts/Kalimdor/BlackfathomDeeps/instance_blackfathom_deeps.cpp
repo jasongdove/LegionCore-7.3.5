@@ -64,7 +64,7 @@ public:
 
     struct instance_blackfathom_deeps_InstanceMapScript : public InstanceScript
     {
-        instance_blackfathom_deeps_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_blackfathom_deeps_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         ObjectGuid twilightLordKelrisGUID;
         ObjectGuid shrine1GUID;
@@ -81,6 +81,7 @@ public:
 
         void Initialize()
         {
+            SetHeaders(DataHeader);
             memset(&encounter, 0, sizeof(encounter));
 
             twilightLordKelrisGUID.Clear();

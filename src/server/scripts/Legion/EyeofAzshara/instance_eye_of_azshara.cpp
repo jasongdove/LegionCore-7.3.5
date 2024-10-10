@@ -44,8 +44,9 @@ public:
 
     struct instance_eye_of_azshara_InstanceMapScript : public InstanceScript
     {
-        instance_eye_of_azshara_InstanceMapScript(Map* map) : InstanceScript(map) 
+        instance_eye_of_azshara_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 

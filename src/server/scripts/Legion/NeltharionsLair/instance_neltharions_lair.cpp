@@ -26,8 +26,9 @@ public:
 
     struct instance_neltharions_lair_InstanceMapScript : public InstanceScript
     {
-        instance_neltharions_lair_InstanceMapScript(Map* map) : InstanceScript(map) 
+        instance_neltharions_lair_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 

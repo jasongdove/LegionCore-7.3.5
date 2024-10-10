@@ -51,7 +51,7 @@ public:
 
     struct instance_old_hillsbrad_InstanceMapScript : public InstanceScript
     {
-        instance_old_hillsbrad_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_old_hillsbrad_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         uint32 m_auiEncounter[MAX_ENCOUNTER];
         uint32 mBarrelCount;
@@ -63,6 +63,7 @@ public:
 
         void Initialize()
         {
+            SetHeaders(DataHeader);
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
             mBarrelCount        = 0;

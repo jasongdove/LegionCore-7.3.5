@@ -27,7 +27,7 @@ public:
 
     struct instance_mogu_shan_vault_InstanceMapScript : public InstanceScript
     {
-        instance_mogu_shan_vault_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_mogu_shan_vault_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         //GameObject
         ObjectGuid stoneexitdoorGuid;
@@ -64,6 +64,7 @@ public:
 
         void Initialize() override
         {
+            SetHeaders(DataHeader);
             SetBossNumber(DATA_MAX_BOSS_DATA);
             LoadDoorData(doorData);
 
@@ -420,21 +421,6 @@ public:
             }
 
             return true;
-        }
-
-        std::string GetSaveData() override
-        {
-            std::ostringstream saveStream;
-            saveStream << GetBossSaveData() << " ";
-            return saveStream.str();
-        }
-
-        void Load(const char* data) override
-        {
-            std::istringstream loadStream(LoadBossState(data));
-            uint32 buff;
-            for (uint32 i=0; i < DATA_MAX_BOSS_DATA; ++i)
-                loadStream >> buff;
         }
     };
 };

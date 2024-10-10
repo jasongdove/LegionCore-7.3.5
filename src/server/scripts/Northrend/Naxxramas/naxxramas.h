@@ -18,6 +18,8 @@
 #ifndef DEF_NAXXRAMAS_H
 #define DEF_NAXXRAMAS_H
 
+#define DataHeader "NAXX"
+
 enum Encounter
 {
     BOSS_ANUBREKHAN,

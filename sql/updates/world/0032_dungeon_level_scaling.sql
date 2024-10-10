@@ -565,6 +565,7 @@ UPDATE creature_template SET minlevel = 41, maxlevel = 41, ScaleLevelMin = 38, S
 UPDATE creature_template SET minlevel = 41, maxlevel = 41, ScaleLevelMin = 38, ScaleLevelMax = 60, ScaleLevelDelta = 0 WHERE entry = 59503;
 UPDATE creature_template SET minlevel = 42, maxlevel = 42, ScaleLevelMin = 38, ScaleLevelMax = 60, ScaleLevelDelta = 1 WHERE entry = 59613;
 UPDATE creature_template SET minlevel = 41, maxlevel = 41, ScaleLevelMin = 38, ScaleLevelMax = 60, ScaleLevelDelta = 0 WHERE entry = 59614;
+UPDATE `creature` SET `spawnMask` = 4 where `id` = 59369; -- Doctor Theolen Krastinov <The Butcher> is heroic only
 
 -- zul'farrak
 UPDATE creature_template SET minlevel = 47, maxlevel = 48, ScaleLevelMin = 44, ScaleLevelMax = 60, ScaleLevelDelta = 0 WHERE entry = 5648;

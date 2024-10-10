@@ -31,7 +31,7 @@ public:
 
     struct instance_troves_of_the_thunder_king_InstanceMapScript : public InstanceScript
     {
-        instance_troves_of_the_thunder_king_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_troves_of_the_thunder_king_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

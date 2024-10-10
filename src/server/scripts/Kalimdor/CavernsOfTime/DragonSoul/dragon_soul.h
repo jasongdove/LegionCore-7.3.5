@@ -10,6 +10,8 @@
 // 106093 - summit teleport aoe
 // 106092 - temple teleport aoe
 
+#define DataHeader "DS"
+
 enum Datas
 {
     DATA_MORCHOK            = 0,

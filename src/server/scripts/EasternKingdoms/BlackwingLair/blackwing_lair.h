@@ -18,6 +18,8 @@
 #ifndef DEF_BLACKWING_LAIR_H
 #define DEF_BLACKWING_LAIR_H
 
+#define DataHeader    "BWL"
+
 uint32 const EncounterCount     = 8;
 
 enum BWLEncounter

@@ -5,6 +5,8 @@
 #ifndef NELTHARIONS_LAIR_H_
 #define NELTHARIONS_LAIR_H_
 
+#define DataHeader "NL"
+
 enum eData
 {
     DATA_ROKMORA      = 0,

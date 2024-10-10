@@ -27,6 +27,8 @@
 #ifndef DEF_BLOODMAUL_SLAG_MINES_H
 #define DEF_BLOODMAUL_SLAG_MINES_H
 
+#define DataHeader "BSM"
+
 enum DataTypes
 {
     DATA_SLAVE_WATCHER_CRUSHTO = 1,

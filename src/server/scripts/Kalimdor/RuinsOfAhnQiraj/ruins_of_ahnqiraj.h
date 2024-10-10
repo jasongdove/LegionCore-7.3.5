@@ -18,6 +18,8 @@
 #ifndef DEF_RUINS_OF_AHNQIRAJ_H
 #define DEF_RUINS_OF_AHNQIRAJ_H
 
+#define DataHeader "RA"
+
 enum Encounters
 {
     BOSS_KURINNAXX              = 0,

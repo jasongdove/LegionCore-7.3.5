@@ -19,6 +19,8 @@
 #ifndef DEF_DARKPORTAL_H
 #define DEF_DARKPORTAL_H
 
+#define DataHeader "DP"
+
 #define TYPE_MEDIVH             1
 #define TYPE_RIFT               2
 

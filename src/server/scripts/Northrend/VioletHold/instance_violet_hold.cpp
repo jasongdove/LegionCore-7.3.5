@@ -107,7 +107,7 @@ public:
 
     struct instance_violet_hold_InstanceMapScript : public InstanceScript
     {
-        instance_violet_hold_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_violet_hold_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         ObjectGuid uiMoragg;
         ObjectGuid uiErekem;
@@ -165,6 +165,8 @@ public:
 
         void Initialize() override
         {
+            SetHeaders(DataHeader);
+
             uiMoragg.Clear();
             uiErekem.Clear();
             uiIchoron.Clear();

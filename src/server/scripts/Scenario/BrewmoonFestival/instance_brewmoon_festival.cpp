@@ -32,7 +32,7 @@ public:
 
     struct instance_brewmoon_festival_InstanceMapScript : public InstanceScript
     {
-        instance_brewmoon_festival_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_brewmoon_festival_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

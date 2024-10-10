@@ -7,12 +7,13 @@ public:
 
     struct instance_hellfire_citadel_InstanceMapScript : public InstanceScript
     {
-        instance_hellfire_citadel_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_hellfire_citadel_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         WorldLocation loc_res_pla;
 
         void Initialize() override
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 

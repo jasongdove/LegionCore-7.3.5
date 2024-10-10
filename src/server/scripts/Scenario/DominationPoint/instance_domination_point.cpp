@@ -32,7 +32,7 @@ public:
 
     struct instance_domination_point_InstanceMapScript : public InstanceScript
     {
-        instance_domination_point_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_domination_point_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

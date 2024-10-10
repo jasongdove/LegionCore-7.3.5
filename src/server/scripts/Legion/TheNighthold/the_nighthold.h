@@ -1,6 +1,8 @@
 #ifndef ThiNightholdH_
 #define ThiNightholdH_
 
+#define DataHeader "NH"
+
 enum eData
 {
     DATA_SKORPYRON          = 0,

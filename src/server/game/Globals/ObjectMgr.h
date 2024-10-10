@@ -742,8 +742,8 @@ class ObjectMgr
         void LoadCreatureAIInstance();
         void LoadCreatureActionData();
         void LoadDisplayChoiceData();
-    void LoadPlayerChoicesLocale();
-    void LoadLinkedRespawn();
+        void LoadPlayerChoicesLocale();
+        void LoadLinkedRespawn();
         bool SetCreatureLinkedRespawn(ObjectGuid::LowType const& guid, ObjectGuid::LowType const& linkedGuid);
         void LoadCreatureAddons();
         void LoadCreatureModelInfo();

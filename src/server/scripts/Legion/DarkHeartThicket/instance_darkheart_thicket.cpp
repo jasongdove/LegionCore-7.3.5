@@ -23,8 +23,9 @@ public:
 
     struct instance_darkheart_thicket_InstanceMapScript : public InstanceScript
     {
-        instance_darkheart_thicket_InstanceMapScript(Map* map) : InstanceScript(map) 
+        instance_darkheart_thicket_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 

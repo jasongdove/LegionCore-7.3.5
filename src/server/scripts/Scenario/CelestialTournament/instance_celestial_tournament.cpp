@@ -32,7 +32,7 @@ public:
 
     struct instance_celestial_tournament_InstanceMapScript : public InstanceScript
     {
-        instance_celestial_tournament_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_celestial_tournament_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

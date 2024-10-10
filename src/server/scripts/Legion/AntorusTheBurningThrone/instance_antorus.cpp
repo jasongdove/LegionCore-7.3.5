@@ -79,8 +79,9 @@ public:
 
     struct instance_antorus_InstanceMapScript : InstanceScript
     {
-        explicit instance_antorus_InstanceMapScript(Map* map) : InstanceScript(map)
+        explicit instance_antorus_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 
@@ -488,46 +489,6 @@ public:
         bool CheckRequiredBosses(uint32 bossId, uint32 /*entry*/, Player const* /*player*/ = nullptr) const override
         {
             return true;
-        }
-
-        std::string GetSaveData() override
-        {
-            std::ostringstream saveStream;
-            saveStream << "A T B T " << GetBossSaveData();
-            return saveStream.str();
-        }
-
-        void Load(const char* data) override
-        {
-            if (!data)
-            {
-                OUT_LOAD_INST_DATA_FAIL;
-                return;
-            }
-
-            OUT_LOAD_INST_DATA(data);
-
-            char dataHead1, dataHead2, dataHead3, dataHead4;
-
-            std::istringstream loadStream(data);
-            loadStream >> dataHead1 >> dataHead2 >> dataHead3 >> dataHead4;
-
-            if (dataHead1 == 'A' && dataHead2 == 'T' && dataHead3 == 'B' && dataHead4 == 'T')
-            {
-                for (uint32 i = 0; i < MAX_ENCOUNTER; ++i)
-                {
-                    uint32 tmpState;
-                    loadStream >> tmpState;
-                    if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                        tmpState = NOT_STARTED;
-                    SetBossState(i, EncounterState(tmpState));
-                }
-            }
-            else
-                OUT_LOAD_INST_DATA_FAIL;
-
-            OUT_LOAD_INST_DATA_COMPLETE;
-
         }
 
         WorldLocation* GetClosestGraveYard(float x, float y, float z) override

@@ -5,6 +5,8 @@
 #ifndef EYE_OF_AZSHARA_H_
 #define EYE_OF_AZSHARA_H_
 
+#define DataHeader "EOA"
+
 enum eData
 {
     DATA_PARJESH                = 0,

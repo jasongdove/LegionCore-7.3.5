@@ -18,7 +18,7 @@ public:
 
     struct instance_silver_hand_InstanceMapScript : public InstanceScript
     {
-        instance_silver_hand_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_silver_hand_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         void OnCreatureCreate(Creature* creature) override
         {

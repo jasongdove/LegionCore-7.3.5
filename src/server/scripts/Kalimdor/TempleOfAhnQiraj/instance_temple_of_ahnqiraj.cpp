@@ -40,7 +40,7 @@ public:
 
     struct instance_temple_of_ahnqiraj_InstanceMapScript : public InstanceScript
     {
-        instance_temple_of_ahnqiraj_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_temple_of_ahnqiraj_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         //If Vem is dead...
         bool IsBossDied[3];
@@ -64,6 +64,8 @@ public:
 
         void Initialize()
         {
+            SetHeaders(DataHeader);
+
             IsBossDied[0] = false;
             IsBossDied[1] = false;
             IsBossDied[2] = false;

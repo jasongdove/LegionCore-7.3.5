@@ -43,8 +43,9 @@ public:
 
     struct instance_the_emerald_nightmare_InstanceMapScript : public InstanceScript
     {
-        instance_the_emerald_nightmare_InstanceMapScript(Map* map) : InstanceScript(map) 
+        instance_the_emerald_nightmare_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 
@@ -254,46 +255,6 @@ public:
             }
         }
 
-        std::string GetSaveData() override
-        {
-            std::ostringstream saveStream;
-            saveStream << "E N " << GetBossSaveData();
-            return saveStream.str();
-        }
-
-        void Load(const char* data) override
-        {
-            if (!data)
-            {
-                OUT_LOAD_INST_DATA_FAIL;
-                return;
-            }
-
-            OUT_LOAD_INST_DATA(data);
-
-            char dataHead1, dataHead2;
-
-            std::istringstream loadStream(data);
-            loadStream >> dataHead1 >> dataHead2;
-
-            if (dataHead1 == 'E' && dataHead2 == 'N')
-            {
-                for (uint32 i = 0; i < MAX_ENCOUNTER; ++i)
-                {
-                    uint32 tmpState;
-                    loadStream >> tmpState;
-                    if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                        tmpState = NOT_STARTED;
-                    SetBossState(i, EncounterState(tmpState));
-                }
-            }
-            else
-                OUT_LOAD_INST_DATA_FAIL;
-
-            OUT_LOAD_INST_DATA_COMPLETE;
-            
-        }
-        
         bool CheckFirstBosses()
         {
             if (GetBossState(DATA_NYTHENDRA) == DONE && 

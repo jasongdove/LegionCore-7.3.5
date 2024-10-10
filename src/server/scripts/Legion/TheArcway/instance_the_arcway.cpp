@@ -29,8 +29,9 @@ public:
 
     struct instance_the_arcway_InstanceMapScript : public InstanceScript
     {
-        instance_the_arcway_InstanceMapScript(Map* map) : InstanceScript(map) 
+        instance_the_arcway_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 

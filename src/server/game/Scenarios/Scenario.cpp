@@ -146,27 +146,24 @@ void Scenario::CreateChallenge(Player* player)
     if (!player || !map)
         return;
 
+    InstanceMap* instanceMap = map->ToInstanceMap();
+    ASSERT(instanceMap);
+
     MapChallengeModeEntry const* m_challengeEntry = player->GetGroup() ? player->GetGroup()->m_challengeEntry : player->m_challengeKeyInfo.challengeEntry;
     if (!m_challengeEntry)
         return;
 
-    _challenge = new Challenge(map, player, GetInstanceId(), this);
+    _challenge = new Challenge(instanceMap, player, GetInstanceId(), this);
 
     // TC_LOG_DEBUG("challenge", "CreateChallenge _challenge %u _canRun %u", bool(_challenge), bool(_challenge->_canRun));
 
     if (!_challenge || !_challenge->_canRun)
         return;
 
-    if (Map* map_ = GetMap())
+    if (InstanceScript* script = instanceMap->GetInstanceScript())
     {
-        if (InstanceMap* instanceMap = map_->ToInstanceMap())
-        {
-            if (InstanceScript* script = instanceMap->GetInstanceScript())
-            {
-                script->SetChallenge(_challenge);
-                _challenge->SetInstanceScript(script);
-            }
-        }
+        script->SetChallenge(_challenge);
+        _challenge->SetInstanceScript(script);
     }
 
     if (ScenarioData const* scenarioData = sObjectMgr->GetScenarioOnMap(map->GetId(), DIFFICULTY_MYTHIC_KEYSTONE))

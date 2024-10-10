@@ -31,8 +31,9 @@ public:
 
     struct instance_black_rook_hold_dungeon_InstanceMapScript : public InstanceScript
     {
-        instance_black_rook_hold_dungeon_InstanceMapScript(Map* map) : InstanceScript(map) 
+        instance_black_rook_hold_dungeon_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 
@@ -194,43 +195,14 @@ public:
             return &loc_res_pla;
         }
 
-        std::string GetSaveData() override
+        void WriteSaveDataMore(std::ostringstream& data) override
         {
-            std::ostringstream saveStream;
-            saveStream << "B R H " << GetBossSaveData() << " " << AmalgamState << " " << illysannaIntroState;
-            return saveStream.str();
+            data << AmalgamState << " " << illysannaIntroState;
         }
 
-        void Load(const char* data) override
+        void ReadSaveDataMore(std::istringstream& data) override
         {
-            if (!data)
-            {
-                OUT_LOAD_INST_DATA_FAIL;
-                return;
-            }
-
-            OUT_LOAD_INST_DATA(data);
-
-            char dataHead1, dataHead2, dataHead3;
-            std::istringstream loadStream(data);
-            loadStream >> dataHead1 >> dataHead2 >> dataHead3;
-
-            if (dataHead1 == 'B' && dataHead2 == 'R' && dataHead3 == 'H')
-            {
-                for (uint32 i = 0; i < MAX_ENCOUNTER; ++i)
-                {
-                    uint32 tmpState;
-                    loadStream >> tmpState;
-                    if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                        tmpState = NOT_STARTED;
-                    SetBossState(i, EncounterState(tmpState));
-                }
-                loadStream >> AmalgamState >> illysannaIntroState;
-            }
-            else
-                OUT_LOAD_INST_DATA_FAIL;
-
-            OUT_LOAD_INST_DATA_COMPLETE;
+            data >> AmalgamState >> illysannaIntroState;
         }
 
         bool HasPlayerUpperThan(float minZ)

@@ -24,8 +24,9 @@ public:
 
     struct instance_court_of_stars_InstanceMapScript : public InstanceScript
     {
-        instance_court_of_stars_InstanceMapScript(Map* map) : InstanceScript(map) 
+        instance_court_of_stars_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 

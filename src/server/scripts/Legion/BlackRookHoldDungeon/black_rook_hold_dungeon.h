@@ -5,6 +5,8 @@
 #ifndef BLACK_ROOK_HOLD_DUNGEON_H_
 #define BLACK_ROOK_HOLD_DUNGEON_H_
 
+#define DataHeader "BRH"
+
 enum eData
 {
     DATA_AMALGAM                = 0,

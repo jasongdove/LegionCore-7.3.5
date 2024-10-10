@@ -19,6 +19,8 @@
 #ifndef DEF_ARENAOFANNIHILATION
 #define DEF_ARENAOFANNIHILATION
 
+#define DataHeader "AOA"
+
 enum eEnums
 {
     DATA_SCAR_SHELL         = 1,

@@ -5,6 +5,8 @@
 #ifndef DEF_ZF_H
 #define DEF_ZF_H
 
+#define DataHeader "ZF"
+
 enum zfEntries
 {
     ENTRY_ZUMRAH        = 7271,

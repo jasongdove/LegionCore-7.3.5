@@ -32,8 +32,9 @@ public:
 
     struct instance_arena_of_annihilation_InstanceMapScript : public InstanceScript
     {
-        instance_arena_of_annihilation_InstanceMapScript(Map* map) : InstanceScript(map) 
+        instance_arena_of_annihilation_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 

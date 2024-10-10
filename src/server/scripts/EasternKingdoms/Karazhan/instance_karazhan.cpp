@@ -56,7 +56,7 @@ public:
 
     struct instance_karazhan_InstanceMapScript : public InstanceScript
     {
-        instance_karazhan_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_karazhan_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         uint32 m_auiEncounter[MAX_ENCOUNTER];
         std::string strSaveData;
@@ -82,6 +82,7 @@ public:
 
         void Initialize()
         {
+            SetHeaders(DataHeader);
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
             // 1 - OZ, 2 - HOOD, 3 - RAJ, this never gets altered.

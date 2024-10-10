@@ -18,6 +18,8 @@
 #ifndef DEF_PINNACLE_H
 #define DEF_PINNACLE_H
 
+#define DataHeader "UP"
+
 enum Data
 {
     DATA_SVALA_SORROWGRAVE_EVENT,

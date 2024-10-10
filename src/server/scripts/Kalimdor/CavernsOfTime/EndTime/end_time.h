@@ -1,6 +1,7 @@
 #ifndef DEF_ENDTIME_H
 #define DEF_ENDTIME_H
 
+#define DataHeader "ET"
 #define ETScriptName "instance_end_time"
 
 #define MAX_FRAGMENTS_COUNT 12

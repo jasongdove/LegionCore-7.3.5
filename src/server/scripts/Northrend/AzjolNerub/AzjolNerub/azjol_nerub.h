@@ -18,6 +18,8 @@
 #ifndef DEF_AZJOL_NERUB_H
 #define DEF_AZJOL_NERUB_H
 
+#define DataHeader "AJN"
+
 enum Data64
 {
     DATA_KRIKTHIR_THE_GATEWATCHER,

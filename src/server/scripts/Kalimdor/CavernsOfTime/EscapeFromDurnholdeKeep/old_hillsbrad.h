@@ -19,6 +19,8 @@
 #ifndef DEF_OLD_HILLSBRAD_H
 #define DEF_OLD_HILLSBRAD_H
 
+#define DataHeader "OH"
+
 #define TYPE_BARREL_DIVERSION 1
 #define TYPE_THRALL_EVENT     2
 #define TYPE_THRALL_PART1     3

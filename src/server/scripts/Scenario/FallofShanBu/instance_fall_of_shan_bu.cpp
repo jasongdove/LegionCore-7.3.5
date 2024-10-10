@@ -32,7 +32,7 @@ public:
 
     struct instance_fall_of_shan_bu_InstanceMapScript : public InstanceScript
     {
-        instance_fall_of_shan_bu_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_fall_of_shan_bu_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

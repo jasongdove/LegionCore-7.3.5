@@ -15,8 +15,9 @@ class instance_end_time : public InstanceMapScript
 
         struct instance_end_time_InstanceMapScript : public InstanceScript
         {
-            instance_end_time_InstanceMapScript(Map* map) : InstanceScript(map)
+            instance_end_time_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
             {
+                SetHeaders(DataHeader);
                 SetBossNumber(MAX_ENCOUNTER);
                 uiTeamInInstance = 0;
                 uiFragmentsCollected = 0;
@@ -239,90 +240,51 @@ class instance_end_time : public InstanceMapScript
                 packet.Worldstates.emplace_back(WorldStates::WORLDSTATE_FRAGMENTS_COLLECTED, uiFragmentsCollected);
             }
 
-            std::string GetSaveData()
+            void WriteSaveDataMore(std::ostringstream& data) override
             {
-                OUT_SAVE_INST_DATA;
-
-                std::string str_data;
-
-                std::ostringstream saveStream;
-                saveStream << "E T " << GetBossSaveData() 
-                    << first_echo  << ' ' << second_echo << ' ' 
-                    << first_encounter << ' ' << second_encounter << ' '
-                    << jaina_event << ' ' << tyrande_event << ' '
-                    << nozdormu_dialog[0] << ' ' << nozdormu_dialog[1] << ' '
-                    << nozdormu_dialog[2] << ' ' << nozdormu_dialog[3] << ' ';
-
-                str_data = saveStream.str();
-
-                OUT_SAVE_INST_DATA_COMPLETE;
-                return str_data;
+                data << first_echo << ' ' << second_echo << ' '
+                     << first_encounter << ' ' << second_encounter << ' '
+                     << jaina_event << ' ' << tyrande_event << ' '
+                     << nozdormu_dialog[0] << ' ' << nozdormu_dialog[1] << ' '
+                     << nozdormu_dialog[2] << ' ' << nozdormu_dialog[3];
             }
 
-            void Load(const char* in)
+            void ReadSaveDataMore(std::istringstream& data) override
             {
-                if (!in)
+                uint32 temp_echo1 = 0;
+                data >> temp_echo1;
+                first_echo = temp_echo1;
+
+                uint32 temp_echo2 = 0;
+                data >> temp_echo2;
+                second_echo = temp_echo2;
+
+                uint32 temp_enc1 = 0;
+                data >> temp_enc1;
+                first_encounter = temp_enc1;
+
+                uint32 temp_enc2 = 0;
+                data >> temp_enc2;
+                second_encounter = temp_enc2;
+
+                uint32 temp = 0;
+                data >> temp;
+                jaina_event = temp ? DONE : NOT_STARTED;
+
+                uint32 temp_event = 0;
+                data >> temp_event;
+                if (temp_event == IN_PROGRESS || temp_event > SPECIAL)
+                    temp_event = NOT_STARTED;
+                tyrande_event = temp_event;
+
+                for (uint8 i = 0; i < 4; ++i)
                 {
-                    OUT_LOAD_INST_DATA_FAIL;
-                    return;
+                    uint32 tmpDialog;
+                    data >> tmpDialog;
+                    if (tmpDialog == IN_PROGRESS || tmpDialog > SPECIAL)
+                        tmpDialog = NOT_STARTED;
+                    nozdormu_dialog[i] = tmpDialog;
                 }
-
-                OUT_LOAD_INST_DATA(in);
-
-                char dataHead1, dataHead2;
-
-                std::istringstream loadStream(in);
-                loadStream >> dataHead1 >> dataHead2;
-
-                if (dataHead1 == 'E' && dataHead2 == 'T')
-                {
-                    for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-                    {
-                        uint32 tmpState;
-                        loadStream >> tmpState;
-                        if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                            tmpState = NOT_STARTED;
-                        SetBossState(i, EncounterState(tmpState));
-                    }
-
-                    uint32 temp_echo1 = 0;
-                    loadStream >> temp_echo1;
-                    first_echo = temp_echo1;
-
-                    uint32 temp_echo2 = 0;
-                    loadStream >> temp_echo2;
-                    second_echo = temp_echo2;
-
-                    uint32 temp_enc1 = 0;
-                    loadStream >> temp_enc1;
-                    first_encounter = temp_enc1;
-
-                    uint32 temp_enc2 = 0;
-                    loadStream >> temp_enc2;
-                    second_encounter = temp_enc2;
-
-                    uint32 temp = 0;
-                    loadStream >> temp;
-                    jaina_event = temp ? DONE : NOT_STARTED;
-
-                    uint32 temp_event = 0;
-                    loadStream >> temp_event;
-                    if (temp_event == IN_PROGRESS || temp_event > SPECIAL)
-                        temp_event = NOT_STARTED;
-                    tyrande_event = temp_event;
-
-                    for (uint8 i = 0; i < 4; ++i)
-                    {
-                        uint32 tmpDialog;
-                        loadStream >> tmpDialog;
-                        if (tmpDialog == IN_PROGRESS || tmpDialog > SPECIAL)
-                            tmpDialog = NOT_STARTED;
-                        nozdormu_dialog[i] = tmpDialog;
-                    }
-
-                } else OUT_LOAD_INST_DATA_FAIL;
-
-                OUT_LOAD_INST_DATA_COMPLETE;
             }
 
             private:

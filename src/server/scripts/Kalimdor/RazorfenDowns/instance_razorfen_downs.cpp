@@ -33,8 +33,9 @@ public:
 
     struct instance_razorfen_downs_InstanceMapScript : public InstanceScript
     {
-        instance_razorfen_downs_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_razorfen_downs_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
         }
 
         ObjectGuid uiGongGUID;
@@ -54,49 +55,14 @@ public:
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
         }
 
-        std::string GetSaveData()
+        void WriteSaveDataMore(std::ostringstream& data) override
         {
-            OUT_SAVE_INST_DATA;
-
-            std::ostringstream saveStream;
-
-            saveStream << "T C " << m_auiEncounter[0]
-                << ' ' << uiGongWaves;
-
-            str_data = saveStream.str();
-
-            OUT_SAVE_INST_DATA_COMPLETE;
-            return str_data;
+            data << uiGongWaves;
         }
 
-        void Load(const char* in)
+        void ReadSaveDataMore(std::istringstream& data) override
         {
-            if (!in)
-            {
-                OUT_LOAD_INST_DATA_FAIL;
-                return;
-            }
-
-            OUT_LOAD_INST_DATA(in);
-
-            char dataHead1, dataHead2;
-            uint16 data0, data1;
-
-            std::istringstream loadStream(in);
-            loadStream >> dataHead1 >> dataHead2 >> data0 >> data1;
-
-            if (dataHead1 == 'T' && dataHead2 == 'C')
-            {
-                m_auiEncounter[0] = data0;
-
-                for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-                    if (m_auiEncounter[i] == IN_PROGRESS)
-                        m_auiEncounter[i] = NOT_STARTED;
-
-                uiGongWaves = data1;
-            } else OUT_LOAD_INST_DATA_FAIL;
-
-            OUT_LOAD_INST_DATA_COMPLETE;
+            data >> uiGongWaves;
         }
 
         void OnGameObjectCreate(GameObject* go)

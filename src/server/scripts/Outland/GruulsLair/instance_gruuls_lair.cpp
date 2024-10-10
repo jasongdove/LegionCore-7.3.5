@@ -46,7 +46,7 @@ public:
 
     struct instance_gruuls_lair_InstanceMapScript : public InstanceScript
     {
-        instance_gruuls_lair_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_gruuls_lair_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         uint32 m_auiEncounter[MAX_ENCOUNTER];
 
@@ -62,6 +62,8 @@ public:
 
         void Initialize()
         {
+            SetHeaders(DataHeader);
+
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
             MaulgarEvent_Tank.Clear();

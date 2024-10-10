@@ -3,6 +3,8 @@
 
 #ifndef STORMSTOUT_BREWERY_H_
 #define STORMSTOUT_BREWERY_H_
+
+#define DataHeader "SSB"
 #define SBScriptName "instance_stormstout_brewery"
 
 enum DataTypes

@@ -5,6 +5,8 @@
 #ifndef UPPER_SKYREACH_H_
 #define UPPER_SKYREACH_H_
 
+#define DataHeader "SR"
+
 enum eData
 {
     DATA_RANJIT     = 0,

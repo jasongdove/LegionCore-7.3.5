@@ -1,7 +1,6 @@
 #include "ScriptMgr.h"
 #include "Creature.h"
 #include "InstanceScript.h"
-#include "Map.h"
 #include "the_slave_pens.h"
 
 class instance_the_slave_pens : public InstanceMapScript
@@ -11,8 +10,9 @@ public:
 
     struct instance_the_slave_pens_InstanceMapScript : public InstanceScript
     {
-        instance_the_slave_pens_InstanceMapScript(Map* map) : InstanceScript(map) 
-        { 
+        instance_the_slave_pens_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
+        {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 

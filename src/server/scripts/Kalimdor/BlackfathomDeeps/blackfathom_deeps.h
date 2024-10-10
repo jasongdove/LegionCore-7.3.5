@@ -19,6 +19,8 @@
 #ifndef DEF_BFD_H
 #define DEF_BFD_H
 
+#define DataHeader "BFD"
+
 enum Data64
 {
     DATA_SHRINE1,

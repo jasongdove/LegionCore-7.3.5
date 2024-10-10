@@ -19,6 +19,8 @@
 #ifndef DEF_TEMPLE_OF_AHNQIRAJ_H
 #define DEF_TEMPLE_OF_AHNQIRAJ_H
 
+#define DataHeader "TA"
+
 #define DATA_SKERAM              1
 #define DATA_KRI                 2
 #define DATA_VEM                 3

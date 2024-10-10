@@ -23,6 +23,7 @@ class instance_the_vortex_pinnacle : public InstanceMapScript
 
             void Initialize()
             {
+                SetHeaders(DataHeader);
                 SetBossNumber(MAX_ENCOUNTER);
                 uiGrandVizierErtanGUID.Clear();
                 uiAltairusGUID.Clear();
@@ -86,50 +87,6 @@ class instance_the_vortex_pinnacle : public InstanceMapScript
                         return uiAsaadGUID;
                 }
                 return ObjectGuid::Empty;
-            }
-
-            std::string GetSaveData()
-            {
-                OUT_SAVE_INST_DATA;
-
-                std::string str_data;
-                std::ostringstream saveStream;
-                saveStream << "V P" << GetBossSaveData(); 
-                str_data = saveStream.str();
-
-                OUT_SAVE_INST_DATA_COMPLETE;
-                return str_data;
-            }
-
-            void Load(const char* in)
-            {
-                if (!in)
-                {
-                    OUT_LOAD_INST_DATA_FAIL;
-                    return;
-                }
-
-                OUT_LOAD_INST_DATA(in);
-
-                char dataHead1, dataHead2;
-
-                std::istringstream loadStream(in);
-                loadStream >> dataHead1 >> dataHead2;
-
-                if (dataHead1 == 'V' && dataHead2 == 'P')
-                {
-                    for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-                    {
-                        uint32 tmpState;
-                        loadStream >> tmpState;
-                        if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                            tmpState = NOT_STARTED;
-                        SetBossState(i, EncounterState(tmpState));
-                    }
-                }
-                else OUT_LOAD_INST_DATA_FAIL;
-
-                OUT_LOAD_INST_DATA_COMPLETE;
             }
         };
 };

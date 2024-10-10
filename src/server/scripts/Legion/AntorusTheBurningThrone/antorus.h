@@ -1,6 +1,8 @@
 #ifndef AntorusH_
 #define AntorusH_
 
+#define DataHeader "ATBT"
+
 enum eData
 {
     DATA_WORLDBREAKER       = 0,

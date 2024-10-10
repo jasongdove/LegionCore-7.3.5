@@ -1,6 +1,7 @@
 #ifndef DEF_BLACKWING_DESCENT_H
 #define DEF_BLACKWING_DESCENT_H
 
+#define DataHeader "BD"
 #define BDScriptName "instance_blackwing_descent"
 
 enum Data

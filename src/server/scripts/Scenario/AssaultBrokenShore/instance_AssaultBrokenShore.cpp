@@ -17,7 +17,7 @@ public:
 
     struct instance_AssaultBrokenShore_InstanceMapScript : public InstanceScript
     {
-        instance_AssaultBrokenShore_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_AssaultBrokenShore_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         WorldLocation loc_res_pla;  // for respawn
 

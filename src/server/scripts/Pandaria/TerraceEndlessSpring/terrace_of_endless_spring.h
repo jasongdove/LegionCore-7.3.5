@@ -20,6 +20,8 @@
 #ifndef TERRACE_OF_ENDLESS_SPRING_H_
 #define TERRACE_OF_ENDLESS_SPRING_H_
 
+#define DataHeader "TES"
+
 #include "SpellScript.h"
 #include "Map.h"
 #include "Creature.h"

@@ -7,12 +7,13 @@ public:
 
     struct instance_blackrock_foundry_InstanceMapScript : public InstanceScript
     {
-        instance_blackrock_foundry_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_blackrock_foundry_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         WorldLocation loc_res_pla;
 
         void Initialize() override
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MaxBossData);
         }
 

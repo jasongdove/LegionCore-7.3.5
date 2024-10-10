@@ -32,7 +32,7 @@ public:
 
     struct instance_crypt_of_forgotten_kings_InstanceMapScript : public InstanceScript
     {
-        instance_crypt_of_forgotten_kings_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_crypt_of_forgotten_kings_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

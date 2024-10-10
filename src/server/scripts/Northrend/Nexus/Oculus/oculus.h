@@ -18,6 +18,8 @@
 #ifndef OCULUS_H_
 #define OCULUS_H_
 
+#define DataHeader "OC"
+
 uint32 const EncounterCount = 4;
 
 enum DataTypes

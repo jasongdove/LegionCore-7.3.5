@@ -1,6 +1,8 @@
 #ifndef DEF_HELLFIRE_CITADEL_H
 #define DEF_HELLFIRE_CITADEL_H
 
+#define DataHeader "HFC"
+
 enum DataTypes
 {
     DATA_HELLFIRE_ASSAULT     = 0,

@@ -32,7 +32,7 @@ public:
 
     struct instance_blood_in_the_snow_InstanceMapScript : public InstanceScript
     {
-        instance_blood_in_the_snow_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_blood_in_the_snow_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

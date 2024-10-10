@@ -32,7 +32,7 @@ public:
 
     struct instance_assault_on_zanvess_InstanceMapScript : public InstanceScript
     {
-        instance_assault_on_zanvess_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_assault_on_zanvess_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

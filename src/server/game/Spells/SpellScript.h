@@ -375,7 +375,7 @@ class SpellScript : public _SpellScript
         // methods allowing interaction with Spell object
         //
         // methods useable during all spell handling phases
-        Unit* GetCaster();
+        Unit* GetCaster() const;
         Unit* GetOriginalCaster();
         SpellInfo const* GetSpellInfo();
         SpellValue const* GetSpellValue();
@@ -411,7 +411,7 @@ class SpellScript : public _SpellScript
 
         // methods useable only during spell hit on target, or during spell launch on target:
         // returns: target of current effect if it was Unit otherwise NULL
-        Unit* GetHitUnit();
+        Unit* GetHitUnit() const;
         Unit* GetOriginalTarget();
         // returns: target of current effect if it was Creature otherwise NULL
         Creature* GetHitCreature();
@@ -456,7 +456,7 @@ class SpellScript : public _SpellScript
         void PreventHitDefaultEffect(SpellEffIndex effIndex);
 
         // method avalible only in EffectHandler method
-        int32 GetEffectValue();
+        int32 GetEffectValue() const;
         void SetEffectValue(int32 val);
 
         // returns: cast item if present.

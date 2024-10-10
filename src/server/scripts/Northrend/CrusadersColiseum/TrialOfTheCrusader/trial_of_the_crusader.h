@@ -5,6 +5,8 @@
 #ifndef DEF_CRUSADER_H
 #define DEF_CRUSADER_H
 
+#define DataHeader "TOTC"
+
 enum DataTypes
 {
     BOSS_BEASTS                 = 0,

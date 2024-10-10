@@ -32,7 +32,7 @@ public:
 
     struct instance_lions_landing_InstanceMapScript : public InstanceScript
     {
-        instance_lions_landing_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_lions_landing_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

@@ -70,8 +70,9 @@ public:
 
     struct instance_blackwing_lair_InstanceMapScript : public InstanceScript
     {
-        instance_blackwing_lair_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_blackwing_lair_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(EncounterCount);
         }
 

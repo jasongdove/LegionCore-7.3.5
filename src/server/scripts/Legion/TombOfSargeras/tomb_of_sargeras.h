@@ -1,6 +1,8 @@
 #ifndef TombOsSargeasH_
 #define TombOsSargeasH_
 
+#define DataHeader "TOS"
+
 enum eData
 {
     DATA_GOROTH                     = 0,

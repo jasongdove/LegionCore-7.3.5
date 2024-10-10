@@ -17,6 +17,9 @@
 
 #ifndef DEF_HALLS_OF_STONE_H
 #define DEF_HALLS_OF_STONE_H
+
+#define DataHeader "HOS"
+
 enum Data
 {
     DATA_KRYSTALLUS_EVENT,

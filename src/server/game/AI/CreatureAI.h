@@ -214,7 +214,7 @@ public:
 protected:
     virtual void MoveInLineOfSight(Unit* /*who*/);
 
-    bool _EnterEvadeMode();
+    virtual bool _EnterEvadeMode();
 
 private:
     bool m_MoveInLineOfSight_locked;

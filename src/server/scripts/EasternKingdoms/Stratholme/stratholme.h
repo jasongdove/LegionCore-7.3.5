@@ -19,6 +19,8 @@
 #ifndef DEF_STRATHOLME_H
 #define DEF_STRATHOLME_H
 
+#define DataHeader "STR"
+
 #define TYPE_BARON_RUN          1
 #define TYPE_BARONESS           2
 #define TYPE_NERUB              3

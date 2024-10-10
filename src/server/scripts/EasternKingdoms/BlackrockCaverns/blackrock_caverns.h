@@ -1,6 +1,8 @@
 #ifndef DEF_BLACKROCK_CAVERNS_H
 #define DEF_BLACKROCK_CAVERNS_H
 
+#define DataHeader "BC"
+
 enum Data
 {
     DATA_ROMOGG                     = 1,

@@ -1,6 +1,8 @@
 #ifndef DEF_THESTONECORE_H_
 #define DEF_THESTONECORE_H_
 
+#define DataHeader "PS"
+
 enum eData
 {
     DATA_CORBORUS               = 0,

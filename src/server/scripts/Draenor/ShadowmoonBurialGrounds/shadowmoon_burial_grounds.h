@@ -5,6 +5,8 @@
 #ifndef SHADOWMOON_BURIAL_GROUNDS_H_
 #define SHADOWMOON_BURIAL_GROUNDS_H_
 
+#define DataHeader "SBG"
+
 enum eData
 {
     DATA_SADANA     = 0,

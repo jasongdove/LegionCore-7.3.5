@@ -18,6 +18,8 @@
 #ifndef DRAK_THARON_KEEP_H_
 #define DRAK_THARON_KEEP_H_
 
+#define DataHeader "DTK"
+
 uint32 const EncounterCount = 4;
 
 enum DataTypes

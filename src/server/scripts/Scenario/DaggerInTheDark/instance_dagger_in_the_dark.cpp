@@ -32,7 +32,7 @@ public:
 
     struct instance_dagger_in_the_dark_InstanceMapScript : public InstanceScript
     {
-        instance_dagger_in_the_dark_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_dagger_in_the_dark_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

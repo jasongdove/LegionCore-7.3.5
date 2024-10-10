@@ -32,7 +32,7 @@ public:
 
     struct instance_a_brewing_storm_InstanceMapScript : public InstanceScript
     {
-        instance_a_brewing_storm_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_a_brewing_storm_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

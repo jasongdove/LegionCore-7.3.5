@@ -5,6 +5,8 @@
 #ifndef MAW_OF_SOULS_H_
 #define MAW_OF_SOULS_H_
 
+#define DataHeader "MOS"
+
 enum eData
 {
     DATA_YMIRON         = 0,

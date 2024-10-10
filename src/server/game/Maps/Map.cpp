@@ -4335,7 +4335,11 @@ void InstanceMap::CreateInstanceData(InstanceSave* save)
             #endif
             i_data->Load(data.c_str());
         }
+        else
+            i_data->Create();
     }
+    else
+        i_data->Create();
 }
 
 /*

@@ -520,7 +520,7 @@ class WorldObject : public Object, public WorldLocation
         uint32 GetAreaId() const;
         void GetZoneAndAreaId(uint32& zoneid, uint32& areaid) const;
 
-        InstanceScript* GetInstanceScript();
+        InstanceScript* GetInstanceScript() const;
 
         const char* GetName() const { return m_name.c_str(); }
         void SetName(std::string const& newname) { m_name=newname; }

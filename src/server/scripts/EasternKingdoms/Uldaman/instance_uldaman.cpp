@@ -43,12 +43,13 @@ class instance_uldaman : public InstanceMapScript
 
         struct instance_uldaman_InstanceMapScript : public InstanceScript
         {
-            instance_uldaman_InstanceMapScript(Map* map) : InstanceScript(map)
+            instance_uldaman_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
             {
             }
 
             void Initialize()
             {
+                SetHeaders(DataHeader);
                 memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
                 uiArchaedasGUID.Clear();

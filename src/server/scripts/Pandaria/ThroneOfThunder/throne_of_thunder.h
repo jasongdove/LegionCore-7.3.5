@@ -4,6 +4,8 @@
 #ifndef THRONEOFTHUNDER
 #define THRONEOFTHUNDER
 
+#define DataHeader "TOT"
+
 enum eData
 {
     DATA_STORM_CALLER           = 1, //Mini Boss

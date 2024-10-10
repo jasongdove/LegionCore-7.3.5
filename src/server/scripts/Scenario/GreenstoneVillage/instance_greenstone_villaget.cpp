@@ -32,7 +32,7 @@ public:
 
     struct instance_greenstone_village_InstanceMapScript : public InstanceScript
     {
-        instance_greenstone_village_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_greenstone_village_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

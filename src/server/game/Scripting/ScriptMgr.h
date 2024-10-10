@@ -396,9 +396,11 @@ class AreaTriggerScript : public ScriptObject
 {
     protected:
 
-        AreaTriggerScript(std::string name);
+        explicit AreaTriggerScript(std::string name);
 
     public:
+
+        ~AreaTriggerScript();
 
         bool IsDatabaseBound() const override { return true; }
 
@@ -407,6 +409,23 @@ class AreaTriggerScript : public ScriptObject
 
         // Called when a AreaTriggerAI object is needed for the areatrigger.
         virtual AreaTriggerAI* GetAI(AreaTrigger* /*at*/) const { return nullptr; }
+};
+
+class OnlyOnceAreaTriggerScript : public AreaTriggerScript
+{
+        using AreaTriggerScript::AreaTriggerScript;
+
+    public:
+
+        ~OnlyOnceAreaTriggerScript();
+
+        bool OnTrigger(Player* player, AreaTriggerEntry const* trigger, bool enter) final;
+
+    protected:
+        // returns true if the trigger was successfully handled, false if we should try again next time
+        virtual bool TryHandleOnce(Player* player, AreaTriggerEntry const* trigger) = 0;
+        void ResetAreaTriggerDone(InstanceScript* instance, uint32 triggerId);
+        void ResetAreaTriggerDone(Player const* player, AreaTriggerEntry const* trigger);
 };
 
 class SceneTriggerScript : public ScriptObject

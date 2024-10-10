@@ -27,13 +27,14 @@ public:
 
         void Initialize()
         {
-             uiRomoggGUID.Clear();
-             uiCorlaGUID.Clear();
-             uiKarshGUID.Clear();
-             uiBeautyGUID.Clear();
-             uiLordObsidiusGUID.Clear();
-             for (int32 i = 0; i < 4; ++i)
-                 m_uiPortalGUID[i].Clear();
+            SetHeaders(DataHeader);
+            uiRomoggGUID.Clear();
+            uiCorlaGUID.Clear();
+            uiKarshGUID.Clear();
+            uiBeautyGUID.Clear();
+            uiLordObsidiusGUID.Clear();
+            for (int32 i = 0; i < 4; ++i)
+                m_uiPortalGUID[i].Clear();
         }
 
         void OnCreatureCreate(Creature* pCreature)

@@ -18,7 +18,7 @@ public:
 
     struct instance_devourer_InstanceMapScript : public InstanceScript
     {
-        instance_devourer_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_devourer_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
         
         WorldLocation loc_res_pla;  // for respawn
         std::list<Creature*> trashGUIDconteiner;

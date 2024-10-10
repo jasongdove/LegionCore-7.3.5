@@ -13,7 +13,7 @@ public:
 
     struct instance_proving_grounds_InstanceMapScript : public InstanceScript
     {
-        instance_proving_grounds_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_proving_grounds_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

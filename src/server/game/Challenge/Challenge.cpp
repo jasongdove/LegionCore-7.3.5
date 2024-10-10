@@ -26,7 +26,7 @@
 #include "MiscPackets.h"
 #include "WorldStatePackets.h"
 
-Challenge::Challenge(Map* map, Player* player, uint32 instanceID, Scenario* scenario) : InstanceScript(map), _instanceScript(nullptr), _challengeEntry(nullptr), _isKeyDepleted(false), _scenario(scenario)
+Challenge::Challenge(InstanceMap* map, Player* player, uint32 instanceID, Scenario* scenario) : InstanceScript(map), _instanceScript(nullptr), _challengeEntry(nullptr), _isKeyDepleted(false), _scenario(scenario)
 {
     if (!player)
     {

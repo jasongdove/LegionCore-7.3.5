@@ -1,6 +1,7 @@
 #ifndef DEF_VORTEX_PINNACLE_H
 #define DEF_VORTEX_PINNACLE_H
 
+#define DataHeader "VP"
 #define VPScriptName "instance_the_vortex_pinnacle"
 
 enum Data

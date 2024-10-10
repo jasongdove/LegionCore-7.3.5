@@ -488,7 +488,7 @@ bool SpellScript::IsInEffectHook() const
     return (m_currentScriptState >= SPELL_SCRIPT_HOOK_EFFECT_LAUNCH && m_currentScriptState <= SPELL_SCRIPT_HOOK_EFFECT_HIT_TARGET) || m_currentScriptState == SPELL_SCRIPT_HOOK_EFFECT_SUCCESSFUL_DISPEL;
 }
 
-Unit* SpellScript::GetCaster()
+Unit* SpellScript::GetCaster() const
 {
     return m_spell->GetCaster();
 }
@@ -540,7 +540,7 @@ Item* SpellScript::GetExplTargetItem()
     return m_spell->m_targets.GetItemTarget();
 }
 
-Unit* SpellScript::GetHitUnit()
+Unit* SpellScript::GetHitUnit() const
 {
     if (!IsInTargetHook())
     {
@@ -745,7 +745,7 @@ void SpellScript::PreventHitDefaultEffect(SpellEffIndex effIndex)
     m_hitPreventDefaultEffectMask |= 1 << effIndex;
 }
 
-int32 SpellScript::GetEffectValue()
+int32 SpellScript::GetEffectValue() const
 {
     if (!IsInEffectHook())
     {

@@ -4,6 +4,8 @@
 #ifndef MOGUSHAN_PALACE_H_
 #define MOGUSHAN_PALACE_H_
 
+#define DataHeader "MSP"
+
 enum eData
 {
     DATA_TRIAL_OF_THE_KING      = 0,

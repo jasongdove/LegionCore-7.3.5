@@ -18,6 +18,7 @@
 #ifndef DEF_FORGE_OF_SOULS_H
 #define DEF_FORGE_OF_SOULS_H
 
+#define DataHeader "FOS"
 #define FoSScriptName "instance_forge_of_souls"
 
 enum Data

@@ -26,8 +26,9 @@ public:
 
     struct instance_bastion_of_twilight_InstanceMapScript: public InstanceScript
     {
-        instance_bastion_of_twilight_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_bastion_of_twilight_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
             LoadDoorData(doordata);
             uiWyrmbreakerGUID.Clear();
@@ -292,65 +293,22 @@ public:
             return true;
         }
 
-        std::string GetDialogSaveData()
+        void WriteSaveDataMore(std::ostringstream& data) override
         {
-            std::ostringstream saveStream;
+            for (unsigned int m_uiDialog : m_uiDialogs)
+                data << (uint32)m_uiDialog << " ";
+        }
+
+        void ReadSaveDataMore(std::istringstream& data) override
+        {
             for (uint8 i = 0; i < 8; i++)
-                saveStream << (uint32)m_uiDialogs[i] << " ";
-            return saveStream.str();
-        }
-
-        std::string GetSaveData()
-        {
-            OUT_SAVE_INST_DATA;
-
-            std::string str_data;
-
-            std::ostringstream saveStream;
-            saveStream << "B T " << GetBossSaveData() << GetDialogSaveData();
-
-            str_data = saveStream.str();
-
-            OUT_SAVE_INST_DATA_COMPLETE;
-            return str_data;
-        }
-
-        void Load(const char* in)
-        {
-            if (!in)
             {
-                OUT_LOAD_INST_DATA_FAIL;
-                return;
+                uint32 tmpDlg;
+                data >> tmpDlg;
+                if (tmpDlg != DONE)
+                    tmpDlg = NOT_STARTED;
+                m_uiDialogs[i] = tmpDlg;
             }
-
-            OUT_LOAD_INST_DATA(in);
-
-            char dataHead1, dataHead2;
-
-            std::istringstream loadStream(in);
-            loadStream >> dataHead1 >> dataHead2;
-
-            if (dataHead1 == 'B' && dataHead2 == 'T')
-            {
-                for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-                {
-                    uint32 tmpState;
-                    loadStream >> tmpState;
-                    if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                        tmpState = NOT_STARTED;
-                    SetBossState(i, EncounterState(tmpState));
-                }
-                for (uint8 i = 0; i < 8; i++)
-                {
-                    uint32 tmpDlg;
-                    loadStream >> tmpDlg;
-                    if (tmpDlg != DONE)
-                        tmpDlg = NOT_STARTED;
-                    m_uiDialogs[i] = tmpDlg;
-                }
-            } else OUT_LOAD_INST_DATA_FAIL;
-
-            OUT_LOAD_INST_DATA_COMPLETE;
         }
 
         private:

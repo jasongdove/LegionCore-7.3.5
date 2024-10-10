@@ -126,7 +126,7 @@ public:
 
     struct instance_siege_of_orgrimmar_InstanceMapScript : public InstanceScript
     {
-        instance_siege_of_orgrimmar_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_siege_of_orgrimmar_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         std::map<uint32, ObjectGuid> easyGUIDconteiner;
         //count killed klaxxi
@@ -255,6 +255,7 @@ public:
 
         void Initialize()
         {
+            SetHeaders(DataHeader);
             SetBossNumber(DATA_MAX);
             LoadDoorData(doorData);
 
@@ -2491,44 +2492,14 @@ public:
             return true;
         }
 
-        std::string GetSaveData()
+        void WriteSaveDataMore(std::ostringstream& data) override
         {
-            std::ostringstream saveStream;
-            saveStream << "S O " << GetBossSaveData() << " " << EventfieldOfSha;
-            return saveStream.str();
+            data << EventfieldOfSha;
         }
 
-        void Load(const char* data)
+        void ReadSaveDataMore(std::istringstream& data) override
         {
-            if (!data)
-            {
-                OUT_LOAD_INST_DATA_FAIL;
-                return;
-            }
-
-            OUT_LOAD_INST_DATA(data);
-
-            char dataHead1, dataHead2;
-
-            std::istringstream loadStream(data);
-            loadStream >> dataHead1 >> dataHead2;
-
-            if (dataHead1 == 'S' && dataHead2 == 'O')
-            {
-                for (uint32 i = 0; i < DATA_MAX; ++i)
-                {
-                    uint32 tmpState;
-                    loadStream >> tmpState;
-                    if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                        tmpState = NOT_STARTED;
-                    SetBossState(i, EncounterState(tmpState));
-                }
-                loadStream >> EventfieldOfSha;
-            }
-            else
-                OUT_LOAD_INST_DATA_FAIL;
-
-            OUT_LOAD_INST_DATA_COMPLETE;
+            data >> EventfieldOfSha;
         }
         
         bool CheckRequiredBosses(uint32 bossId, uint32 entry, Player const* player = NULL) const

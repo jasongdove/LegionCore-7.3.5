@@ -18,6 +18,7 @@
 #ifndef DEF_PIT_OF_SARON_H
 #define DEF_PIT_OF_SARON_H
 
+#define DataHeader "POS"
 #define PoSScriptName "instance_pit_of_saron"
 #define MAX_ENCOUNTER 3
 

@@ -100,7 +100,7 @@ public:
 
     struct instance_zulfarrak_InstanceMapScript : public InstanceScript
     {
-        instance_zulfarrak_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_zulfarrak_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         uint32 GahzRillaEncounter;
         ObjectGuid ZumrahGUID;
@@ -118,6 +118,7 @@ public:
 
         void Initialize()
         {
+            SetHeaders(DataHeader);
             GahzRillaEncounter = NOT_STARTED;
             ZumrahGUID.Clear();
             BlyGUID.Clear();

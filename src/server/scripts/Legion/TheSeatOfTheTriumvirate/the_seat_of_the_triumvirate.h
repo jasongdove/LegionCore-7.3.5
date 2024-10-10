@@ -5,6 +5,8 @@
 #ifndef SEAT_OF_THE_TRIUMVIRATE_H_
 #define SEAT_OF_THE_TRIUMVIRATE_H_
 
+#define DataHeader "SOTT"
+
 enum eData
 {
     DATA_ZURAAL         = 0,

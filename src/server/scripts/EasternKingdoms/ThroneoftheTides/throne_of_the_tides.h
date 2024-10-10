@@ -1,6 +1,8 @@
 #ifndef DEF_THRONEOFTHETIDES_H_
 #define DEF_THRONEOFTHETIDES_H_
 
+#define DataHeader "TotT"
+
 enum CreatureIds
 {
     NPC_LADY_NAZJAR_EVENT       = 39959,

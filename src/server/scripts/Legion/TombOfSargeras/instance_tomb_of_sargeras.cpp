@@ -124,12 +124,12 @@ public:
 
     struct instance_tomb_of_sargeras_InstanceMapScript : InstanceScript
     {
-        instance_tomb_of_sargeras_InstanceMapScript(Map* map) : InstanceScript(map) 
+        instance_tomb_of_sargeras_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 
-        
         std::vector<ObjectGuid> addsIntro{};
         std::set<ObjectGuid> lunarArchersEvent{};
         WorldLocation loc_res_pla{};
@@ -482,46 +482,6 @@ public:
             }
 
             return &loc_res_pla;
-        }
-
-        std::string GetSaveData() override
-        {
-            std::ostringstream saveStream;
-            saveStream << "T O S " << GetBossSaveData();
-            return saveStream.str();
-        }
-
-        void Load(const char* data) override
-        {
-            if (!data)
-            {
-                OUT_LOAD_INST_DATA_FAIL;
-                return;
-            }
-
-            OUT_LOAD_INST_DATA(data);
-
-            char dataHead1, dataHead2, dataHead3;
-
-            std::istringstream loadStream(data);
-            loadStream >> dataHead1 >> dataHead2 >> dataHead3;
-
-            if (dataHead1 == 'T' && dataHead2 == 'O' && dataHead3 == 'S')
-            {
-                for (uint32 i = 0; i < MAX_ENCOUNTER; ++i)
-                {
-                    uint32 tmpState;
-                    loadStream >> tmpState;
-                    if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                        tmpState = NOT_STARTED;
-                    SetBossState(i, EncounterState(tmpState));
-                }
-            }
-            else
-                OUT_LOAD_INST_DATA_FAIL;
-
-            OUT_LOAD_INST_DATA_COMPLETE;
-
         }
 
         void Update(uint32 diff) override

@@ -5,6 +5,8 @@
 #ifndef VAULT_OF_THE_WARDENS_H_
 #define VAULT_OF_THE_WARDENS_H_
 
+#define DataHeader "VOW"
+
 enum eData
 {
     DATA_SALTHERIL          = 0,

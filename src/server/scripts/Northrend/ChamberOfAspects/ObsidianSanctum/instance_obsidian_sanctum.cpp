@@ -37,7 +37,7 @@ public:
 
     struct instance_obsidian_sanctum_InstanceMapScript : public InstanceScript
     {
-        instance_obsidian_sanctum_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_obsidian_sanctum_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         uint32 m_auiEncounter[MAX_ENCOUNTER];
         ObjectGuid m_uiSartharionGUID;
@@ -51,6 +51,7 @@ public:
 
         void Initialize() override
         {
+            SetHeaders(DataHeader);
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
             m_uiSartharionGUID.Clear();

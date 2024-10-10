@@ -1,6 +1,8 @@
 #ifndef THESLAVEPENS_H_
 #define THESLAVEPENS_H_
 
+#define DataHeader "SP"
+
 enum eData
 {
     DATA_MENNU = 0,

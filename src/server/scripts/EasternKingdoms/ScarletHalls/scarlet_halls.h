@@ -19,6 +19,8 @@
 #ifndef DEF_SCARLET_H
 #define DEF_SCARLET_H 
 
+#define DataHeader "SH"
+
 enum Data
 {
     DATA_BRAUN      = 0,

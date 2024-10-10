@@ -34,7 +34,6 @@ public:
         instance_blackrock_spireMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         uint32 encounter[MAX_ENCOUNTER];
-        std::string m_strInstData;
         ObjectGuid HighlordOmokk;
         ObjectGuid ShadowHunterVoshgajin;
         ObjectGuid WarMasterVoone;
@@ -53,11 +52,12 @@ public:
         ObjectGuid go_doors;
         ObjectGuid go_emberseerout;
         ObjectGuid go_roomrunes[MAX_DRAGONSPIRE_HALL_RUNES];
-        uint8 Runemaxprotectors[MAX_DRAGONSPIRE_HALL_RUNES];
-        uint8 Runeprotectorsdead[MAX_DRAGONSPIRE_HALL_RUNES];
+        //uint8 Runemaxprotectors[MAX_DRAGONSPIRE_HALL_RUNES];
+        //uint8 Runeprotectorsdead[MAX_DRAGONSPIRE_HALL_RUNES];
 
         void Initialize()
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
             HighlordOmokk.Clear();
             ShadowHunterVoshgajin.Clear();
@@ -278,48 +278,7 @@ public:
 
             return ObjectGuid::Empty;
         }
-
-        std::string GetSaveData()
-        {
-            OUT_SAVE_INST_DATA;
-
-            std::ostringstream saveStream;
-            saveStream << "B S " << GetBossSaveData();
-
-            OUT_SAVE_INST_DATA_COMPLETE;
-            return saveStream.str();
-        }
-
-        void Load(const char* strIn)
-        {
-            if (!strIn)
-            {
-                OUT_LOAD_INST_DATA_FAIL;
-                return;
-            }
-
-            OUT_LOAD_INST_DATA(strIn);
-
-            char dataHead1, dataHead2;
-
-            std::istringstream loadStream(strIn);
-            loadStream >> dataHead1 >> dataHead2;
-
-            if (dataHead1 == 'B' && dataHead2 == 'S')
-            {
-                for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-                {
-                    uint32 tmpState;
-                    loadStream >> tmpState;
-                    if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                        tmpState = NOT_STARTED;
-                }
-            }
-
-            OUT_LOAD_INST_DATA_COMPLETE;
-        }
     };
-
 };
 
 void AddSC_instance_blackrock_spire()

@@ -75,8 +75,9 @@ public:
 
     struct instance_the_nightnold_InstanceMapScript : InstanceScript
     {
-        explicit instance_the_nightnold_InstanceMapScript(Map* map) : InstanceScript(map)
+        explicit instance_the_nightnold_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 
@@ -406,45 +407,14 @@ public:
             return true;
         }
 
-        std::string GetSaveData() override
+        void WriteSaveDataMore(std::ostringstream& data) override
         {
-            std::ostringstream saveStream;
-            saveStream << "N H " << GetBossSaveData() << trilliaxIntro << KrosusIntroTrash;
-            return saveStream.str();
+            data << trilliaxIntro << " " << KrosusIntroTrash;
         }
 
-        void Load(const char* data) override
+        void ReadSaveDataMore(std::istringstream& data) override
         {
-            if (!data)
-            {
-                OUT_LOAD_INST_DATA_FAIL;
-                return;
-            }
-
-            OUT_LOAD_INST_DATA(data);
-
-            char dataHead1, dataHead2;
-
-            std::istringstream loadStream(data);
-            loadStream >> dataHead1 >> dataHead2;
-
-            if (dataHead1 == 'N' && dataHead2 == 'H')
-            {
-                for (uint32 i = 0; i < MAX_ENCOUNTER; ++i)
-                {
-                    uint32 tmpState;
-                    loadStream >> tmpState;
-                    if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                        tmpState = NOT_STARTED;
-                    SetBossState(i, EncounterState(tmpState));
-                }
-                loadStream >> trilliaxIntro >> KrosusIntroTrash;
-            }
-            else
-                OUT_LOAD_INST_DATA_FAIL;
-
-            OUT_LOAD_INST_DATA_COMPLETE;
-
+            data >> trilliaxIntro >> KrosusIntroTrash;
         }
 
         WorldLocation* GetClosestGraveYard(float x, float y, float z) override

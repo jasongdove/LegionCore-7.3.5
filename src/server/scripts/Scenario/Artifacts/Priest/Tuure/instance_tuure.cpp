@@ -18,7 +18,7 @@ public:
 
     struct instance_tuure_InstanceMapScript : public InstanceScript
     {
-        instance_tuure_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_tuure_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
         
         WorldLocation loc_res_pla;  // for respawn
 

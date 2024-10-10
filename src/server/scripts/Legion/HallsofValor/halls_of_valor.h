@@ -5,6 +5,8 @@
 #ifndef HALLS_OF_VALOR_H_
 #define HALLS_OF_VALOR_H_
 
+#define DataHeader "HOV"
+
 enum eData
 {
     DATA_HYMDALL        = 0,

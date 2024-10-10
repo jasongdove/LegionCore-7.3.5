@@ -4,6 +4,8 @@
 #ifndef SIEGE_NIUZOA_TEMPLE_H_
 #define SIEGE_NIUZOA_TEMPLE_H_
 
+#define DataHeader "SNT"
+
 enum DataTypes
 {
     DATA_JINBAK     = 1,

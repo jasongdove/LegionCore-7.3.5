@@ -5,6 +5,8 @@
 #ifndef THE_EVERBLOOM_H_
 #define THE_EVERBLOOM_H_
 
+#define DataHeader "EB"
+
 enum eData
 {
     DATA_WITHERBARK     = 0,

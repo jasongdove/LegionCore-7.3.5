@@ -31,7 +31,7 @@ public:
 
     struct instance_pursuing_the_black_harvest_InstanceMapScript : public InstanceScript
     {
-        instance_pursuing_the_black_harvest_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_pursuing_the_black_harvest_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { }
 
         void Initialize() override

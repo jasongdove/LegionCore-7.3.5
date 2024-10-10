@@ -16,7 +16,7 @@ public:
 
     struct instance_iron_docks_InstanceMapScript : public InstanceScript
     {
-        instance_iron_docks_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_iron_docks_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         std::list<ObjectGuid> oshirGUIDconteiner;
         std::map<uint32, ObjectGuid> skullocGUIDconteiner;
@@ -29,6 +29,7 @@ public:
 
         void Initialize() override
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
 
             enforCount = 0;
@@ -254,57 +255,22 @@ public:
             return 0;
         }
 
-        std::string GetDialogSaveData()
+        void WriteSaveDataMore(std::ostringstream& data) override
         {
-            std::ostringstream saveStream;
             for (uint8 i = 0; i < 7; i++)
-                saveStream << (uint32)m_uiDialogs[i] << " ";
-            return saveStream.str();
+                data << (uint32)m_uiDialogs[i] << " ";
         }
 
-        std::string GetSaveData()
+        void ReadSaveDataMore(std::istringstream& data) override
         {
-            OUT_SAVE_INST_DATA;
-
-            std::string str_data;
-
-            std::ostringstream saveStream;
-            saveStream << "I D " << GetDialogSaveData();
-
-            str_data = saveStream.str();
-
-            OUT_SAVE_INST_DATA_COMPLETE;
-            return str_data;
-        }
-        
-        void Load(const char* in) override
-        {
-            if (!in)
+            for (uint8 i = 0; i < 5; i++)
             {
-                OUT_LOAD_INST_DATA_FAIL;
-                return;
+                uint32 tmpDlg;
+                data >> tmpDlg;
+                if (tmpDlg != DONE)
+                    tmpDlg = NOT_STARTED;
+                m_uiDialogs[i] = tmpDlg;
             }
-
-            OUT_LOAD_INST_DATA(in);
-
-            char dataHead1, dataHead2;
-
-            std::istringstream loadStream(in);
-            loadStream >> dataHead1 >> dataHead2;
-
-            if (dataHead1 == 'I' && dataHead2 == 'D')
-            {
-                for (uint8 i = 0; i < 5; i++)
-                {
-                    uint32 tmpDlg;
-                    loadStream >> tmpDlg;
-                    if (tmpDlg != DONE)
-                        tmpDlg = NOT_STARTED;
-                    m_uiDialogs[i] = tmpDlg;
-                }
-            } else OUT_LOAD_INST_DATA_FAIL;
-
-            OUT_LOAD_INST_DATA_COMPLETE;
         }
     };
 };

@@ -19,6 +19,8 @@
 #ifndef DEF_KARAZHAN_H
 #define DEF_KARAZHAN_H
 
+#define DataHeader "KZ"
+
 enum eEnums
 {
     TYPE_ATTUMEN                    = 1,

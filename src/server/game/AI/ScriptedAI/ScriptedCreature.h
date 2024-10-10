@@ -115,7 +115,7 @@ struct ScriptedAI : public CreatureAI
     void AttackStart(Unit* who);
 
     // Called at any Damage from any attacker (before damage apply)
-    void DamageTaken(Unit* /*attacker*/, uint32& /*damage*/, DamageEffectType dmgType) {}
+    void DamageTaken(Unit* /*attacker*/, uint32& /*damage*/, DamageEffectType dmgType) override { }
 
     //Called at World update tick
     virtual void UpdateAI(uint32 diff);
@@ -371,6 +371,7 @@ protected:
     void _EnterCombat();
     void _JustDied();
     void _JustReachedHome();
+    bool _EnterEvadeMode() override;
 
     void _DespawnAtEvade(uint32 delayToRespawn = 30, Creature* who = nullptr);
 
@@ -389,7 +390,6 @@ protected:
     TaskScheduler scheduler;
 
 private:
-    virtual bool _EnterEvadeMode();
 
     BossBoundaryMap const* const _boundary;
     uint32 const _bossId;

@@ -37,7 +37,7 @@ public:
 
     struct instance_nexus_InstanceMapScript : public InstanceScript
     {
-        instance_nexus_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_nexus_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         uint32 m_auiEncounter[NUMBER_OF_ENCOUNTERS];
 
@@ -52,6 +52,7 @@ public:
 
         void Initialize() override
         {
+            SetHeaders(DataHeader);
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
             Anomalus.Clear();

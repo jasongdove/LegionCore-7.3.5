@@ -28,8 +28,9 @@ public:
 
     struct instance_return_to_karazhan_InstanceMapScript : public InstanceScript
     {
-        instance_return_to_karazhan_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_return_to_karazhan_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 
@@ -519,47 +520,14 @@ public:
             }
         }
 
-        std::string GetSaveData() override
+        void WriteSaveDataMore(std::ostringstream& data) override
         {
-            std::ostringstream saveStream;
-            saveStream << "R K " << GetBossSaveData() << OperaHallScene << ' ' << dataPH2Door;
-
-            OUT_SAVE_INST_DATA_COMPLETE;
-            return saveStream.str();
+            data << OperaHallScene << ' ' << dataPH2Door;
         }
 
-        void Load(const char* data) override
+        void ReadSaveDataMore(std::istringstream& data) override
         {
-            if (!data)
-            {
-                OUT_LOAD_INST_DATA_FAIL;
-                return;
-            }
-
-            OUT_LOAD_INST_DATA(data);
-
-            char dataHead1, dataHead2;
-
-            std::istringstream loadStream(data);
-            loadStream >> dataHead1 >> dataHead2;
-
-            if (dataHead1 == 'R' && dataHead2 == 'K')
-            {
-                for (uint32 i = 0; i < MAX_ENCOUNTER; ++i)
-                {
-                    uint32 tmpState;
-                    loadStream >> tmpState;
-                    if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                        tmpState = NOT_STARTED;
-                    SetBossState(i, EncounterState(tmpState));
-                }
-
-                loadStream >> OperaHallScene >> dataPH2Door;
-            }
-            else
-                OUT_LOAD_INST_DATA_FAIL;
-
-            OUT_LOAD_INST_DATA_COMPLETE;
+            data >> OperaHallScene >> dataPH2Door;
         }
 
         WorldLocation* GetClosestGraveYard(float x, float y, float z) override

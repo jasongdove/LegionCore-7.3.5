@@ -52,8 +52,9 @@ public:
 
     struct instance_sunken_temple_InstanceMapScript : public InstanceScript
     {
-        instance_sunken_temple_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_sunken_temple_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
         }
 
         ObjectGuid GOAtalaiStatue1;

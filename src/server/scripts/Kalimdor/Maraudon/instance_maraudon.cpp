@@ -24,6 +24,7 @@ gets instead the deserter debuff.
 
 #include "ScriptMgr.h"
 #include "InstanceScript.h"
+#include "maraudon.h"
 
 class instance_maraudon : public InstanceMapScript
 {
@@ -37,7 +38,10 @@ public:
 
     struct instance_maraudon_InstanceMapScript : public InstanceScript
     {
-        instance_maraudon_InstanceMapScript(Map* map) : InstanceScript(map) { }
+        instance_maraudon_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
+        {
+            SetHeaders(DataHeader);
+        }
     };
 };
 

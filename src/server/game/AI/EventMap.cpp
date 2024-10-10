@@ -72,6 +72,11 @@ void EventMap::RemovePhase(uint8 phase)
         _phase &= ~(1 << (phase - 1));
 }
 
+void EventMap::ScheduleEvent(uint32 eventId, Milliseconds time, uint32 group, uint32 phase)
+{
+    ScheduleEvent(eventId, time.count(), group, phase);
+}
+
 void EventMap::ScheduleEvent(uint32 eventId, Seconds time, uint32 group, uint32 phase)
 {
     ScheduleEvent(eventId, time.count(), group, phase);

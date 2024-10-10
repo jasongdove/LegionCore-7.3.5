@@ -31,7 +31,7 @@ public:
 
     struct instance_halls_of_valor_InstanceMapScript : public InstanceScript
     {
-        instance_halls_of_valor_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_halls_of_valor_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         WorldLocation loc_res_pla;
 
@@ -56,6 +56,7 @@ public:
 
         void Initialize() override
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
             LoadDoorData(doorData);
 
@@ -327,49 +328,15 @@ public:
                 checkTimerAura -= diff;
         }
 
-        std::string GetSaveData() override
+        void WriteSaveDataMore(std::ostringstream& data) override
         {
-            OUT_SAVE_INST_DATA;
-
-            std::ostringstream saveStream;
-            saveStream << "H V " << GetBossSaveData() << fenryrEventDone << " " << skovaldEventDone << " ";
-
-            OUT_SAVE_INST_DATA_COMPLETE;
-            return saveStream.str();
+            data << fenryrEventDone << " " << skovaldEventDone;
         }
 
-        void Load(const char* in) override
+        void ReadSaveDataMore(std::istringstream& data) override
         {
-            if (!in)
-            {
-                OUT_LOAD_INST_DATA_FAIL;
-                return;
-            }
-
-            OUT_LOAD_INST_DATA(in);
-
-            char dataHead1, dataHead2;
-
-            std::istringstream loadStream(in);
-            loadStream >> dataHead1 >> dataHead2;
-
-            if (dataHead1 == 'H' && dataHead2 == 'V')
-            {
-                for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-                {
-                    uint32 tmpState;
-                    loadStream >> tmpState;
-                    if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                        tmpState = NOT_STARTED;
-                    SetBossState(i, EncounterState(tmpState));
-                }
-                
-                loadStream >> fenryrEventDone;
-                loadStream >> skovaldEventDone;
-
-            } else OUT_LOAD_INST_DATA_FAIL;
-
-            OUT_LOAD_INST_DATA_COMPLETE;
+            data >> fenryrEventDone;
+            data >> skovaldEventDone;
         }
 
         WorldLocation* GetClosestGraveYard(float x, float y, float z) override

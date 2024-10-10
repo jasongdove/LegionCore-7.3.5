@@ -39,8 +39,9 @@ public:
 
     struct instance_scarlet_halls_InstanceMapScript : public InstanceScript
     {
-        instance_scarlet_halls_InstanceMapScript(Map* map) : InstanceScript(map) 
+        instance_scarlet_halls_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_ENCOUNTER);
         }
 

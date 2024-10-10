@@ -38,7 +38,7 @@ public:
 
     struct instance_broken_islands_InstanceMapScript : public InstanceScript
     {
-        instance_broken_islands_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_broken_islands_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         { 
         }
 

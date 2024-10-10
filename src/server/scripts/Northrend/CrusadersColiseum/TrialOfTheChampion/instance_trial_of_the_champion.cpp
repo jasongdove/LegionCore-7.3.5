@@ -36,7 +36,7 @@ public:
 
     struct instance_trial_of_the_champion_InstanceMapScript : public InstanceScript
     {
-        instance_trial_of_the_champion_InstanceMapScript(Map* pMap) : InstanceScript(pMap) {}
+        instance_trial_of_the_champion_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         uint32 m_auiEncounter[MAX_ENCOUNTER];
         uint32 grandChampionEntry[3];
@@ -63,6 +63,7 @@ public:
 
         void Initialize() override
         {
+            SetHeaders(DataHeader);
             uiAnnouncerGUID.Clear();
             uiTirionGUID.Clear();
             uiThrallGUID.Clear();

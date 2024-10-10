@@ -5,6 +5,8 @@
 #ifndef THE_ARCWAY_H_
 #define THE_ARCWAY_H_
 
+#define DataHeader "AW"
+
 enum eData
 {
     DATA_IVANYR         = 0,

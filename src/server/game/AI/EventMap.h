@@ -117,6 +117,7 @@ public:
     void AddPhase(uint8 phase);
     void RemovePhase(uint8 phase);
 
+    void ScheduleEvent(uint32 eventId, Milliseconds time, uint32 group = 0, uint32 phase = 0);
     void ScheduleEvent(uint32 eventId, Seconds time, uint32 group = 0, uint32 phase = 0);
     void ScheduleEvent(uint32 eventId, Minutes time, uint32 group = 0, uint32 phase = 0);
     void ScheduleEvent(uint32 eventId, uint32 time, uint32 group = 0, uint32 phase = 0);

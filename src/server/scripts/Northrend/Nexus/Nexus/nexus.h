@@ -18,6 +18,8 @@
 #ifndef DEF_NEXUS_H
 #define DEF_NEXUS_H
 
+#define DataHeader "NX"
+
 enum eTypes
 {
     DATA_MAGUS_TELESTRA_EVENT,

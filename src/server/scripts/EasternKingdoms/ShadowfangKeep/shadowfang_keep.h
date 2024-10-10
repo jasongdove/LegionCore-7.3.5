@@ -1,6 +1,8 @@
 #ifndef DEF_SHADOWFANG_KEEP_H
 #define DEF_SHADOWFANG_KEEP_H
 
+#define DataHeader "SK"
+
 uint32 const EncounterCount = 5;
 
 enum eData

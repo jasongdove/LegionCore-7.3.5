@@ -36,8 +36,9 @@ class instance_dragon_soul : public InstanceMapScript
 
         struct instance_dragon_soul_InstanceMapScript : public InstanceScript, public instance_dragon_soul_trash_accessor
         {
-            instance_dragon_soul_InstanceMapScript(Map* map) : InstanceScript(map)
+            instance_dragon_soul_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
             {
+                SetHeaders(DataHeader);
                 SetBossNumber(MAX_ENCOUNTER);
 
                 uiMorchokGUID.Clear();
@@ -761,76 +762,40 @@ class instance_dragon_soul : public InstanceMapScript
                                 ActivatePortal(Teleports);
             }
 
-            std::string GetSaveData()
+            void WriteSaveDataMore(std::ostringstream& data) override
             {
-                OUT_SAVE_INST_DATA;
-
-                std::string str_data;
-
-                std::ostringstream saveStream;
-                saveStream << "D S " << GetBossSaveData() << uiOpenPortalEvent  << " " << bHagaraEvent << " " << uiDragonSoulEvent << " " << uiUltraxionTrash << " ";
-
-                str_data = saveStream.str();
-
-                OUT_SAVE_INST_DATA_COMPLETE;
-                return str_data;
+                data << uiOpenPortalEvent  << " " << bHagaraEvent << " " << uiDragonSoulEvent << " " << uiUltraxionTrash;
             }
 
-            void Load(const char* in)
+            void ReadSaveDataMore(std::istringstream& data) override
             {
-                if (!in)
-                {
-                    OUT_LOAD_INST_DATA_FAIL;
-                    return;
-                }
+                uint32 tmpEvent;
+                data >> tmpEvent;
+                if (tmpEvent != DONE)
+                    tmpEvent = NOT_STARTED;
+                uiOpenPortalEvent = tmpEvent;
 
-                OUT_LOAD_INST_DATA(in);
+                data >> tmpEvent;
+                if (tmpEvent != DONE)
+                    tmpEvent = NOT_STARTED;
+                bHagaraEvent = tmpEvent;
 
-                char dataHead1, dataHead2;
+                data >> tmpEvent;
+                if (tmpEvent != DONE)
+                    tmpEvent = NOT_STARTED;
+                uiDragonSoulEvent = tmpEvent;
 
-                std::istringstream loadStream(in);
-                loadStream >> dataHead1 >> dataHead2;
-
-                if (dataHead1 == 'D' && dataHead2 == 'S')
-                {
-                    for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-                    {
-                        uint32 tmpState;
-                        loadStream >> tmpState;
-                        if (tmpState == IN_PROGRESS || tmpState > SPECIAL)
-                            tmpState = NOT_STARTED;
-                        SetBossState(i, EncounterState(tmpState));
-                    }
-                    
-                    uint32 tmpEvent;
-                    loadStream >> tmpEvent;
-                    if (tmpEvent != DONE) 
-                        tmpEvent = NOT_STARTED;
-                    uiOpenPortalEvent = tmpEvent;
-
-                    loadStream >> tmpEvent;
-                    if (tmpEvent != DONE) 
-                        tmpEvent = NOT_STARTED;
-                    bHagaraEvent = tmpEvent;
-
-                    loadStream >> tmpEvent;
-                    if (tmpEvent != DONE) 
-                        tmpEvent = NOT_STARTED;
-                    uiDragonSoulEvent = tmpEvent;
-
-                    loadStream >> tmpEvent;
-                    if (tmpEvent != DONE) 
-                        tmpEvent = NOT_STARTED;
-                    uiUltraxionTrash = tmpEvent;
-                } else OUT_LOAD_INST_DATA_FAIL;
-
-                OUT_LOAD_INST_DATA_COMPLETE;
+                data >> tmpEvent;
+                if (tmpEvent != DONE)
+                    tmpEvent = NOT_STARTED;
+                uiUltraxionTrash = tmpEvent;
             }
 
             bool IsLFR() const
             {
                 return isLfr;
             }
+
             bool IsFallOfDeathwing() const
             {
                 return isLfr && isFallOfDeathwing;

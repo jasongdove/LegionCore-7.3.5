@@ -1,6 +1,7 @@
 #ifndef DEF_DEADMINES_H
 #define DEF_DEADMINES_H
 
+#define DataHeader "DM"
 #define DMScriptName "instance_deadmines"
 
 enum CannonState

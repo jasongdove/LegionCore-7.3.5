@@ -18,6 +18,8 @@
 #ifndef DEF_RAZORFEN_DOWNS_H
 #define DEF_RAZORFEN_DOWNS_H
 
+#define DataHeader "RFD"
+
 enum eData
 {
     BOSS_TUTEN_KASH,

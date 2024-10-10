@@ -18,7 +18,7 @@ public:
 
     struct instance_broken_shore_InstanceMapScript : public InstanceScript
     {
-        instance_broken_shore_InstanceMapScript(Map* map) : InstanceScript(map) {}
+        instance_broken_shore_InstanceMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         std::list<Creature*> trashGUIDconteiner;
         std::list<GameObject*> DoorGUIDconteiner;

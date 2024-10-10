@@ -146,8 +146,9 @@ public:
 
     struct instance_naxxramas_InstanceMapScript : public InstanceScript
     {
-        instance_naxxramas_InstanceMapScript(Map* map) : InstanceScript(map)
+        instance_naxxramas_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
         {
+            SetHeaders(DataHeader);
             SetBossNumber(MAX_BOSS_NUMBER);
             LoadDoorData(doorData);
             LoadMinionData(minionData);
@@ -706,22 +707,17 @@ public:
         return false;
     }
 
-    std::string GetSaveData() override
+    void WriteSaveDataMore(std::ostringstream& data) override
     {
-        std::ostringstream saveStream;
-        saveStream << GetBossSaveData() << " " << gothikDoorState << " " << bImmortal;
-        return saveStream.str();
+        data << gothikDoorState << " " << bImmortal;
     }
 
-    void Load(const char * data) override
+    void ReadSaveDataMore(std::istringstream& data) override
     {
-        std::istringstream loadStream(LoadBossState(data));
         uint32 buff;
-        for (uint32 i=0; i<MAX_BOSS_NUMBER; ++i)
-            loadStream >> buff;
-        loadStream >> buff;
+        data >> buff;
         gothikDoorState = GOState(buff);
-        loadStream >> bImmortal;
+        data >> bImmortal;
     }
 
     void Update(uint32 diff) override

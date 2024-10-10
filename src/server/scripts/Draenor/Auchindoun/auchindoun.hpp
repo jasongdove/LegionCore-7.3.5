@@ -10,6 +10,8 @@
 
 #include "Common.h"
 
+#define DataHeader "AD"
+
 static void DespawnCreaturesInArea(uint32 entry, WorldObject* object)
 {
     std::list<Creature*> creatures;

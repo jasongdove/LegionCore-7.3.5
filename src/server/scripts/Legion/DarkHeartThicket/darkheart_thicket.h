@@ -5,6 +5,8 @@
 #ifndef DARKHEART_THICKET_H_
 #define DARKHEART_THICKET_H_
 
+#define DataHeader "DHT"
+
 enum eData
 {
     DATA_GLAIDALIS         = 0,

@@ -222,7 +222,7 @@ class UnitAI
         // Called at any Damage from any attacker (before damage apply)
         // Note: it for recalculation damage or special reaction at damage
         // for attack reaction use AttackedBy called for not DOT damage in Unit::DealDamage also
-        virtual void DamageTaken(Unit* /*attacker*/, uint32& /*damage*/, DamageEffectType dmgType) {}
+        virtual void DamageTaken(Unit* /*attacker*/, uint32& /*damage*/, DamageEffectType dmgType) { }
 
         // Called when the creature receives heal
         virtual void HealReceived(Unit* /*done_by*/, uint32& /*addhealth*/) {}
@@ -235,6 +235,7 @@ class UnitAI
         void DoAddAuraToAllHostilePlayers(uint32 spellid);
         void DoCast(uint32 spellId);
         void DoCast(Unit* victim, uint32 spellId, bool triggered = false);
+        void DoCastSelf(uint32 spellId, bool triggered = false) { DoCast(me, spellId, triggered); }
         void DoCastToAllHostilePlayers(uint32 spellid, bool triggered = false);
         void DoFunctionToHostilePlayers(uint8 playersCount, std::function<void(Unit*, Player*)> const& function);
         void DoCastVictim(uint32 spellId, bool triggered = false);
