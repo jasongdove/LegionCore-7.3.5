@@ -26,6 +26,7 @@ EndScriptData */
 #include "ObjectMgr.h"
 #include "Chat.h"
 #include "QuestData.h"
+#include "ScenarioMgr.h"
 
 class quest_commandscript : public CommandScript
 {
@@ -248,9 +249,28 @@ public:
         // If player doesn't have the quest
         if (!quest || player->GetQuestStatus(entry) != QUEST_STATUS_COMPLETE)
         {
-            handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);
-            handler->SetSentErrorMessage(true);
-            return false;
+            // check for scenario reward quest in current instance; only allow rewarding one time
+            // this is helpful when leveling and encountering bugged scenarios
+            bool isActiveScenario = false;
+
+            if (quest && player->GetMap() && player->GetMap()->IsDungeon() && player->GetMap()->GetInstanceId())
+            {
+                if (auto scenario = sScenarioMgr->GetScenario(player->GetMap()->GetInstanceId()))
+                {
+                    auto steps = sScenarioMgr->GetScenarioSteps(scenario->GetScenarioId());
+                    if (steps->size() == 1 && steps->front()->RewardQuestID == quest->Id)
+                    {
+                        isActiveScenario = !player->HasCompletedQuest(quest->Id);
+                    }
+                }
+            }
+
+            if (!isActiveScenario)
+            {
+                handler->PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);
+                handler->SetSentErrorMessage(true);
+                return false;
+            }
         }
 
         player->RewardQuest(quest, 0, player);
