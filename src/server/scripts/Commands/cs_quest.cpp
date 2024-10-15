@@ -258,9 +258,13 @@ public:
                 if (auto scenario = sScenarioMgr->GetScenario(player->GetMap()->GetInstanceId()))
                 {
                     auto steps = sScenarioMgr->GetScenarioSteps(scenario->GetScenarioId());
-                    if (steps->size() == 1 && steps->front()->RewardQuestID == quest->Id)
+                    for (auto step : *steps)
                     {
-                        isActiveScenario = !player->HasCompletedQuest(quest->Id);
+                        if (step->RewardQuestID == quest->Id)
+                        {
+                            isActiveScenario = !player->HasCompletedQuest(quest->Id);
+                            break;
+                        }
                     }
                 }
             }

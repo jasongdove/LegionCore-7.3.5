@@ -22,3 +22,4 @@ nbproject/*
 cmake-build-*/
 .vs
 *.user
+.cache/
