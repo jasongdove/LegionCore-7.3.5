@@ -124,6 +124,7 @@ bool CreatureAI::_EnterEvadeMode()
     me->CombatStop(true);
     me->LoadCreaturesAddon();
     me->SetLootRecipient(nullptr);
+    me->SetCannotReachTarget(false);
     me->ResetPlayerDamageReq();
 
     if (me->IsInEvadeMode())

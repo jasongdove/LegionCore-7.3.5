@@ -36,6 +36,7 @@
 #include "MMapManager.h"
 #include "MiscPackets.h"
 #include "MovementPackets.h"
+#include "MovementTypedefs.h"
 #include "Object.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"

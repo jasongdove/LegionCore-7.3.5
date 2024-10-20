@@ -21,11 +21,10 @@
 
 #include "MovementGenerator.h"
 
-template<class MOVEMENT_GEN>
-MovementGenerator*
-MovementGeneratorFactory<MOVEMENT_GEN>::Create(void * /*data*/) const
+template<class Movement>
+MovementGenerator* MovementGeneratorFactory<Movement>::Create(void * /*data*/) const
 {
-    return (new MOVEMENT_GEN());
+    return (new Movement());
 }
-#endif
 
+#endif

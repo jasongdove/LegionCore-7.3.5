@@ -758,6 +758,7 @@ class Spell
         bool m_skipCheck;
         uint32 m_spellMissMask;
         uint32 m_auraScaleMask;
+        std::unique_ptr<PathGenerator> m_preGeneratedPath;
 
         std::vector<SpellLogEffectPowerDrainParams> _powerDrainTargets[MAX_SPELL_EFFECTS];
         std::vector<SpellLogEffectExtraAttacksParams> _extraAttacksTargets[MAX_SPELL_EFFECTS];

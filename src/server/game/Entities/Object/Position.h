@@ -28,6 +28,7 @@ struct Position
 {
     Position(float x = 0, float y = 0, float z = 0, float o = 0, float h = 0);
     Position(Position const& loc);
+    Position(G3D::Vector3 const& vect);
     Position(DBCPosition4D const& dbcLoc);
 
     struct XY;

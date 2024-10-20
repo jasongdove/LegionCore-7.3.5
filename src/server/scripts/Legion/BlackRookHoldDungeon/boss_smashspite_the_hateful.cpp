@@ -114,7 +114,7 @@ struct boss_smashspite_the_hateful : public BossAI
             Talk(SAY_HATEFUL_GAZE_CHARGE);
             me->SetFacingTo(target);
             me->CastSpell(target, SPELL_HATEFUL_CHARGE_DMG, true);
-            me->GetMotionMaster()->MoveCharge(target->GetPosition(), 30.0f, SPELL_HATEFUL_CHARGE);
+            me->GetMotionMaster()->MoveCharge(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 30.0f, SPELL_HATEFUL_CHARGE);
         }
     }
 

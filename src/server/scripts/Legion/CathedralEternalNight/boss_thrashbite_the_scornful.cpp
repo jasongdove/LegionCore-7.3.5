@@ -266,7 +266,7 @@ class spell_coen_scornful_gaze : public SpellScriptLoader
                 if (!select)
                     return;
                 
-                caster->GetMotionMaster()->MoveCharge(select->GetPosition(), SPEED_CHARGE, select->IsPlayer() ? 1 : 2);
+                caster->GetMotionMaster()->MoveCharge(select->GetPositionX(), select->GetPositionY(), select->GetPositionZ(), SPEED_CHARGE, select->IsPlayer() ? 1 : 2);
             }
 
 

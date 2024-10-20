@@ -16,8 +16,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRINITY_MOTIONMASTER_H
-#define TRINITY_MOTIONMASTER_H
+#ifndef MOTIONMASTER_H
+#define MOTIONMASTER_H
 
 #include "Common.h"
 #include "SharedDefines.h"
@@ -28,6 +28,7 @@ class MovementGenerator;
 class Unit;
 class Spell;
 class DelayCastEvent;
+class PathGenerator;
 
 namespace Movement
 {
@@ -36,29 +37,33 @@ namespace Movement
 
 // Creature Entry ID used for waypoints show, visible only for GMs
 #define VISUAL_WAYPOINT 1
+// assume it is 25 yard per 0.6 second
+#define SPEED_CHARGE    42.0f
 
 // values 0 ... MAX_DB_MOTION_TYPE-1 used in DB
 enum MovementGeneratorType
 {
-    IDLE_MOTION_TYPE      = 0,                              // IdleMovementGenerator.h
-    RANDOM_MOTION_TYPE    = 1,                              // RandomMovementGenerator.h
-    WAYPOINT_MOTION_TYPE  = 2,                              // WaypointMovementGenerator.h
-    MAX_DB_MOTION_TYPE    = 3,                              // *** this and below motion types can't be set in DB.
-    ANIMAL_RANDOM_MOTION_TYPE = MAX_DB_MOTION_TYPE,         // AnimalRandomMovementGenerator.h
-    CONFUSED_MOTION_TYPE  = 4,                              // ConfusedMovementGenerator.h
-    CHASE_MOTION_TYPE     = 5,                              // TargetedMovementGenerator.h
-    HOME_MOTION_TYPE      = 6,                              // HomeMovementGenerator.h
-    FLIGHT_MOTION_TYPE    = 7,                              // WaypointMovementGenerator.h
-    POINT_MOTION_TYPE     = 8,                              // PointMovementGenerator.h
-    FLEEING_MOTION_TYPE   = 9,                              // FleeingMovementGenerator.h
-    DISTRACT_MOTION_TYPE  = 10,                             // IdleMovementGenerator.h
-    ASSISTANCE_MOTION_TYPE= 11,                             // PointMovementGenerator.h (first part of flee for assistance)
-    ASSISTANCE_DISTRACT_MOTION_TYPE = 12,                   // IdleMovementGenerator.h (second part of flee for assistance)
-    TIMED_FLEEING_MOTION_TYPE = 13,                         // FleeingMovementGenerator.h (alt.second part of flee for assistance)
-    FOLLOW_MOTION_TYPE    = 14,
-    ROTATE_MOTION_TYPE    = 15,
-    EFFECT_MOTION_TYPE    = 16,
-    NULL_MOTION_TYPE      = 17,
+    IDLE_MOTION_TYPE                = 0,                   // IdleMovementGenerator.h
+    RANDOM_MOTION_TYPE              = 1,                   // RandomMovementGenerator.h
+    WAYPOINT_MOTION_TYPE            = 2,                   // WaypointMovementGenerator.h
+    MAX_DB_MOTION_TYPE              = 3,                   // Below motion types can't be set in DB.
+    ANIMAL_RANDOM_MOTION_TYPE       = MAX_DB_MOTION_TYPE,  // AnimalRandomMovementGenerator.h
+    CONFUSED_MOTION_TYPE            = 4,                   // ConfusedMovementGenerator.h
+    CHASE_MOTION_TYPE               = 5,                   // TargetedMovementGenerator.h
+    HOME_MOTION_TYPE                = 6,                   // HomeMovementGenerator.h
+    FLIGHT_MOTION_TYPE              = 7,                   // WaypointMovementGenerator.h
+    POINT_MOTION_TYPE               = 8,                   // PointMovementGenerator.h
+    FLEEING_MOTION_TYPE             = 9,                   // FleeingMovementGenerator.h
+    DISTRACT_MOTION_TYPE            = 10,                  // IdleMovementGenerator.h
+    ASSISTANCE_MOTION_TYPE          = 11,                  // PointMovementGenerator.h (first part of flee for assistance)
+    ASSISTANCE_DISTRACT_MOTION_TYPE = 12,                  // IdleMovementGenerator.h (second part of flee for assistance)
+    TIMED_FLEEING_MOTION_TYPE       = 13,                  // FleeingMovementGenerator.h (alt.second part of flee for assistance)
+    FOLLOW_MOTION_TYPE              = 14,
+    ROTATE_MOTION_TYPE              = 15,
+    EFFECT_MOTION_TYPE              = 16,
+    NULL_MOTION_TYPE                = 17,
+    SPLINE_CHAIN_MOTION_TYPE        = 18,                  // NYI
+    MAX_MOTION_TYPE                                        // limit
 };
 
 enum MovementSlot
@@ -82,75 +87,47 @@ enum RotateDirection
     ROTATE_DIRECTION_RIGHT,
 };
 
-// assume it is 25 yard per 0.6 second
-#define SPEED_CHARGE    42.0f
+struct JumpArrivalCastArgs
+{
+    uint32 SpellId;
+    ObjectGuid Target;
+};
 
-class MotionMaster //: private std::stack<MovementGenerator *>
+class MotionMaster
 {
     private:
-        //typedef std::stack<MovementGenerator *> Impl;
-        typedef MovementGenerator* _Ty;
+        typedef std::vector<MovementGenerator*> ExpireList;
 
-        void pop()
-        {
-            Impl[_top] = nullptr;
-            while (!top())
-                --_top;
-        }
-        void push(_Ty _Val) { ++_top; Impl[_top] = _Val; }
-
-        bool needInitTop() const { return _needInit[_top]; }
-        void InitTop();
     public:
-
-        explicit MotionMaster(Unit* unit) : _expList(nullptr), _top(-1), _owner(unit), _cleanFlag(MMCF_NONE)
+        explicit MotionMaster(Unit* unit) : _expireList(nullptr), _top(-1), _owner(unit), _cleanFlag(MMCF_NONE)
         {
             for (uint8 i = 0; i < MAX_MOTION_SLOT; ++i)
             {
-                Impl[i] = nullptr;
-                _needInit[i] = true;
+                _slot[i] = nullptr;
+                _initialize[i] = true;
             }
         }
         ~MotionMaster();
 
+        bool empty() const { return (_top < 0); }
+        int size() const { return _top + 1; }
+        MovementGenerator* top() const { ASSERT(!empty()); return _slot[_top]; }
+
         void Initialize();
         void InitDefault();
 
-        bool empty() const { return (_top < 0); }
-        int size() const { return _top + 1; }
-        _Ty top() const { return Impl[_top]; }
-        _Ty GetMotionSlot(int slot) const { return Impl[slot]; }
-
-        void DirectDelete(_Ty curr);
-        void DelayedDelete(_Ty curr);
-
         void UpdateMotion(uint32 diff);
-        void Clear(bool reset = true)
-        {
-            if (_cleanFlag & MMCF_UPDATE)
-            {
-                if (reset)
-                    _cleanFlag |= MMCF_RESET;
-                else
-                    _cleanFlag &= ~MMCF_RESET;
-                DelayedClean();
-            }
-            else
-                DirectClean(reset);
-        }
-        void MovementExpired(bool reset = true)
-        {
-            if (_cleanFlag & MMCF_UPDATE)
-            {
-                if (reset)
-                    _cleanFlag |= MMCF_RESET;
-                else
-                    _cleanFlag &= ~MMCF_RESET;
-                DelayedExpire();
-            }
-            else
-                DirectExpire(reset);
-        }
+
+        void Clear(bool reset = true);
+        void MovementExpired(bool reset = true);
+
+        MovementGeneratorType GetCurrentMovementGeneratorType() const;
+        MovementGeneratorType GetMotionSlotType(int slot) const;
+        MovementGenerator* GetMotionSlot(int slot) const;
+
+        void PropagateSpeedChange();
+
+        bool GetDestination(float &x, float &y, float &z);
 
         void MoveIdle();
         void MoveTargetedHome();
@@ -171,16 +148,17 @@ class MotionMaster //: private std::stack<MovementGenerator *>
         void MoveLand(uint32 id, Position const& pos);
         void MoveTakeoff(uint32 id, float x, float y, float z);
 
-        void MoveCharge(Position const pos, float speed = SPEED_CHARGE, uint32 id = EVENT_CHARGE, bool generatePath = true);
-        void MoveCharge(float x, float y, float z, float speed = SPEED_CHARGE, uint32 id = EVENT_CHARGE, bool generatePath = true);
-        bool SpellMoveCharge(float x, float y, float z, float speed = SPEED_CHARGE, uint32 id = EVENT_CHARGE, uint32 triggerspellId = 0);
+        void MoveCharge(float x, float y, float z, float speed = SPEED_CHARGE, uint32 id = EVENT_CHARGE, bool generatePath = false, Unit const* target = nullptr, Movement::SpellEffectExtraData const* spellEffectExtraData = nullptr);
+        void MoveCharge(PathGenerator const& path, float speed = SPEED_CHARGE, Unit const* target = nullptr, Movement::SpellEffectExtraData const* spellEffectExtraData = nullptr);
         void MoveKnockbackFrom(float srcX, float srcY, float speedXY, float speedZ, Movement::SpellEffectExtraData const* spellEffectExtraData = nullptr);
         void MoveJumpTo(float angle, float speedXY, float speedZ);
-        void MoveJump(Position const pos, float speedXY, float speedZ, uint32 id = 0, float o = 0.0f, DelayCastEvent* e = nullptr, Unit* target = nullptr, Movement::SpellEffectExtraData const* spellEffectExtraData = nullptr);
-        void MoveJump(float x, float y, float z, float speedXY, float speedZ, uint32 id = 0, float o = 0.0f, DelayCastEvent* e = nullptr, Unit* target = nullptr, Movement::SpellEffectExtraData const* spellEffectExtraData = nullptr);
+        void MoveJump(Position const& pos, float speedXY, float speedZ, uint32 id = EVENT_JUMP, bool hasOrientation = false, JumpArrivalCastArgs const* arrivalCast = nullptr, Movement::SpellEffectExtraData const* spellEffectExtraData = nullptr)
+        {
+            MoveJump(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation(), speedXY, speedZ, id, hasOrientation, arrivalCast, spellEffectExtraData);
+        }
+        void MoveJump(float x, float y, float z, float o, float speedXY, float speedZ, uint32 id = EVENT_JUMP, bool hasOrientation = false, JumpArrivalCastArgs const* arrivalCast = nullptr, Movement::SpellEffectExtraData const* spellEffectExtraData = nullptr);
         void MoveFall(uint32 id = 0);
         void MoveCirclePath(float x, float y, float z, float radius, bool clockwise, uint8 stepCount);
-        void MoveSmoothPath(uint32 pointId, G3D::Vector3 pathPoints, bool walk);
         void MoveSmoothPath(uint32 pointId, G3D::Vector3 const* pathPoints, size_t pathSize, bool walk);
         void MoveSmoothFlyPath(uint32 pointId, G3D::Vector3 const* path, size_t size);
         void MoveSmoothFlyPath(uint32 pointId, Position const position, float flightSpeed = 0.0f);
@@ -193,27 +171,25 @@ class MotionMaster //: private std::stack<MovementGenerator *>
         void MoveRotate(uint32 time, RotateDirection direction, bool repeat = false);
         void MoveBackward(uint32 id, float x, float y, float z, float speed = 0.0f);
 
-        MovementGeneratorType GetCurrentMovementGeneratorType() const;
-        MovementGeneratorType GetMotionSlotType(int slot) const;
-
-        void propagateSpeedChange();
-
-        bool GetDestination(float &x, float &y, float &z);
     private:
+        void pop();
+        bool NeedInitTop() const;
+        void InitTop();
+
         void Mutate(MovementGenerator *m, MovementSlot slot);                  // use Move* functions instead
 
         void DirectClean(bool reset);
         void DelayedClean();
-
         void DirectExpire(bool reset);
         void DelayedExpire();
+        void DirectDelete(MovementGenerator* curr);
+        void DelayedDelete(MovementGenerator* curr);
 
-        typedef Trinity::LockedVector<_Ty> ExpireList;
-        ExpireList* _expList;
-        _Ty Impl[MAX_MOTION_SLOT];
+        ExpireList* _expireList;
+        MovementGenerator* _slot[MAX_MOTION_SLOT];
         int _top;
         Unit* _owner;
-        bool _needInit[MAX_MOTION_SLOT];
+        bool _initialize[MAX_MOTION_SLOT];
         uint8 _cleanFlag;
 };
 #endif

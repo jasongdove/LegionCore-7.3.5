@@ -7379,44 +7379,43 @@ SpellCastResult Spell::CheckCast(bool strict)
                     if (strict && m_caster->IsScriptOverriden(m_spellInfo, 6953))
                         m_caster->RemoveMovementImpairingEffects();
                 }
-                if (m_caster->HasUnitState(UNIT_STATE_ROOT))
+                if (!(_triggeredCastFlags & TRIGGERED_IGNORE_CASTER_AURAS) && m_caster->HasUnitState(UNIT_STATE_ROOT))
                     return SPELL_FAILED_ROOTED;
-                if (m_caster->IsPlayer())
+
+                if (GetSpellInfo()->NeedsExplicitUnitTarget())
                 {
-                    if (Unit* target = m_targets.GetUnitTarget())
+                    Unit* target = m_targets.GetUnitTarget();
+                    if (!target)
+                        return SPELL_FAILED_DONT_REPORT;
+
+                    // first we must check to see if the target is in LoS. A path can usually be built but LoS matters for charge spells
+                    if (!target->IsWithinLOSInMap(m_caster)) //Do full LoS/Path check. Don't exclude m2
+                        return SPELL_FAILED_LINE_OF_SIGHT;
+
+                    float objSize = target->GetObjectSize();
+                    float range = m_spellInfo->GetMaxRange(true, m_caster, this) * 1.5f + objSize; // can't be overly strict
+
+                    m_preGeneratedPath = Trinity::make_unique<PathGenerator>(m_caster);
+                    m_preGeneratedPath->SetPathLengthLimit(range);
+                    // first try with raycast, if it fails fall back to normal path
+                    float targetObjectSize = std::min(target->GetObjectSize(), 4.0f);
+                    bool result = m_preGeneratedPath->CalculatePath(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + targetObjectSize, false, true);
+                    if (m_preGeneratedPath->GetPathType() & PATHFIND_SHORT)
+                        return SPELL_FAILED_OUT_OF_RANGE;
+                    else if (!result || m_preGeneratedPath->GetPathType() & (PATHFIND_NOPATH | PATHFIND_INCOMPLETE))
                     {
-                        if (!target->IsAlive())
-                            return SPELL_FAILED_BAD_TARGETS;
-
-                        if (Vehicle* vehicleTar = target->GetVehicle())
-                            if (Unit* base = vehicleTar->GetBase())
-                                if (base->GetEntry() == 27894)
-                                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-
-                        if (target->GetEntry() == 27894)
-                            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-
-                        float angle = target->GetRelativeAngle(m_caster);
-                        Position pos;
-                        target->GetFirstCollisionPosition(pos, target->GetObjectSize(), angle);
-
-                        if (m_caster->IsInWater()) // don`t check in water
-                            break;
-
-                        float limit = m_spellInfo->GetMaxRange(true, m_caster, this) + 1.0f;
-                        PathGenerator* m_path = new PathGenerator(m_caster);
-                        bool result = m_path->CalculatePath(pos.m_positionX, pos.m_positionY, pos.m_positionZ, false);
-                        PathType _pathType = m_path->GetPathType();
-                        float _totalLength = m_path->GetTotalLength();
-                        delete m_path;
-
-                        if (_pathType & PATHFIND_SHORT && _triggeredCastFlags != TRIGGERED_FULL_MASK)
+                        result = m_preGeneratedPath->CalculatePath(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + targetObjectSize, false, false);
+                        if (m_preGeneratedPath->GetPathType() & PATHFIND_SHORT)
                             return SPELL_FAILED_OUT_OF_RANGE;
-                        if (!result || _pathType & PATHFIND_NOPATH)
+                        else if (!result || m_preGeneratedPath->GetPathType() & (PATHFIND_NOPATH | PATHFIND_INCOMPLETE))
                             return SPELL_FAILED_NOPATH;
-                        if (_totalLength > (limit * 1.5f))
-                            return SPELL_FAILED_OUT_OF_RANGE;
+                        else if (m_preGeneratedPath->IsInvalidDestinationZ(target)) // Check position z, if not in a straight line
+                            return SPELL_FAILED_NOPATH;
                     }
+                    else if (m_preGeneratedPath->IsInvalidDestinationZ(target)) // Check position z, if in a straight line
+                            return SPELL_FAILED_NOPATH;
+
+                    m_preGeneratedPath->ReducePathLenghtByDist(objSize); // move back
                 }
                 break;
             }

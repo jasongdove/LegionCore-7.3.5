@@ -16,26 +16,34 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "HomeMovementGenerator.h"
 #include "Creature.h"
 #include "CreatureAI.h"
 #include "WorldPacket.h"
 #include "MoveSplineInit.h"
 #include "MoveSpline.h"
+#include "HomeMovementGenerator.h"
 
-void HomeMovementGenerator<Creature>::DoInitialize(Creature & owner)
+template<class T>
+HomeMovementGenerator<T>::~HomeMovementGenerator() { }
+
+template<>
+HomeMovementGenerator<Creature>::~HomeMovementGenerator()
 {
-    _setTargetLocation(owner);
+    delete _path;
 }
 
-void HomeMovementGenerator<Creature>::DoReset(Creature &)
-{
-}
+template<class T>
+void HomeMovementGenerator<T>::SetTargetLocation(T &) { }
 
-void HomeMovementGenerator<Creature>::_setTargetLocation(Creature & owner)
+template<>
+void HomeMovementGenerator<Creature>::SetTargetLocation(Creature &owner)
 {
     if (owner.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED))
+    {
+        _skipToHome = true;
         return;
+    }
+
 
     Movement::MoveSplineInit init(owner);
     float x, y, z, o;
@@ -45,35 +53,60 @@ void HomeMovementGenerator<Creature>::_setTargetLocation(Creature & owner)
         owner.GetHomePosition(x, y, z, o);
         init.SetFacing(o);
     }
-
-    PathGenerator path(&owner);
-    path.CalculatePath(x, y, z);
-
-    if (path.GetPathType() & PATHFIND_NOPATH)
-        init.MoveTo(x, y, z);
-    else
-        init.MovebyPath(path.GetPath());
-
+    init.MoveTo(x, y, z);
     init.SetWalk(false);
     init.Launch();
 
-    arrived = false;
+    _skipToHome = false;
+    _arrived = false;
+
     owner.ClearUnitState(UNIT_STATE_ALL_STATE & ~UNIT_STATE_EVADE);
 }
 
-bool HomeMovementGenerator<Creature>::DoUpdate(Creature &owner, const uint32 /*time_diff*/)
+template<class T>
+void HomeMovementGenerator<T>::DoInitialize(T &) { }
+
+template<>
+void HomeMovementGenerator<Creature>::DoInitialize(Creature &owner)
 {
-    arrived = owner.movespline->Finalized();
-    return !arrived;
+    SetTargetLocation(owner);
 }
 
-void HomeMovementGenerator<Creature>::DoFinalize(Creature& owner)
+template<class T>
+void HomeMovementGenerator<T>::DoFinalize(T &) { }
+
+template<>
+void HomeMovementGenerator<Creature>::DoFinalize(Creature &owner)
 {
-    if (arrived)
+    if (_arrived)
     {
         owner.ClearUnitState(UNIT_STATE_EVADE);
         owner.SetWalk(true);
         owner.LoadCreaturesAddon(true);
         owner.AI()->JustReachedHome();
+        owner.SetSpawnHealth();
     }
 }
+
+template<class T>
+void HomeMovementGenerator<T>::DoReset(T &) { }
+
+template<>
+void HomeMovementGenerator<Creature>::DoReset(Creature &owner)
+{
+    DoInitialize(owner);
+}
+
+template<class T>
+bool HomeMovementGenerator<T>::DoUpdate(T &, const uint32)
+{
+    return false;
+}
+
+template<>
+bool HomeMovementGenerator<Creature>::DoUpdate(Creature &owner, const uint32 /*time_diff*/)
+{
+    _arrived = _skipToHome || owner.movespline->Finalized();
+    return !_arrived;
+}
+

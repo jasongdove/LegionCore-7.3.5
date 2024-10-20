@@ -29,6 +29,11 @@ Position::Position(Position const& loc)
     Position::Relocate(loc);
 }
 
+Position::Position(G3D::Vector3 const& vect)
+{
+    Relocate(vect.x, vect.y, vect.z, 0.f);
+}
+
 Position::Position(DBCPosition4D const& dbcLoc)
 {
     Position loc{ dbcLoc.X, dbcLoc.Y, dbcLoc.Z, dbcLoc.O };

@@ -48,11 +48,13 @@
 #include "Log.h"
 #include "MapManager.h"
 #include "MiscPackets.h"
+#include "MoveSplineInitArgs.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "ObjectVisitors.hpp"
 #include "Opcodes.h"
 #include "OutdoorPvPMgr.h"
+#include "PathGenerator.h"
 #include "Pet.h"
 #include "PetBattle.h"
 #include "Player.h"
@@ -1862,7 +1864,7 @@ void Spell::EffectJump(SpellEffIndex effIndex)
     if (!unitTarget || m_caster == unitTarget)
         return;
 
-    //Perfome trigger spell at jumping.
+    // Perform trigger spell at jumping.
     uint32 triggered_spell_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
     DelayCastEvent* delayCast = GetSpellTriggerDelay(effIndex, triggered_spell_id);
 
@@ -1882,6 +1884,14 @@ void Spell::EffectJump(SpellEffIndex effIndex)
     float speedXY, speedZ;
     float distance = m_caster->GetExactDist(&pos);
     CalculateJumpSpeeds(effIndex, distance, speedXY, speedZ);
+    JumpArrivalCastArgs arrivalCast;
+    arrivalCast.SpellId = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
+    arrivalCast.Target = unitTarget->GetGUID();
+    if (!arrivalCast.SpellId && delayCast)
+    {
+        arrivalCast.SpellId = delayCast->Spell;
+        arrivalCast.Target = !delayCast->TargetGUID.IsEmpty() ? delayCast->TargetGUID : m_caster->GetGUID();
+    }
 
     if (m_spellInfo->Id == 196052)
     {
@@ -1896,7 +1906,7 @@ void Spell::EffectJump(SpellEffIndex effIndex)
     // TC_LOG_DEBUG("spells", "EffectJump start xyz %f %f %f caster %u target %u damage %i distance %f targetSize %f casterSize %f",
     // pos.m_positionX, pos.m_positionY, pos.m_positionZ, m_caster->GetGUIDLow(), unitTarget->GetGUIDLow(), damage, distance, unitTarget->GetObjectSize(), m_caster->GetObjectSize());
 
-    m_caster->GetMotionMaster()->MoveJump(pos.m_positionX, pos.m_positionY, pos.m_positionZ, speedXY, speedZ, m_spellInfo->Id, 0.0f, delayCast, unitTarget);
+    m_caster->GetMotionMaster()->MoveJump(*unitTarget, speedXY, speedZ, m_spellInfo->Id, false, &arrivalCast);
 }
 
 void Spell::EffectJumpDest(SpellEffIndex effIndex)
@@ -1910,7 +1920,7 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
     if (!m_targets.HasDst())
         return;
 
-    //Perfome trigger spell at jumping.
+    // Perform trigger spell at jumping.
     uint32 triggered_spell_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
     DelayCastEvent* delayCast = GetSpellTriggerDelay(effIndex, triggered_spell_id);
 
@@ -1959,7 +1969,14 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
     // TC_LOG_DEBUG("spells", "EffectJumpDest start xyz %f %f %f o %f distance %f distance2d %f", x, y, z, o, distance, distance2d);
 
     // Death Grip and Wild Charge (no form)
-    m_caster->GetMotionMaster()->MoveJump(x, y, z, speedXY, speedZ, m_spellInfo->Id, o, delayCast);
+    JumpArrivalCastArgs arrivalCast;
+    arrivalCast.SpellId = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
+    if (!arrivalCast.SpellId && delayCast)
+    {
+        arrivalCast.SpellId = delayCast->Spell;
+        arrivalCast.Target = !delayCast->TargetGUID.IsEmpty() ? delayCast->TargetGUID : m_caster->GetGUID();
+    }
+    m_caster->GetMotionMaster()->MoveJump(*destTarget, speedXY, speedZ, m_spellInfo->Id, !m_targets.GetObjectTargetGUID().IsEmpty(), &arrivalCast);
 }
 
 void Spell::CalculateJumpSpeeds(uint8 i, float dist, float & speedXY, float & speedZ)
@@ -6824,69 +6841,75 @@ void Spell::EffectSkinning(SpellEffIndex /*effIndex*/)
 
 void Spell::EffectCharge(SpellEffIndex effIndex)
 {
+    if (!unitTarget)
+        return;
+
     if (effectHandleMode == SPELL_EFFECT_HANDLE_LAUNCH_TARGET)
     {
-        if (!unitTarget)
-            return;
+        float speed = G3D::fuzzyGt(m_spellInfo->Misc.MiscData.Speed, 0.0f) ? m_spellInfo->Misc.MiscData.Speed : SPEED_CHARGE;
+        Optional<Movement::SpellEffectExtraData> spellEffectExtraData;
+        if (m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValueB)
+        {
+            spellEffectExtraData.emplace();
+            spellEffectExtraData->Target = unitTarget->GetGUID();
+            spellEffectExtraData->SpellVisualId = m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValueB;
+        }
 
-        uint32 triggered_spell_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
-        float angle = unitTarget->GetRelativeAngle(m_caster);
-        Position pos;
-
-        unitTarget->GetContactPoint(m_caster, pos.m_positionX, pos.m_positionY, pos.m_positionZ);
-        if (!canHitTargetInLOS)
-            unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), angle);
-
-        m_caster->SetSplineTimer(0);
-
-        if (Player* plr = m_caster->ToPlayer())
-            plr->SetKnockBackTime(0);
-
-        if (!m_caster->GetMotionMaster()->SpellMoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ + unitTarget->GetObjectSize(), 27.f, EVENT_CHARGE, triggered_spell_id))
-            return;
+        // Spell is not using explicit target - no generated path
+        if (m_preGeneratedPath->GetPathType() == PATHFIND_BLANK)
+        {
+            Position pos;
+            unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), unitTarget->GetRelativeAngle(m_caster));
+            m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ, speed, EVENT_CHARGE, false, unitTarget, std::to_address(spellEffectExtraData));
+        }
+        else
+            m_caster->GetMotionMaster()->MoveCharge(*m_preGeneratedPath, speed, unitTarget, std::to_address(spellEffectExtraData));
     }
 
     if (effectHandleMode == SPELL_EFFECT_HANDLE_HIT_TARGET)
     {
-        if (!unitTarget)
-            return;
-
         // not all charge effects used in negative spells
         if (!m_spellInfo->IsPositive() && m_caster->IsPlayer())
             m_caster->Attack(unitTarget, true);
+
+        if (m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell)
+            m_caster->CastSpell(unitTarget, m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell, true, nullptr, nullptr, m_originalCasterGUID);
     }
 }
 
 void Spell::EffectChargeDest(SpellEffIndex effIndex)
 {
-    if (effectHandleMode != SPELL_EFFECT_HANDLE_LAUNCH)
+    if (!destTarget)
         return;
 
-    if (m_targets.HasDst())
+    if (effectHandleMode == SPELL_EFFECT_HANDLE_LAUNCH)
     {
-        Position pos;
-        destTarget->GetPosition(&pos);
-        float angle = m_caster->GetRelativeAngle(pos.GetPositionX(), pos.GetPositionY());
-        float dist = m_caster->GetDistance(pos);
+        Position pos   = destTarget->GetPosition();
+        float    angle = m_caster->GetRelativeAngle(pos.GetPositionX(), pos.GetPositionY());
+        float    dist  = m_caster->GetDistance(pos);
+        m_caster->GetFirstCollisionPosition(pos, dist, angle);
+
         if (canHitTargetInLOS && m_caster->ToCreature() && dist < 200.0f)
             m_caster->GetNearPoint2D(pos, dist, angle);
         else
             m_caster->GetFirstCollisionPosition(pos, dist, angle);
 
-        // Racer Slam Hit Destination
-        if (m_spellInfo->Id == 49302)
-        {
-            if (urand(0, 100) < 80)
-            {
-                m_caster->CastSpell(m_caster, 49336, false);
-                m_caster->CastSpell(static_cast<Unit*>(nullptr), 49444, false); // achievement counter
-            }
-        }
+//        // Racer Slam Hit Destination
+//        if (m_spellInfo->Id == 49302)
+//        {
+//            if (urand(0, 100) < 80)
+//            {
+//                m_caster->CastSpell(m_caster, 49336, false);
+//                m_caster->CastSpell(static_cast<Unit *>(nullptr), 49444, false); // achievement counter
+//            }
+//        }
 
-        uint32 triggered_spell_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
-
-        if (!m_caster->GetMotionMaster()->SpellMoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ, SPEED_CHARGE, EVENT_CHARGE, triggered_spell_id))
-            return;
+        m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+    }
+    else if (effectHandleMode == SPELL_EFFECT_HANDLE_HIT)
+    {
+        if (m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell)
+            m_caster->CastSpell(destTarget->GetPositionX(), destTarget->GetPositionY(), destTarget->GetPositionZ(), m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell, true, nullptr, nullptr, m_originalCasterGUID);
     }
 }
 

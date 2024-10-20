@@ -18,122 +18,82 @@
 
 #include "Unit.h"
 #include "Creature.h"
+#include "Player.h"
 #include "MapManager.h"
-#include "ConfusedMovementGenerator.h"
 #include "VMapFactory.h"
 #include "MoveSplineInit.h"
-#include "Player.h"
 #include "MoveSpline.h"
+#include "ConfusedMovementGenerator.h"
 
-#define WALK_SPEED_YARDS_PER_SECOND 2.45f
-
-template<class T>
-void ConfusedMovementGenerator<T>::DoInitialize(T &unit)
+template <class T>
+ConfusedMovementGenerator<T>::~ConfusedMovementGenerator()
 {
-    unit.GetPosition(i_x, i_y, i_z, unit.GetTransport());
-    unit.StopMoving();
-    unit.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
-    unit.AddUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
-    i_duration = unit.GetTimeForSpline();
-    unit.SetSpeed(MOVE_WALK, 1.f, true);
-    speed = WALK_SPEED_YARDS_PER_SECOND;
-    moving_to_start = false;
+    delete _path;
 }
 
 template<class T>
-void ConfusedMovementGenerator<T>::DoReset(T &unit)
+void ConfusedMovementGenerator<T>::DoInitialize(T &owner)
 {
-    i_nextMoveTime.Reset(0);
-    unit.AddUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
-    unit.StopMoving();
+    if (!owner.IsAlive())
+        return;
+
+    owner.AddUnitState(UNIT_STATE_CONFUSED);
+    owner.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
+    owner.StopMoving();
+
+    _timer.Reset(0);
+    owner.GetPosition(_reference.x, _reference.y, _reference.z);
 }
 
 template<class T>
-bool ConfusedMovementGenerator<T>::DoUpdate(T &unit, const uint32 &diff)
+void ConfusedMovementGenerator<T>::DoReset(T &owner)
 {
-    if (unit.HasUnitState(UNIT_STATE_ROOT | UNIT_STATE_STUNNED | UNIT_STATE_DISTRACTED))
-        return true;
+    DoInitialize(owner);
+}
 
-    i_nextMoveTime.Update(diff);
-    if(i_duration >= diff)
-        i_duration -= diff;
+template<class T>
+bool ConfusedMovementGenerator<T>::DoUpdate(T &owner, const uint32 &diff)
+{
+    if (!owner.IsAlive())
+        return false;
 
-    if (!moving_to_start)
+    if (owner.HasUnitState(UNIT_STATE_NOT_MOVE) || owner.IsMovementPreventedByCasting())
     {
-        float max_accuracyMiliYard = 150 * speed;
-        float min_accuracyMiliYard = -20 * speed;
-        PathGenerator path(&unit);
-
-        if (path.CalculatePath(i_x, i_y, i_z))
-        {
-            float len = 0;
-            for (size_t i = 1; i < path.GetPath().size(); ++i)
-            {
-                G3D::Vector3 node = path.GetPath()[i];
-                G3D::Vector3 prev = path.GetPath()[i-1];
-                float xd = node.x - prev.x;
-                float yd = node.y - prev.y;
-                float zd = node.z - prev.z;
-                len += sqrtf(xd*xd + yd*yd + zd*zd);
-            }
-
-            float timeSpent = float(i_duration) - len * 1000.f / speed;
-
-            if (timeSpent <= max_accuracyMiliYard && timeSpent >= min_accuracyMiliYard)
-            {
-                moving_to_start = true;
-                unit.AddUnitState(UNIT_STATE_CONFUSED_MOVE);
-                unit.UpdateAllowedPositionZ(i_x, i_y, i_z);
-
-                Movement::MoveSplineInit init(unit);
-                init.MovebyPath(path.GetPath());
-                init.SetWalk(true);
-                init.Launch();
-                return true;
-            }
-        }
+        _interrupt = true;
+        owner.StopMoving();
+        return true;
     }
     else
-        return true;
+        _interrupt = false;
 
     // waiting for next move
-    if (i_nextMoveTime.Passed() && unit.movespline->Finalized())
+    _timer.Update(diff);
+    if (!_interrupt && _timer.Passed() && owner.movespline->Finalized())
     {
+        // start moving
+        owner.AddUnitState(UNIT_STATE_CONFUSED_MOVE);
+
+        Position destination(_reference);
+        float distance = 4.0f * frand(0.0f, 1.0f) - 2.0f;
+        float angle = frand(0.0f, 1.0f) * float(M_PI) * 2.0f;
+        owner.MovePositionToFirstCollision(destination, distance, angle);
+
+        if (!_path)
+            _path = new PathGenerator(&owner);
+
+        _path->SetPathLengthLimit(30.0f);
+        bool result = _path->CalculatePath(destination.GetPositionX(), destination.GetPositionY(), destination.GetPositionZ());
+        if (!result || (_path->GetPathType() & PATHFIND_NOPATH))
         {
-            // start moving
-            unit.AddUnitState(UNIT_STATE_CONFUSED_MOVE);
-
-            float const wander_distance = 5;
-            float x, y, z = 0.0f;
-            unit.GetPosition(x, y, z, unit.GetTransport());
-            x += (wander_distance * static_cast<float>(rand_norm()) - wander_distance/2);
-            y += (wander_distance * static_cast<float>(rand_norm()) - wander_distance/2);
-
-            Trinity::NormalizeMapCoord(x);
-            Trinity::NormalizeMapCoord(y);
-
-            unit.UpdateAllowedPositionZ(x, y, z);
-
-            if (z <= INVALID_HEIGHT)
-                i_z = unit.GetHeight(x, y, MAX_HEIGHT) + 2.0f;
-
-            PathGenerator path(&unit);
-            path.SetPathLengthLimit(30.0f);
-            path.SetUseStraightPath(false);
-
-            if (!unit.IsWithinLOS(x, y, z) || !path.CalculatePath(x, y, z) || path.GetPathType() & PATHFIND_NOPATH)
-            {
-                i_nextMoveTime.Reset(urand(200, 500));
-                return true;
-            }
-
-            Movement::MoveSplineInit init(unit);
-            if (unit.GetTransport())
-                init.DisableTransportPathTransformations();
-            init.MovebyPath(path.GetPath());
-            init.SetWalk(true);
-            init.Launch();
+            _timer.Reset(100);
+            return true;
         }
+
+        Movement::MoveSplineInit init(owner);
+        init.MovebyPath(_path->GetPath());
+        init.SetWalk(true);
+        int32 traveltime = init.Launch();
+        _timer.Reset(traveltime + urand(800, 1500));
     }
 
     return true;
@@ -143,7 +103,7 @@ template<>
 void ConfusedMovementGenerator<Player>::DoFinalize(Player &unit)
 {
     unit.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
-    unit.ClearUnitState(UNIT_STATE_CONFUSED | UNIT_STATE_CONFUSED_MOVE);
+    unit.ClearUnitState(UNIT_STATE_CONFUSED);
     unit.StopMoving();
 }
 
@@ -156,6 +116,8 @@ void ConfusedMovementGenerator<Creature>::DoFinalize(Creature &unit)
         unit.SetTarget(unit.getVictim()->GetGUID());
 }
 
+template ConfusedMovementGenerator<Player>::~ConfusedMovementGenerator();
+template ConfusedMovementGenerator<Creature>::~ConfusedMovementGenerator();
 template void ConfusedMovementGenerator<Player>::DoInitialize(Player &player);
 template void ConfusedMovementGenerator<Creature>::DoInitialize(Creature &creature);
 template void ConfusedMovementGenerator<Player>::DoReset(Player &player);
