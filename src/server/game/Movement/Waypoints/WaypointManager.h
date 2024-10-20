@@ -19,11 +19,20 @@
 #ifndef TRINITY_WAYPOINTMANAGER_H
 #define TRINITY_WAYPOINTMANAGER_H
 
+enum WaypointMoveType
+{
+    WAYPOINT_MOVE_TYPE_WALK,
+    WAYPOINT_MOVE_TYPE_RUN,
+    WAYPOINT_MOVE_TYPE_LAND,
+    WAYPOINT_MOVE_TYPE_TAKEOFF,
+    WAYPOINT_MOVE_TYPE_MAX
+};
+
 struct WaypointData
 {
     uint32 id;
     float x, y, z, orientation;
-    bool run;
+    uint32 move_type;
     float speed;
     uint32 delay;
     uint8 delay_chance;

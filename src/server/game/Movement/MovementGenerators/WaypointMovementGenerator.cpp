@@ -203,22 +203,21 @@ bool WaypointMovementGenerator<Creature>::StartMove(Creature &creature)
     if (node->speed > 0)
         init.SetVelocity(node->speed);
 
-    init.SetWalk(!node->run);
-    //switch (node->move_type)
-    //{
-    //    case WAYPOINT_MOVE_TYPE_LAND:
-    //        init.SetAnimation(Movement::ToGround);
-    //        break;
-    //    case WAYPOINT_MOVE_TYPE_TAKEOFF:
-    //        init.SetAnimation(Movement::ToFly);
-    //        break;
-    //    case WAYPOINT_MOVE_TYPE_RUN:
-    //        init.SetWalk(false);
-    //        break;
-    //    case WAYPOINT_MOVE_TYPE_WALK:
-    //        init.SetWalk(true);
-    //        break;
-    //}
+    switch (node->move_type)
+    {
+        case WAYPOINT_MOVE_TYPE_LAND:
+            init.SetAnimation(Movement::ToGround);
+            break;
+        case WAYPOINT_MOVE_TYPE_TAKEOFF:
+            init.SetAnimation(Movement::ToFly);
+            break;
+        case WAYPOINT_MOVE_TYPE_RUN:
+            init.SetWalk(false);
+            break;
+        case WAYPOINT_MOVE_TYPE_WALK:
+            init.SetWalk(true);
+            break;
+    }
 
     init.Launch();
 
@@ -395,7 +394,7 @@ bool WaypointMovementGenerator<Player>::StartMove(Player &player)
     if (node->speed > 0)
         init.SetVelocity(node->speed);
 
-    init.SetWalk(!node->run);
+    init.SetWalk(node->move_type != WAYPOINT_MOVE_TYPE_RUN);
     init.Launch();
 
     return true;
