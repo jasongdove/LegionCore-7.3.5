@@ -33,6 +33,12 @@ GroupMgr::~GroupMgr()
         delete itr.second;
 }
 
+GroupMgr* GroupMgr::instance()
+{
+    static GroupMgr instance;
+    return &instance;
+}
+
 void GroupMgr::Update(uint32 diff)
 {
     // for (GroupContainer::iterator itr = GroupStore.begin(); itr != GroupStore.end(); ++itr)

@@ -514,11 +514,8 @@ class LootMgr
         ~LootMgr() {}
 
     public:
-        static LootMgr* instance()
-        {
-            static LootMgr instance;
-            return &instance;
-        }
+        static LootMgr* instance();
+
         typedef std::map<ObjectGuid, Loot*> LootsMap;
 
         Loot* GetLoot(ObjectGuid const& guid);

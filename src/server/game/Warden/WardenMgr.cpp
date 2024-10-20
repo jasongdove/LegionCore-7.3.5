@@ -53,6 +53,12 @@ WardenMgr::~WardenMgr()
     }
 }
 
+WardenMgr* WardenMgr::instance()
+{
+    static WardenMgr instance;
+    return &instance;
+}
+
 void WardenMgr::LoadWardenChecks()
 {
     QueryResult result = WorldDatabase.Query("SELECT MAX(id) FROM warden_checks");

@@ -272,6 +272,12 @@ ScriptMgr::ScriptMgr() : _scriptCount(0)
 
 ScriptMgr::~ScriptMgr() = default;
 
+ScriptMgr* ScriptMgr::instance()
+{
+    static ScriptMgr instance;
+    return &instance;
+}
+
 void ScriptMgr::Initialize()
 {
     uint32 oldMSTime = getMSTime();

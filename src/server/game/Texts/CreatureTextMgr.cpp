@@ -92,6 +92,12 @@ bool CreatureTextId::operator<(CreatureTextId const& right) const
     return std::tie(entry, textGroup, textId) < std::tie(right.entry, right.textGroup, right.textId);
 }
 
+CreatureTextMgr* CreatureTextMgr::instance()
+{
+    static CreatureTextMgr instance;
+    return &instance;
+}
+
 void CreatureTextMgr::LoadCreatureTexts()
 {
     uint32 oldMSTime = getMSTime();

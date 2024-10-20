@@ -107,11 +107,8 @@ class WardenMgr
         WardenMgr& operator= (WardenMgr const&) = delete;
 
     public:
-        static WardenMgr* instance()
-        {
-            static WardenMgr instance;
-            return &instance;
-        }
+        static WardenMgr* instance();
+
         // We have a linear key without any gaps, so we use vector for fast access
         typedef std::vector<WardenCheck*> CheckContainer;
         typedef std::unordered_map<std::string, WardenModule*> ModuleContainer;

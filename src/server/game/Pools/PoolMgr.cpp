@@ -554,6 +554,12 @@ void PoolGroup<Quest>::ReSpawn1Object(PoolObject* /*obj*/)
 
 PoolMgr::PoolMgr() { }
 
+PoolMgr* PoolMgr::instance()
+{
+    static PoolMgr instance;
+    return &instance;
+}
+
 void PoolMgr::Initialize()
 {
     mQuestSearchMap.clear();

@@ -47,6 +47,12 @@ WaypointMgr::~WaypointMgr()
     _waypointScriptStore.clear();
 }
 
+WaypointMgr* WaypointMgr::instance()
+{
+    static WaypointMgr instance;
+    return &instance;
+}
+
 void WaypointMgr::Load()
 {
     uint32 oldMSTime = getMSTime();
@@ -152,7 +158,6 @@ void WaypointMgr::Load()
     while (result->NextRow());
 
     TC_LOG_INFO("server.loading", ">> Loaded %u waypoints in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-
 }
 
 void WaypointMgr::ReloadPath(uint32 id)

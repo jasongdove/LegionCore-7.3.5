@@ -332,6 +332,12 @@ SpellMgr::~SpellMgr()
     UnloadSpellInfoStore();
 }
 
+SpellMgr* SpellMgr::instance()
+{
+    static SpellMgr instance;
+    return &instance;
+}
+
 bool SpellMgr::IsSpellValid(SpellInfo const* spellInfo, Player* player, bool msg)
 {
     if (!spellInfo)

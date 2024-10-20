@@ -159,11 +159,7 @@ class ObjectAccessor
 public:
     // TODO: override these template functions for each holder type and add assertions
 
-    static ObjectAccessor* instance()
-    {
-        static ObjectAccessor instance;
-        return &instance;
-    }
+    static ObjectAccessor* instance();
 
     template<class T> static T* GetObjectInOrOutOfWorld(ObjectGuid guid, T* /*typeSpecifier*/)
     {

@@ -47,6 +47,12 @@ ObjectAccessor::~ObjectAccessor()
 {
 }
 
+ObjectAccessor* ObjectAccessor::instance()
+{
+    static ObjectAccessor instance;
+    return &instance;
+}
+
 WorldObject* ObjectAccessor::GetWorldObject(WorldObject const& p, ObjectGuid guid)
 {
     switch (guid.GetHigh())

@@ -31,12 +31,9 @@ class BattlefieldMgr
 {
   private:
     BattlefieldMgr();
+
   public:
-    static BattlefieldMgr* instance()
-    {
-        static BattlefieldMgr instance;
-        return &instance;
-    }
+    static BattlefieldMgr* instance();
 
     ~BattlefieldMgr();
 

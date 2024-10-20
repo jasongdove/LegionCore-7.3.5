@@ -3831,6 +3831,12 @@ void LoadLootTemplates_Reference()
     TC_LOG_INFO("server.loading", ">> Loaded refence loot templates in %u ms", GetMSTimeDiffToNow(oldMSTime));
 }
 
+LootMgr* LootMgr::instance()
+{
+    static LootMgr instance;
+    return &instance;
+}
+
 Loot* LootMgr::GetLoot(ObjectGuid const& guid)
 {
     std::lock_guard<std::recursive_mutex> _lock(m_LootsLock);

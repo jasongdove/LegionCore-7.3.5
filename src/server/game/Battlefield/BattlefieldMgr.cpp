@@ -27,6 +27,12 @@ BattlefieldMgr::BattlefieldMgr()
     m_UpdateTimer = 0;
 }
 
+BattlefieldMgr* BattlefieldMgr::instance()
+{
+    static BattlefieldMgr instance;
+    return &instance;
+}
+
 BattlefieldMgr::~BattlefieldMgr()
 {
     for (auto const& v : m_BattlefieldSet)
