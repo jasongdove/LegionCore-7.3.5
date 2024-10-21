@@ -24,21 +24,21 @@
 #include "Timer.h"
 
 template<class T>
-class FleeingMovementGenerator : public MovementGeneratorMedium< T, FleeingMovementGenerator<T> >
+class FleeingMovementGenerator : public MovementGeneratorMedium<T, FleeingMovementGenerator<T>>
 {
     public:
         explicit FleeingMovementGenerator(ObjectGuid fleeTargetGUID) : _path(nullptr), _fleeTargetGUID(fleeTargetGUID), _timer(0), _interrupt(false) { }
 
-        MovementGeneratorType GetMovementGeneratorType() override { return FLEEING_MOTION_TYPE; }
+        MovementGeneratorType GetMovementGeneratorType() const override { return FLEEING_MOTION_TYPE; }
 
-        void DoInitialize(T &);
-        void DoFinalize(T &);
-        void DoReset(T &);
-        bool DoUpdate(T &, const uint32 &);
+        void DoInitialize(T&);
+        void DoFinalize(T&);
+        void DoReset(T&);
+        bool DoUpdate(T&, uint32);
 
     private:
-        void SetTargetLocation(T &owner);
-        void GetPoint(T &owner, Position &position);
+        void SetTargetLocation(T& owner);
+        void GetPoint(T& owner, Position& position);
 
         std::unique_ptr<PathGenerator> _path;
         ObjectGuid _fleeTargetGUID;
@@ -51,10 +51,10 @@ class TimedFleeingMovementGenerator : public FleeingMovementGenerator<Creature>
     public:
         explicit TimedFleeingMovementGenerator(ObjectGuid fleeTargetGUID, uint32 time) : FleeingMovementGenerator<Creature>(fleeTargetGUID), _totalFleeTime(time) { }
 
-        MovementGeneratorType GetMovementGeneratorType() override { return TIMED_FLEEING_MOTION_TYPE; }
+        MovementGeneratorType GetMovementGeneratorType() const override { return TIMED_FLEEING_MOTION_TYPE; }
 
-        bool Update(Unit &, const uint32&) override;
-        void Finalize(Unit &) override;
+        bool Update(Unit&, uint32) override;
+        void Finalize(Unit&) override;
 
     private:
         TimeTracker _totalFleeTime;

@@ -20,6 +20,7 @@
 #include "Anticheat.h"
 #include "ObjectMgr.h"
 #include "WaypointMovementGenerator.h"
+#include "FlightPathMovementGenerator.h"
 #include "Garrison.h"
 #include "PlayerDefines.h"
 #include "InstancePackets.h"

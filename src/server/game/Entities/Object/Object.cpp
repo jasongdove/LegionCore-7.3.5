@@ -2116,6 +2116,23 @@ float WorldObject::GetHeight(float x, float y, float z, bool vmap /*= true*/, fl
     return GetMap()->GetHeight(GetPhases(), x, y, z, vmap, maxSearchDist);
 }
 
+Position WorldObject::GetHitSpherePointFor(Position const& dest) const
+{
+    G3D::Vector3 vThis(GetPositionX(), GetPositionY(), GetPositionZ() + GetCollisionHeight());
+    G3D::Vector3 vObj(dest.GetPositionX(), dest.GetPositionY(), dest.GetPositionZ());
+    G3D::Vector3 contactPoint = vThis + (vObj - vThis).directionOrZero() * std::min(dest.GetExactDist(GetPosition()), GetCombatReach());
+
+    return Position(contactPoint.x, contactPoint.y, contactPoint.z, GetAngle(contactPoint.x, contactPoint.y));
+}
+
+void WorldObject::GetHitSpherePointFor(Position const& dest, float& x, float& y, float& z) const
+{
+    Position pos = GetHitSpherePointFor(dest);
+    x = pos.GetPositionX();
+    y = pos.GetPositionY();
+    z = pos.GetPositionZ();
+}
+
 bool WorldObject::GetDistanceOrder(WorldObject const* obj1, WorldObject const* obj2, bool is3D /* = true */) const
 {
     float dx1 = GetPositionX() - obj1->GetPositionX();

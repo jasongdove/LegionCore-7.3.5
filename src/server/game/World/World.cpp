@@ -1142,6 +1142,8 @@ void World::LoadConfigSettings(bool reload)
 
     m_bool_configs[CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN]            = sConfigMgr->GetBoolDefault("OffhandCheckAtSpellUnlearn", true);
 
+    m_int_configs[CONFIG_CREATURE_STOP_FOR_PLAYER]                   = sConfigMgr->GetIntDefault("Creature.MovingStopTimeForPlayer", 3 * MINUTE * IN_MILLISECONDS);
+
     if (int32 clientCacheId = sConfigMgr->GetIntDefault("ClientCacheVersion", 0))
     {
         // overwrite DB/old value

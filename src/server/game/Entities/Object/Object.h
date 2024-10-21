@@ -166,6 +166,8 @@ private:
     std::vector<uint32> const& _data;
 };
 
+float const DEFAULT_COLLISION_HEIGHT = 2.03128f; // Most common value in dbc
+
 class Object
 {
     public:
@@ -474,6 +476,7 @@ class WorldObject : public Object, public WorldLocation
         void GenerateCollisionNonDuplicatePoints(std::list<Position>& randPosList, uint8 maxPoint, float randMin, float randMax, float minDist);
 
         float GetObjectSize() const;
+        virtual float GetCombatReach() const { return 0.0f; } // overridden (only) in Unit
         void UpdateGroundPositionZ(float x, float y, float &z) const;
         void UpdateAllowedPositionZ(float x, float y, float &z) const;
         virtual bool IsInWater() const { return false; }
@@ -543,6 +546,8 @@ class WorldObject : public Object, public WorldLocation
         bool IsWithinDistInMap(WorldObject const* obj, float dist2compare, bool is3D = true, bool ignoreObjectSize = false) const;
         bool IsWithinLOS(float x, float y, float z) const;
         bool IsWithinLOSInMap(const WorldObject* obj) const;
+        Position GetHitSpherePointFor(Position const& dest) const;
+        void GetHitSpherePointFor(Position const& dest, float& x, float& y, float& z) const;
         bool GetDistanceOrder(WorldObject const* obj1, WorldObject const* obj2, bool is3D = true) const;
         bool IsInRange(WorldObject const* obj, float minRange, float maxRange, bool is3D = true) const;
         bool IsInRange2d(float x, float y, float minRange, float maxRange) const;
@@ -693,6 +698,8 @@ class WorldObject : public Object, public WorldLocation
         virtual float GetStationaryY() const { return GetPositionY(); }
         virtual float GetStationaryZ() const { return GetPositionZ(); }
         virtual float GetStationaryO() const { return GetOrientation(); }
+
+        virtual float GetCollisionHeight() const { return 0.0f; }
 
         //template<class NOTIFIER> void VisitNearbyObject(const float &radius, NOTIFIER &notifier) const;
         template<class NOTIFIER>

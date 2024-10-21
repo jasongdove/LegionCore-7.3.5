@@ -1180,7 +1180,7 @@ bool VehicleJoinEvent::Execute(uint64, uint32)
     }
 
     if (player)
-        player->SendMovementSetCollisionHeight(player->GetCollisionHeight(true), 2); // Force update collision
+        player->SendMovementSetCollisionHeight(player->GetCollisionHeight(), 2); // Force update collision
 
     return true;
 }

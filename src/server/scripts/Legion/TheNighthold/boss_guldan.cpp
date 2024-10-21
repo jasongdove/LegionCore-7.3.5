@@ -2740,7 +2740,7 @@ class areatrigger_guldan_visual_charging : public AreaTriggerScript
                 return false;
             
             for (auto cur_point = WP_path->begin(); cur_point != WP_path->end(); ++cur_point)
-                path.push_back({(*cur_point)->x, (*cur_point)->y, (*cur_point)->z, (*cur_point)->orientation});
+                path.push_back({(*cur_point).x, (*cur_point).y, (*cur_point).z, (*cur_point).orientation});
             
             if (need_reverse)
                 std::reverse(path.begin(), path.end());

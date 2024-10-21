@@ -17,23 +17,28 @@
  */
 
 #include "MotionMaster.h"
-#include "CreatureAISelector.h"
-#include "Creature.h"
 #include "ConfusedMovementGenerator.h"
+#include "Creature.h"
+#include "CreatureAISelector.h"
 #include "FleeingMovementGenerator.h"
+#include "FlightPathMovementGenerator.h"
 #include "HomeMovementGenerator.h"
 #include "IdleMovementGenerator.h"
-#include "PointMovementGenerator.h"
-#include "TargetedMovementGenerator.h"
-#include "WaypointMovementGenerator.h"
-#include "RandomMovementGenerator.h"
 #include "MoveSpline.h"
 #include "MoveSplineInit.h"
-#include <cassert>
+#include "PointMovementGenerator.h"
+#include "RandomMovementGenerator.h"
+#include "TargetedMovementGenerator.h"
+#include "WaypointMovementGenerator.h"
+
+inline MovementGenerator* GetIdleMovementGenerator()
+{
+    return sMovementGeneratorRegistry->GetRegistryItem(IDLE_MOTION_TYPE)->Create();
+}
 
 inline bool IsStatic(MovementGenerator* movement)
 {
-    return (movement == &si_idleMovement);
+    return (movement == GetIdleMovementGenerator());
 }
 
 MotionMaster::~MotionMaster()
@@ -41,10 +46,10 @@ MotionMaster::~MotionMaster()
     // clear ALL movement generators (including default)
     while (!empty())
     {
-        MovementGenerator *curr = top();
+        MovementGenerator* curr = top();
         pop();
         if (curr && !IsStatic(curr))
-            delete curr;    // Skip finalizing on delete, it might launch new movement
+            delete curr; // Skip finalizing on delete, it might launch new movement
     }
 }
 
@@ -65,15 +70,7 @@ void MotionMaster::Initialize()
 // set new default movement generator
 void MotionMaster::InitDefault()
 {
-    if (_owner->IsCreature())
-    {
-        MovementGenerator* movement = FactorySelector::selectMovementGenerator(_owner->ToCreature());
-        Mutate(movement == nullptr ? &si_idleMovement : movement, MOTION_SLOT_IDLE);
-    }
-    else
-    {
-        Mutate(&si_idleMovement, MOTION_SLOT_IDLE);
-    }
+    Mutate(FactorySelector::SelectMovementGenerator(_owner), MOTION_SLOT_IDLE);
 }
 
 void MotionMaster::UpdateMotion(uint32 diff)
@@ -155,6 +152,20 @@ void MotionMaster::MovementExpired(bool reset /*= true*/)
         DirectExpire(reset);
 }
 
+MovementSlot MotionMaster::GetCurrentSlot() const
+{
+    if (empty() || (_slot[MOTION_SLOT_IDLE] && !_slot[MOTION_SLOT_ACTIVE]))
+        return MOTION_SLOT_IDLE;
+
+    if (_slot[MOTION_SLOT_ACTIVE])
+        return MOTION_SLOT_ACTIVE;
+
+    if (_slot[MOTION_SLOT_CONTROLLED])
+        return MOTION_SLOT_CONTROLLED;
+
+    return MAX_MOTION_SLOT;
+}
+
 MovementGeneratorType MotionMaster::GetCurrentMovementGeneratorType() const
 {
     if (empty())
@@ -165,7 +176,7 @@ MovementGeneratorType MotionMaster::GetCurrentMovementGeneratorType() const
 
 MovementGeneratorType MotionMaster::GetMotionSlotType(int slot) const
 {
-    if (!_slot[slot])
+    if (empty() || IsInvalidMovementSlot(slot) || !_slot[slot])
         return NULL_MOTION_TYPE;
     else
         return _slot[slot]->GetMovementGeneratorType();
@@ -173,17 +184,22 @@ MovementGeneratorType MotionMaster::GetMotionSlotType(int slot) const
 
 MovementGenerator* MotionMaster::GetMotionSlot(int slot) const
 {
-    ASSERT(slot >= 0);
+    if (empty() || IsInvalidMovementSlot(slot) || !_slot[slot])
+        return nullptr;
+
     return _slot[slot];
 }
 
 void MotionMaster::PropagateSpeedChange()
 {
-    for (int i = 0; i <= _top; ++i)
-    {
-        if (_slot[i])
-            _slot[i]->UnitSpeedChanged();
-    }
+    if (empty())
+        return;
+
+    MovementGenerator* movement = top();
+    if (!movement)
+        return;
+
+    movement->UnitSpeedChanged();
 }
 
 bool MotionMaster::GetDestination(float &x, float &y, float &z)
@@ -202,7 +218,7 @@ void MotionMaster::MoveIdle()
 {
     //! Should be preceded by MovementExpired or Clear if there's an overlying movementgenerator active
     if (empty() || !IsStatic(top()))
-        Mutate(&si_idleMovement, MOTION_SLOT_IDLE);
+        Mutate(GetIdleMovementGenerator(), MOTION_SLOT_IDLE);
 }
 
 void MotionMaster::MoveTargetedHome()
@@ -602,7 +618,7 @@ void MotionMaster::MoveCirclePath(float x, float y, float z, float radius, bool 
 
     if (_owner->IsFlying())
     {
-        init.SetFly();    
+        init.SetFly();
         init.SetAnimation(Movement::ToFly);
     }
     else
@@ -733,19 +749,28 @@ void MotionMaster::MoveDistract(uint32 timer)
     Mutate(mgen, MOTION_SLOT_CONTROLLED);
 }
 
-void MotionMaster::MovePath(uint32 path_id, bool repeatable, float randomMoveX, float randomMoveY)
+void MotionMaster::MovePath(uint32 pathId, bool repeatable, float randomMoveX, float randomMoveY)
 {
-    if (!path_id)
+    if (!pathId)
         return;
 
     if (_owner->IsPlayer())
-        Mutate(new WaypointMovementGenerator<Player>(path_id), MOTION_SLOT_IDLE);
+        Mutate(new WaypointMovementGenerator<Player>(pathId), MOTION_SLOT_IDLE);
     else
-        Mutate(new WaypointMovementGenerator<Creature>(path_id, repeatable, randomMoveX, randomMoveY), MOTION_SLOT_IDLE);
+        Mutate(new WaypointMovementGenerator<Creature>(pathId, repeatable, randomMoveX, randomMoveY), MOTION_SLOT_IDLE);
 
-    TC_LOG_DEBUG("misc", "%s (GUID: %u) start moving over path(Id:%u, repeatable: %s)",
-        _owner->IsPlayer() ? "Player" : "Creature",
-        _owner->GetGUIDLow(), path_id, repeatable ? "YES" : "NO");
+    TC_LOG_DEBUG("misc", "%s (GUID: %lu) start moving over path(Id: %u, repeatable: %s)",
+                 _owner->IsPlayer() ? "Player" : "Creature",
+                 _owner->GetGUID().GetCounter(), pathId, repeatable ? "YES" : "NO");
+}
+
+void MotionMaster::MovePath(WaypointPath& path, bool repeatable)
+{
+    Mutate(new WaypointMovementGenerator<Creature>(path, repeatable), MOTION_SLOT_IDLE);
+
+    TC_LOG_DEBUG("misc", "%s (GUID: %lu) start moving over path(repeatable: %s)",
+                 _owner->GetTypeId() == TYPEID_PLAYER ? "Player" : "Creature",
+                 _owner->GetGUID().GetCounter(), repeatable ? "YES" : "NO");
 }
 
 void MotionMaster::MoveRotate(uint32 time, RotateDirection direction, bool repeat /* = false*/)

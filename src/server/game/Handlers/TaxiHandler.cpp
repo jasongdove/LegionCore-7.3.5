@@ -17,10 +17,11 @@
  */
 
 #include "CreatureAI.h"
-#include "TaxiPackets.h"
+#include "FlightPathMovementGenerator.h"
 #include "ObjectMgr.h"
-#include "TaxiPathGraph.h"
 #include "PlayerDefines.h"
+#include "TaxiPackets.h"
+#include "TaxiPathGraph.h"
 #include "WaypointMovementGenerator.h"
 
 void WorldSession::HandleEnableTaxiNode(WorldPackets::Taxi::EnableTaxiNode& enableTaxiNode)

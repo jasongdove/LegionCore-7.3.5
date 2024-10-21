@@ -19,6 +19,8 @@
 #ifndef TRINITY_WAYPOINTMANAGER_H
 #define TRINITY_WAYPOINTMANAGER_H
 
+#include "Containers.h"
+
 enum WaypointMoveType
 {
     WAYPOINT_MOVE_TYPE_WALK,
@@ -30,6 +32,8 @@ enum WaypointMoveType
 
 struct WaypointData
 {
+    WaypointData() : id(0), x(0.f), y(0.f), z(0.f), orientation(0.f), delay(0), delay_chance(0), event_id(0), move_type(WAYPOINT_MOVE_TYPE_RUN), speed(0), event_chance(0) { }
+
     uint32 id;
     float x, y, z, orientation;
     uint32 move_type;
@@ -40,7 +44,7 @@ struct WaypointData
     uint8 event_chance;
 };
 
-typedef std::vector<WaypointData*> WaypointPath;
+typedef std::vector<WaypointData> WaypointPath;
 typedef std::unordered_map<uint32, WaypointPath> WaypointPathContainer;
 
 class WaypointMgr
@@ -67,8 +71,7 @@ class WaypointMgr
         }
 
     private:
-        WaypointMgr();
-        ~WaypointMgr();
+        WaypointMgr() = default;
 
         WaypointPathContainer _waypointStore;
         WaypointPathContainer _waypointScriptStore;

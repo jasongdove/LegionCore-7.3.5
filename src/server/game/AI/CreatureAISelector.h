@@ -28,7 +28,7 @@ class GameObject;
 namespace FactorySelector
 {
     CreatureAI* selectAI(Creature*);
-    MovementGenerator* selectMovementGenerator(Creature*);
+    MovementGenerator* SelectMovementGenerator(Unit*);
     GameObjectAI* SelectGameObjectAI(GameObject*);
 }
 #endif

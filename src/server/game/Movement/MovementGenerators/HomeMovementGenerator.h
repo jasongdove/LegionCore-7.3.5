@@ -20,29 +20,28 @@
 #define TRINITY_HOMEMOVEMENTGENERATOR_H
 
 #include "MovementGenerator.h"
-#include "PathGenerator.h"
 
-template <class T>
-class HomeMovementGenerator : public MovementGeneratorMedium< T, HomeMovementGenerator<T> >
+template<class T>
+class HomeMovementGenerator : public MovementGeneratorMedium<T, HomeMovementGenerator<T>>
 {
     public:
-
         explicit HomeMovementGenerator() : _path(nullptr), _arrived(false), _skipToHome(false) { }
         ~HomeMovementGenerator();
 
-        MovementGeneratorType GetMovementGeneratorType() override { return HOME_MOTION_TYPE; }
+        MovementGeneratorType GetMovementGeneratorType() const override { return HOME_MOTION_TYPE; }
 
-        void DoInitialize(T &);
-        void DoFinalize(T &);
-        void DoReset(T &);
-        bool DoUpdate(T &, const uint32);
+        void DoInitialize(T&);
+        void DoFinalize(T&);
+        void DoReset(T&);
+        bool DoUpdate(T&, uint32);
 
     private:
-        void SetTargetLocation(T &);
+        void SetTargetLocation(T&);
 
         PathGenerator* _path;
         bool _arrived;
         bool _skipToHome;
 };
+
 #endif
 

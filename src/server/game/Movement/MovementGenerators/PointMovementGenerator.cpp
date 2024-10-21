@@ -16,20 +16,20 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "PointMovementGenerator.h"
 #include "Creature.h"
 #include "CreatureAI.h"
 #include "CreatureGroups.h"
-#include "MoveSplineInit.h"
 #include "MoveSpline.h"
+#include "MoveSplineInit.h"
 #include "Player.h"
 #include "ScriptMgr.h"
 #include "World.h"
-#include "PointMovementGenerator.h"
 
 //----- Point Movement Generator
 
 template<class T>
-void PointMovementGenerator<T>::DoInitialize(T &owner)
+void PointMovementGenerator<T>::DoInitialize(T& owner)
 {
     if (_movementId == EVENT_CHARGE_PREPATH)
     {
@@ -49,8 +49,8 @@ void PointMovementGenerator<T>::DoInitialize(T &owner)
     owner.AddUnitState(UNIT_STATE_ROAMING_MOVE);
 
     Movement::MoveSplineInit init(owner);
-//    if (unit.GetTransport())
-//        init.DisableTransportPathTransformations();
+    //    if (unit.GetTransport())
+    //        init.DisableTransportPathTransformations();
     init.MoveTo(_destination, _generatePath);
     if (_speed > 0.0f)
         init.SetVelocity(_speed);
@@ -63,16 +63,16 @@ void PointMovementGenerator<T>::DoInitialize(T &owner)
     // Call for creature group update
     if (Creature* creature = owner.ToCreature())
         if (creature->GetFormation() && creature->GetFormation()->getLeader() == creature)
-            creature->GetFormation()->LeaderMoveTo(_destination.x, _destination.y, _destination.z);
+            creature->GetFormation()->LeaderMoveTo(_destination.GetPositionX(), _destination.GetPositionY(), _destination.GetPositionZ());
 }
 
 template<class T>
-bool PointMovementGenerator<T>::DoUpdate(T &owner, const uint32 & /*diff*/)
+bool PointMovementGenerator<T>::DoUpdate(T& owner, uint32 /*diff*/)
 {
     if (_movementId == EVENT_CHARGE_PREPATH)
         return !owner.movespline->Finalized();
 
-    if (owner.HasUnitState(UNIT_STATE_NOT_MOVE) || owner.IsMovementPreventedByCasting())
+    if (owner.HasUnitState(UNIT_STATE_NOT_MOVE) || owner.IsMovementPreventedByCasting() && _movementId != EVENT_CHARGE)
     {
         _interrupt = true;
         owner.StopMoving();
@@ -95,14 +95,14 @@ bool PointMovementGenerator<T>::DoUpdate(T &owner, const uint32 & /*diff*/)
         // Call for creature group update
         if (Creature* creature = owner.ToCreature())
             if (creature->GetFormation() && creature->GetFormation()->getLeader() == creature)
-                creature->GetFormation()->LeaderMoveTo(_destination.x, _destination.y, _destination.z);
+                creature->GetFormation()->LeaderMoveTo(_destination.GetPositionX(), _destination.GetPositionY(), _destination.GetPositionZ());
     }
 
     return !owner.movespline->Finalized();
 }
 
 template<class T>
-void PointMovementGenerator<T>::DoFinalize(T &owner)
+void PointMovementGenerator<T>::DoFinalize(T& owner)
 {
     owner.ClearUnitState(UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE);
 
@@ -111,7 +111,7 @@ void PointMovementGenerator<T>::DoFinalize(T &owner)
 }
 
 template<class T>
-void PointMovementGenerator<T>::DoReset(T &owner)
+void PointMovementGenerator<T>::DoReset(T& owner)
 {
     owner.StopMoving();
     DoInitialize(owner);
@@ -120,14 +120,14 @@ void PointMovementGenerator<T>::DoReset(T &owner)
 template<class T>
 void PointMovementGenerator<T>::MovementInform(T&) { }
 
-template <>
+template<>
 void PointMovementGenerator<Player>::MovementInform(Player& owner)
 {
     sScriptMgr->OnMovementInform(&owner, POINT_MOTION_TYPE, _movementId);
 }
 
-template <>
-void PointMovementGenerator<Creature>::MovementInform(Creature &owner)
+template<>
+void PointMovementGenerator<Creature>::MovementInform(Creature& owner)
 {
     if (owner.AI())
         owner.AI()->MovementInform(POINT_MOTION_TYPE, _movementId);
@@ -139,12 +139,12 @@ template void PointMovementGenerator<Player>::DoFinalize(Player&);
 template void PointMovementGenerator<Creature>::DoFinalize(Creature&);
 template void PointMovementGenerator<Player>::DoReset(Player&);
 template void PointMovementGenerator<Creature>::DoReset(Creature&);
-template bool PointMovementGenerator<Player>::DoUpdate(Player &, const uint32 &);
-template bool PointMovementGenerator<Creature>::DoUpdate(Creature&, const uint32 &);
+template bool PointMovementGenerator<Player>::DoUpdate(Player&, uint32);
+template bool PointMovementGenerator<Creature>::DoUpdate(Creature&, uint32);
 
 //---- AssistanceMovementGenerator
 
-void AssistanceMovementGenerator::Finalize(Unit &owner)
+void AssistanceMovementGenerator::Finalize(Unit& owner)
 {
     owner.ClearUnitState(UNIT_STATE_ROAMING);
     owner.StopMoving();
@@ -156,17 +156,17 @@ void AssistanceMovementGenerator::Finalize(Unit &owner)
 
 //---- EffectMovementGenerator
 
-bool EffectMovementGenerator::Update(Unit &owner, const uint32&)
+bool EffectMovementGenerator::Update(Unit& owner, uint32)
 {
     return !owner.movespline->Finalized();
 }
 
-void EffectMovementGenerator::Finalize(Unit &owner)
+void EffectMovementGenerator::Finalize(Unit& owner)
 {
     MovementInform(owner);
 }
 
-void EffectMovementGenerator::MovementInform(Unit &owner)
+void EffectMovementGenerator::MovementInform(Unit& owner)
 {
     if (_arrivalSpellId)
         owner.CastSpell(ObjectAccessor::GetUnit(owner, _arrivalSpellTargetGuid), _arrivalSpellId, true);

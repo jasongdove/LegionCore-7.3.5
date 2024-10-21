@@ -605,7 +605,20 @@ float Position::GetExactDistSq(Position const* pos) const
     return dx * dx + dy * dy + dz * dz;
 }
 
+float Position::GetExactDistSq(Position const& pos) const
+{
+    float dx = m_positionX - pos.m_positionX;
+    float dy = m_positionY - pos.m_positionY;
+    float dz = GetPositionZH() - pos.GetPositionZH();
+    return dx * dx + dy * dy + dz * dz;
+}
+
 float Position::GetExactDist(Position const* pos) const
+{
+    return sqrt(GetExactDistSq(pos));
+}
+
+float Position::GetExactDist(Position const& pos) const
 {
     return sqrt(GetExactDistSq(pos));
 }

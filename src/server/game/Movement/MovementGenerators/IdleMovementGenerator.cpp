@@ -20,8 +20,6 @@
 #include "CreatureAI.h"
 #include "Creature.h"
 
-IdleMovementGenerator si_idleMovement;
-
 // StopMoving is needed to make unit stop if its last movement generator expires
 // But it should not be sent otherwise there are many redundent packets
 void IdleMovementGenerator::Initialize(Unit &owner)
@@ -46,27 +44,16 @@ void RotateMovementGenerator::Initialize(Unit& owner)
         owner.SetInFront(owner.getVictim());
 
     owner.AddUnitState(UNIT_STATE_ROTATING);
-
     owner.AttackStop();
 }
 
-bool RotateMovementGenerator::Update(Unit& owner, const uint32& diff)
+bool RotateMovementGenerator::Update(Unit& owner, uint32 diff)
 {
     float angle = owner.GetOrientation();
-    if (_direction == ROTATE_DIRECTION_LEFT)
-    {
-        angle += float(diff) * float(M_PI) * 2.f / float(_maxDuration);
-        while (angle >= float(M_PI) * 2.f)
-            angle -= float(M_PI) * 2.f;
-    }
-    else
-    {
-        angle -= float(diff) * float(M_PI) * 2.f / float(_maxDuration);
-        while (angle < 0.f)
-            angle += float(M_PI) * 2.f;
-    }
+    angle += (float(diff) * static_cast<float>(M_PI * 2) / _maxDuration) * (_direction == ROTATE_DIRECTION_LEFT ? 1.0f : -1.0f);
+    angle = G3D::wrap(angle, 0.0f, float(G3D::twoPi()));
 
-    owner.SetOrientation(angle);   // TODO: UpdateSplinePosition does not set orientation with UNIT_STATE_ROTATING
+    owner.SetOrientation(angle);   // UpdateSplinePosition does not set orientation with UNIT_STATE_ROTATING
     owner.SetFacingTo(angle);      // Send spline movement to clients
 
     if (_duration > diff)
@@ -109,7 +96,7 @@ void DistractMovementGenerator::Finalize(Unit& owner)
     }
 }
 
-bool DistractMovementGenerator::Update(Unit& /*owner*/, const uint32& diff)
+bool DistractMovementGenerator::Update(Unit& /*owner*/, uint32 diff)
 {
     if (diff > _timer)
         return false;

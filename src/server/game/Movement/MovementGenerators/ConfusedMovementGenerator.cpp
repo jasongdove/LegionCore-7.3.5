@@ -16,14 +16,14 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Unit.h"
-#include "Creature.h"
-#include "Player.h"
-#include "MapManager.h"
-#include "VMapFactory.h"
-#include "MoveSplineInit.h"
-#include "MoveSpline.h"
 #include "ConfusedMovementGenerator.h"
+#include "Creature.h"
+#include "MapManager.h"
+#include "MoveSpline.h"
+#include "MoveSplineInit.h"
+#include "Player.h"
+#include "Unit.h"
+#include "VMapFactory.h"
 
 template <class T>
 ConfusedMovementGenerator<T>::~ConfusedMovementGenerator()
@@ -32,7 +32,7 @@ ConfusedMovementGenerator<T>::~ConfusedMovementGenerator()
 }
 
 template<class T>
-void ConfusedMovementGenerator<T>::DoInitialize(T &owner)
+void ConfusedMovementGenerator<T>::DoInitialize(T& owner)
 {
     if (!owner.IsAlive())
         return;
@@ -42,17 +42,17 @@ void ConfusedMovementGenerator<T>::DoInitialize(T &owner)
     owner.StopMoving();
 
     _timer.Reset(0);
-    owner.GetPosition(_reference.x, _reference.y, _reference.z);
+    _reference = owner.GetPosition();
 }
 
 template<class T>
-void ConfusedMovementGenerator<T>::DoReset(T &owner)
+void ConfusedMovementGenerator<T>::DoReset(T& owner)
 {
     DoInitialize(owner);
 }
 
 template<class T>
-bool ConfusedMovementGenerator<T>::DoUpdate(T &owner, const uint32 &diff)
+bool ConfusedMovementGenerator<T>::DoUpdate(T& owner, uint32 diff)
 {
     if (!owner.IsAlive())
         return false;
@@ -83,7 +83,9 @@ bool ConfusedMovementGenerator<T>::DoUpdate(T &owner, const uint32 &diff)
 
         _path->SetPathLengthLimit(30.0f);
         bool result = _path->CalculatePath(destination.GetPositionX(), destination.GetPositionY(), destination.GetPositionZ());
-        if (!result || (_path->GetPathType() & PATHFIND_NOPATH))
+        if (!result || (_path->GetPathType() & PATHFIND_NOPATH)
+            || (_path->GetPathType() & PATHFIND_SHORTCUT)
+            || (_path->GetPathType() & PATHFIND_FARFROMPOLY))
         {
             _timer.Reset(100);
             return true;
@@ -118,10 +120,9 @@ void ConfusedMovementGenerator<Creature>::DoFinalize(Creature &unit)
 
 template ConfusedMovementGenerator<Player>::~ConfusedMovementGenerator();
 template ConfusedMovementGenerator<Creature>::~ConfusedMovementGenerator();
-template void ConfusedMovementGenerator<Player>::DoInitialize(Player &player);
-template void ConfusedMovementGenerator<Creature>::DoInitialize(Creature &creature);
-template void ConfusedMovementGenerator<Player>::DoReset(Player &player);
-template void ConfusedMovementGenerator<Creature>::DoReset(Creature &creature);
-template bool ConfusedMovementGenerator<Player>::DoUpdate(Player &player, const uint32 &diff);
-template bool ConfusedMovementGenerator<Creature>::DoUpdate(Creature &creature, const uint32 &diff);
-
+template void ConfusedMovementGenerator<Player>::DoInitialize(Player& player);
+template void ConfusedMovementGenerator<Creature>::DoInitialize(Creature& creature);
+template void ConfusedMovementGenerator<Player>::DoReset(Player& player);
+template void ConfusedMovementGenerator<Creature>::DoReset(Creature& creature);
+template bool ConfusedMovementGenerator<Player>::DoUpdate(Player& player, uint32 diff);
+template bool ConfusedMovementGenerator<Creature>::DoUpdate(Creature& creature, uint32 diff);

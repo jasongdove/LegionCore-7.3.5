@@ -102,7 +102,9 @@ struct Position
     float GetExactDistSq(float x, float y, float z) const;
     float GetExactDist(float x, float y, float z) const;
     float GetExactDistSq(Position const* pos) const;
+    float GetExactDistSq(Position const& pos) const;
     float GetExactDist(Position const* pos) const;
+    float GetExactDist(Position const& pos) const;
 
     void GetPositionOffsetTo(Position const& endPos, Position & retOffset) const;
 

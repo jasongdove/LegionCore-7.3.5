@@ -41,7 +41,12 @@ void WorldSession::HandleBattlemasterHello(WorldPackets::NPC::Hello& packet)
     if (!unit->isBattleMaster())                             // it's not battlemaster
         return;
 
-    unit->StopMoving();
+    // Stop the npc if moving
+    //if (uint32 pause = unit->GetMovementTemplate().GetInteractionPauseTimer())
+    {
+        unit->PauseMovement(sWorld->getIntConfig(CONFIG_CREATURE_STOP_FOR_PLAYER));
+        unit->SetHomePosition(unit->GetPosition());
+    }
 
     uint16 bgTypeId = sBattlegroundMgr->GetBattleMasterBG(unit->GetEntry());
 

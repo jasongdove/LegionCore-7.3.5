@@ -35254,34 +35254,6 @@ void Player::ShowNeutralPlayerFactionSelectUI()
     SendDirectMessage(WorldPackets::Misc::NullSMsg(SMSG_SHOW_NEUTRAL_PLAYER_FACTION_SELECT_UI).Write());
 }
 
-float Player::GetCollisionHeight(bool mounted)
-{
-    if (mounted)
-    {
-        CreatureDisplayInfoEntry const* mountDisplayInfo = sCreatureDisplayInfoStore.LookupEntry(GetUInt32Value(UNIT_FIELD_MOUNT_DISPLAY_ID));
-        if (!mountDisplayInfo)
-            return GetCollisionHeight(false);
-
-        CreatureModelDataEntry const* mountModelData = sCreatureModelDataStore.LookupEntry(mountDisplayInfo->ModelID);
-        if (!mountModelData)
-            return GetCollisionHeight(false);
-
-        CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(GetNativeDisplayId());
-        ASSERT(displayInfo);
-        CreatureModelDataEntry const* modelData = sCreatureModelDataStore.LookupEntry(displayInfo->ModelID);
-        ASSERT(modelData);
-
-        return mountModelData->MountHeight + modelData->CollisionHeight * 0.5;
-    }
-    //! Dismounting case - use basic default model data
-    CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(GetNativeDisplayId());
-    ASSERT(displayInfo);
-    CreatureModelDataEntry const* modelData = sCreatureModelDataStore.LookupEntry(displayInfo->ModelID);
-    ASSERT(modelData);
-
-    return modelData->CollisionHeight;
-}
-
 bool Player::IsVoidStorageUnlocked() const
 {
     return HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_VOID_UNLOCKED);

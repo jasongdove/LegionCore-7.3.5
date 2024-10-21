@@ -19,9 +19,9 @@
 #ifndef _PATH_GENERATOR_H
 #define _PATH_GENERATOR_H
 
-#include "MapDefines.h"
 #include "DetourNavMesh.h"
 #include "DetourNavMeshQuery.h"
+#include "MapDefines.h"
 #include "MoveSplineInitArgs.h"
 
 class Unit;
@@ -41,52 +41,73 @@ class Unit;
 
 enum PathType
 {
-    PATHFIND_BLANK          = 0x00,   // path not built yet
-    PATHFIND_NORMAL         = 0x01,   // normal path
-    PATHFIND_SHORTCUT       = 0x02,   // travel through obstacles, terrain, air, etc (old behavior)
-    PATHFIND_INCOMPLETE     = 0x04,   // we have partial path to follow - getting closer to target
-    PATHFIND_NOPATH         = 0x08,   // no valid path at all or error in generating one
-    PATHFIND_NOT_USING_PATH = 0x10,   // used when we are either flying/swiming or on map w/o mmaps
-    PATHFIND_SHORT          = 0x20,   // path is longer or equal to its limited path length
+    PATHFIND_BLANK             = 0x00,   // path not built yet
+    PATHFIND_NORMAL            = 0x01,   // normal path
+    PATHFIND_SHORTCUT          = 0x02,   // travel through obstacles, terrain, air, etc (old behavior)
+    PATHFIND_INCOMPLETE        = 0x04,   // we have partial path to follow - getting closer to target
+    PATHFIND_NOPATH            = 0x08,   // no valid path at all or error in generating one
+    PATHFIND_NOT_USING_PATH    = 0x10,   // used when we are either flying/swiming or on map w/o mmaps
+    PATHFIND_SHORT             = 0x20,   // path is longer or equal to its limited path length
+    PATHFIND_FARFROMPOLY_START = 0x40,   // start position is far from the mmap polygon
+    PATHFIND_FARFROMPOLY_END   = 0x80,   // end positions is far from the mmap polygon
+    PATHFIND_FARFROMPOLY       = PATHFIND_FARFROMPOLY_START | PATHFIND_FARFROMPOLY_END, // start or end positions are far from the mmap polygon
 };
 
 class PathGenerator
 {
     public:
-        explicit PathGenerator(Unit const* owner);
+        explicit PathGenerator(WorldObject const* owner);
         ~PathGenerator();
+
+        PathGenerator(PathGenerator const& right) = delete;
+        PathGenerator(PathGenerator&& right) = delete;
+        PathGenerator& operator=(PathGenerator const& right) = delete;
+        PathGenerator& operator=(PathGenerator&& right) = delete;
 
         // Calculate the path from owner to given destination
         // return: true if new path was calculated, false otherwise (no change needed)
-        void InitPath();
-        bool CalculatePath(float destX, float destY, float destZ, bool forceDest = false, bool straightLine = false, bool stopOnlyOnEndPos = false);
-        bool CalculateShortcutPath(float destX, float destY, float destZ);
+        bool CalculatePath(float destX, float destY, float destZ, bool forceDest = false);
+        bool CalculatePath(Position const& destination, bool forceDest = false);
+        bool CalculatePath(Position const& startPosition, Position const& destination, bool forceDest = false);
+        // Calculates the path from start point to given destination
+        bool CalculatePath(G3D::Vector3 const& startPoint, G3D::Vector3 const& endPoint, bool forceDest = false);
         bool IsInvalidDestinationZ(Unit const* target) const;
 
         // option setters - use optional
-        void SetUseStraightPath(bool useStraightPath);
-        void SetPathLengthLimit(float distance);
+        void SetUseStraightPath(bool useStraightPath) { _useStraightPath = useStraightPath; }
+        void SetPathLengthLimit(float length);
+        void SetUseRaycast(bool useRaycast) { _useRaycast = useRaycast; }
 
         // result getters
-        G3D::Vector3 const& GetStartPosition() const;
-        G3D::Vector3 const& GetEndPosition() const;
-        G3D::Vector3 const& GetActualEndPosition() const;
+        G3D::Vector3 const& GetStartPosition() const { return _startPosition; }
+        G3D::Vector3 const& GetEndPosition() const { return _endPosition; }
+        G3D::Vector3 const& GetActualEndPosition() const { return _actualEndPosition; }
 
-        Movement::PointsArray const& GetPath() const;
+        Movement::PointsArray const& GetPath() const { return _pathPoints; }
 
-        PathType GetPathType() const;
+        PathType GetPathType() const { return _type; }
 
-        void ReducePathLenghtByDist(float dist); // path must be already built
+        // shortens the path until the destination is the specified distance from the target point
+        void ShortenPathUntilDist(G3D::Vector3 const& point, float dist);
 
         float GetTotalLength() const;
-        static dtPolyRef FindWalkPoly(dtNavMeshQuery const* query, float const* pointYZX, dtQueryFilter const& filter, float* closestPointYZX, float zSearchDist = 10.0f);
-        void SetTransport(Transport* t) { _transport = t; }
-        Transport* GetTransport() const { return _transport; }
 
-        void SetShortPatch(bool enable = false);
+        void Clear()
+        {
+            _polyLength = 0;
+            _pathPoints.clear();
+        }
 
-        void Clear();
-        bool _charges;
+//        void ReducePathLenghtByDist(float dist); // path must be already built
+//
+//        float GetTotalLength() const;
+//        static dtPolyRef FindWalkPoly(dtNavMeshQuery const* query, float const* pointYZX, dtQueryFilter const& filter, float* closestPointYZX, float zSearchDist = 10.0f);
+//        void SetTransport(Transport* t) { _transport = t; }
+//        Transport* GetTransport() const { return _transport; }
+//
+//        void SetShortPatch(bool enable = false);
+//
+//        bool _charges;
 
     private:
 
@@ -98,27 +119,27 @@ class PathGenerator
 
         bool _useStraightPath;  // type of path will be generated
         bool _forceDestination; // when set, we will always arrive at given point
-        bool _stopOnlyOnEndPos; // check path for TARGET_DEST_DEST
+        //bool _stopOnlyOnEndPos; // check path for TARGET_DEST_DEST
         uint32 _pointPathLimit; // limit point path size; min(this, MAX_POINT_PATH_LENGTH)
-        bool _straightLine;     // use raycast if true for a straight line path
+        bool _useRaycast;       // use raycast if true for a straight line path
 
         G3D::Vector3 _startPosition;        // {x, y, z} of current location
         G3D::Vector3 _endPosition;          // {x, y, z} of the destination
         G3D::Vector3 _actualEndPosition;    // {x, y, z} of the closest possible point to given destination
 
-        Transport* _transport;
-        GameObject* _go;
-        bool _enableShort;
+//        Transport* _transport;
+//        GameObject* _go;
+//        bool _enableShort;
 
-        Unit const* const _sourceUnit;          // the unit that is moving
-        dtNavMesh const* _navMesh;              // the nav mesh
-        dtNavMeshQuery const* _navMeshQuery;    // the nav mesh query used to find the path
+        WorldObject const* const _source;     // the object that is moving
+        dtNavMesh const* _navMesh;            // the nav mesh
+        dtNavMeshQuery const* _navMeshQuery;  // the nav mesh query used to find the path
 
         dtQueryFilter _filter;  // use single filter for all movements, update it when needed
 
-        void SetStartPosition(G3D::Vector3 const& point);
-        void SetEndPosition(G3D::Vector3 const& point);
-        void SetActualEndPosition(G3D::Vector3 const& point);
+        void SetStartPosition(G3D::Vector3 const& point) { _startPosition = point; }
+        void SetEndPosition(G3D::Vector3 const& point) { _actualEndPosition = point; _endPosition = point; }
+        void SetActualEndPosition(G3D::Vector3 const& point) { _actualEndPosition = point; }
         void NormalizePath();
 
         bool InRange(G3D::Vector3 const& p1, G3D::Vector3 const& p2, float r, float h) const;
@@ -141,6 +162,8 @@ class PathGenerator
         uint32 FixupCorridor(dtPolyRef* path, uint32 npath, uint32 maxPath, dtPolyRef const* visited, uint32 nvisited);
         bool GetSteerTarget(float const* startPos, float const* endPos, float minTargetDist, dtPolyRef const* path, uint32 pathSize, float* steerPos, unsigned char& steerPosFlag, dtPolyRef& steerPosRef);
         dtStatus FindSmoothPath(float const* startPos, float const* endPos, dtPolyRef const* polyPath, uint32 polyPathSize, float* smoothPath, int* smoothPathSize, uint32 smoothPathMaxSize);
+
+        void AddFarFromPolyFlags(bool startFarFromPoly, bool endFarFromPoly);
 };
 
 #endif

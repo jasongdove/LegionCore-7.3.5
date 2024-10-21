@@ -1162,7 +1162,7 @@ class Unit : public WorldObject
         void SetCanDualWield(bool value) { m_canDualWield = value; }
         float GetModelSize(uint32 displayId = 0) const;
         float GetBoundingRadius() const { return m_floatValues[UNIT_FIELD_BOUNDING_RADIUS]; }
-        float GetCombatReach() const { return m_floatValues[UNIT_FIELD_COMBAT_REACH]; }
+        float GetCombatReach() const override { return m_floatValues[UNIT_FIELD_COMBAT_REACH]; }
         float GetMeleeReach() const { float reach = m_floatValues[UNIT_FIELD_COMBAT_REACH]; return reach > MIN_MELEE_REACH ? reach : MIN_MELEE_REACH; }
         bool IsWithinCombatRange(const Unit* obj, float dist2compare) const;
         bool IsWithinMeleeRange(const Unit* obj, float dist = MELEE_RANGE) const;
@@ -2198,6 +2198,8 @@ class Unit : public WorldObject
 
         bool IsStopped() const { return !(HasUnitState(UNIT_STATE_MOVING)); }
         void StopMoving();
+        void PauseMovement(uint32 timer = 0, uint8 slot = 0, bool forced = true); // timer in ms
+        void ResumeMovement(uint32 timer = 0, uint8 slot = 0); // timer in ms
 
         void AddUnitMovementFlag(uint32 f) { m_movementInfo.AddMovementFlag(f); }
         void RemoveUnitMovementFlag(uint32 f) { m_movementInfo.RemoveMovementFlag(f); }
@@ -2289,11 +2291,17 @@ class Unit : public WorldObject
 
         bool isMoving() const   { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_MASK_MOVING); }
         bool isTurning() const  { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_MASK_TURNING); }
+        bool IsFalling() const;
         virtual bool CanSwim() const;
         virtual bool CanFly() const = 0;
         bool IsFlying() const   { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_FLYING | MOVEMENTFLAG_DISABLE_GRAVITY); }
         void SetTimeForSpline(uint32 time) { m_timeForSpline = time; }
         uint32 GetTimeForSpline() { return m_timeForSpline; }
+
+        float GetHoverOffset() const
+        {
+            return HasUnitMovementFlag(MOVEMENTFLAG_HOVER) ? GetFloatValue(UNIT_FIELD_HOVER_HEIGHT) : 0.0f;
+        }
 
         void RewardRage(float baseRage, bool attacker);
 
@@ -2390,6 +2398,8 @@ class Unit : public WorldObject
         uint32 GetTotalDamageTakenFromPlayer(ObjectGuid guid) { return m_playerTotalDamage[guid]; }
 
         int32 GetHighestExclusiveSameEffectSpellGroupValue(AuraEffect const* aurEff, AuraType auraType, bool checkMiscValue = false, int32 miscValue = 0) const;
+
+        float GetCollisionHeight() const override;
 
         // Movement info
         Movement::MoveSpline* movespline;

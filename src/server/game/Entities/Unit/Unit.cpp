@@ -16,8 +16,9 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "AreaTriggerAI.h"
+#include "Unit.h"
 #include "Anticheat.h"
+#include "AreaTriggerAI.h"
 #include "Battlefield.h"
 #include "BattlefieldMgr.h"
 #include "Battleground.h"
@@ -46,9 +47,10 @@
 #include "LootPackets.h"
 #include "MapManager.h"
 #include "MiscPackets.h"
-#include "MovementPackets.h"
 #include "MoveSpline.h"
 #include "MoveSplineInit.h"
+#include "MovementGenerator.h"
+#include "MovementPackets.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "ObjectVisitors.hpp"
@@ -73,7 +75,6 @@
 #include "TemporarySummon.h"
 #include "Totem.h"
 #include "Transport.h"
-#include "Unit.h"
 #include "UpdateFieldFlags.h"
 #include "UpdatePackets.h"
 #include "Util.h"
@@ -14398,7 +14399,7 @@ void Unit::Mount(uint32 mount, uint32 VehicleId, uint32 creatureEntry)
             pet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
 
         player->UnsummonCurrentBattlePetIfAny(true);
-        player->SendMovementSetCollisionHeight(player->GetCollisionHeight(true));
+        player->SendMovementSetCollisionHeight(player->GetCollisionHeight(), WorldPackets::Movement::UpdateCollisionHeightReason::UPDATE_COLLISION_HEIGHT_MOUNT);
     }
 
     if (!HasFlag(UNIT_FIELD_FLAGS_3, UNIT_FLAG3_NOT_CHECK_MOUNT))
@@ -14414,7 +14415,7 @@ void Unit::Dismount()
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNT);
 
     if (Player* thisPlayer = ToPlayer())
-        thisPlayer->SendMovementSetCollisionHeight(thisPlayer->GetCollisionHeight(false));
+        thisPlayer->SendMovementSetCollisionHeight(thisPlayer->GetCollisionHeight(), WorldPackets::Movement::UpdateCollisionHeightReason::UPDATE_COLLISION_HEIGHT_MOUNT);
 
     SendMessageToSet(WorldPackets::Misc::Dismount(GetGUID()).Write(), true);
 
@@ -18538,6 +18539,27 @@ void Unit::StopMoving()
     Movement::MoveSplineInit(*this).Stop();
 }
 
+void Unit::PauseMovement(uint32 timer/* = 0*/, uint8 slot/* = 0*/, bool forced/* = true*/)
+{
+    if (IsInvalidMovementSlot(slot))
+        return;
+
+    if (MovementGenerator* movementGenerator = GetMotionMaster()->GetMotionSlot(MovementSlot(slot)))
+        movementGenerator->Pause(timer);
+
+    if (forced && GetMotionMaster()->GetCurrentSlot() == MovementSlot(slot))
+        StopMoving();
+}
+
+void Unit::ResumeMovement(uint32 timer/* = 0*/, uint8 slot/* = 0*/)
+{
+    if (IsInvalidMovementSlot(slot))
+        return;
+
+    if (MovementGenerator* movementGenerator = GetMotionMaster()->GetMotionSlot(MovementSlot(slot)))
+        movementGenerator->Resume(timer);
+}
+
 void Unit::SendMovementFlagUpdate(bool self /*= false*/)
 {
     if (IsPlayer())
@@ -22524,7 +22546,7 @@ void Unit::SetConfused(bool apply)
         if (player->HasUnitState(UNIT_STATE_POSSESSED))
             return;
 
-        player->SendMovementSetCollisionHeight(player->GetCollisionHeight(apply));
+        player->SendMovementSetCollisionHeight(player->GetCollisionHeight(), apply ? 1 : 0);
         player->SetClientControl(this, !apply);
     }
 }
@@ -22615,8 +22637,11 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
 
     if (IsCreature())
     {
+        GetMotionMaster()->Clear(MOTION_SLOT_ACTIVE);
+        PauseMovement(0, MOTION_SLOT_IDLE);
+        StopMoving();
+
         ToCreature()->AI()->OnCharmed(true);
-        GetMotionMaster()->MoveIdle();
     }
     else
     {
@@ -22728,6 +22753,8 @@ void Unit::RemoveCharmedBy(Unit* charmer)
     Map* map = GetMap();
     if (!IsVehicle() || (IsVehicle() && map && !map->IsBattleground()))
         RestoreFaction();
+
+    ///@todo Handle SLOT_IDLE motion resume
     GetMotionMaster()->Clear(true);
     GetMotionMaster()->InitDefault();
 
@@ -24270,6 +24297,11 @@ void Unit::_EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* a
     ASSERT(!m_vehicle);
 
     vehicle->AddPassenger(this, seatId);
+}
+
+bool Unit::IsFalling() const
+{
+    return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR) || movespline->isFalling();
 }
 
 bool Unit::CanSwim() const
@@ -27304,6 +27336,33 @@ bool Unit::HasAuraLinkedSpell(Unit* caster, Unit* target, uint8 type, int32 hast
         }
     }
     return true;
+}
+
+// Returns collisionheight of the unit. If it is 0, it returns DEFAULT_COLLISION_HEIGHT.
+float Unit::GetCollisionHeight() const
+{
+    float scaleMod = GetObjectScale(); // 99% sure about this
+
+    if (IsMounted())
+    {
+        if (CreatureDisplayInfoEntry const* mountDisplayInfo = sCreatureDisplayInfoStore.LookupEntry(GetUInt32Value(UNIT_FIELD_MOUNT_DISPLAY_ID)))
+        {
+            if (CreatureModelDataEntry const* mountModelData = sCreatureModelDataStore.LookupEntry(mountDisplayInfo->ModelID))
+            {
+                CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.AssertEntry(GetNativeDisplayId());
+                CreatureModelDataEntry const* modelData = sCreatureModelDataStore.AssertEntry(displayInfo->ModelID);
+                float const collisionHeight = scaleMod * ((mountModelData->MountHeight * mountDisplayInfo->CreatureModelScale) + (modelData->CollisionHeight * modelData->ModelScale * displayInfo->CreatureModelScale * 0.5f));
+                return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
+            }
+        }
+    }
+
+    //! Dismounting case - use basic default model data
+    CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.AssertEntry(GetNativeDisplayId());
+    CreatureModelDataEntry const* modelData = sCreatureModelDataStore.AssertEntry(displayInfo->ModelID);
+
+    float const collisionHeight = scaleMod * modelData->CollisionHeight * modelData->ModelScale * displayInfo->CreatureModelScale;
+    return collisionHeight == 0.0f ? DEFAULT_COLLISION_HEIGHT : collisionHeight;
 }
 
 SpellInfo const* Unit::GetCastSpellInfo(SpellInfo const* spellInfo) const

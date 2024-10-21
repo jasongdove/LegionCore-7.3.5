@@ -296,8 +296,12 @@ void WorldSession::HandleGossipHelloOpcode(WorldPackets::NPC::Hello& packet)
 
     player->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_TALK);
 
-    if (unit->isArmorer() || unit->isCivilian() || unit->isQuestGiver() || unit->isServiceProvider() || unit->isGuard())
-        unit->StopMoving();
+    // Stop the npc if moving
+    //if (uint32 pause = unit->GetMovementTemplate().GetInteractionPauseTimer())
+    {
+        unit->PauseMovement(sWorld->getIntConfig(CONFIG_CREATURE_STOP_FOR_PLAYER));
+        unit->SetHomePosition(unit->GetPosition());
+    }
 
     if (unit->isSpiritGuide())
     {
@@ -517,7 +521,11 @@ void WorldSession::SendListInventory(ObjectGuid const& vendorGuid, uint32 entry)
         player->RemoveAurasByType(SPELL_AURA_FEIGN_DEATH);
 
     if (vendor->HasUnitState(UNIT_STATE_MOVING))
-        vendor->StopMoving();
+    //if (uint32 pause = vendor->GetMovementTemplate().GetInteractionPauseTimer())
+    {
+        vendor->PauseMovement(sWorld->getIntConfig(CONFIG_CREATURE_STOP_FOR_PLAYER));
+        vendor->SetHomePosition(vendor->GetPosition());
+    }
 
     VendorItemData const* vendorItems;
     

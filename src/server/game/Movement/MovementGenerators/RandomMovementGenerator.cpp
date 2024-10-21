@@ -16,49 +16,64 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "RandomMovementGenerator.h"
 #include "Creature.h"
 #include "CreatureGroups.h"
-#include "Map.h"
 #include "MapManager.h"
-#include "MoveSplineInit.h"
 #include "MoveSpline.h"
+#include "MoveSplineInit.h"
 #include "ObjectAccessor.h"
+#include "PathGenerator.h"
 #include "Util.h"
-#include "RandomMovementGenerator.h"
 
 template<class T>
-RandomMovementGenerator<T>::~RandomMovementGenerator() { }
+void RandomMovementGenerator<T>::Pause(uint32) { }
 
 template<>
-RandomMovementGenerator<Creature>::~RandomMovementGenerator()
+void RandomMovementGenerator<Creature>::Pause(uint32 timer /* = 0*/)
 {
-    delete _path;
+    _stalled = timer ? false : true;
+    _timer.Reset(timer ? timer : 1);
 }
 
 template<class T>
-void RandomMovementGenerator<T>::DoInitialize(T &) { }
+void RandomMovementGenerator<T>::Resume(uint32) { }
 
 template<>
-void RandomMovementGenerator<Creature>::DoInitialize(Creature &owner)
+void RandomMovementGenerator<Creature>::Resume(uint32 overrideTimer /* = 0*/)
+{
+    _stalled = false;
+    if (overrideTimer)
+        _timer.Reset(overrideTimer);
+}
+
+template<class T>
+void RandomMovementGenerator<T>::DoInitialize(T&) { }
+
+template<>
+void RandomMovementGenerator<Creature>::DoInitialize(Creature& owner)
 {
     if (!owner.IsAlive() || owner.isDead(true) || !owner.CanFreeMove())
         return;
 
     owner.AddUnitState(UNIT_STATE_ROAMING);
-    owner.GetPosition(_reference.x, _reference.y, _reference.z);
+    _reference = owner.GetPosition();
     owner.StopMoving();
 
-    if (!_wanderDistance)
-        _wanderDistance = owner.GetRespawnRadius();
+    _wanderDistance = std::max<float>(owner.GetRespawnRadius(), 0.1f);
+
+    // Retail seems to let a creature walk 2 up to 10 splines before triggering a pause
+    _wanderSteps = urand(2, 10);
 
     _timer.Reset(0);
+    _path = nullptr;
 }
 
 template<class T>
-void RandomMovementGenerator<T>::DoFinalize(T &) { }
+void RandomMovementGenerator<T>::DoFinalize(T&) { }
 
 template<>
-void RandomMovementGenerator<Creature>::DoFinalize(Creature &owner)
+void RandomMovementGenerator<Creature>::DoFinalize(Creature& owner)
 {
     owner.ClearUnitState(UNIT_STATE_ROAMING);
     owner.StopMoving();
@@ -66,10 +81,10 @@ void RandomMovementGenerator<Creature>::DoFinalize(Creature &owner)
 }
 
 template<class T>
-void RandomMovementGenerator<T>::DoReset(T &) { }
+void RandomMovementGenerator<T>::DoReset(T&) { }
 
 template<>
-void RandomMovementGenerator<Creature>::DoReset(Creature &owner)
+void RandomMovementGenerator<Creature>::DoReset(Creature& owner)
 {
     DoInitialize(owner);
 }
@@ -84,34 +99,64 @@ void RandomMovementGenerator<Creature>::SetRandomLocation(Creature& owner)
     {
         _interrupt = true;
         owner.StopMoving();
+        _path = nullptr;
         return;
     }
 
     owner.AddUnitState(UNIT_STATE_ROAMING_MOVE);
 
     Position position(_reference);
-    float distance = frand(0.f, 1.f) * _wanderDistance;
-    float angle = frand(0.f, 1.f) * float(M_PI) * 2.f;
+    float distance = _wanderDistance > 0.1f ? frand(0.1f, _wanderDistance) : _wanderDistance;
+    float angle = frand(0.f, static_cast<float>(M_PI * 2));
     owner.MovePositionToFirstCollision(position, distance, angle);
-
-    uint32 resetTimer = roll_chance_i(50) ? urand(5000, 10000) : urand(1000, 2000);
-
-    if (!_path)
-        _path = new PathGenerator(&owner);
-
-    _path->SetPathLengthLimit(30.0f);
-    bool result = _path->CalculatePath(position.GetPositionX(), position.GetPositionY(), position.GetPositionZ());
-    if (!result || (_path->GetPathType() & PATHFIND_NOPATH))
+    if (owner.GetPosition().GetExactDist(&position) < 0.1f)
     {
-        _timer.Reset(100);
+        // the path is too short for the spline system to be accepted. Let's try again soon.
+        _timer.Reset(500);
         return;
     }
 
+    if (!_path)
+    {
+        _path = std::make_unique<PathGenerator>(&owner);
+        _path->SetPathLengthLimit(30.0f);
+    }
+
+    bool result = _path->CalculatePath(position.GetPositionX(), position.GetPositionY(), position.GetPositionZ());
+    if (!result || (_path->GetPathType() & PATHFIND_NOPATH)
+        || (_path->GetPathType() & PATHFIND_SHORTCUT))
+    {
+        _timer.Reset(500);
+        return;
+    }
+
+    bool walk = true;
+//    switch (owner.GetMovementTemplate().GetRandom())
+//    {
+//        case CreatureRandomMovementType::CanRun:
+//            walk = owner.IsWalking();
+//            break;
+//        case CreatureRandomMovementType::AlwaysRun:
+//            walk = false;
+//            break;
+//        default:
+//            break;
+//    }
+
     Movement::MoveSplineInit init(owner);
     init.MovebyPath(_path->GetPath());
-    init.SetWalk(true);
-    int32 traveltime = init.Launch();
-    _timer.Reset(traveltime + resetTimer);
+    init.SetWalk(walk);
+    int32 splineDuration = init.Launch();
+
+    --_wanderSteps;
+    if (_wanderSteps) // Creature has yet to do steps before pausing
+        _timer.Reset(splineDuration);
+    else
+    {
+        // Creature has made all its steps, time for a little break
+        _timer.Reset(splineDuration + urand(4, 10) * IN_MILLISECONDS); // Retail seems to use rounded numbers so we do as well
+        _wanderSteps = urand(2, 10);
+    }
 
     // Call for creature group update
     if (owner.GetFormation() && owner.GetFormation()->getLeader() == &owner)
@@ -119,21 +164,22 @@ void RandomMovementGenerator<Creature>::SetRandomLocation(Creature& owner)
 }
 
 template<class T>
-bool RandomMovementGenerator<T>::DoUpdate(T &, const uint32)
+bool RandomMovementGenerator<T>::DoUpdate(T&, const uint32)
 {
     return false;
 }
 
 template<>
-bool RandomMovementGenerator<Creature>::DoUpdate(Creature &owner, const uint32 diff)
+bool RandomMovementGenerator<Creature>::DoUpdate(Creature& owner, const uint32 diff)
 {
     if (!owner.IsAlive())
         return false;
 
-    if (owner.HasUnitState(UNIT_STATE_NOT_MOVE) || owner.IsMovementPreventedByCasting())
+    if (owner.HasUnitState(UNIT_STATE_NOT_MOVE) || owner.IsMovementPreventedByCasting() || _stalled)
     {
         _interrupt = true;
         owner.StopMoving();
+        _path = nullptr;
         return true;
     }
     else
@@ -145,6 +191,3 @@ bool RandomMovementGenerator<Creature>::DoUpdate(Creature &owner, const uint32 d
 
     return true;
 }
-
-
-

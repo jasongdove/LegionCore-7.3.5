@@ -15,20 +15,21 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "DatabaseEnv.h"
-#include "ObjectMgr.h"
-#include "ObjectDefines.h"
-#include "GridDefines.h"
-#include "GridNotifiers.h"
-#include "SpellMgr.h"
-#include "GridNotifiersImpl.h"
+#include "SmartAI.h"
 #include "Cell.h"
 #include "CellImpl.h"
-#include "InstanceScript.h"
-#include "ScriptedCreature.h"
+#include "CreatureGroups.h"
+#include "DatabaseEnv.h"
+#include "GridDefines.h"
+#include "GridNotifiers.h"
+#include "GridNotifiersImpl.h"
 #include "Group.h"
-#include "SmartAI.h"
+#include "InstanceScript.h"
+#include "ObjectDefines.h"
+#include "ObjectMgr.h"
 #include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "SpellMgr.h"
 
 SmartAI::~SmartAI()
 {
@@ -197,7 +198,11 @@ bool SmartAI::LoadPath(uint32 entry)
 void SmartAI::PausePath(uint32 delay, bool forced)
 {
     if (!HasEscortState(SMART_ESCORT_ESCORTING))
+    {
+        me->PauseMovement(delay, MOTION_SLOT_IDLE, forced);
         return;
+    }
+
     if (HasEscortState(SMART_ESCORT_PAUSED))
     {
         TC_LOG_DEBUG("misc", "SmartAI::StartPath: Creature entry %u wanted to pause waypoint movement while already paused, ignoring.", me->GetEntry());
@@ -210,8 +215,8 @@ void SmartAI::PausePath(uint32 delay, bool forced)
     if (forced)
     {
         SetRun(mRun);
-        me->StopMoving();//force stop
-        me->GetMotionMaster()->MoveIdle();//force stop
+        me->PauseMovement();
+        me->SetHomePosition(me->GetPosition());
     }
     GetScript()->ProcessEventsFor(SMART_EVENT_WAYPOINT_PAUSED, nullptr, mLastWP->id, GetScript()->GetPathId());
 }
@@ -296,6 +301,8 @@ void SmartAI::ResumePath()
 {
     //mWPReached = false;
     SetRun(mRun);
+    me->ResumeMovement();
+
     if (mLastWP)
         me->GetMotionMaster()->MovePoint(mLastWP->id, mLastWP->x, mLastWP->y, mLastWP->z);
 }
@@ -641,6 +648,19 @@ int SmartAI::Permissible(const Creature* creature)
 void SmartAI::JustReachedHome()
 {
     GetScript()->ProcessEventsFor(SMART_EVENT_REACHED_HOME);
+
+    CreatureGroup* formation = me->GetFormation();
+    if (!formation || formation->getLeader() == me || !formation->isFormed())
+    {
+        if (me->GetMotionMaster()->GetMotionSlotType(MOTION_SLOT_IDLE) != WAYPOINT_MOTION_TYPE && me->GetWaypointPath())
+            me->GetMotionMaster()->MovePath(me->GetWaypointPath(), true);
+//        else if (me->GetMotionMaster()->GetMotionSlotType(MOTION_SLOT_IDLE) != CYCLIC_SPLINE_MOTION_TYPE && me->GetCyclicSplinePathId())
+//            me->GetMotionMaster()->MoveCyclicPath(me->GetCyclicSplinePathId());
+        else
+            me->ResumeMovement();
+    }
+    else if (formation->isFormed())
+        me->GetMotionMaster()->MoveIdle(); // wait the order of leader
 }
 
 void SmartAI::OnQuestReward(Player* player, Quest const* quest)
@@ -700,12 +720,14 @@ void SmartAI::AttackStart(Unit* who)
 {
     if (who && me->Attack(who, true))
     {
-        SetRun(mRun);
-        if (me->GetMotionMaster()->GetMotionSlotType(MOTION_SLOT_ACTIVE) == POINT_MOTION_TYPE)
-            me->GetMotionMaster()->MovementExpired();
+        me->GetMotionMaster()->Clear(MOTION_SLOT_ACTIVE);
+        me->PauseMovement(0, 0, false);
 
         if (mCanCombatMove)
+        {
+            SetRun(mRun);
             me->GetMotionMaster()->MoveChase(who);
+        }
 
         me->GetPosition(&mLastOOCPos);
     }
