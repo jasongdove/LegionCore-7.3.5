@@ -651,6 +651,7 @@ class ObjectMgr
         EquipmentInfo const* GetEquipmentInfo(uint32 entry, int8& id);
         CreatureAddon const* GetCreatureAddon(ObjectGuid::LowType const& lowguid);
         CreatureAddon const* GetCreatureTemplateAddon(uint32 entry);
+        CreatureMovementData const* GetCreatureMovementOverride(ObjectGuid::LowType spawnId) const;
         ItemTemplate const* GetItemTemplate(uint32 entry);
         ItemTemplateContainer const* GetItemTemplateStore() const { return &_itemTemplateStore; }
 
@@ -735,6 +736,7 @@ class ObjectMgr
         void LoadCreatureTemplateAddons();
         void CheckCreatureTemplate(CreatureTemplate const* cInfo);
         void CheckCreatureTemplateWDB(CreatureTemplate* cInfo);
+        void CheckCreatureMovement(char const* table, uint64 id, CreatureMovementData& creatureMovement);
         void RestructCreatureGUID();
         void RestructGameObjectGUID();
         void LoadTempSummons();
@@ -748,6 +750,7 @@ class ObjectMgr
         void LoadCreatureAddons();
         void LoadCreatureModelInfo();
         void LoadEquipmentTemplates();
+        void LoadCreatureMovementOverrides();
         void LoadGameObjectLocales();
         void LoadGameobjects();
         void LoadItemTemplates();
@@ -1136,6 +1139,7 @@ class ObjectMgr
         CreatureModelContainer _creatureModelStore;
         CreatureAddonContainer _creatureAddonStore;
         CreatureTemplateAddonContainer _creatureTemplateAddonStore;
+        std::unordered_map<ObjectGuid::LowType, CreatureMovementData> _creatureMovementOverrides;
         CreatureAIInstanceContainer _creatureAIInstance;
         EquipmentInfoContainer _equipmentInfoStore;
         LinkedRespawnContainer _linkedRespawnStore;

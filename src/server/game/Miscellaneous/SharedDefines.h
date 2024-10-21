@@ -25,6 +25,8 @@
 
 #include "WorldStates.h" // include it just in specific files and remove from here
 
+float const GROUND_HEIGHT_TOLERANCE = 0.05f; // Extra tolerance to z position to check if it is in air or on ground.
+
 static uint16 const MAX_ACHIEVEMENT = 13000;
 static uint32 const MAX_CRITERIA = 40000;
 static uint32 const MAX_CRITERIA_TREE = 66000;

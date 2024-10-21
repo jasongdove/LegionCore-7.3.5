@@ -131,17 +131,17 @@ void RandomMovementGenerator<Creature>::SetRandomLocation(Creature& owner)
     }
 
     bool walk = true;
-//    switch (owner.GetMovementTemplate().GetRandom())
-//    {
-//        case CreatureRandomMovementType::CanRun:
-//            walk = owner.IsWalking();
-//            break;
-//        case CreatureRandomMovementType::AlwaysRun:
-//            walk = false;
-//            break;
-//        default:
-//            break;
-//    }
+    switch (owner.GetMovementTemplate().GetRandom())
+    {
+        case CreatureRandomMovementType::CanRun:
+            walk = owner.IsWalking();
+            break;
+        case CreatureRandomMovementType::AlwaysRun:
+            walk = false;
+            break;
+        default:
+            break;
+    }
 
     Movement::MoveSplineInit init(owner);
     init.MovebyPath(_path->GetPath());

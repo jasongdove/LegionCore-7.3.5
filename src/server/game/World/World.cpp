@@ -1846,6 +1846,9 @@ void World::SetInitialWorldSettings()
     sObjectMgr->LoadCreatureAddons();                            // must be after LoadCreatureTemplates() and LoadCreatures()
     sObjectMgr->LoadCreatureActionData();
 
+    TC_LOG_INFO("server.loading", "Loading Creature Movement Overrides...");
+    sObjectMgr->LoadCreatureMovementOverrides();                 // must be after LoadCreatures()
+
     TC_LOG_INFO("server.loading", "Loading Display Choice Data...");
     sObjectMgr->LoadDisplayChoiceData();
 

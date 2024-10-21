@@ -16,16 +16,16 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Creature.h"
 #include "BattlegroundMgr.h"
 #include "CellImpl.h"
+#include "CharmInfo.h"
+#include "Chat.h"
 #include "CombatPackets.h"
 #include "Common.h"
-#include "Chat.h"
-#include "CharmInfo.h"
-#include "Creature.h"
-#include <utility>
 #include "CreatureAI.h"
 #include "CreatureAISelector.h"
+#include "CreatureData.h"
 #include "CreatureGroups.h"
 #include "CreatureTextMgr.h"
 #include "DatabaseEnv.h"
@@ -59,8 +59,28 @@
 #include "WildBattlePet.h"
 #include "World.h"
 #include "WorldPacket.h"
+#include <utility>
 
 #define ZONE_UPDATE_INTERVAL (10*IN_MILLISECONDS)
+
+CreatureMovementData::CreatureMovementData() : Ground(CreatureGroundMovementType::Run), Flight(CreatureFlightMovementType::None), Swim(true), Rooted(false), Random(CreatureRandomMovementType::Walk), InteractionPauseTimer(sWorld->getIntConfig(CONFIG_CREATURE_STOP_FOR_PLAYER)) { }
+
+std::string CreatureMovementData::ToString() const
+{
+    char const* const GroundStates[] = { "None", "Run", "Hover" };
+    char const* const FlightStates[] = { "None", "DisableGravity", "CanFly" };
+    char const* const RandomStates[] = { "Walk", "CanRun", "AlwaysRun" };
+    std::ostringstream str;
+    str << std::boolalpha
+        << "Ground: " << GroundStates[AsUnderlyingType(Ground)]
+        << ", Swim: " << Swim
+        << ", Flight: " << FlightStates[AsUnderlyingType(Flight)]
+        << ", Random: " << RandomStates[AsUnderlyingType(Random)];
+    if (Rooted)
+        str << ", Rooted";
+    str << ", InteractionPauseTimer: " << InteractionPauseTimer;
+    return str.str();
+}
 
 bool TrainerSpell::IsCastable() const
 {
@@ -826,21 +846,52 @@ bool Creature::UpdateEntry(uint32 entry, uint32 team, const CreatureData* data)
         ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, true);
     }
 
-    //! Suspect it works this way:
-    //! If creature can walk and fly (usually with pathing)
-    //! Set MOVEMENTFLAG_CAN_FLY. Otherwise if it can only fly
-    //! Set MOVEMENTFLAG_DISABLE_GRAVITY
-    //! The only time I saw Movement Flags: DisableGravity, CanFly, Flying (50332672) on the same unit
-    //! it was a vehicle
-    if (cInfo->InhabitType & INHABIT_AIR)
+    if (GetMovementTemplate().IsRooted())
+        SetControlled(true, UNIT_STATE_ROOT);
+
+    UpdateMovementFlags();
+
+    return true;
+}
+
+void Creature::UpdateMovementFlags()
+{
+    // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)
+    float ground = GetMap()->GetHeight(GetPositionX(), GetPositionY(), GetPositionZH());
+
+    bool isInAir = !IsFalling() && (G3D::fuzzyGt(GetPositionZ(), ground + (IsHovering() ? GetFloatValue(UNIT_FIELD_HOVER_HEIGHT) : 0.0f) + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyGt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
+
+    // Creature has a flight state enabled in db
+    if (GetMovementTemplate().IsFlightAllowed() && isInAir && !IsFalling())
     {
-        SetCanFly(true);
-        SetDisableGravity(true);
+        if (GetMovementTemplate().IsGravityDisabled())
+            SetDisableGravity(true);
+
+        if (GetMovementTemplate().CanFly())
+            SetCanFly(true);
+    }
+    else
+    {
+        // @todo: this interferes with scripted flight movement so let's reevaluate if we want to stick with CREATURE_FLAG_EXTRA_NO_MOVE_FLAGS_UPDATE to avoid that or if we want to drop that all together.
+        SetCanFly(false);
+        SetDisableGravity(false);
     }
 
-    // TODO: Shouldn't we check whether or not the creature is in water first?
-    SetSwim(cInfo->InhabitType & INHABIT_WATER && IsInWater());
-    return true;
+    // Creature has a special ground state enabled in db or has a movement hover aura applied
+    if (GetMovementTemplate().IsGroundAllowed())
+    {
+        // Hovering always requires the creature to be alive to avoid visual issues
+        // @todo: sniffed spawn locations have applied hover offsets to the position z value so either subtract them when parsing sniffs or skip the initial relocation from Unit::SetHover
+        if (IsAlive() && (GetMovementTemplate().IsHoverEnabled() || HasAuraType(SPELL_AURA_HOVER)))
+            SetHover(true);
+        else
+            SetHover(false);
+    }
+
+    if (!isInAir)
+        RemoveUnitMovementFlag(MOVEMENTFLAG_FALLING);
+
+    SetSwim(CanSwim() && IsInWater());
 }
 
 void Creature::UpdateStat()
@@ -945,16 +996,7 @@ void Creature::Update(uint32 diff)
             m_zoneUpdateTimer -= diff;
     }
 
-    if (IsInWater())
-    {
-        if (CanSwim())
-            AddUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
-    }
-    else
-    {
-        if (CanWalk())
-            RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
-    }
+    UpdateMovementFlags();
 
     if (IsAIEnabled && TriggerJustRespawned)
     {
@@ -2563,19 +2605,10 @@ void Creature::setDeathState(DeathState s)
         SetLootRecipient(nullptr);
         ResetPlayerDamageReq();
         SetCannotReachTarget(false);
+
+        UpdateMovementFlags();
+
         CreatureTemplate const* cinfo = GetCreatureTemplate();
-        SetWalk(true);
-        if (cinfo->InhabitType & INHABIT_AIR && cinfo->InhabitType & INHABIT_GROUND)
-            SetCanFly(true);
-        else if (cinfo->InhabitType & INHABIT_AIR)
-            SetDisableGravity(true);
-        if (cinfo->InhabitType & INHABIT_WATER)
-            AddUnitMovementFlag(MOVEMENTFLAG_SWIMMING);
-
-        //Enable hover when respawn
-        if (GetMiscStandValue() & UNIT_BYTE1_FLAG_HOVER)
-            SetHover(true);
-
         SetUInt32Value(UNIT_FIELD_NPC_FLAGS, cinfo->npcflag);
         SetUInt32Value(UNIT_FIELD_NPC_FLAGS2, cinfo->npcflag2);
         ClearUnitState(uint32(UNIT_STATE_ALL_STATE));
@@ -3242,7 +3275,7 @@ bool Creature::LoadCreaturesAddon(bool /*reload*/)
         //! Suspected correlation between UNIT_FIELD_BYTES_1, offset 3, value 0x2:
         //! If no inhabittype_fly (if no MovementFlag_DisableGravity flag found in sniffs)
         //! Set MovementFlag_Hover. Otherwise do nothing.
-        if ((GetMiscStandValue() & UNIT_BYTE1_FLAG_HOVER) && IsAlive())
+        if (CanHover())
             SetHover(true);
     }
 
@@ -3471,6 +3504,14 @@ void Creature::GetRespawnPosition(float &x, float &y, float &z, float* ori, floa
         *ori = GetOrientation();
     if (dist)
         *dist = 0;
+}
+
+CreatureMovementData const& Creature::GetMovementTemplate() const
+{
+    if (CreatureMovementData const* movementOverride = sObjectMgr->GetCreatureMovementOverride(m_DBTableGuid))
+        return *movementOverride;
+
+    return GetCreatureTemplate()->Movement;
 }
 
 void Creature::AllLootRemovedFromCorpse()

@@ -20,6 +20,7 @@
 #define CREATURE_H
 
 #include "Common.h"
+#include "CreatureData.h"
 #include "GridObject.h"
 #include "LootMgr.h"
 #include "MapObject.h"
@@ -138,7 +139,7 @@ struct CreatureTemplate
     uint32 faction = 35;
     uint32 flags_extra = 0;
     uint32 GossipMenuId = 0;
-    uint32 InhabitType = 7/*INHABIT_ANYWHERE*/;
+    CreatureMovementData Movement;
     uint32 lootid = 0;
     uint32 maxgold = 0;
     uint32 MechanicImmuneMask = 0;
@@ -546,9 +547,13 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         bool isCivilian() const { return (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_CIVILIAN) != 0; }
         bool isTrigger() const { return (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_TRIGGER) != 0; }
         bool isGuard() const { return (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_GUARD) != 0; }
-        bool CanWalk() const { return (GetCreatureTemplate()->InhabitType & INHABIT_GROUND) != 0; }
-        bool CanSwim() const override  { return (GetCreatureTemplate()->InhabitType & INHABIT_WATER) != 0; }
-        bool CanFly()  const override { return (GetCreatureTemplate()->InhabitType & INHABIT_AIR) != 0; }
+
+        CreatureMovementData const& GetMovementTemplate() const;
+        bool CanWalk() const { return GetMovementTemplate().IsGroundAllowed(); }
+        bool CanSwim() const override { return GetMovementTemplate().IsSwimAllowed() || isPet(); }
+        bool CanFly()  const override { return GetMovementTemplate().IsFlightAllowed(); }
+        bool CanHover() const { return GetMovementTemplate().IsHoverEnabled() || IsHovering(); }
+
         bool CanShared()  const { return GetCreatureTemplate()->QuestPersonalLoot; }
         bool IsIgnoreLos() const { return GetCreatureTemplate()->IgnoreLos; }
 
@@ -601,6 +606,9 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         bool HasSpell(uint32 spellID) override;
 
         bool UpdateEntry(uint32 entry, uint32 team=ALLIANCE, const CreatureData* data= nullptr);
+
+        void UpdateMovementFlags();
+
         void UpdateStat();
         bool UpdateStats(Stats stat) override;
         float GetTotalStatValue(Stats stat) override;

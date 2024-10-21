@@ -297,9 +297,9 @@ void WorldSession::HandleGossipHelloOpcode(WorldPackets::NPC::Hello& packet)
     player->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_TALK);
 
     // Stop the npc if moving
-    //if (uint32 pause = unit->GetMovementTemplate().GetInteractionPauseTimer())
+    if (uint32 pause = unit->GetMovementTemplate().GetInteractionPauseTimer())
     {
-        unit->PauseMovement(sWorld->getIntConfig(CONFIG_CREATURE_STOP_FOR_PLAYER));
+        unit->PauseMovement(pause);
         unit->SetHomePosition(unit->GetPosition());
     }
 
@@ -520,10 +520,9 @@ void WorldSession::SendListInventory(ObjectGuid const& vendorGuid, uint32 entry)
     if (player->HasUnitState(UNIT_STATE_DIED))
         player->RemoveAurasByType(SPELL_AURA_FEIGN_DEATH);
 
-    if (vendor->HasUnitState(UNIT_STATE_MOVING))
-    //if (uint32 pause = vendor->GetMovementTemplate().GetInteractionPauseTimer())
+    if (uint32 pause = vendor->GetMovementTemplate().GetInteractionPauseTimer())
     {
-        vendor->PauseMovement(sWorld->getIntConfig(CONFIG_CREATURE_STOP_FOR_PLAYER));
+        vendor->PauseMovement(pause);
         vendor->SetHomePosition(vendor->GetPosition());
     }
 

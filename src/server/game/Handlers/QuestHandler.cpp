@@ -82,9 +82,9 @@ void WorldSession::HandleQuestGiverHello(WorldPackets::Quest::QuestGiverHello& p
         GetPlayer()->RemoveAurasByType(SPELL_AURA_FEIGN_DEATH);
 
     // Stop the npc if moving
-    //if (uint32 pause = creature->GetMovementTemplate().GetInteractionPauseTimer())
+    if (uint32 pause = creature->GetMovementTemplate().GetInteractionPauseTimer())
     {
-        creature->PauseMovement(sWorld->getIntConfig(CONFIG_CREATURE_STOP_FOR_PLAYER));
+        creature->PauseMovement(pause);
         creature->SetHomePosition(creature->GetPosition());
     }
 
