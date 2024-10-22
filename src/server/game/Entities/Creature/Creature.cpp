@@ -856,36 +856,38 @@ bool Creature::UpdateEntry(uint32 entry, uint32 team, const CreatureData* data)
 
 void Creature::UpdateMovementFlags()
 {
+    // Do not update movement flags if creature is controlled by a player (charm/vehicle)
+    if (m_ControlledByPlayer)
+        return;
+
+//    // Creatures with CREATURE_FLAG_EXTRA_NO_MOVE_FLAGS_UPDATE should control MovementFlags in your own scripts
+//    if (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_NO_MOVE_FLAGS_UPDATE)
+//        return;
+
     // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)
     float ground = GetMap()->GetHeight(GetPositionX(), GetPositionY(), GetPositionZH());
 
-    bool isInAir = !IsFalling() && (G3D::fuzzyGt(GetPositionZ(), ground + (IsHovering() ? GetFloatValue(UNIT_FIELD_HOVER_HEIGHT) : 0.0f) + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyGt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
+    bool canHover = CanHover();
+    bool isInAir = !IsFalling() && (G3D::fuzzyGt(GetPositionZ(), ground + (canHover ? GetFloatValue(UNIT_FIELD_HOVER_HEIGHT) : 0.0f) + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyGt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
 
     // Creature has a flight state enabled in db
-    if (GetMovementTemplate().IsFlightAllowed() && isInAir && !IsFalling())
+    if (GetMovementTemplate().IsFlightAllowed() && (isInAir || !GetMovementTemplate().IsGroundAllowed()) && !IsFalling())
     {
+        if (GetMovementTemplate().CanFly())
+            SetCanFly(true);
+
         if (GetMovementTemplate().IsGravityDisabled())
             SetDisableGravity(true);
 
-        if (GetMovementTemplate().CanFly())
-            SetCanFly(true);
+        if (!HasAuraType(SPELL_AURA_HOVER) && GetMovementTemplate().Ground != CreatureGroundMovementType::Hover)
+            SetHover(false);
     }
     else
     {
-        // @todo: this interferes with scripted flight movement so let's reevaluate if we want to stick with CREATURE_FLAG_EXTRA_NO_MOVE_FLAGS_UPDATE to avoid that or if we want to drop that all together.
         SetCanFly(false);
         SetDisableGravity(false);
-    }
-
-    // Creature has a special ground state enabled in db or has a movement hover aura applied
-    if (GetMovementTemplate().IsGroundAllowed())
-    {
-        // Hovering always requires the creature to be alive to avoid visual issues
-        // @todo: sniffed spawn locations have applied hover offsets to the position z value so either subtract them when parsing sniffs or skip the initial relocation from Unit::SetHover
-        if (IsAlive() && (GetMovementTemplate().IsHoverEnabled() || HasAuraType(SPELL_AURA_HOVER)))
+        if (IsAlive() && (CanHover() || HasAuraType(SPELL_AURA_HOVER)))
             SetHover(true);
-        else
-            SetHover(false);
     }
 
     if (!isInAir)

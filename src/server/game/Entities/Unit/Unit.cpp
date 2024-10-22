@@ -24985,26 +24985,22 @@ bool Unit::SetSwim(bool enable)
 
 bool Unit::SetCanFly(bool enable)
 {
-    //if (enable == HasUnitMovementFlag(MOVEMENTFLAG_CAN_FLY))
-        //return false;
+    if (enable == HasUnitMovementFlag(MOVEMENTFLAG_CAN_FLY))
+        return false;
 
-    if (!IsPlayer())
+    if (enable)
     {
-        if (enable)
-        {
-            AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
-            RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_SPLINE_ELEVATION);
-            SetFall(false);
-        }
-        else
-        {
-            RemoveUnitMovementFlag(MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_MASK_MOVING_FLY);
-            if (!IsLevitating())
-                SetFall(true);
-        }
+        AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+        RemoveUnitMovementFlag(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_SPLINE_ELEVATION);
     }
+    else
+        RemoveUnitMovementFlag(MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_MASK_MOVING_FLY);
 
-    static OpcodeServer const flyOpcodeTable[2][2] = {{SMSG_MOVE_SPLINE_UNSET_FLYING, SMSG_MOVE_UNSET_CAN_FLY}, {SMSG_MOVE_SPLINE_SET_FLYING, SMSG_MOVE_SET_CAN_FLY}};
+    static OpcodeServer const flyOpcodeTable[2][2] =
+    {
+        { SMSG_MOVE_SPLINE_UNSET_FLYING, SMSG_MOVE_UNSET_CAN_FLY },
+        { SMSG_MOVE_SPLINE_SET_FLYING, SMSG_MOVE_SET_CAN_FLY }
+    };
 
     if (!enable && IsPlayer())
         ToPlayer()->SetFallInformation(0, GetPositionZ());
@@ -25016,6 +25012,10 @@ bool Unit::SetCanFly(bool enable)
         packet.SequenceIndex = m_sequenceIndex++;
         playerMover->SendDirectMessage(packet.Write());
         playerMover->GetCheatData()->OrderSent(flyOpcodeTable[enable][1]);
+
+        WorldPackets::Movement::MoveUpdate moveUpdate;
+        moveUpdate.movementInfo = &m_movementInfo;
+        SendMessageToSet(moveUpdate.Write(), playerMover);
     }
     else
     {
