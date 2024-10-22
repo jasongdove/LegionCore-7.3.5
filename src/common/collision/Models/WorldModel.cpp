@@ -19,9 +19,8 @@
 #include "WorldModel.h"
 #include "VMapDefinitions.h"
 #include "MapTree.h"
-//#include "World.h"
-#include "Log.h"
-#include "Common.h"
+#include "ModelInstance.h"
+#include "ModelIgnoreFlags.h"
 
 using G3D::Vector3;
 using G3D::Ray;
@@ -33,12 +32,6 @@ template<> struct BoundsTrait<VMAP::GroupModel>
 
 namespace VMAP
 {
-    // Bugged WMO location, need check it
-    static std::set<uint32> ignoreGroupWMOID{
-    28464,  // Orgrimmar .go 1653 -4351 26 1
-    27482  // Stormwind .go -8835 651 98 0
-    };
-
     bool IntersectTriangle(const MeshTriangle &tri, std::vector<Vector3>::const_iterator points, const G3D::Ray &ray, float &distance)
     {
         static const float EPS = 1e-5f;
@@ -297,25 +290,18 @@ namespace VMAP
 
     GroupModel::GroupModel(const GroupModel &other):
         iBound(other.iBound), iMogpFlags(other.iMogpFlags), iGroupWMOID(other.iGroupWMOID),
-        vertices(other.vertices), triangles(other.triangles), meshTree(other.meshTree), iLiquid(nullptr),
-        collisions(other.collisions), bspTree(other.bspTree)
+        vertices(other.vertices), triangles(other.triangles), meshTree(other.meshTree), iLiquid(nullptr)
     {
         if (other.iLiquid)
             iLiquid = new WmoLiquid(*other.iLiquid);
     }
 
-    void GroupModel::setMeshData(std::vector<Vector3> &vert, std::vector<MeshTriangle> &tri, std::vector<MeshTriangle> &bsp)
+    void GroupModel::setMeshData(std::vector<Vector3> &vert, std::vector<MeshTriangle> &tri)
     {
         vertices.swap(vert);
         triangles.swap(tri);
-        collisions.swap(bsp);
         TriBoundFunc bFunc(vertices);
-
-        if (!triangles.empty())
-            meshTree.build(triangles, bFunc);
-
-        if (!collisions.empty())
-            bspTree.build(collisions, bFunc);
+        meshTree.build(triangles, bFunc);
     }
 
     bool GroupModel::writeToFile(FILE* wf)
@@ -330,8 +316,6 @@ namespace VMAP
         // write vertices
         if (result && fwrite("VERT", 1, 4, wf) != 4) result = false;
         count = vertices.size();
-        if (!triangles.size() && !collisions.size())
-            count = 0;
         chunkSize = sizeof(uint32)+ sizeof(Vector3)*count;
         if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
         if (result && fwrite(&count, sizeof(uint32), 1, wf) != 1) result = false;
@@ -343,46 +327,13 @@ namespace VMAP
         if (result && fwrite("TRIM", 1, 4, wf) != 4) result = false;
         count = triangles.size();
         chunkSize = sizeof(uint32)+ sizeof(MeshTriangle)*count;
-        // std::cout << "\n GroupModel::writeToFile count " << count << " chunkSize " << chunkSize << std::endl;
+        if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
+        if (result && fwrite(&count, sizeof(uint32), 1, wf) != 1) result = false;
+        if (result && fwrite(&triangles[0], sizeof(MeshTriangle), count, wf) != count) result = false;
 
-        if (!count)
-        {
-            chunkSize = 0;
-            if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
-            if (result && fwrite(&count, sizeof(uint32), 1, wf) != 1) result = false;
-        }
-        else
-        {
-            chunkSize = sizeof(uint32)+ sizeof(MeshTriangle)*count;
-            if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
-            if (result && fwrite(&count, sizeof(uint32), 1, wf) != 1) result = false;
-            if (result && fwrite(&triangles[0], sizeof(MeshTriangle), count, wf) != count) result = false;
-
-            // write mesh BIH
-            if (result && fwrite("MBIH", 1, 4, wf) != 4) result = false;
-            if (result && count) result = meshTree.writeToFile(wf);
-        }
-
-        // write triangle mesh
-        if (result && fwrite("BSPX", 1, 4, wf) != 4) result = false;
-        count = collisions.size();
-        if (!count)
-        {
-            chunkSize = 0;
-            if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
-            if (result && fwrite(&count, sizeof(uint32), 1, wf) != 1) result = false;
-        }
-        else
-        {
-            chunkSize = sizeof(uint32)+ sizeof(MeshTriangle)*count;
-            if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
-            if (result && fwrite(&count, sizeof(uint32), 1, wf) != 1) result = false;
-            if (result && fwrite(&collisions[0], sizeof(MeshTriangle), count, wf) != count) result = false;
-
-            // write mesh BIH
-            if (result && fwrite("BBIH", 1, 4, wf) != 4) result = false;
-            if (result && count) result = bspTree.writeToFile(wf);
-        }
+        // write mesh BIH
+        if (result && fwrite("MBIH", 1, 4, wf) != 4) result = false;
+        if (result) result = meshTree.writeToFile(wf);
 
         // write liquid data
         if (result && fwrite("LIQU", 1, 4, wf) != 4) result = false;
@@ -406,7 +357,6 @@ namespace VMAP
         uint32 chunkSize = 0;
         uint32 count = 0;
         triangles.clear();
-        collisions.clear();
         vertices.clear();
         delete iLiquid;
         iLiquid = NULL;
@@ -428,29 +378,12 @@ namespace VMAP
         if (result && !readChunk(rf, chunk, "TRIM", 4)) result = false;
         if (result && fread(&chunkSize, sizeof(uint32), 1, rf) != 1) result = false;
         if (result && fread(&count, sizeof(uint32), 1, rf) != 1) result = false;
-        if (count)
-        {
-            if (result && count) triangles.resize(count);
-            if (result && count && fread(&triangles[0], sizeof(MeshTriangle), count, rf) != count) result = false;
+        if (result) triangles.resize(count);
+        if (result && fread(&triangles[0], sizeof(MeshTriangle), count, rf) != count) result = false;
 
-            // read mesh BIH
-            if (result && !readChunk(rf, chunk, "MBIH", 4)) result = false;
-            if (result && count) result = meshTree.readFromFile(rf);
-        }
-
-        // read triangle mesh
-        if (result && !readChunk(rf, chunk, "BSPX", 4)) result = false;
-        if (result && fread(&chunkSize, sizeof(uint32), 1, rf) != 1) result = false;
-        if (result && fread(&count, sizeof(uint32), 1, rf) != 1) result = false;
-        if (count)
-        {
-            if (result) collisions.resize(count);
-            if (result && fread(&collisions[0], sizeof(MeshTriangle), count, rf) != count) result = false;
-
-            // read mesh BIH
-            if (result && !readChunk(rf, chunk, "BBIH", 4)) result = false;
-            if (result) result = bspTree.readFromFile(rf);
-        }
+        // read mesh BIH
+        if (result && !readChunk(rf, chunk, "MBIH", 4)) result = false;
+        if (result) result = meshTree.readFromFile(rf);
 
         // write liquid data
         if (result && !readChunk(rf, chunk, "LIQU", 4)) result = false;
@@ -477,35 +410,10 @@ namespace VMAP
 
     bool GroupModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const
     {
-        if (collisions.empty())
-            return false;
-
-        GModelRayCallback callback(collisions, vertices);
-        bspTree.intersectRay(ray, callback, distance, stopAtFirstHit);
-        return callback.hit;
-    }
-
-    struct GModelLineCallback
-    {
-        GModelLineCallback(const std::vector<MeshTriangle> &tris, const std::vector<Vector3> &vert):
-            vertices(vert.begin()), triangles(tris.begin()), hit(false) { }
-        bool operator()(const G3D::Ray& ray, uint32 entry, float& distance, bool /*pStopAtFirstHit*/)
-        {
-            bool result = IntersectTriangle(triangles[entry], vertices, ray, distance);
-            if (result)  hit=true;
-            return hit;
-        }
-        std::vector<Vector3>::const_iterator vertices;
-        std::vector<MeshTriangle>::const_iterator triangles;
-        bool hit;
-    };
-
-    bool GroupModel::intersectLine(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const
-    {
         if (triangles.empty())
             return false;
 
-        GModelLineCallback callback(triangles, vertices);
+        GModelRayCallback callback(triangles, vertices);
         meshTree.intersectRay(ray, callback, distance, stopAtFirstHit);
         return callback.hit;
     }
@@ -566,51 +474,22 @@ namespace VMAP
         bool hit;
     };
 
-    bool WorldModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const
+    bool WorldModel::IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit, ModelIgnoreFlags ignoreFlags) const
     {
+        // If the caller asked us to ignore certain objects we should check flags
+        if ((ignoreFlags & ModelIgnoreFlags::M2) != ModelIgnoreFlags::Nothing)
+        {
+            // M2 models are not taken into account for LoS calculation if caller requested their ignoring.
+            if (Flags & MOD_M2)
+                return false;
+        }
+
         // small M2 workaround, maybe better make separate class with virtual intersection funcs
         // in any case, there's no need to use a bound tree if we only have one submodel
         if (groupModels.size() == 1)
             return groupModels[0].IntersectRay(ray, distance, stopAtFirstHit);
 
         WModelRayCallBack isc(groupModels);
-        groupTree.intersectRay(ray, isc, distance, stopAtFirstHit);
-        return isc.hit;
-    }
-
-    struct WModelLineCallBack
-    {
-        WModelLineCallBack(const std::vector<GroupModel> &mod): models(mod.begin()), hit(false) { }
-        bool operator()(const G3D::Ray& ray, uint32 entry, float& distance, bool pStopAtFirstHit)
-        {
-            bool result = models[entry].intersectLine(ray, distance, pStopAtFirstHit);
-            if (result)
-            {
-				if (ignoreGroupWMOID.find(models[entry].GetWmoID()) == ignoreGroupWMOID.end())
-                    hit = true;
-            }
-            return hit;
-        }
-        std::vector<GroupModel>::const_iterator models;
-        bool hit;
-    };
-
-    bool WorldModel::intersectLine(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const
-    {
-        // small M2 workaround, maybe better make separate class with virtual intersection funcs
-        // in any case, there's no need to use a bound tree if we only have one submodel
-        if (groupModels.size() == 1)
-        {
-            bool hit = groupModels[0].intersectLine(ray, distance, stopAtFirstHit);
-            if (hit)
-            {
-                if (ignoreGroupWMOID.find(groupModels[0].GetWmoID()) != ignoreGroupWMOID.end())
-                    hit = false;
-            }
-            return hit;
-        }
-
-        WModelLineCallBack isc(groupModels);
         groupTree.intersectRay(ray, isc, distance, stopAtFirstHit);
         return isc.hit;
     }

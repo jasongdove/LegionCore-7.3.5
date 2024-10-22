@@ -31,7 +31,7 @@ namespace VMAP
         iInvScale = 1.f/iScale;
     }
 
-    bool ModelInstance::intersectRay(const G3D::Ray& pRay, float& pMaxDist, bool pStopAtFirstHit) const
+    bool ModelInstance::intersectRay(const G3D::Ray& pRay, float& pMaxDist, bool pStopAtFirstHit, ModelIgnoreFlags ignoreFlags) const
     {
         if (!iModel)
         {
@@ -55,40 +55,7 @@ namespace VMAP
         Vector3 p = iInvRot * (pRay.origin() - iPos) * iInvScale;
         Ray modRay(p, iInvRot * pRay.direction());
         float distance = pMaxDist * iInvScale;
-        bool hit = iModel->IntersectRay(modRay, distance, pStopAtFirstHit);
-        if (hit)
-        {
-            distance *= iScale;
-            pMaxDist = distance;
-        }
-        return hit;
-    }
-
-    bool ModelInstance::intersectLine(const G3D::Ray& pRay, float& pMaxDist, bool pStopAtFirstHit) const
-    {
-        if (!iModel)
-        {
-            //std::cout << "<object not loaded>\n";
-            return false;
-        }
-        float time = pRay.intersectionTime(iBound);
-        if (time == G3D::finf())
-        {
-//            std::cout << "Ray does not hit '" << name << "'\n";
-
-            return false;
-        }
-//        std::cout << "Ray crosses bound of '" << name << "'\n";
-/*        std::cout << "ray from:" << pRay.origin().x << ", " << pRay.origin().y << ", " << pRay.origin().z
-                  << " dir:" << pRay.direction().x << ", " << pRay.direction().y << ", " << pRay.direction().z
-                  << " t/tmax:" << time << '/' << pMaxDist;
-        std::cout << "\nBound lo:" << iBound.low().x << ", " << iBound.low().y << ", " << iBound.low().z << " hi: "
-                  << iBound.high().x << ", " << iBound.high().y << ", " << iBound.high().z << std::endl; */
-        // child bounds are defined in object space:
-        Vector3 p = iInvRot * (pRay.origin() - iPos) * iInvScale;
-        Ray modRay(p, iInvRot * pRay.direction());
-        float distance = pMaxDist * iInvScale;
-        bool hit = iModel->intersectLine(modRay, distance, pStopAtFirstHit);
+        bool hit = iModel->IntersectRay(modRay, distance, pStopAtFirstHit, ignoreFlags);
         if (hit)
         {
             distance *= iScale;

@@ -39,31 +39,6 @@ struct GameobjectModelData
     bool isWmo;
 };
 
-struct ModelTreeIntersectionCallback
-{
-    ModelTreeIntersectionCallback(std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) : _didHit(false), _phases(phases), _otherUsePlayerPhasingRules(otherUsePlayerPhasingRules), _go(0) { }
-
-    bool operator()(G3D::Ray const& r, GameObjectModel const& obj, float& distance)
-    {
-        _didHit = obj.intersectRay(r, distance, true, _phases, _otherUsePlayerPhasingRules);
-        if (_didHit)
-        {
-            if (obj.owner->IsDoor()) // Collision for door
-                distance = distance > 1.0f ? distance - 1.0f : 0.0f;
-            _go = const_cast<GameObject*>(obj.owner->GetOwner());
-        }
-        return _didHit;
-    }
-
-    bool didHit() const { return _didHit; }
-    GameObject* _go;
-
-private:
-    bool _didHit;
-    std::set<uint32> _phases;
-    bool _otherUsePlayerPhasingRules;
-};
-
 typedef std::unordered_map<uint32, GameobjectModelData> ModelList;
 ModelList model_list;
 
@@ -74,7 +49,7 @@ void LoadGameObjectModelList(std::string const& dataPath)
     FILE* model_list_file = fopen((dataPath + "vmaps/" + VMAP::GAMEOBJECT_MODELS).c_str(), "rb");
     if (!model_list_file)
     {
-        TC_LOG_DEBUG("maps", "Unable to open '%s' file.", VMAP::GAMEOBJECT_MODELS);
+        TC_LOG_ERROR("misc", "Unable to open '%s' file.", VMAP::GAMEOBJECT_MODELS);
         return;
     }
 
@@ -82,7 +57,7 @@ void LoadGameObjectModelList(std::string const& dataPath)
     if (fread(magic, 1, 8, model_list_file) != 8
         || memcmp(magic, VMAP::VMAP_MAGIC, 8) != 0)
     {
-        TC_LOG_DEBUG("maps", "File '%s' has wrong header, expected %s.", VMAP::GAMEOBJECT_MODELS, VMAP::VMAP_MAGIC);
+        TC_LOG_ERROR("misc", "File '%s' has wrong header, expected %s.", VMAP::GAMEOBJECT_MODELS, VMAP::VMAP_MAGIC);
         fclose(model_list_file);
         return;
     }
@@ -104,13 +79,13 @@ void LoadGameObjectModelList(std::string const& dataPath)
             || fread(&v1, sizeof(Vector3), 1, model_list_file) != 1
             || fread(&v2, sizeof(Vector3), 1, model_list_file) != 1)
         {
-            TC_LOG_DEBUG("maps", "File '%s' seems to be corrupted!", VMAP::GAMEOBJECT_MODELS);
+            TC_LOG_ERROR("misc", "File '%s' seems to be corrupted!", VMAP::GAMEOBJECT_MODELS);
             break;
         }
 
         if (v1.isNaN() || v2.isNaN())
         {
-            TC_LOG_DEBUG("maps", "File '%s' Model '%s' has invalid v1%s v2%s values!", VMAP::GAMEOBJECT_MODELS, std::string(buff, name_length).c_str(), v1.toString().c_str(), v2.toString().c_str());
+            TC_LOG_ERROR("misc", "File '%s' Model '%s' has invalid v1%s v2%s values!", VMAP::GAMEOBJECT_MODELS, std::string(buff, name_length).c_str(), v1.toString().c_str(), v2.toString().c_str());
             continue;
         }
 
@@ -118,7 +93,7 @@ void LoadGameObjectModelList(std::string const& dataPath)
     }
 
     fclose(model_list_file);
-    TC_LOG_DEBUG("maps", ">> Loaded %u GameObject models in %u ms", uint32(model_list.size()), GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded %u GameObject models in %u ms", uint32(model_list.size()), GetMSTimeDiffToNow(oldMSTime));
 }
 
 GameObjectModel::~GameObjectModel()
@@ -137,7 +112,7 @@ bool GameObjectModel::initialize(std::unique_ptr<GameObjectModelOwnerBase> model
     // ignore models with no bounds
     if (mdl_box == G3D::AABox::zero())
     {
-        TC_LOG_DEBUG("maps", "GameObject model %s has zero bounds, loading skipped", it->second.name.c_str());
+        TC_LOG_ERROR("misc", "GameObject model %s has zero bounds, loading skipped", it->second.name.c_str());
         return false;
     }
 
@@ -186,32 +161,7 @@ GameObjectModel* GameObjectModel::Create(std::unique_ptr<GameObjectModelOwnerBas
     return mdl;
 }
 
-bool GameObjectModel::intersectRay(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const
-{
-    if (!owner || !isCollisionEnabled() || !owner->IsSpawned())
-        return false;
-
-    if (!owner->InSamePhaseId(phases, otherUsePlayerPhasingRules))
-        return false;
-
-    float time = ray.intersectionTime(iBound);
-    if (time == G3D::finf())
-        return false;
-
-    // child bounds are defined in object space:
-    Vector3 p = iInvRot * (ray.origin() - iPos) * iInvScale;
-    Ray modRay(p, iInvRot * ray.direction());
-    float distance = maxDist * iInvScale;
-    bool hit = iModel->IntersectRay(modRay, distance, stopAtFirstHit);
-    if (hit)
-    {
-        distance *= iScale;
-        maxDist = distance;
-    }
-    return hit;
-}
-
-bool GameObjectModel::intersectLine(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const
+bool GameObjectModel::intersectRay(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, VMAP::ModelIgnoreFlags ignoreFlags) const
 {
     if (!isCollisionEnabled() || !owner->IsSpawned())
         return false;
@@ -227,9 +177,7 @@ bool GameObjectModel::intersectLine(G3D::Ray const& ray, float& maxDist, bool st
     Vector3 p = iInvRot * (ray.origin() - iPos) * iInvScale;
     Ray modRay(p, iInvRot * ray.direction());
     float distance = maxDist * iInvScale;
-    bool hit = iModel->intersectLine(modRay, distance, stopAtFirstHit);
-
-
+    bool hit = iModel->IntersectRay(modRay, distance, stopAtFirstHit, ignoreFlags);
     if (hit)
     {
         distance *= iScale;
@@ -238,9 +186,9 @@ bool GameObjectModel::intersectLine(G3D::Ray const& ray, float& maxDist, bool st
     return hit;
 }
 
-void GameObjectModel::intersectPoint(G3D::Vector3 const& point, VMAP::AreaInfo& info, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const
+void GameObjectModel::intersectPoint(G3D::Vector3 const& point, VMAP::AreaInfo& info,  std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const
 {
-    if (!owner || !isCollisionEnabled() || !owner->IsSpawned() || !isMapObject())
+    if (!isCollisionEnabled() || !owner->IsSpawned() || !isMapObject())
         return;
 
     if (!owner->InSamePhaseId(phases, otherUsePlayerPhasingRules))
@@ -282,7 +230,7 @@ bool GameObjectModel::getObjectHitPos(std::set<uint32> const& phases, bool other
     G3D::Vector3 dir = (endPos - startPos)/maxDist;              // direction with length of 1
     G3D::Ray ray(startPos, dir);
     float dist = maxDist;
-    if (intersectRay(ray, dist, false, phases, otherUsePlayerPhasingRules))
+    if (intersectRay(ray, dist, false, phases, otherUsePlayerPhasingRules, VMAP::ModelIgnoreFlags::Nothing))
     {
         resultHitPos = startPos + dir * dist;
         if (modifyDist < 0)
@@ -325,7 +273,7 @@ bool GameObjectModel::isInLineOfSight(G3D::Vector3 const& startPos, G3D::Vector3
         return true;
 
     G3D::Ray ray(startPos, (endPos - startPos) / maxDist);
-    bool hit = intersectLine(ray, maxDist, true, phases, otherUsePlayerPhasingRules);
+    bool hit = intersectRay(ray, maxDist, true, phases, otherUsePlayerPhasingRules, VMAP::ModelIgnoreFlags::Nothing);
 
     return !hit;
 }
@@ -335,7 +283,7 @@ float GameObjectModel::getHeight(float x, float y, float z, float maxSearchDist,
     G3D::Vector3 v(x, y, z + 0.5f);
     G3D::Ray ray(v, G3D::Vector3(0, 0, -1));
 
-    bool hit = intersectRay(ray, maxSearchDist, false, phases, otherUsePlayerPhasingRules);
+    bool hit = intersectRay(ray, maxSearchDist, false, phases, otherUsePlayerPhasingRules, VMAP::ModelIgnoreFlags::Nothing);
 
     if (hit)
         return v.z - maxSearchDist;
@@ -356,7 +304,7 @@ bool GameObjectModel::UpdatePosition()
     // ignore models with no bounds
     if (mdl_box == G3D::AABox::zero())
     {
-        TC_LOG_DEBUG("maps", "GameObject model %s has zero bounds, loading skipped", it->second.name.c_str());
+        TC_LOG_ERROR("misc", "GameObject model %s has zero bounds, loading skipped", it->second.name.c_str());
         return false;
     }
 

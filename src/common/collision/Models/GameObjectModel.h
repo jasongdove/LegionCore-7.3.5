@@ -26,12 +26,12 @@
 
 #include "Define.h"
 #include <memory>
-#include <set>
 
 namespace VMAP
 {
     class WorldModel;
     struct AreaInfo;
+    enum class ModelIgnoreFlags : uint32;
 }
 
 class GameObject;
@@ -42,16 +42,16 @@ class GameObjectModelOwnerBase
 public:
     virtual ~GameObjectModelOwnerBase() = default;
 
-    virtual bool IsSpawned() const { return false; }
-    virtual uint32 GetDisplayId() const { return 0; }
+    virtual bool IsSpawned() const = 0;
+    virtual uint32 GetDisplayId() const = 0;
     virtual uint8 GetNameSetId() const = 0;
     virtual bool IsDoor() const { return false; }
     virtual uint32 GetPhaseMask() const { return 0; }
     virtual bool InSamePhaseId(std::set<uint32> const& /*phases*/, bool /*otherUsePlayerPhasingRules*/) const { return false; }
-    virtual G3D::Vector3 GetPosition() const { return G3D::Vector3::zero(); }
-    virtual float GetOrientation() const { return 0.0f; }
-    virtual float GetScale() const { return 1.0f; }
-    virtual void DebugVisualizeCorner(G3D::Vector3 const& /*corner*/) const { }
+    virtual G3D::Vector3 GetPosition() const = 0;
+    virtual float GetOrientation() const = 0;
+    virtual float GetScale() const = 0;
+    virtual void DebugVisualizeCorner(G3D::Vector3 const& /*corner*/) const = 0;
     virtual GameObject const* GetOwner() const { return nullptr; }
     virtual uint32 GetGUIDLow() const { return 0; }
 };
@@ -73,13 +73,12 @@ public:
     bool isCollisionEnabled() const { return _collisionEnabled; }
     bool isMapObject() const { return isWmo; }
 
-    bool intersectRay(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const;
-    bool intersectLine(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const;
+    bool intersectRay(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit,  std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, VMAP::ModelIgnoreFlags ignoreFlags) const;
+    void intersectPoint(G3D::Vector3 const& point, VMAP::AreaInfo& info,  std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const;
 
     bool isInLineOfSight(G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const;
     bool getObjectHitPos(std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, G3D::Vector3& resultHitPos, float modifyDist) const;
     float getHeight(float x, float y, float z, float maxSearchDist, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const;
-    void intersectPoint(G3D::Vector3 const& point, VMAP::AreaInfo& info, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const;
 
     static GameObjectModel* Create(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath);
 

@@ -19,11 +19,11 @@
 #ifndef _VMAPMANAGER2_H
 #define _VMAPMANAGER2_H
 
+#include <mutex>
 #include <unordered_map>
 #include <vector>
 #include "Define.h"
 #include "IVMapManager.h"
-#include <mutex>
 
 //===========================================================
 
@@ -51,7 +51,7 @@ namespace VMAP
     class StaticMapTree;
     class WorldModel;
 
-    class ManagedModel
+    class TC_COMMON_API ManagedModel
     {
         public:
             ManagedModel() : iModel(nullptr), iRefCount(0) { }
@@ -75,7 +75,7 @@ namespace VMAP
         VMAP_DISABLE_LIQUIDSTATUS   = 0x8
     };
 
-    class VMapManager2 : public IVMapManager
+    class TC_COMMON_API VMapManager2 : public IVMapManager
     {
         protected:
             // Tree to check collision
@@ -85,7 +85,7 @@ namespace VMAP
             std::unordered_map<uint32, uint32> iParentMapData;
             bool thread_safe_environment;
             // Mutex for iLoadedModelFiles
-            std::recursive_mutex LoadedModelFilesLock;
+            std::mutex LoadedModelFilesLock;
 
             static uint32 GetLiquidFlagsDummy(uint32) { return 0; }
             static bool IsVMAPDisabledForDummy(uint32 /*entry*/, uint8 /*flags*/) { return false; }
@@ -111,7 +111,7 @@ namespace VMAP
             void unloadMap(unsigned int mapId) override;
             void unloadSingleMap(uint32 mapId);
 
-            bool isInLineOfSight(unsigned int mapId, float x1, float y1, float z1, float x2, float y2, float z2) override ;
+            bool isInLineOfSight(unsigned int mapId, float x1, float y1, float z1, float x2, float y2, float z2, ModelIgnoreFlags ignoreFlags) override ;
             /**
             fill the hit pos and return true, if an object was hit
             */
@@ -123,7 +123,7 @@ namespace VMAP
             bool getAreaInfo(unsigned int pMapId, float x, float y, float& z, uint32& flags, int32& adtId, int32& rootId, int32& groupId) const override;
             bool GetLiquidLevel(uint32 pMapId, float x, float y, float z, uint8 reqLiquidType, float& level, float& floor, uint32& type) const override;
 
-            WorldModel* acquireModelInstance(const std::string& basepath, const std::string& filename);
+            WorldModel* acquireModelInstance(const std::string& basepath, const std::string& filename, uint32 flags = 0);
             void releaseModelInstance(const std::string& filename);
 
             // what's the use of this? o.O
@@ -131,7 +131,7 @@ namespace VMAP
             {
                 return getMapFileName(mapId);
             }
-            virtual bool existsMap(const char* basePath, unsigned int mapId, int x, int y) override;
+            virtual LoadResult existsMap(const char* basePath, unsigned int mapId, int x, int y) override;
 
             void getInstanceMapTree(InstanceTreeMap &instanceMapTree);
 

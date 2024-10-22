@@ -32,6 +32,7 @@ namespace VMAP
     class TreeNode;
     struct AreaInfo;
     struct LocationInfo;
+    enum class ModelIgnoreFlags : uint32;
 
     class MeshTriangle
     {
@@ -80,10 +81,9 @@ namespace VMAP
             ~GroupModel() { delete iLiquid; }
 
             //! pass mesh data to object and create BIH. Passed vectors get get swapped with old geometry!
-            void setMeshData(std::vector<G3D::Vector3> &vert, std::vector<MeshTriangle> &tri, std::vector<MeshTriangle> &bsp);
+            void setMeshData(std::vector<G3D::Vector3> &vert, std::vector<MeshTriangle> &tri);
             void setLiquidData(WmoLiquid*& liquid) { iLiquid = liquid; liquid = NULL; }
             bool IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const;
-            bool intersectLine(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const;
             bool IsInsideObject(const G3D::Vector3 &pos, const G3D::Vector3 &down, float &z_dist) const;
             bool GetLiquidLevel(const G3D::Vector3 &pos, float &liqHeight) const;
             uint32 GetLiquidType() const;
@@ -99,9 +99,7 @@ namespace VMAP
             uint32 iGroupWMOID;
             std::vector<G3D::Vector3> vertices;
             std::vector<MeshTriangle> triangles;
-            std::vector<MeshTriangle> collisions;
             BIH meshTree;
-            BIH bspTree;
             WmoLiquid* iLiquid;
     };
 
@@ -114,13 +112,13 @@ namespace VMAP
             //! pass group models to WorldModel and create BIH. Passed vector is swapped with old geometry!
             void setGroupModels(std::vector<GroupModel> &models);
             void setRootWmoID(uint32 id) { RootWMOID = id; }
-            bool IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const;
-            bool intersectLine(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const;
+            bool IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit, ModelIgnoreFlags ignoreFlags) const;
             bool IntersectPoint(const G3D::Vector3 &p, const G3D::Vector3 &down, float &dist, AreaInfo &info) const;
             bool GetLocationInfo(const G3D::Vector3 &p, const G3D::Vector3 &down, float &dist, LocationInfo &info) const;
             bool writeFile(const std::string &filename);
             bool readFile(const std::string &filename);
             void getGroupModels(std::vector<GroupModel>& outGroupModels);
+            uint32 Flags;
         protected:
             uint32 RootWMOID;
             std::vector<GroupModel> groupModels;

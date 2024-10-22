@@ -27,15 +27,16 @@ If you want you can join the community discord: [here](https://discord.gg/uaP2ae
 Most of the install steps are the same as the TrinityCore ones [here](https://www.trinitycore.info/en/install/Core-Installation).
 
 # Data Files
-This core has been optimized for DBC/vmap/map/mmaps files from UWoW and are not provided as part of this source code package. Instead the data files for LegionCore can be acquired [here](https://www.emucoach.com/legion-7-3-5-/6945-repack-7-3-5-legion-wow-repack-wow-legion-7-3-5-repack-blizzlike-fun.html).
+This core has been updated with tools to generate all required data files.
 
-***⚠️ We will not provide further assistance if those files are not available anymore.***
+Run the tools in the following order, using client build 26972:
 
-Some files from the above data files are wrong.
-Use the tools from this repo to generate the following files:
-> gt/xp.txt
+1. `mapextractor`
+2. `vmap4extractor`
+3. `vmap4assembler`
+4. `mmaps_generator`
 
-Replace the listed above file(s) with the one(s) you generated yourself.
+The generated folders `dbc`, `maps`, `vmaps`, `mmaps`, `cameras` and `gt` are all required.
 
 # Common issues
 TODO

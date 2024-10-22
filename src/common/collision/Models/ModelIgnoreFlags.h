@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -16,21 +15,20 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _VMAPDEFINITIONS_H
-#define _VMAPDEFINITIONS_H
-#include <cstring>
-#include <cstdio>
+#ifndef ModelIgnoreFlags_h__
+#define ModelIgnoreFlags_h__
 
-#define LIQUID_TILE_SIZE (533.333f / 128.f)
+#include "Define.h"
 
 namespace VMAP
 {
-    const char VMAP_MAGIC[] = "VMAP_4.8";
-    const char RAW_VMAP_MAGIC[] = "VMAP048";                // used in extracted vmap files with raw data
-    const char GAMEOBJECT_MODELS[] = "GameObjectModels.dtree";
+enum class ModelIgnoreFlags : uint32
+{
+    Nothing = 0x00,
+    M2      = 0x01
+};
 
-    // defined in TileAssembler.cpp currently...
-    bool readChunk(FILE* rf, char *dest, const char *compare, uint32 len);
+inline ModelIgnoreFlags operator&(ModelIgnoreFlags left, ModelIgnoreFlags right) { return ModelIgnoreFlags(uint32(left) & uint32(right)); }
 }
 
-#endif
+#endif // ModelIgnoreFlags_h__

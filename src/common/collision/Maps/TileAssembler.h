@@ -25,8 +25,8 @@
 #include <map>
 #include <set>
 
-#include "Models/ModelInstance.h"
-#include "Models/WorldModel.h"
+#include "ModelInstance.h"
+#include "WorldModel.h"
 
 namespace VMAP
 {
@@ -36,7 +36,7 @@ namespace VMAP
     */
     //===============================================
 
-    class ModelPosition
+    class TC_COMMON_API ModelPosition
     {
         private:
             G3D::Matrix3 iRotation;
@@ -64,7 +64,7 @@ namespace VMAP
         bool operator<(TileSpawn const& right) const { return Id < right.Id; }
     };
 
-    struct MapSpawns
+    struct TC_COMMON_API MapSpawns
     {
         MapSpawns() { }
 
@@ -77,7 +77,7 @@ namespace VMAP
     typedef std::deque<MapSpawns> MapData;
     //===============================================
 
-    struct GroupModel_Raw
+    struct TC_COMMON_API GroupModel_Raw
     {
         uint32 mogpflags;
         uint32 GroupWMOID;
@@ -85,7 +85,6 @@ namespace VMAP
         G3D::AABox bounds;
         uint32 liquidflags;
         std::vector<MeshTriangle> triangles;
-        std::vector<MeshTriangle> collisions;
         std::vector<G3D::Vector3> vertexArray;
         class WmoLiquid* liquid;
 
@@ -96,7 +95,7 @@ namespace VMAP
         bool Read(FILE* f);
     };
 
-    struct WorldModel_Raw
+    struct TC_COMMON_API WorldModel_Raw
     {
         uint32 RootWMOID;
         std::vector<GroupModel_Raw> groupsArray;
@@ -104,7 +103,7 @@ namespace VMAP
         bool Read(const char * path);
     };
 
-    class TileAssembler
+    class TC_COMMON_API TileAssembler
     {
         private:
             std::string iDestDir;

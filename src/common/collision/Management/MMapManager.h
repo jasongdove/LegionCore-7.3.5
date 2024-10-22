@@ -23,21 +23,19 @@
 #include "DetourNavMesh.h"
 #include "DetourNavMeshQuery.h"
 #include <string>
-#include <map>
 #include <unordered_map>
-#include <set>
 #include <vector>
 
 //  move map related classes
 namespace MMAP
 {
-    typedef std::map<uint32, dtTileRef> MMapTileSet;
-    typedef std::map<uint64, dtNavMeshQuery*> NavMeshQuerySet;
+    typedef std::unordered_map<uint32, dtTileRef> MMapTileSet;
+    typedef std::unordered_map<uint32, dtNavMeshQuery*> NavMeshQuerySet;
 
     // dummy struct to hold map's mmap data
-    struct MMapData
+    struct TC_COMMON_API MMapData
     {
-        MMapData(dtNavMesh* mesh, uint32 mapId) : navMesh(mesh), _mapId(mapId) { }
+        MMapData(dtNavMesh* mesh) : navMesh(mesh) { }
         ~MMapData()
         {
             for (NavMeshQuerySet::iterator i = navMeshQueries.begin(); i != navMeshQueries.end(); ++i)
@@ -50,13 +48,8 @@ namespace MMAP
         // we have to use single dtNavMeshQuery for every instance, since those are not thread safe
         NavMeshQuerySet navMeshQueries;     // instanceId to query
 
-        std::recursive_mutex navMeshQueries_lock;
-        std::recursive_mutex navModelMeshQueries_lock;
-        std::recursive_mutex tilesLoading_lock;
-
         dtNavMesh* navMesh;
         MMapTileSet loadedTileRefs;        // maps [map grid coords] to [dtTile]
-        uint32 _mapId;
     };
 
 
@@ -64,7 +57,7 @@ namespace MMAP
 
     // singleton class
     // holds all all access to mmap loading unloading and meshes
-    class MMapManager
+    class TC_COMMON_API MMapManager
     {
         public:
             MMapManager() : loadedTiles(0), thread_safe_environment(true) {}
@@ -72,15 +65,14 @@ namespace MMAP
 
             void InitializeThreadUnsafe(std::unordered_map<uint32, std::vector<uint32>> const& mapData);
             bool loadMap(std::string const& basePath, uint32 mapId, int32 x, int32 y);
-            bool loadMapInstance(std::string const& basePath, uint32 mapId, uint64 instanceId);
+            bool loadMapInstance(std::string const& basePath, uint32 mapId, uint32 instanceId);
             bool unloadMap(uint32 mapId, int32 x, int32 y);
             bool unloadMap(uint32 mapId);
-            bool unloadMapInstance(uint32 mapId, uint64 instanceId);
+            bool unloadMapInstance(uint32 mapId, uint32 instanceId);
             bool loadGameObject(uint32 displayId, std::string patch);
 
             // the returned [dtNavMeshQuery const*] is NOT threadsafe
-            dtNavMeshQuery const* GetNavMeshQuery(uint32 mapId, uint64 instanceId);
-            dtNavMeshQuery const* GetModelNavMeshQuery(uint32 displayId, uint64 instanceId);
+            dtNavMeshQuery const* GetNavMeshQuery(uint32 mapId, uint32 instanceId);
             dtNavMesh const* GetNavMesh(uint32 mapId);
 
             uint32 getLoadedTilesCount() const { return loadedTiles; }
@@ -88,7 +80,7 @@ namespace MMAP
         private:
             bool loadMapData(std::string const& basePath, uint32 mapId);
             bool loadMapImpl(std::string const& basePath, uint32 mapId, int32 x, int32 y);
-            bool loadMapInstanceImpl(std::string const& basePath, uint32 mapId, uint64 instanceId);
+            bool loadMapInstanceImpl(std::string const& basePath, uint32 mapId, uint32 instanceId);
             bool unloadMapImpl(uint32 mapId, int32 x, int32 y);
             bool unloadMapImpl(uint32 mapId);
             uint32 packTileID(int32 x, int32 y);

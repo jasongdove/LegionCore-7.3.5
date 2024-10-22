@@ -24,7 +24,6 @@
 #include <G3D/Array.h>
 #include <G3D/Set.h>
 
-typedef std::lock_guard<std::recursive_mutex> RecursiveGuard;
 
 template<class T, class BoundsFunc = BoundsTrait<T> >
 class BIHWrap
@@ -65,7 +64,6 @@ class BIHWrap
     G3D::Table<const T*, uint32> m_obj2Idx;
     G3D::Set<const T*> m_objects_to_push;
     int unbalanced_times;
-    std::recursive_mutex balance_lock;
 
 public:
     BIHWrap() : unbalanced_times(0) { }
@@ -93,7 +91,6 @@ public:
             return;
 
         unbalanced_times = 0;
-        RecursiveGuard guard(balance_lock);
         m_objects.fastClear();
         m_obj2Idx.getKeys(m_objects);
         m_objects_to_push.getMembers(m_objects);
