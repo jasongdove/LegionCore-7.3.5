@@ -478,7 +478,7 @@ class WorldObject : public Object, public WorldLocation
         float GetObjectSize() const;
         virtual float GetCombatReach() const { return 0.0f; } // overridden (only) in Unit
         void UpdateGroundPositionZ(float x, float y, float &z) const;
-        void UpdateAllowedPositionZ(float x, float y, float &z) const;
+        void UpdateAllowedPositionZ(float x, float y, float &z, float* groundZ = nullptr) const;
         virtual bool IsInWater() const { return false; }
         virtual bool IsUnderWater() const { return false; }
 

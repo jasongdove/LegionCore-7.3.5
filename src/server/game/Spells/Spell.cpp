@@ -1225,28 +1225,29 @@ void Spell::SelectImplicitAreaTargets(SpellEffIndex effIndex, SpellImplicitTarge
 
 void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplicitTargetInfo const& targetType)
 {
-    m_targets.SetDst(*m_caster);
+    SpellDestination dest(*m_caster);
+    //m_targets.SetDst(*m_caster);
 
     switch (targetType.GetTarget())
     {
         case TARGET_DEST_HOME:
             if (Player* playerCaster = m_caster->ToPlayer())
-                m_targets.SetDst(playerCaster->m_homebindX, playerCaster->m_homebindY, playerCaster->m_homebindZ, playerCaster->GetOrientation(), playerCaster->m_homebindMapId);
+                  dest = SpellDestination(playerCaster->m_homebindX, playerCaster->m_homebindY, playerCaster->m_homebindZ, playerCaster->GetOrientation(), playerCaster->m_homebindMapId);
             return;
         case TARGET_DEST_DB:
             if (SpellTargetPosition const* st = sSpellMgr->GetSpellTargetPosition(m_spellInfo->Id))
             {
                 // TODO: fix this check
                 if (m_spellInfo->HasEffect(SPELL_EFFECT_TELEPORT_L) || m_spellInfo->HasEffect(SPELL_EFFECT_TELEPORT))
-                    m_targets.SetDst(st->target_X, st->target_Y, st->target_Z, st->target_Orientation, (int32)st->target_mapId);
+                    dest = SpellDestination(st->target_X, st->target_Y, st->target_Z, st->target_Orientation, (int32)st->target_mapId);
                 else if (st->target_mapId == m_caster->GetMapId())
-                    m_targets.SetDst(st->target_X, st->target_Y, st->target_Z, st->target_Orientation);
+                    dest = SpellDestination(st->target_X, st->target_Y, st->target_Z, st->target_Orientation);
             }
             else
             {
                 TC_LOG_DEBUG("spells", "SPELL: unknown target coordinates for spell ID %u", m_spellInfo->Id);
-                WorldObject* target = m_targets.GetObjectTarget();
-                m_targets.SetDst(target ? *target : *m_caster);
+                if (WorldObject* target = m_targets.GetObjectTarget())
+                    dest = SpellDestination(*target);
             }
             return;
         case TARGET_DEST_CASTER_FISHING:
@@ -1280,8 +1281,7 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
                 return;
             }
 
-            Position pos{x, y, liquidLevel, m_caster->GetOrientation()};
-            m_targets.ModDst(pos);
+            dest = SpellDestination(x, y, liquidLevel, m_caster->GetOrientation());
             return;
         }
         default:
@@ -1306,7 +1306,6 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
     else if (targetType.GetTarget() == TARGET_DEST_CASTER_RANDOM)
         dist = objSize + (dist - objSize) * static_cast<float>(rand_norm());
 
-    Position pos;
     switch (targetType.GetTarget())
     {
         case TARGET_DEST_CASTER_FRONT_LEAP:
@@ -1315,12 +1314,24 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
             if (!unitCaster)
                 break;
 
-            float dist = m_spellInfo->GetEffect(effIndex, m_diffMode)->CalcRadius(m_caster);
-            float angle = targetType.CalcDirectionAngle();
+            Position pos = dest._position;
 
-            Position pos = static_cast<Position>(*m_targets.GetDstPos());
             unitCaster->MovePositionToFirstCollision(pos, dist, angle);
-            m_targets.SetDst(pos);
+            // Generate path to that point
+            if (!m_preGeneratedPath)
+                m_preGeneratedPath = std::make_unique<PathGenerator>(unitCaster);
+
+            m_preGeneratedPath->SetPathLengthLimit(dist);
+
+            // Should we use straightline here ? What do we do when we don't have a full path ?
+            bool pathResult = m_preGeneratedPath->CalculatePath(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), false);
+            if (pathResult && m_preGeneratedPath->GetPathType() & (PATHFIND_NORMAL | PATHFIND_SHORTCUT))
+            {
+                pos.m_positionX = m_preGeneratedPath->GetActualEndPosition().x;
+                pos.m_positionY = m_preGeneratedPath->GetActualEndPosition().y;
+                pos.m_positionZ = m_preGeneratedPath->GetActualEndPosition().z;
+                dest.Relocate(pos);
+            }
             break;
 
 //            if (canHitTargetInLOS && m_caster->IsCreature() && dist < 200.0f)
@@ -1410,16 +1421,29 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
         case TARGET_DEST_CASTER_RIGHT:
         case TARGET_DEST_CASTER_LEFT:
         case TARGET_UNK_125:
+        {
+            Position pos = dest._position;
+
             if (canHitTargetInLOS && m_caster->IsCreature() && dist < 200.0f)
                 m_caster->GetNearPoint2D(pos, dist, angle, false);
             else
                 m_caster->GetFirstCollisionPosition(pos, dist, angle);
+
+            dest.Relocate(pos);
             break;
+        }
         default:
+        {
+            Position pos = dest._position;
+
             m_caster->GetNearPoint2D(pos, dist, angle);
+
+            dest.Relocate(pos);
             break;
+        }
     }
-    m_targets.ModDst(pos);
+
+    m_targets.SetDst(dest);
 }
 
 void Spell::SelectImplicitGotoMoveTargets(SpellEffIndex effIndex, SpellImplicitTargetInfo const& /*targetType*/, uint32 /*effMask*/)

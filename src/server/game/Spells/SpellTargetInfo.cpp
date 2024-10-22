@@ -33,6 +33,17 @@ SpellDestination::SpellDestination(WorldObject const& wObj)
     _position.SetOrientation(wObj.GetOrientation());
 }
 
+void SpellDestination::Relocate(Position const& pos)
+{
+    if (!_transportGUID.IsEmpty())
+    {
+        Position offset;
+        _position.GetPositionOffsetTo(pos, offset);
+        _transportOffset.RelocateOffset(offset);
+    }
+    _position.Relocate(pos);
+}
+
 TargetInfo::TargetInfo(ObjectGuid tGUID, uint32 effMask) : TargetInfo()
 {
     targetGUID = tGUID;
@@ -312,6 +323,12 @@ void SpellCastTargets::SetDst(WorldObject const& wObj)
     m_targetMask |= TARGET_FLAG_DEST_LOCATION;
     if (m_caster)
         m_dst._position.SetMapId(m_caster->GetMapId());
+}
+
+void SpellCastTargets::SetDst(const SpellDestination& spellDest)
+{
+    m_dst = spellDest;
+    m_targetMask |= TARGET_FLAG_DEST_LOCATION;
 }
 
 void SpellCastTargets::SetDst(SpellCastTargets const& spellTargets)

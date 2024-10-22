@@ -55,6 +55,8 @@ struct SpellDestination
     SpellDestination(Position const& pos);
     SpellDestination(WorldObject const& wObj);
 
+    void Relocate(Position const& pos);
+
     WorldLocation _position;
     ObjectGuid _transportGUID;
     Position _transportOffset;
@@ -187,6 +189,7 @@ public:
     void SetDst(float x, float y, float z, float orientation, uint32 mapId = MAPID_INVALID);
     void SetDst(Position const& pos);
     void SetDst(WorldObject const& wObj);
+    void SetDst(SpellDestination const& spellDest);
     void SetDst(SpellCastTargets const& spellTargets);
     void ModDst(Position const& pos);
     void RemoveDst();

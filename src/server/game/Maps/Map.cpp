@@ -3047,13 +3047,10 @@ float Map::GetHeight(float x, float y, float z, bool checkVMap /*= true*/, float
 {
     // find raw .map surface under Z coordinates
     float mapHeight = VMAP_INVALID_HEIGHT_VALUE;
-    if (GridMap* gmap = const_cast<Map*>(this)->GetGrid(x, y))
-    {
-        float gridHeight = gmap->getHeight(x, y);
-        // look from a bit higher pos to find the floor, ignore under surface case
-        if (z + 2.0f > gridHeight)
-            mapHeight = gridHeight;
-    }
+    float gridHeight = GetGridMapHeigh(x, y);
+    // look from a bit higher pos to find the floor, ignore under surface case
+    if (z + 2.0f > gridHeight)
+        mapHeight = gridHeight;
 
     float vmapHeight = VMAP_INVALID_HEIGHT_VALUE;
     if (checkVMap)
@@ -3075,11 +3072,11 @@ float Map::GetHeight(float x, float y, float z, bool checkVMap /*= true*/, float
             // or if the distance of the vmap height is less the land height distance
             if (vmapHeight > mapHeight || std::fabs(mapHeight - z) > std::fabs(vmapHeight - z))
                 return vmapHeight;
-            return mapHeight;
-            // better use .map surface height
+
+            return mapHeight; // better use .map surface height
         }
-        return vmapHeight;
-        // we have only vmapHeight (if have)
+
+        return vmapHeight; // we have only vmapHeight (if have)
     }
 
     return mapHeight;                               // explicitly use map data

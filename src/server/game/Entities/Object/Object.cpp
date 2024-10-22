@@ -2365,98 +2365,53 @@ void WorldObject::UpdateGroundPositionZ(float x, float y, float &z) const
         z = new_z + 0.08f;                                   // just to be sure that we are not a few pixel under the surface
 }
 
-void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z) const
+void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z, float* groundZ) const
 {
-    float _offset = GetPositionH() < 2.0f ? 2.0f : 0.0f; // For find correct position Z
-    bool isFalling = m_movementInfo.HasMovementFlag(MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR);
-
-    switch (GetTypeId())
+    // TODO: Allow transports to be part of dynamic vmap tree
+    if (GetTransport())
     {
-        case TYPEID_UNIT:
+        if (groundZ)
+            *groundZ = z;
+
+        return;
+    }
+
+    if (Unit const* unit = ToUnit())
+    {
+        if (!unit->CanFly())
         {
-            Unit* victim = ToCreature()->getVictim();
-            if (victim)
-            {
-                // anyway creature move to victim for thinly Z distance (shun some VMAP wrong ground calculating)
-                if (fabs(GetPositionZ() - victim->GetPositionZ()) < 2.5f)
-                    return;
-            }
-            // non fly unit don't must be in air
-            // non swim unit must be at ground (mostly speedup, because it don't must be in water and water level check less fast
-            if (!ToCreature()->CanFly())
-            {
-                bool canSwim = ToCreature()->CanSwim();
-                float ground_z = z;
-                float max_z = canSwim
-                    ? GetWaterOrGroundLevel(x, y, z + _offset, &ground_z, !ToUnit()->HasAuraType(SPELL_AURA_WATER_WALK))
-                    : ((ground_z = GetHeight(x, y, z + _offset, true)));
-
-                if (isFalling) // Allowed point in air if we falling
-                    if ((z - max_z) > 2.0f)
-                        return;
-
-                max_z += GetPositionH();
-                ground_z += GetPositionH();
-                if (max_z > INVALID_HEIGHT)
-                {
-                    if (z > max_z && !IsInWater())
-                        z = max_z;
-                    else if (z < ground_z)
-                        z = ground_z;
-                }
-            }
+            bool canSwim = unit->CanSwim();
+            float ground_z = z;
+            float max_z;
+            if (canSwim)
+                max_z = GetWaterOrGroundLevel(x, y, z, &ground_z);
             else
+                max_z = ground_z = GetHeight(x, y, z);
+
+            if (max_z > INVALID_HEIGHT)
             {
-                float ground_z = GetHeight(x, y, z + _offset, true);
-                ground_z += GetPositionH();
-                if (z < ground_z)
+                // hovering units cannot go below their hover height
+                float hoverOffset = unit->GetHoverOffset();
+                max_z += hoverOffset;
+                ground_z += hoverOffset;
+
+                if (z > max_z)
+                    z = max_z;
+                else if (z < ground_z)
                     z = ground_z;
             }
-            break;
+
+            if (groundZ)
+                *groundZ = ground_z;
         }
-        case TYPEID_PLAYER:
+        else
         {
-            // for server controlled moves playr work same as creature (but it can always swim)
-            if (!ToPlayer()->CanFly())
-            {
-                float ground_z = z;
-                float max_z = GetWaterOrGroundLevel(x, y, z + _offset, &ground_z, !ToUnit()->HasAuraType(SPELL_AURA_WATER_WALK));
-                max_z += GetPositionH();
-
-                if (isFalling) // Allowed point in air if we falling
-                    if ((z - max_z) > 2.0f)
-                        return;
-
-                ground_z += GetPositionH();
-                if (max_z > INVALID_HEIGHT)
-                {
-                    if (z > max_z && !IsInWater())
-                        z = max_z;
-                    else if (z < ground_z)
-                        z = ground_z;
-                }
-            }
-            else
-            {
-                float ground_z = GetHeight(x, y, z + _offset, true);
-                ground_z += GetPositionH();
-                if (z < ground_z)
-                    z = ground_z;
-            }
-            break;
-        }
-        default:
-        {
-            float ground_z = GetHeight(x, y, z + _offset, true);
-            ground_z += GetPositionH();
-
-            if (isFalling) // Allowed point in air if we falling
-                if ((z - ground_z) > 2.0f)
-                    return;
-
-            if (ground_z > INVALID_HEIGHT)
+            float ground_z = GetHeight(x, y, z) + unit->GetHoverOffset();
+            if (z < ground_z)
                 z = ground_z;
-            break;
+
+            if (groundZ)
+                *groundZ = ground_z;
         }
     }
 }
@@ -3550,10 +3505,27 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
         }
     }
 
+    float groundZ = VMAP_INVALID_HEIGHT_VALUE;
     Trinity::NormalizeMapCoord(pos.m_positionX);
     Trinity::NormalizeMapCoord(pos.m_positionY);
-    UpdateAllowedPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+    UpdateAllowedPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ, &groundZ);
     pos.SetOrientation(GetOrientation());
+
+    // position has no ground under it (or is too far away)
+    if (groundZ <= INVALID_HEIGHT)
+    {
+        if (Unit const* unit = ToUnit())
+        {
+            // unit can fly, ignore
+            if (unit->CanFly())
+                return;
+
+            // fall back to gridHeight if any
+            float gridHeight = GetMap()->GetGridMapHeigh(pos.m_positionX, pos.m_positionY);
+            if (gridHeight > INVALID_HEIGHT)
+                pos.m_positionZ = gridHeight + unit->GetHoverOffset();
+        }
+    }
 }
 
 void WorldObject::MovePositionToTransportCollision(Position &pos, float dist, float angle)

@@ -6672,11 +6672,7 @@ void Spell::EffectLeap(SpellEffIndex /*effIndex*/)
     if (!m_targets.HasDst())
         return;
 
-    Position pos = static_cast<Position>(*m_targets.GetDstPos());
-    unitTarget->AddUnitState(UNIT_STATE_JUMPING);
-
-    // TC_LOG_DEBUG("spells", "EffectLeap If %i, X %f, Y %f, Z %f", m_spellInfo->Id, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
-
+    Position pos = destTarget->GetPosition();
     unitTarget->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation(), unitTarget == m_caster, false);
 }
 
