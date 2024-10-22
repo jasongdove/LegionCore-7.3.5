@@ -11485,15 +11485,7 @@ bool Unit::AttackStop()
 
     // reset only at real combat stop
     if (Creature* creature = ToCreature())
-    {
         creature->SetNoCallAssistance(false);
-
-        if (creature->HasSearchedAssistance())
-        {
-            creature->SetNoSearchAssistance(false);
-            UpdateSpeed(MOVE_RUN, false);
-        }
-    }
 
     SendMeleeAttackStop(victim);
 
@@ -15750,11 +15742,6 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
         default:
             break;
     }
-
-    // for creature case, we check explicit if mob searched for assistance
-    if (auto creature = ToCreature())
-        if (creature->HasSearchedAssistance())
-            speed *= 0.66f;                                 // best guessed value, so this will be 33% reduction. Based off initial speed, mob can then "run", "walk fast" or "walk".
 
     // Apply strongest slow aura mod to speed
     float slow = 0.f;
@@ -22332,6 +22319,9 @@ void Unit::SetControlled(bool apply, UnitState state)
         if (HasUnitState(state))
             return;
 
+        if (state & UNIT_STATE_CONTROLLED)
+            CastStop();
+
         AddUnitState(state);
 
         switch (state)
@@ -22350,7 +22340,6 @@ void Unit::SetControlled(bool apply, UnitState state)
                     SendMeleeAttackStop();
                     // SendCancelAutoRepeat ?
                     SetConfused(true);
-                    CastStop();
                 }
                 break;
             case UNIT_STATE_FLEEING:
@@ -22360,7 +22349,6 @@ void Unit::SetControlled(bool apply, UnitState state)
                     SendMeleeAttackStop();
                     // SendCancelAutoRepeat ?
                     SetFeared(true);
-                    CastStop();
                 }
                 break;
             default:
@@ -22373,46 +22361,62 @@ void Unit::SetControlled(bool apply, UnitState state)
         {
             case UNIT_STATE_STUNNED:
                 {
-                    if (HasAuraType(SPELL_AURA_MOD_STUN))    return;
+                    if (HasAuraType(SPELL_AURA_MOD_STUN))
+                        return;
+
+                    ClearUnitState(state);
                     SetStunned(false);
                 }
                 break;
             case UNIT_STATE_ROOT:
                 {
-                    if (HasAuraType(SPELL_AURA_MOD_ROOT) || HasAuraType(SPELL_AURA_MOD_ROOTED) || GetVehicle())    return;
+                    if (HasAuraType(SPELL_AURA_MOD_ROOT) || HasAuraType(SPELL_AURA_MOD_ROOTED) || GetVehicle())
+                        return;
+
+                    ClearUnitState(state);
                     SetRooted(false);
                 }
                 break;
             case UNIT_STATE_CONFUSED:
                 {
-                    if (HasAuraType(SPELL_AURA_MOD_CONFUSE)) return;
+                    if (HasAuraType(SPELL_AURA_MOD_CONFUSE))
+                        return;
+
+                    ClearUnitState(state);
                     SetConfused(false);
                 }
                 break;
             case UNIT_STATE_FLEEING:
                 {
-                    if (HasAuraType(SPELL_AURA_MOD_FEAR))    return;
+                    if (HasAuraType(SPELL_AURA_MOD_FEAR))
+                        return;
+
+                    ClearUnitState(state);
                     SetFeared(false);
                 }
                 break;
-            default: return;
+            default:
+                return;
         }
 
-        ClearUnitState(state);
-
-        if (HasUnitState(UNIT_STATE_STUNNED))
-            SetStunned(true);
-        else
-        {
-            if (HasUnitState(UNIT_STATE_ROOT))
-                SetRooted(true);
-
-            if (HasUnitState(UNIT_STATE_CONFUSED))
-                SetConfused(true);
-            else if (HasUnitState(UNIT_STATE_FLEEING))
-                SetFeared(true);
-        }
+        ApplyControlStatesIfNeeded();
     }
+}
+
+void Unit::ApplyControlStatesIfNeeded()
+{
+    // Unit States might have been already cleared but auras still present. I need to check with HasAuraType
+    if (HasUnitState(UNIT_STATE_STUNNED) || HasAuraType(SPELL_AURA_MOD_STUN)) // || HasAuraType(SPELL_AURA_MOD_STUN_DISABLE_GRAVITY))
+        SetStunned(true);
+
+    if (HasUnitState(UNIT_STATE_ROOT) || HasAuraType(SPELL_AURA_MOD_ROOT)) // || HasAuraType(SPELL_AURA_MOD_ROOT_2) || HasAuraType(SPELL_AURA_MOD_ROOT_DISABLE_GRAVITY))
+        SetRooted(true);
+
+    if (HasUnitState(UNIT_STATE_CONFUSED) || HasAuraType(SPELL_AURA_MOD_CONFUSE))
+        SetConfused(true);
+
+    if (HasUnitState(UNIT_STATE_FLEEING) || HasAuraType(SPELL_AURA_MOD_FEAR))
+        SetFeared(true);
 }
 
 void Unit::SetStunned(bool apply)
@@ -22837,6 +22841,9 @@ void Unit::RemoveCharmedBy(Unit* charmer)
         charmer->ToPlayer()->SendRemoveControlBar();
     else if (IsPlayer() || (IsCreature() && !ToCreature()->isGuardian()))
         DeleteCharmInfo();
+
+    // reset confused movement for example
+    ApplyControlStatesIfNeeded();
 }
 
 void Unit::RestoreFaction()

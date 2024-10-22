@@ -682,12 +682,14 @@ void MotionMaster::MoveSeekAssistance(float x, float y, float z)
     {
         TC_LOG_ERROR("misc", "Player (GUID: %u) attempt to seek assistance", _owner->GetGUIDLow());
     }
-    else
+    else if (Creature* creature = _owner->ToCreature())
     {
         TC_LOG_DEBUG("misc", "Creature (Entry: %u GUID: %u) seek assistance (X: %f Y: %f Z: %f)",
-            _owner->GetEntry(), _owner->GetGUIDLow(), x, y, z);
-        _owner->AttackStop();
-        _owner->ToCreature()->SetReactState(REACT_PASSIVE);
+            creature->GetEntry(), creature->GetGUIDLow(), x, y, z);
+        creature->AttackStop();
+        creature->CastStop();
+        //creature->DoNotReacquireSpellFocusTarget();
+        creature->SetReactState(REACT_PASSIVE);
         Mutate(new AssistanceMovementGenerator(x, y, z), MOTION_SLOT_ACTIVE);
     }
 }

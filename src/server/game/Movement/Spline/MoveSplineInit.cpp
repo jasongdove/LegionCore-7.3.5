@@ -52,24 +52,33 @@ namespace Movement
         move_spline.onTransport = transport;
 
         uint32 moveFlags = unit.m_movementInfo.GetMovementFlags();
-        if (args.walk)
-            moveFlags |= MOVEMENTFLAG_WALKING;
-        else
-            moveFlags &= ~MOVEMENTFLAG_WALKING;
 
         if (!args.flags.backward)
             moveFlags = (moveFlags & ~MOVEMENTFLAG_BACKWARD) | MOVEMENTFLAG_FORWARD;
         else
             moveFlags = (moveFlags & ~MOVEMENTFLAG_FORWARD) | MOVEMENTFLAG_BACKWARD;
 
+        if (moveFlags & MOVEMENTFLAG_ROOT)
+            moveFlags &= ~MOVEMENTFLAG_MASK_MOVING;
+
         if (!args.HasVelocity)
-            args.velocity = unit.GetSpeed(UnitMoveType(SelectSpeedType(moveFlags)));
+        {
+            // If spline is initialized with SetWalk method it only means we need to select
+            // walk move speed for it but not add walk flag to unit
+            uint32 moveFlagsForSpeed = moveFlags;
+            if (args.walk)
+                moveFlagsForSpeed |= MOVEMENTFLAG_WALKING;
+            else
+                moveFlagsForSpeed &= ~MOVEMENTFLAG_WALKING;
+
+            args.velocity = unit.GetSpeed(UnitMoveType(SelectSpeedType(moveFlagsForSpeed)));
+            if (Creature* creature = unit.ToCreature())
+                if (creature->HasSearchedAssistance())
+                    args.velocity *= 0.66f;
+        }
 
         if (!args.Validate())
             return 0;
-
-        if (moveFlags & MOVEMENTFLAG_ROOT)
-            moveFlags &= ~MOVEMENTFLAG_MASK_MOVING;
 
         unit.m_movementInfo.SetMovementFlags(moveFlags);
         move_spline.Initialize(args);

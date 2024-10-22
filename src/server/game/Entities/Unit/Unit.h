@@ -2221,6 +2221,7 @@ class Unit : public WorldObject
         void SendSetVehicleRecId(uint32 vehicleID);
 
         void SetControlled(bool apply, UnitState state);
+        void ApplyControlStatesIfNeeded();
 
         ///----------Pet responses methods-----------------
         void SendPetActionFeedback (uint32 spellID, uint8 msg);
