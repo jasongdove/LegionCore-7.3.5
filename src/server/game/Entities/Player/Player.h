@@ -1488,7 +1488,6 @@ class Player : public Unit, public GridObject<Player>
         void SetPing(uint32 val);
         uint32 GetPing() const;
 
-        bool IsForbiddenMapForLevel(uint32 mapid, uint32 zone);
         bool IsLoXpMap(uint32 map);
 
         void SetSummonPoint(uint32 mapid, float x, float y, float z);

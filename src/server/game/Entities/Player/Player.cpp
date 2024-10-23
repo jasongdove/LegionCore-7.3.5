@@ -3736,9 +3736,6 @@ void Player::GiveXP(uint32 xp, Unit* victim, float groupRate /*= 1.0f*/)
     if (victim && victim->IsCreature() && !victim->ToCreature()->hasLootRecipient())
         return;
 
-    if (IsForbiddenMapForLevel(GetMapId(), m_zoneId))
-        xp = 0;
-
     if (IsLoXpMap(GetMapId()))
         xp = uint32(xp / (sWorld->getRate(RATE_XP_QUEST)));
 
@@ -10161,26 +10158,6 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
 
     if (m_zoneId != newZone)
     {
-        if (!IsBeingTeleported())
-        {
-            // Check valid player level
-            if (IsForbiddenMapForLevel(GetMapId(), newZone))
-            {
-                if (isInFlight())
-                {
-                    GetMotionMaster()->MovementExpired();
-                    CleanupAfterTaxiFlight(false);
-                }
-
-                if (GetTeam() == ALLIANCE)
-                    TeleportTo(0, -8833.37f, 628.62f, 94.00f, 1.06f);
-                else
-                    TeleportTo(1, 1569.59f, -4397.63f, 16.06f, 0.54f);
-
-                return;
-            }
-        }
-
         sOutdoorPvPMgr->HandlePlayerLeaveZone(GetGUID(), m_zoneId);
         sOutdoorPvPMgr->HandlePlayerEnterZone(GetGUID(), newZone);
         sBattlefieldMgr->HandlePlayerLeaveZone(GetGUID(), m_zoneId);
@@ -36026,93 +36003,6 @@ bool Player::CanSpeakLanguage(uint32 lang_id) const
     }
 
     return true;
-}
-
-bool Player::IsForbiddenMapForLevel(uint32 mapid, uint32 zone)
-{
-    if (isGameMaster())
-        return false;
-
-    uint8 minLevel = 0;
-
-    switch (mapid)
-    {
-        // Eastern Kingdoms
-        case 0:
-            switch (zone)
-            {
-                case 4922: // Twilight Highlands
-                case 4815: // Vashj'ir: Kelp'thar Forest
-                case 5144: // Vashj'ir: Shimmering Expanse
-                case 5145: // Vashj'ir: Abyssal Depths
-                case 5146: // Vashj'ir
-                    minLevel = 80;
-                default:
-                    break;
-            }
-            break;
-        // Kalimdor
-        case 1:
-            //      Uldum           Hyjal
-            if (zone == 5034 || zone == 616)
-                minLevel = 80;
-            break;
-        // Outland
-        case 530:
-        {
-            minLevel = 58;
-
-            switch (zone) // Start location: Blood Elf and Draenei
-            {
-                case 4080:
-                    minLevel = 70; // Isle of Quel'Danas
-                    break;
-                case 3430: case 3433: case 3524:
-                case 3525: case 3487: case 3557:
-                case 3479: case 6456: case 6455:
-                    return false;
-            }
-            break;
-        }
-        // Northrend
-        case 571:
-            minLevel = 68;
-            break;
-        // Deepholm
-        case 646:
-            minLevel = 80;
-            break;
-        case 732:  //Tol Barad
-        case 861:  //Molten Front
-        case 1064: //Isle of Giants
-            minLevel = 85;
-            break;
-        case 870:
-            if (getClass() != CLASS_MONK)
-                minLevel = 80;
-            break;
-        case 1116: //Draenor
-        case 1265: //Dark Portal
-            minLevel = 90;
-            break;
-        case 1220: //Legion: Broken Isles
-        {
-            //Allied Races start loc
-            if (GetAreaId() == 7999 || GetAreaId() == 9502)
-                return false;
-
-            minLevel = 98;
-            break;
-        }
-    }
-
-    if (getLevel() < minLevel)
-    {
-        GetSession()->SendNotification(GetSession()->GetTrinityString(LANG_LEVEL_MINREQUIRED_MAP), minLevel);
-        return true;
-    }
-
-    return false;
 }
 
 bool Player::IsLoXpMap(uint32 map)
