@@ -233,6 +233,7 @@ void SmartAI::StopPath(uint32 DespawnTime, uint32 quest, bool fail)
 
     me->GetPosition(&mLastOOCPos);
     me->StopMoving();//force stop
+    me->GetMotionMaster()->MovementExpired(false);
     me->GetMotionMaster()->MoveIdle();
     GetScript()->ProcessEventsFor(SMART_EVENT_WAYPOINT_STOPPED, nullptr, mLastWP->id, GetScript()->GetPathId());
     EndPath(fail);
@@ -718,14 +719,24 @@ void SmartAI::JustSummoned(Creature* creature)
 
 void SmartAI::AttackStart(Unit* who)
 {
+    // dont allow charmed npcs to act on their own
+    if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED))
+    {
+        if (who)
+            me->Attack(who, true);
+        return;
+    }
+
     if (who && me->Attack(who, true))
     {
-        me->GetMotionMaster()->Clear(MOTION_SLOT_ACTIVE);
-        me->PauseMovement(0, 0, false);
-
         if (mCanCombatMove)
         {
             SetRun(mRun);
+
+            MovementGeneratorType type = me->GetMotionMaster()->GetMotionSlotType(MOTION_SLOT_ACTIVE);
+            if (type == WAYPOINT_MOTION_TYPE || type == POINT_MOTION_TYPE)
+                me->StopMoving();
+
             me->GetMotionMaster()->MoveChase(who);
         }
 
@@ -907,6 +918,7 @@ void SmartAI::SetCombatMove(bool on)
 {
     if (mCanCombatMove == on)
         return;
+
     mCanCombatMove = on;
     if (!HasEscortState(SMART_ESCORT_ESCORTING))
     {
@@ -922,6 +934,8 @@ void SmartAI::SetCombatMove(bool on)
         else
         {
             me->StopMoving();
+            if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+                me->GetMotionMaster()->Clear(false);
             me->GetMotionMaster()->MoveIdle();
         }
     }
