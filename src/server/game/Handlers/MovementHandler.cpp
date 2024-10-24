@@ -268,11 +268,11 @@ void WorldSession::HandleMovementOpcode(OpcodeClient opcode, MovementInfo& movem
     if (movementInfo.Guid != mover->GetGUID() || !movementInfo.Pos.IsPositionValid())
         return;
 
-    if (plrMover && !plrMover->GetCheatData()->HandleAnticheatTests(movementInfo, this, opcode))
-        return;
-
     if (plrMover && (plrMover->GetUInt32Value(UNIT_FIELD_EMOTE_STATE) != 0))
         plrMover->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_ONESHOT_NONE);
+
+    if (plrMover && !plrMover->GetCheatData()->HandleAnticheatTests(movementInfo, this, opcode))
+        return;
 
     if (mover->HasAuraType(SPELL_AURA_MOD_POSSESS) || (plrMover && plrMover->HasAuraType(SPELL_AURA_MOD_POSSESS)))
         if (movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING))
