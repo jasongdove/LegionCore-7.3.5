@@ -172,6 +172,21 @@ std::string WorldSession::GetPlayerName(bool simple /* = true */) const
     return name;
 }
 
+std::string WorldSession::GetPlayerInfo() const
+{
+    std::ostringstream ss;
+
+    ss << "[Player: ";
+    if (!m_playerLoading.IsEmpty())
+        ss << "Logging in: " << m_playerLoading.ToString() << ", ";
+    else if (_player)
+        ss << _player->GetName() << ' ' << _player->GetGUID().ToString() << ", ";
+
+    ss << "Account: " << GetAccountId() << "]";
+
+    return ss.str();
+}
+
 /// Get player guid if available. Use for logging purposes only
 ObjectGuid::LowType WorldSession::GetGuidLow() const
 {

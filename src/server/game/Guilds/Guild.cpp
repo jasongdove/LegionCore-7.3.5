@@ -1620,25 +1620,29 @@ void Guild::SendRoster(WorldSession* session /*= nullptr*/)
 
 void Guild::SendQueryResponse(WorldSession* session)
 {
-    if (!session)
-        return;
     WorldPackets::Guild::QueryGuildInfoResponse response;
     response.GuildGuid = GetGUID();
     response.Info.emplace();
+
     response.Info->GuildGUID = GetGUID();
     response.Info->VirtualRealmAddress = GetVirtualRealmAddress();
+
     response.Info->EmblemStyle = m_emblemInfo.GetStyle();
     response.Info->EmblemColor = m_emblemInfo.GetColor();
     response.Info->BorderStyle = m_emblemInfo.GetBorderStyle();
     response.Info->BorderColor = m_emblemInfo.GetBorderColor();
     response.Info->BackgroundColor = m_emblemInfo.GetBackgroundColor();
-    response.Info->GuildName = m_name;
 
     for (uint8 i = 0; i < _GetRanksSize(); ++i)
-        response.Info->Ranks.insert(WorldPackets::Guild::QueryGuildInfoResponse::GuildInfo::GuildInfoRank(m_ranks[i].GetId(), i, m_ranks[i].GetName()));
+    {
+        WorldPackets::Guild::QueryGuildInfoResponse::GuildInfo::GuildInfoRank info
+        (m_ranks[i].GetId(), i, m_ranks[i].GetName());
+        response.Info->Ranks.insert(info);
+    }
 
-    if (Player* player = session->GetPlayer())
-        player->SendDirectMessage(response.Write());
+    response.Info->GuildName = m_name;
+    session->SendPacket(response.Write());
+    TC_LOG_DEBUG("guild", "SMSG_GUILD_QUERY_RESPONSE [%s]", session->GetPlayerInfo().c_str());
 }
 
 void Guild::HandleSetAchievementTracking(WorldSession* session, std::set<uint32> const& achievementIds)

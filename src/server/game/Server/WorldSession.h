@@ -1095,6 +1095,7 @@ class WorldSession
         ObjectGuid GetBattlenetAccountGUID() const;
         Player* GetPlayer() const { return _player; }
         std::string GetPlayerName(bool simple = true) const;
+        std::string GetPlayerInfo() const;
 
         Map* GetMap() const { return m_map; }
         void SetMap(Map* m) { m_map = m; }
