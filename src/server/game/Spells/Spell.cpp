@@ -1232,7 +1232,8 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
     {
         case TARGET_DEST_HOME:
             if (Player* playerCaster = m_caster->ToPlayer())
-                  dest = SpellDestination(playerCaster->m_homebindX, playerCaster->m_homebindY, playerCaster->m_homebindZ, playerCaster->GetOrientation(), playerCaster->m_homebindMapId);
+                dest = SpellDestination(playerCaster->m_homebindX, playerCaster->m_homebindY, playerCaster->m_homebindZ, playerCaster->GetOrientation(), playerCaster->m_homebindMapId);
+            m_targets.SetDst(dest);
             return;
         case TARGET_DEST_DB:
             if (SpellTargetPosition const* st = sSpellMgr->GetSpellTargetPosition(m_spellInfo->Id))
@@ -1249,6 +1250,7 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
                 if (WorldObject* target = m_targets.GetObjectTarget())
                     dest = SpellDestination(*target);
             }
+            m_targets.SetDst(dest);
             return;
         case TARGET_DEST_CASTER_FISHING:
         {
@@ -1282,6 +1284,7 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
             }
 
             dest = SpellDestination(x, y, liquidLevel, m_caster->GetOrientation());
+            m_targets.SetDst(dest);
             return;
         }
         default:
@@ -1333,83 +1336,6 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
                 dest.Relocate(pos);
             }
             break;
-
-//            if (canHitTargetInLOS && m_caster->IsCreature() && dist < 200.0f)
-//                m_caster->GetNearPoint2D(pos, dist, angle);
-//            else
-//            {
-//                bool needRecalcPatch = false;
-//                m_caster->GetFirstCollisionPosition(pos, dist, angle);
-//
-//                if (m_caster->IsInWater()) // don`t check in water
-//                    break;
-//
-//                float destx = pos.m_positionX;
-//                float desty = pos.m_positionY;
-//                float destz = pos.m_positionZ;
-//
-//                float ground = m_caster->GetHeight(destx, desty, MAX_HEIGHT, true);
-//                float floor = m_caster->GetHeight(destx, desty, pos.m_positionZ, true);
-//
-//                if (m_caster->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR)) // don`t check if falling
-//                {
-//                    float z_now = m_caster->m_movementInfo.fall.lastTimeUpdate ? (pos.m_positionZ - Movement::computeFallElevation(Movement::MSToSec(getMSTime() - m_caster->m_movementInfo.fall.lastTimeUpdate), false) - 5.0f) : pos.m_positionZ;
-//                    if ((z_now - ground) > 10.0f)
-//                        break;
-//                }
-//
-//                PathGenerator* m_path = new PathGenerator(m_caster);
-//                m_path->SetShortPatch(false);
-//                if (!needRecalcPatch)
-//                {
-//                    bool result = m_path->CalculatePath(pos.m_positionX, pos.m_positionY, pos.m_positionZ, false);
-//                    PathType _pathType = m_path->GetPathType();
-//                    float _totalLength = m_path->GetTotalLength();
-//                    if (_pathType & PATHFIND_SHORT && _triggeredCastFlags != TRIGGERED_FULL_MASK)
-//                        needRecalcPatch = true;
-//                    if (!result || _pathType & PATHFIND_NOPATH)
-//                        needRecalcPatch = true;
-//                }
-//
-//                if (needRecalcPatch)
-//                {
-//                    float _dist = m_caster->GetDistance(destx, desty, destz);
-//                    float realAngle = angle + m_caster->GetOrientation();
-//                    float step = _dist / 10.0f;
-//                    for (uint8 j = 0; j < 10; ++j)
-//                    {
-//                        bool _correct = true;
-//                        if (!m_caster->IsWithinLOS(destx, desty, destz))
-//                            _correct = false;
-//
-//                        if (_correct)
-//                        {
-//                            m_path->Clear();
-//                            bool result = m_path->CalculatePath(destx, desty, destz, false);
-//                            if (m_path->GetPathType() & PATHFIND_SHORT && _triggeredCastFlags != TRIGGERED_FULL_MASK)
-//                                _correct = false;
-//                            if (!result || m_path->GetPathType() & PATHFIND_NOPATH)
-//                                _correct = false;
-//                        }
-//                        if (!_correct)
-//                        {
-//                            destx -= step * std::cos(realAngle);
-//                            desty -= step * std::sin(realAngle);
-//                            ground = m_caster->GetHeight(destx, desty, MAX_HEIGHT, true);
-//                            floor = m_caster->GetHeight(destx, desty, pos.m_positionZ, true);
-//                            destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
-//                            _correct = false;
-//                        }
-//                        else
-//                        {
-//                            pos.Relocate(destx, desty, destz);
-//                            break;
-//                        }
-//                    }
-//                }
-//                delete m_path;
-//            }
-//            break;
         }
         case TARGET_DEST_CASTER_RADIUS:
         case TARGET_DEST_CASTER_FRONT_RIGHT:
