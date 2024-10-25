@@ -68,7 +68,7 @@ private:
 };
 
 DB2StorageBase::DB2StorageBase(char const* fileName, DB2LoadInfo const* loadInfo)
-    : _tableHash(0), _layoutHash(0), _fileName(fileName), _fieldCount(0), _loadInfo(loadInfo), _dataTable(nullptr), _dataTableEx(nullptr), _indexTable(nullptr), _indexTableSize(0)
+    : _tableHash(0), _layoutHash(0), _fileName(fileName), _fieldCount(0), _loadInfo(loadInfo), _dataTable(nullptr), _dataTableEx(nullptr), _indexTable(nullptr), _indexTableSize(0), _minId(0)
 {
 }
 
@@ -150,6 +150,7 @@ bool DB2StorageBase::Load(std::string const& path, uint32 locale)
     _fieldCount = db2.GetCols();
     _tableHash = db2.GetTableHash();
     _layoutHash = db2.GetLayoutHash();
+    _minId = db2.GetMinId();
 
     // load raw non-string data
     _dataTable = db2.AutoProduceData(_indexTableSize, _indexTable, _stringPool);
@@ -190,7 +191,7 @@ bool DB2StorageBase::LoadStringsFrom(std::string const& path, uint32 locale)
 void DB2StorageBase::LoadFromDB()
 {
     char* extraStringHolders = nullptr;
-    _dataTableEx = DB2DatabaseLoader(_fileName, _loadInfo).Load(_indexTableSize, _indexTable, extraStringHolders, _stringPool);
+    _dataTableEx = DB2DatabaseLoader(_fileName, _loadInfo).Load(_indexTableSize, _indexTable, extraStringHolders, _stringPool, _minId);
     if (extraStringHolders)
         _stringPool.push_back(extraStringHolders);
 }

@@ -159,6 +159,7 @@ public:
     virtual DB2RecordCopy GetRecordCopy(uint32 copyNumber) const = 0;
     virtual uint32 GetRecordCount() const = 0;
     virtual uint32 GetRecordCopyCount() const = 0;
+    virtual uint32 GetMinId() const = 0;
     virtual uint32 GetMaxId() const = 0;
     virtual DB2FileLoadInfo const* GetLoadInfo() const = 0;
 
@@ -193,6 +194,7 @@ public:
     DB2RecordCopy GetRecordCopy(uint32 copyNumber) const override;
     uint32 GetRecordCount() const override;
     uint32 GetRecordCopyCount() const override;
+    uint32 GetMinId() const override;
     uint32 GetMaxId() const override;
     DB2FileLoadInfo const* GetLoadInfo() const override;
 
@@ -244,6 +246,7 @@ public:
     DB2RecordCopy GetRecordCopy(uint32 copyNumber) const override;
     uint32 GetRecordCount() const override;
     uint32 GetRecordCopyCount() const override;
+    uint32 GetMinId() const override;
     uint32 GetMaxId() const override;
     DB2FileLoadInfo const* GetLoadInfo() const override;
 
@@ -527,8 +530,8 @@ char* DB2FileLoaderRegularImpl::AutoProduceStrings(char** indexTable, uint32 ind
                         auto db2str = *reinterpret_cast<LocalizedString**>(&recordData[offset]);
                         if (db2str->Str[locale] == nullStr)
                         {
-                            char const* st = RecordGetString(rawRecord, x, z);
-                            db2str->Str[locale] = stringPool + (st - reinterpret_cast<char const*>(_stringTable));
+                            if (char const* st = RecordGetString(rawRecord, x, z))
+                                db2str->Str[locale] = stringPool + (st - reinterpret_cast<char const*>(_stringTable));
                         }
 
                         offset += sizeof(char*);
@@ -537,8 +540,8 @@ char* DB2FileLoaderRegularImpl::AutoProduceStrings(char** indexTable, uint32 ind
                     case FT_STRING_NOT_LOCALIZED:
                     {
                         auto db2str = reinterpret_cast<char**>(&recordData[offset]);
-                        auto st = RecordGetString(rawRecord, x, z);
-                        *db2str = stringPool + (st - reinterpret_cast<char const*>(_stringTable));
+                        if (auto st = RecordGetString(rawRecord, x, z))
+                            *db2str = stringPool + (st - reinterpret_cast<char const*>(_stringTable));
                         offset += sizeof(char*);
                         break;
                     }
@@ -776,6 +779,34 @@ std::size_t* DB2FileLoaderRegularImpl::RecordCreateDetachedFieldOffsets(std::siz
 
 void DB2FileLoaderRegularImpl::RecordDestroyFieldOffsets(std::size_t*& /*fieldOffsets*/) const
 {
+}
+
+uint32 DB2FileLoaderRegularImpl::GetMinId() const
+{
+    uint32 minId = std::numeric_limits<uint32>::max();
+    for (uint32 row = 0; row < _header->RecordCount; ++row)
+    {
+        unsigned char const* rawRecord = GetRawRecordData(row);
+        if (!rawRecord)
+            continue;
+
+        uint32 id = RecordGetId(rawRecord, row);
+        if (id < minId)
+            minId = id;
+    }
+
+    for (uint32 copy = 0; copy < GetRecordCopyCount(); ++copy)
+    {
+        uint32 id = GetRecordCopy(copy).NewRowId;
+        if (id < minId)
+            minId = id;
+    }
+
+    if (minId == std::numeric_limits<uint32>::max())
+        minId = 0;
+
+    ASSERT(minId >= _header->MinId);
+    return minId;
 }
 
 uint32 DB2FileLoaderRegularImpl::GetMaxId() const
@@ -1214,6 +1245,11 @@ void DB2FileLoaderSparseImpl::CalculateAndStoreFieldOffsets(uint8 const* rawReco
     }
 }
 
+uint32 DB2FileLoaderSparseImpl::GetMinId() const
+{
+    return _header->MinId;
+}
+
 uint32 DB2FileLoaderSparseImpl::GetMaxId() const
 {
     return _header->MaxId;
@@ -1532,6 +1568,11 @@ uint32 DB2FileLoader::GetRecordCount() const
 uint32 DB2FileLoader::GetRecordCopyCount() const
 {
     return _impl->GetRecordCopyCount();
+}
+
+uint32 DB2FileLoader::GetMinId() const
+{
+    return _impl->GetMinId();
 }
 
 uint32 DB2FileLoader::GetMaxId() const

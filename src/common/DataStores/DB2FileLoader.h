@@ -139,6 +139,7 @@ public:
     uint32 GetRecordCopyCount() const;
     uint32 GetTableHash() const { return _header.TableHash; }
     uint32 GetLayoutHash() const { return _header.LayoutHash; }
+    uint32 GetMinId() const;
     uint32 GetMaxId() const;
 
     DB2Record GetRecord(uint32 recordNumber) const;
