@@ -489,6 +489,8 @@ void WorldSession::HandleQuestGiverChooseReward(WorldPackets::Quest::QuestGiverC
 
 void WorldSession::HandleQuestGiverRequestReward(WorldPackets::Quest::QuestGiverRequestReward& packet)
 {
+    TC_LOG_DEBUG("network", "WORLD: Received CMSG_QUESTGIVER_REQUEST_REWARD npc = %s, quest = %u", packet.QuestGiverGUID.ToString().c_str(), packet.QuestID);
+
     Quest const* quest = sQuestDataStore->GetQuestTemplate(packet.QuestID);
     if (!quest)
         return;
@@ -510,7 +512,8 @@ void WorldSession::HandleQuestGiverRequestReward(WorldPackets::Quest::QuestGiver
     if (_player->GetQuestStatus(packet.QuestID) != QUEST_STATUS_COMPLETE)
         return;
 
-    _player->PlayerTalkClass->SendQuestGiverOfferReward(quest, packet.QuestGiverGUID, true);
+    if (quest)
+        _player->PlayerTalkClass->SendQuestGiverOfferReward(quest, packet.QuestGiverGUID, true);
 }
 
 void WorldSession::HandleQuestLogRemoveQuest(WorldPackets::Quest::QuestLogRemoveQuest& packet)
