@@ -1465,17 +1465,16 @@ void Map::PlayerRelocation(Player* player, float x, float y, float z, float orie
     Cell new_cell(x, y);
 
     player->Relocate(x, y, z, orientation);
+    player->m_movementInfo.Pos.Relocate(x, y, z, orientation);
+
     if (player->IsVehicle())
         player->GetVehicleKit()->RelocatePassengers();
 
     if (old_cell.DiffGrid(new_cell) || old_cell.DiffCell(new_cell))
     {
-        #ifdef TRINITY_DEBUG
         TC_LOG_DEBUG("maps", "Player %s relocation grid[%u, %u]cell[%u, %u]->grid[%u, %u]cell[%u, %u]", player->GetName(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
-        #endif
 
-        if (player->IsInGrid())
-            player->RemoveFromGrid();
+        player->RemoveFromGrid();
 
         if (old_cell.DiffGrid(new_cell))
             EnsureGridLoadedForActiveObject(new_cell, player);
@@ -1483,7 +1482,7 @@ void Map::PlayerRelocation(Player* player, float x, float y, float z, float orie
         AddToGrid(player, new_cell);
     }
 
-    player->OnRelocated();
+    player->UpdateObjectVisibility(false);
 }
 
 void Map::CreatureRelocation(Creature* creature, float x, float y, float z, float ang, bool respawnRelocationOnFail)

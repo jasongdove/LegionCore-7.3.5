@@ -8530,7 +8530,9 @@ bool Player::UpdatePosition(float x, float y, float z, float orientation, bool t
     //    mover->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_TURNING);
     //AURA_INTERRUPT_FLAG_JUMP not sure
 
-    SetGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
+    // group update
+    if (GetGroup())
+        SetGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
 
     if (GetTrader() && !IsWithinDistInMap(GetTrader(), INTERACTION_DISTANCE))
         GetSession()->SendCancelTrade();
@@ -38878,12 +38880,6 @@ void SpellInQueue::Clear()
 uint32 Player::GetGroupUpdateFlag() const
 {
     return m_groupUpdateMask;
-}
-
-void Player::SetGroupUpdateFlag(uint32 flag)
-{
-    return; // Need find bugs with update it
-    if (GetGroup()) m_groupUpdateMask |= flag;
 }
 
 void Player::RemoveGroupUpdateFlag(uint32 flag)
