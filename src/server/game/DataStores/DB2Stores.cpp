@@ -838,7 +838,10 @@ typedef std::vector<std::string> DB2StoreProblemList;
 
 std::mutex loadMutex{};
 
-void LoadDB2(uint32& availableDb2Locales, DB2StoreProblemList& errlist, StorageMap& stores, DB2StorageBase* storage, std::string const& db2Path, uint32 defaultLocale)
+template<typename T>
+constexpr std::size_t GetCppRecordSize(DB2Storage<T> const&) { return sizeof(T); }
+
+void LoadDB2(uint32& availableDb2Locales, DB2StoreProblemList& errlist, StorageMap& stores, DB2StorageBase* storage, std::string const& db2Path, uint32 defaultLocale, std::size_t cppRecordSize)
 {
     auto loadInfo = storage->GetLoadInfo();
     {
@@ -860,9 +863,9 @@ void LoadDB2(uint32& availableDb2Locales, DB2StoreProblemList& errlist, StorageM
             return;
         }
 
-        if (loadInfo->Meta->GetRecordSize() != storage->GetTemplateSize())
+        if (loadInfo->Meta->GetRecordSize() != cppRecordSize)
         {
-            stream << "Size of " << storage->GetFileName().c_str() << " set by format string (" << loadInfo->Meta->GetRecordSize() << ") not equal size of C++ structure (" << storage->GetTemplateSize() << ").";
+            stream << "Size of " << storage->GetFileName().c_str() << " set by format string (" << loadInfo->Meta->GetRecordSize() << ") not equal size of C++ structure (" << cppRecordSize << ").";
             loadMutex.lock();
             errlist.push_back(stream.str());
             loadMutex.unlock();
@@ -960,9 +963,7 @@ void DB2Manager::LoadStores(std::string const& dataPath, uint32 defaultLocale)
     DB2StoreProblemList bad_db2_files;
     uint32 availableDb2Locales = 0xFFF;
 
-    std::vector<DB2StorageBase*> storages{};
-
-#define LOAD_DB2(store) storages.push_back(&store)
+#define LOAD_DB2(store) LoadDB2(availableDb2Locales, bad_db2_files, _stores, &(store), db2Path, defaultLocale, GetCppRecordSize(store))
 
     LOAD_DB2(sAchievementStore);
     //LOAD_DB2(sAchievement_CategoryStore);
@@ -1569,27 +1570,7 @@ void DB2Manager::LoadStores(std::string const& dataPath, uint32 defaultLocale)
     //LOAD_DB2(sZoneMusicStore);
     //LOAD_DB2(sZoneStoryStore);
 
-    auto threadPool = new ThreadPoolMap();
-    threadPool->start(std::max(std::thread::hardware_concurrency() / 2, 4u));
-
-    for (auto store : storages)
-    {
-        threadPool->schedule([=]() mutable
-        {
-            LoadDB2(availableDb2Locales, bad_db2_files, _stores, store, db2Path, defaultLocale);
-        });
-    }
-
-    if (threadPool)
-        threadPool->wait();
-
 #undef LOAD_DB2
-
-    if (threadPool)
-    {
-        threadPool->stop();
-        delete threadPool;
-    }
 
     // error checks
     if (bad_db2_files.size() == _stores.size())

@@ -5350,13 +5350,13 @@ void ObjectMgr::LoadGameObjectTemplate()
         got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].SpellStateAnimKitID = fields[56].GetInt32();
         got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].StateWorldEffectID = fields[57].GetInt32();
 
-        if (got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].WorldEffectID && !sWorldEffectStore[got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].WorldEffectID])
+        if (got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].WorldEffectID && !sWorldEffectStore.LookupEntry(got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].WorldEffectID))
         {
             TC_LOG_ERROR("sql.sql", "GameObject ID: %u has invalid WorldEffectID (%u) in `gameobject_addon`, set to 0.", entry, got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].WorldEffectID);
             got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].WorldEffectID = 0;
         }
 
-        if (got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].StateWorldEffectID && !sWorldEffectStore[got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].StateWorldEffectID])
+        if (got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].StateWorldEffectID && !sWorldEffectStore.LookupEntry(got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].StateWorldEffectID))
         {
             TC_LOG_ERROR("sql.sql", "GameObject ID: %u has invalid WorldEffectID (%u) in `gameobject_addon`, set to 0.", entry, got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].StateWorldEffectID);
             got.visualData[GO_VISUAL_BEFORE_COMPLETE_QUEST].StateWorldEffectID = 0;

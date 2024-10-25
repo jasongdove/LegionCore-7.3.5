@@ -1404,7 +1404,7 @@ void Battleground::AddPlayer(Player* player)
     bp.ActiveSpec = player->GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID);
     bp.PrestigeRank = player->GetPrestigeLevel();
     bp.Role = player->GetSpecializationRoleMaskForGroup();
-    if (auto const& spec = sChrSpecializationStore[bp.ActiveSpec])
+    if (auto spec = sChrSpecializationStore.LookupEntry(bp.ActiveSpec))
         bp.PrimaryTalentTreeNameIndex = spec->ID;
     _players[guid] = bp;
 

@@ -278,8 +278,8 @@ void BattlePet::UpdateStats()
     }
 
     float qualityFactor = 1.0f;
-    if (auto aualityInfo = sBattlePetBreedQualityStore[7 + Quality])
-        qualityFactor = aualityInfo->StateMultiplier;
+    if (auto qualityInfo = sBattlePetBreedQualityStore.LookupEntry(7 + Quality))
+        qualityFactor = qualityInfo->StateMultiplier;
 
     for (size_t i = 0; i < 3; ++i)
         stats[i] = stats[i] * Level * qualityFactor;

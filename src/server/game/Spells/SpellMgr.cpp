@@ -8482,15 +8482,15 @@ void SpellMgr::LoadSpellCustomAttr()
             continue;
         }
 
-        if (auto entry = sSpellRadiusStore[fields[1].GetUInt32()])
+        if (auto entry = sSpellRadiusStore.LookupEntry(fields[1].GetUInt32()))
             spellInfo2->Effects[EFFECT_0]->RadiusEntry = entry;
-        if (auto entry = sSpellRadiusStore[fields[2].GetUInt32()])
+        if (auto entry = sSpellRadiusStore.LookupEntry(fields[2].GetUInt32()))
             spellInfo2->Effects[EFFECT_1]->RadiusEntry = entry;
-        if (auto entry = sSpellRadiusStore[fields[3].GetUInt32()])
+        if (auto entry = sSpellRadiusStore.LookupEntry(fields[3].GetUInt32()))
             spellInfo2->Effects[EFFECT_2]->RadiusEntry = entry;
-        if (auto entry = sSpellRadiusStore[fields[4].GetUInt32()])
+        if (auto entry = sSpellRadiusStore.LookupEntry(fields[4].GetUInt32()))
             spellInfo2->Effects[EFFECT_3]->RadiusEntry = entry;
-        if (auto entry = sSpellRadiusStore[fields[5].GetUInt32()])
+        if (auto entry = sSpellRadiusStore.LookupEntry(fields[5].GetUInt32()))
             spellInfo2->Effects[EFFECT_4]->RadiusEntry = entry;
 
         ++count;

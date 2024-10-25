@@ -234,7 +234,7 @@ LFGListEntry * LFGListMgr::GetEntryByApplicant(WorldPackets::LFG::RideTicket app
 
 void LFGListMgr::OnPlayerApplyForGroup(Player* player, WorldPackets::LFG::RideTicket const* applicationTicket, uint32 activityID, std::string comment, uint8 role)
 {
-    if (!sGroupFinderActivityStore[activityID])
+    if (!sGroupFinderActivityStore.LookupEntry(activityID))
         return;
 
     auto entry = GetEntrybyGuidLow(applicationTicket->Id);

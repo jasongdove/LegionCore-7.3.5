@@ -441,7 +441,7 @@ void GarrisonMgr::LoadMissionsOwermaxRewards()
             data.RewardItemID = rewardPackItem->ItemID;
             data.ItemAmount = rewardPackItem->ItemQuantity;
 
-            if (auto itemEntry  = sItemStore[data.RewardItemID])
+            if (auto itemEntry  = sItemStore.LookupEntry(data.RewardItemID))
                 data.Unknown = itemEntry->IconFileDataID;
         }
 

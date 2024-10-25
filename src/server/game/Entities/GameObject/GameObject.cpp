@@ -1500,7 +1500,7 @@ void GameObject::UseDoorOrButton(uint32 time_to_restore, bool alternative /* = f
 
 void GameObject::SetGoArtKit(uint8 kit)
 {
-    if (!sGameObjectArtKitStore[kit])
+    if (!sGameObjectArtKitStore.LookupEntry(kit))
         return;
 
     SetByteValue(GAMEOBJECT_FIELD_BYTES_1, GAMEOBJECT_BYTES_2_ART_KIT, kit);
@@ -1510,7 +1510,7 @@ void GameObject::SetGoArtKit(uint8 kit)
 
 void GameObject::SetGoArtKit(uint8 artkit, GameObject* go, ObjectGuid::LowType lowguid)
 {
-    if (!sGameObjectArtKitStore[artkit])
+    if (!sGameObjectArtKitStore.LookupEntry(artkit))
         return;
 
     const GameObjectData* data = nullptr;

@@ -114,7 +114,7 @@ uint32 GameObjectTemplate::GetTrackingQuestId() const
         break;
     }
 
-    if (auto playerCondition = sPlayerConditionStore[playerConditionID])
+    if (auto playerCondition = sPlayerConditionStore.LookupEntry(playerConditionID))
         return playerCondition->PrevQuestID[1];
     return 0;
 }

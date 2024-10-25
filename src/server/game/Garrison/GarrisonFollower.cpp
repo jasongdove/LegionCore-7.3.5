@@ -56,14 +56,14 @@ void Follower::ModAssistant(SpellInfo const* spellInfo, Player* caster)
         IncreaseArmorLevel = 3
     };
 
-    auto itemLevelUpgradeDataEntry = sGarrItemLevelUpgradeDataStore[spellInfo->Effects[0]->MiscValue];
+    auto itemLevelUpgradeDataEntry = sGarrItemLevelUpgradeDataStore.LookupEntry(spellInfo->Effects[0]->MiscValue);
     if (!itemLevelUpgradeDataEntry)
         return;
 
     if (itemLevelUpgradeDataEntry->FollowerTypeID != TypeID)
         return;
 
-    auto followerTypeData = sGarrFollowerTypeStore[TypeID];
+    auto followerTypeData = sGarrFollowerTypeStore.LookupEntry(TypeID);
     if (!followerTypeData)
         return;
 
@@ -184,7 +184,7 @@ uint32 Follower::GiveXP(uint32 xp)
     else
     {
         ++PacketInfo.Quality;
-        PacketInfo.AbilityID = sGarrisonMgr.RollFollowerAbilities(sGarrFollowerStore[PacketInfo.GarrFollowerID], PacketInfo.Quality, Faction, false);
+        PacketInfo.AbilityID = sGarrisonMgr.RollFollowerAbilities(sGarrFollowerStore.LookupEntry(PacketInfo.GarrFollowerID), PacketInfo.Quality, Faction, false);
         for (auto const& itr : ItemTraits)
             PacketInfo.AbilityID[itr.first] = itr.second;
 
