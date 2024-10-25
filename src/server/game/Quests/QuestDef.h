@@ -44,7 +44,7 @@ namespace WorldPackets
 #define QUEST_REWARD_REPUTATIONS_COUNT 5
 #define QUEST_EMOTE_COUNT 4
 #define QUEST_REWARD_CURRENCY_COUNT 4
-static uint8 const QUEST_REWARD_DISPLAY_SPELL_COUNT = 3;
+#define QUEST_REWARD_DISPLAY_SPELL_COUNT 3
 
 #define QUEST_REQUIRED 3
 
@@ -422,6 +422,7 @@ class Quest
         uint32 GetFlags() const { return Flags; }
         bool   IsDaily() const { return (Flags & QUEST_FLAGS_DAILY) != 0; }
         bool   IsWeekly() const { return (Flags & QUEST_FLAGS_WEEKLY) != 0; }
+        bool   IsMonthly() const { return (SpecialFlags & QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE) != 0; }
         bool   IsSeasonal() const { return (QuestSortID == -QUEST_SORT_SEASONAL || QuestSortID == -QUEST_SORT_SPECIAL || QuestSortID == -QUEST_SORT_LUNAR_FESTIVAL || QuestSortID == -QUEST_SORT_MIDSUMMER || QuestSortID == -QUEST_SORT_BREWFEST || QuestSortID == -QUEST_SORT_LOVE_IS_IN_THE_AIR || QuestSortID == -QUEST_SORT_NOBLEGARDEN) && !IsRepeatable(); }
         bool   IsDailyOrWeekly() const { return (Flags & (QUEST_FLAGS_DAILY | QUEST_FLAGS_WEEKLY)) != 0; }
         bool   IsRaidQuest(Difficulty difficulty) const;
@@ -500,7 +501,7 @@ class Quest
         float  RewardMoneyMultiplier;
         uint32 RewardBonusMoney;
         int32  RewardSpell;
-        uint32 RewardDisplaySpell[3];
+        uint32 RewardDisplaySpell[QUEST_REWARD_DISPLAY_SPELL_COUNT];
         uint32 POIContinent;
         float  POIx;
         float  POIy;

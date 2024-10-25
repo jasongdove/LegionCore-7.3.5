@@ -245,8 +245,8 @@ public:
     void SendQuestGiverStatus(QuestGiverStatus questStatus, ObjectGuid npcGUID) const;
     void SendQuestGiverQuestList(uint32 BroadcastTextID, ObjectGuid npcGUID);
     void SendQuestQueryResponse(uint32 questId) const;
-    void SendQuestGiverQuestDetails(Quest const* quest, ObjectGuid npcGUID, bool activateAccept, bool isArea = false) const;
-    void SendQuestGiverOfferReward(Quest const* quest, ObjectGuid npcGUID, bool enableNext) const;
-    void SendQuestGiverRequestItems(Quest const* quest, ObjectGuid npcGUID, bool canComplete, bool closeOnCancel) const;
+    void SendQuestGiverQuestDetails(Quest const* quest, ObjectGuid npcGUID, bool autoLaunched, bool displayPopup, bool isArea = false) const;
+    void SendQuestGiverOfferReward(Quest const* quest, ObjectGuid npcGUID, bool autoLaunched) const;
+    void SendQuestGiverRequestItems(Quest const* quest, ObjectGuid npcGUID, bool canComplete, bool autoLaunched) const;
 };
 #endif

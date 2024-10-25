@@ -51,7 +51,7 @@ namespace WorldPackets
             QuestGiverInfo(ObjectGuid const& guid, ::QuestGiverStatus status) : Guid(guid), Status(status) { }
 
             ObjectGuid Guid;
-            ::QuestGiverStatus Status = QuestGiverStatus::None;
+            ::QuestGiverStatus Status = ::QuestGiverStatus::None;
         };
 
         class QuestGiverStatus final : public ServerPacket

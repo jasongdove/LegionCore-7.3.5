@@ -18443,7 +18443,7 @@ void Player::PrepareAreaQuest(uint32 area)
         if ((quest->IsAutoComplete() && quest->IsRepeatable() && !quest->IsDailyOrWeekly())/* || quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE)*/)
             PlayerTalkClass->SendQuestGiverRequestItems(quest, GetGUID(), CanCompleteRepeatableQuest(quest), true);
         else
-            PlayerTalkClass->SendQuestGiverQuestDetails(quest, GetGUID(), true);
+            PlayerTalkClass->SendQuestGiverQuestDetails(quest, GetGUID(), true, false);
     }
 }
 
@@ -18531,7 +18531,7 @@ void Player::SendPreparedQuest(ObjectGuid guid)
             else
             {
                 Object* source = ObjectAccessor::GetObjectByTypeMask(*this, guid, TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT | TYPEMASK_ITEM);
-                if (!source || (!source->hasQuest(questId) && !source->hasInvolvedQuest(questId)))
+                if (!source->hasQuest(questId) && !source->hasInvolvedQuest(questId))
                 {
                     PlayerTalkClass->SendCloseGossip();
                     return;
@@ -18545,7 +18545,7 @@ void Player::SendPreparedQuest(ObjectGuid guid)
                     if ((quest->IsAutoComplete() && quest->IsRepeatable() && !quest->IsDailyOrWeekly())/* || quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE)*/)
                         PlayerTalkClass->SendQuestGiverRequestItems(quest, guid, CanCompleteRepeatableQuest(quest), true);
                     else
-                        PlayerTalkClass->SendQuestGiverQuestDetails(quest, guid, true);
+                        PlayerTalkClass->SendQuestGiverQuestDetails(quest, guid, true, false);
                     return;
                 }
             }
@@ -18571,31 +18571,47 @@ void Player::SendPreparedQuest(ObjectGuid guid)
 Quest const* Player::GetNextQuest(ObjectGuid guid, Quest const* quest)
 {
     QuestRelationBounds objectQR;
+    uint32 nextQuestID = quest->NextQuestIdChain;
 
-    Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid);
-    if (creature)
-        objectQR  = sQuestDataStore->GetCreatureQuestRelationBounds(creature->GetEntry());
-    else
+    switch (guid.GetHigh())
+    {
+    case HighGuid::Player:
+        ASSERT(quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE));
+        return sQuestDataStore->GetQuestTemplate(nextQuestID);
+    case HighGuid::Creature:
+    case HighGuid::Pet:
+    case HighGuid::Vehicle:
+    {
+        if (Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid))
+            objectQR = sQuestDataStore->GetCreatureQuestRelationBounds(creature->GetEntry());
+        else
+            return nullptr;
+        break;
+    }
+    case HighGuid::GameObject:
     {
         //we should obtain map pointer from GetMap() in 99% of cases. Special case
         //only for quests which cast teleport spells on player
         Map* _map = IsInWorld() ? GetMap() : sMapMgr->FindMap(GetMapId(), GetInstanceId());
         ASSERT(_map);
-        GameObject* pGameObject = _map->GetGameObject(guid);
-        if (pGameObject)
-            objectQR  = sQuestDataStore->GetGOQuestRelationBounds(pGameObject->GetEntry());
+        if (GameObject* gameObject = _map->GetGameObject(guid))
+            objectQR = sQuestDataStore->GetGOQuestRelationBounds(gameObject->GetEntry());
         else
-            return NULL;
+            return nullptr;
+        break;
+    }
+    default:
+        return nullptr;
     }
 
-    uint32 nextQuestID = quest->NextQuestIdChain;
+    // for unit and go state
     for (QuestRelations::const_iterator itr = objectQR.first; itr != objectQR.second; ++itr)
     {
         if (itr->second == nextQuestID)
             return sQuestDataStore->GetQuestTemplate(nextQuestID);
     }
 
-    return NULL;
+    return nullptr;
 }
 
 bool Player::CanSeeStartQuest(Quest const* quest)
@@ -18779,7 +18795,7 @@ bool Player::CanCompleteQuest(uint32 quest_id)
             return false;                                   // not allow re-complete quest
 
         // auto complete quest
-        if (qInfo->IsAutoComplete()/* || qInfo->GetFlags() & QUEST_FLAGS_AUTOCOMPLETE) && CanTakeQuest(qInfo, false)*/)
+        if (qInfo->IsAutoComplete() && CanTakeQuest(qInfo, false))
             return true;
 
         QuestStatusData* q_status = getQuestStatus(quest_id);
@@ -18835,7 +18851,7 @@ bool Player::CanCompleteRepeatableQuest(Quest const* quest)
 bool Player::CanRewardQuest(Quest const* quest, bool msg)
 {
     // not auto complete quest and not completed quest (only cheating case, then ignore without message)
-    if (!quest->IsDFQuest() && !quest->IsAutoComplete() /*&& !(quest->GetFlags() & QUEST_FLAGS_AUTOCOMPLETE)*/ && GetQuestStatus(quest->GetQuestId()) != QUEST_STATUS_COMPLETE)
+    if (!quest->IsDFQuest() && !quest->IsAutoComplete() && GetQuestStatus(quest->GetQuestId()) != QUEST_STATUS_COMPLETE)
         return false;
 
     // daily quest can't be rewarded (25 daily quest already completed)
@@ -19121,13 +19137,12 @@ void Player::CompleteQuest(uint32 quest_id)
 
         if (Quest const* qInfo = sQuestDataStore->GetQuestTemplate(quest_id))
         {
-            //QUEST_SPECIAL_FLAGS_AUTO_REWARD - is just objectrive with scale. Q: 39279 auto-rewarded, but Q: 38819 not.
-            // SO. Diff of  flags is QUEST_FLAGS_AUTOCOMPLETE AND QUEST_FLAGS_AUTO_ACCEPT or  (0x00090000). 
-            // SO. QUEST_FLAGS_AUTOCOMPLETE is AutoRewerd. Yes? Or Not! But if u will be correct something on this logic check after quest: 39279 & 38819
-            if (qInfo->HasFlag(QUEST_FLAGS_TRACKING) || /*qInfo->HasSpecialFlag(QUEST_SPECIAL_FLAGS_AUTO_REWARD) && */qInfo->HasFlag(QUEST_FLAGS_AUTOCOMPLETE))
+            if (qInfo->HasFlag(QUEST_FLAGS_TRACKING))
+                RewardQuest(qInfo, 0, this, false);
+            else if (qInfo->Type == QUEST_TYPE_TASK)
                 RewardQuest(qInfo, 0, this, true);
-            else
-                SendQuestComplete(qInfo);
+
+            sScriptMgr->OnQuestComplete(this, qInfo);
         }
     }
 }
@@ -19633,6 +19648,12 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
 
     //lets remove flag for delayed teleports
     SetCanDelayTeleport(false);
+}
+
+void Player::SetRewardedQuest(uint32 quest_id)
+{
+    m_RewardedQuests.insert(quest_id);
+    m_RewardedQuestsSave[quest_id] = QUEST_DEFAULT_SAVE_TYPE;
 }
 
 void Player::FailQuest(uint32 questId)
@@ -21275,7 +21296,8 @@ void Player::SendQuestReward(Quest const* quest, uint32 XP, Object* questGiver, 
             else if (giver->isQuestGiver())
                 packet.LaunchQuest = true;
             else if (quest->NextQuestIdChain && !quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE))
-                packet.UseQuestReward = true;
+                if (Quest const* rewardQuest = sQuestDataStore->GetQuestTemplate(quest->NextQuestIdChain))
+                    packet.UseQuestReward = CanTakeQuest(rewardQuest, false);
 
             giver->AI()->OnQuestReward(this, quest);
         }

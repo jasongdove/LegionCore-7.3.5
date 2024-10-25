@@ -167,45 +167,34 @@ void ItemTemplate::GetDamage(uint32 itemLevel, float& minDamage, float& maxDamag
     maxDamage = floor(float(avgDamage * (GetDmgVariance() * 0.5f + 1.0f) + 0.5f));
 }
 
-bool ItemTemplate::IsUsableBySpecialization(uint32 specId, uint8 level) const
-{
-    if (!ItemSpecExist) // if item don`t use spec allways good
-        return true;
-
-    if (ChrSpecializationEntry const* chrSpecialization = sChrSpecializationStore.LookupEntry(specId))
-    {
-        std::size_t levelIndex = 0;
-        if (level >= 110)
-            levelIndex = 2;
-        else if (level > 40)
-            levelIndex = 1;
-
-        return Specializations[levelIndex].test(CalculateItemSpecBit(chrSpecialization));
-    }
-
-    return false;
-}
-
 bool ItemTemplate::IsUsableByLootSpecialization(Player const* player, bool alwaysAllowBoundToAccount) const
 {
-    if (GetFlags() & ITEM_FLAG_IS_BOUND_TO_ACCOUNT && alwaysAllowBoundToAccount)
-        return true;
-
     uint32 spec = player->GetUInt32Value(PLAYER_FIELD_LOOT_SPEC_ID);
     if (!spec)
         spec = player->GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID);
     if (!spec)
         spec = player->GetDefaultSpecId();
 
+    return IsUsableBySpecialization(spec, player->getLevel(), alwaysAllowBoundToAccount);
+}
+
+bool ItemTemplate::IsUsableBySpecialization(uint32 spec, uint32 level, bool alwaysAllowBoundToAccount) const
+{
+    if (GetFlags() & ITEM_FLAG_IS_BOUND_TO_ACCOUNT && alwaysAllowBoundToAccount)
+        return true;
+
     ChrSpecializationEntry const* chrSpecialization = sChrSpecializationStore.LookupEntry(spec);
     if (!chrSpecialization)
         return false;
 
     std::size_t levelIndex = 0;
-    if (player->getLevel() >= 110)
+    if (level >= 110)
         levelIndex = 2;
-    else if (player->getLevel() > 40)
+    else if (level > 40)
         levelIndex = 1;
+
+    if (Specializations[levelIndex].none())
+        return true;
 
     return Specializations[levelIndex].test(CalculateItemSpecBit(chrSpecialization));
 }

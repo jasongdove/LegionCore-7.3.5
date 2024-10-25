@@ -255,7 +255,7 @@ void PlayerMenu::SendGossipMenu(uint32 titleTextId, ObjectGuid objectGUID, uint3
             text.QuestMaxScalingLevel = quest->MaxScalingLevel;
             text.QuestFlags[0] = quest->GetFlags();
             text.QuestFlags[1] = quest->FlagsEx;
-            text.Repeatable = quest->IsRepeatable();
+            text.Repeatable = quest->IsAutoComplete() && quest->IsRepeatable() && !quest->IsDailyOrWeekly() && !quest->IsMonthly();
             auto title = quest->LogTitle;
             if (auto localeData = sQuestDataStore->GetQuestLocale(item.QuestId))
                 ObjectMgr::GetLocaleString(localeData->LogTitle, _session->GetSessionDbLocaleIndex(), title);
@@ -375,7 +375,7 @@ void PlayerMenu::SendQuestGiverQuestList(uint32 BroadcastTextID, ObjectGuid npcG
             if (QuestTemplateLocale const* ql = sQuestDataStore->GetQuestLocale(questMenuItem.QuestId))
                 ObjectMgr::GetLocaleString(ql->LogTitle, _session->GetSessionDbLocaleIndex(), title);
 
-            questList.GossipTexts.emplace_back(questMenuItem.QuestId, questMenuItem.QuestIcon, quest->GetScaledQuestLevel(player->getLevel()), quest->MaxScalingLevel, quest->Flags, quest->FlagsEx, quest->IsRepeatable(), title);
+            questList.GossipTexts.emplace_back(questMenuItem.QuestId, questMenuItem.QuestIcon, quest->Level, quest->MaxScalingLevel, quest->Flags, quest->FlagsEx, quest->IsAutoComplete() && quest->IsRepeatable() && !quest->IsDailyOrWeekly() && !quest->IsMonthly(), title);
         }
     }
 
@@ -391,7 +391,7 @@ void PlayerMenu::SendQuestGiverStatus(QuestGiverStatus questStatus, ObjectGuid n
         player->SendDirectMessage(packet.Write());
 }
 
-void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, ObjectGuid npcGUID, bool activateAccept, bool isAreaTrigger /*=false*/) const
+void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, ObjectGuid npcGUID, bool autoLaunched, bool displayPopup, bool isAreaTrigger /*=false*/) const
 {
     Player* player = _session->GetPlayer();
     if (!player)
@@ -432,7 +432,8 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, ObjectGuid npcGU
     packet.PortraitTurnInName = portraitTurnInName;
     packet.PortraitGiver = quest->QuestGiverPortrait;
     packet.PortraitTurnIn = quest->QuestTurnInPortrait;
-    packet.AutoLaunched = activateAccept;
+    packet.AutoLaunched = autoLaunched;
+    packet.DisplayPopup = displayPopup;
     packet.QuestFlags[0] = quest->GetFlags() & (sWorld->getBoolConfig(CONFIG_QUEST_IGNORE_AUTO_ACCEPT) ? ~QUEST_FLAGS_AUTO_ACCEPT : ~0);
     packet.QuestFlags[1] = quest->FlagsEx;
     packet.SuggestedPartyMembers = quest->SuggestedPlayers;
@@ -460,6 +461,8 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, ObjectGuid npcGU
         packet.Objectives[i].Amount = objs[i].Amount;
         packet.Objectives[i].Type = objs[i].Type;
     }
+
+    _session->SendPacket(packet.Write());
 
     player->SendDirectMessage(packet.Write());
 }
@@ -609,7 +612,7 @@ void PlayerMenu::SendQuestQueryResponse(uint32 questId) const
         player->SendDirectMessage(packet.Write());
 }
 
-void PlayerMenu::SendQuestGiverOfferReward(Quest const* quest, ObjectGuid npcGUID, bool enableNext) const
+void PlayerMenu::SendQuestGiverOfferReward(Quest const* quest, ObjectGuid npcGUID, bool autoLaunched) const
 {
     Player* player = _session->GetPlayer();
 
@@ -644,7 +647,7 @@ void PlayerMenu::SendQuestGiverOfferReward(Quest const* quest, ObjectGuid npcGUI
         offer.QuestGiverCreatureID = creature->GetCreatureTemplate()->Entry;
 
     offer.QuestID = quest->GetQuestId();
-    offer.AutoLaunched = enableNext;
+    offer.AutoLaunched = autoLaunched;
     offer.SuggestedPartyMembers = quest->SuggestedPlayers;
 
     for (uint32 i = 0; i < QUEST_EMOTE_COUNT && quest->OfferRewardEmote[i]; ++i)
@@ -685,7 +688,7 @@ GossipMenuItemData const* GossipMenu::GetItemData(uint32 indexId) const
     return Trinity::Containers::MapGetValuePtr(_menuItemData, indexId);
 }
 
-void PlayerMenu::SendQuestGiverRequestItems(Quest const* quest, ObjectGuid npcGUID, bool canComplete, bool closeOnCancel) const
+void PlayerMenu::SendQuestGiverRequestItems(Quest const* quest, ObjectGuid npcGUID, bool canComplete, bool autoLaunched) const
 {
     // We can always call to RequestItems, but this packet only goes out if there are actually
     // items.  Otherwise, we'll skip straight to the OfferReward
@@ -729,9 +732,13 @@ void PlayerMenu::SendQuestGiverRequestItems(Quest const* quest, ObjectGuid npcGU
     packet.QuestFlags[0] = quest->GetFlags();
     packet.QuestFlags[1] = quest->FlagsEx;
     packet.SuggestPartyMembers = quest->SuggestedPlayers;
-    packet.StatusFlags = 0xDF; // Unk, send common value
 
-    for (QuestObjective const& obj : quest->GetObjectives())
+    // incomplete: FD
+    // incomplete quest with item objective but item objective is complete DD
+    packet.StatusFlags = canComplete ? 0xFF : 0xFD;
+    
+    packet.MoneyToGet = 0;
+        for (QuestObjective const& obj : quest->GetObjectives())
     {
         switch (obj.Type)
         {
@@ -749,7 +756,7 @@ void PlayerMenu::SendQuestGiverRequestItems(Quest const* quest, ObjectGuid npcGU
         }
     }
 
-    packet.AutoLaunched = closeOnCancel;
+    packet.AutoLaunched = autoLaunched;
     packet.QuestTitle = questTitle;
     packet.CompletionText = requestItemsText;
 

@@ -435,11 +435,7 @@ void WorldSession::HandleQuestGiverChooseReward(WorldPackets::Quest::QuestGiverC
                     // Send next quest
                     if (Quest const* nextQuest = _player->GetNextQuest(packet.QuestGiverGUID, quest))
                     {
-                        if (_player->CanTakeQuest(nextQuest, false))
-                        {
-
-                        }
-                        if (nextQuest->IsAutoAccept() && _player->CanAddQuest(nextQuest, true))
+                        if (nextQuest->IsAutoAccept() && _player->CanAddQuest(nextQuest, true) && _player->CanTakeQuest(nextQuest, true))
                         {
                             if (creatureQGiver)
                             {
@@ -450,7 +446,7 @@ void WorldSession::HandleQuestGiverChooseReward(WorldPackets::Quest::QuestGiverC
                             _player->AddQuestAndCheckCompletion(nextQuest, object);
                         }
 
-                        _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextQuest, packet.QuestGiverGUID, true);
+                        _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextQuest, packet.QuestGiverGUID, true, false);
                     }
 
                     if (creatureQGiver)
@@ -469,7 +465,7 @@ void WorldSession::HandleQuestGiverChooseReward(WorldPackets::Quest::QuestGiverC
                         if (nextQuest->IsAutoAccept() && _player->CanAddQuest(nextQuest, true))
                             _player->AddQuestAndCheckCompletion(nextQuest, object);
 
-                        _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextQuest, packet.QuestGiverGUID, true);
+                        _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextQuest, packet.QuestGiverGUID, true, false);
                     }
                 }
 
@@ -485,7 +481,7 @@ void WorldSession::HandleQuestGiverChooseReward(WorldPackets::Quest::QuestGiverC
         //SendQuestgiverStatusMultipleQuery();
 
         // AutoTake system
-         _player->PrepareAreaQuest( _player->GetCurrentAreaID());
+        _player->PrepareAreaQuest(_player->GetCurrentAreaID());
     }
     else 
         _player->PlayerTalkClass->SendQuestGiverOfferReward(quest, packet.QuestGiverGUID, true);
@@ -591,10 +587,29 @@ void WorldSession::HandleQuestConfirmAccept(WorldPackets::Quest::QuestConfirmAcc
 
 void WorldSession::HandleQuestgiverCompleteQuest(WorldPackets::Quest::QuestGiverCompleteQuest& packet)
 {
-    if (!packet.FromScript)
+    bool autoCompleteMode = packet.FromScript; // 0 - standart complete quest mode with npc, 1 - auto-complete mode
+
+    TC_LOG_ERROR("network", "WORLD: Received CMSG_QUESTGIVER_COMPLETE_QUEST npc = %s, questId = %u self-complete: %u", packet.QuestGiverGUID.ToString().c_str(), packet.QuestID, autoCompleteMode ? 1 : 0);
+
+    Quest const* quest = sQuestDataStore->GetQuestTemplate(packet.QuestID);
+    if (!quest)
+        return;
+
+    if (autoCompleteMode && !quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE))
+        return;
+
+    Object* object = nullptr;
+    if (autoCompleteMode)
+        object = _player;
+    else
+        object = ObjectAccessor::GetObjectByTypeMask(*_player, packet.QuestGiverGUID, TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT);
+
+    if (!object)
+        return;
+
+    if (!autoCompleteMode)
     {
-        Object* object = ObjectAccessor::GetObjectByTypeMask(*_player, packet.QuestGiverGUID, TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT);
-        if (!object || !object->hasInvolvedQuest(packet.QuestID))
+        if (!object->hasInvolvedQuest(packet.QuestID))
             return;
 
         // some kind of WPE protection
@@ -602,52 +617,38 @@ void WorldSession::HandleQuestgiverCompleteQuest(WorldPackets::Quest::QuestGiver
             return;
     }
 
-    if (Quest const* quest = sQuestDataStore->GetQuestTemplate(packet.QuestID))
+    else
     {
-        if (packet.FromScript && !quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE))
-        {
-            TC_LOG_ERROR("network", "Possible hacking attempt: Player %s [playerGuid: %s] tried to complete questId [entry: %u] by auto-submit flag for quest witch not suport it.",
-                _player->GetName(), _player->GetGUID().ToString().c_str(), packet.QuestID);
+        // Do not allow completing quests on other players.
+        if (packet.QuestGiverGUID != _player->GetGUID())
             return;
-        }
-        if (!_player->CanSeeStartQuest(quest) && _player->GetQuestStatus(packet.QuestID) == QUEST_STATUS_NONE)
-        {
-            TC_LOG_ERROR("network", "Possible hacking attempt: Player %s [playerGuid: %s] tried to complete questId [entry: %u] without being in possession of the questId!",
-                          _player->GetName(), _player->GetGUID().ToString().c_str(), packet.QuestID);
-            return;
-        }
-        // TODO: need a virtual function
-        if (_player->InBattleground())
-            if (Battleground* bg = _player->GetBattleground())
-                if (bg->GetTypeID() == MS::Battlegrounds::BattlegroundTypeId::BattlegroundAlteracValley)
-                    ((BattlegroundAlteracValley*)bg)->HandleQuestComplete(packet.QuestID, _player);
+    }
 
-        if (_player->GetQuestStatus(packet.QuestID) != QUEST_STATUS_COMPLETE)
-        {
-            if (quest->IsRepeatable())
-                _player->PlayerTalkClass->SendQuestGiverRequestItems(quest, packet.QuestGiverGUID, _player->CanCompleteRepeatableQuest(quest), false);
-            else
-                _player->PlayerTalkClass->SendQuestGiverRequestItems(quest, packet.QuestGiverGUID, _player->CanRewardQuest(quest, false), false);
-        }
+    if (!_player->CanSeeStartQuest(quest) && _player->GetQuestStatus(packet.QuestID) == QUEST_STATUS_NONE)
+    {
+        TC_LOG_ERROR("network", "Possible hacking attempt: Player %s [playerGuid: %s] tried to complete questId [entry: %u] without being in possession of the questId!",
+            _player->GetName(), _player->GetGUID().ToString().c_str(), packet.QuestID);
+        return;
+    }
+
+    if (_player->InBattleground())
+        if (Battleground* bg = _player->GetBattleground())
+            if (bg->GetTypeID() == MS::Battlegrounds::BattlegroundTypeId::BattlegroundAlteracValley)
+                ((BattlegroundAlteracValley*)bg)->HandleQuestComplete(packet.QuestID, _player);
+
+    if (_player->GetQuestStatus(packet.QuestID) != QUEST_STATUS_COMPLETE)
+    {
+        if (quest->IsRepeatable())
+            _player->PlayerTalkClass->SendQuestGiverRequestItems(quest, packet.QuestGiverGUID, _player->CanCompleteRepeatableQuest(quest), false);
         else
-        {
-            bool reqItem = false;
-            if (quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER))                  // some items required
-            {
-                reqItem = true;
-                for (QuestObjective const& obj : quest->GetObjectives())
-                {
-                    if (obj.Type != QUEST_OBJECTIVE_ITEM)
-                        continue;
-                    if (obj.Flags & QUEST_OBJECTIVE_FLAG_OPTIONAL)
-                        reqItem = false;
-                }
-            }
-            if (reqItem)                  // some items required
-                _player->PlayerTalkClass->SendQuestGiverRequestItems(quest, packet.QuestGiverGUID, _player->CanRewardQuest(quest, false), false);
-            else                                                                    // no items required
-                _player->PlayerTalkClass->SendQuestGiverOfferReward(quest, packet.QuestGiverGUID, !packet.FromScript);
-        }
+            _player->PlayerTalkClass->SendQuestGiverRequestItems(quest, packet.QuestGiverGUID, _player->CanRewardQuest(quest, false), false);
+    }
+    else
+    {
+        if (quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_DELIVER))                  // some items required
+            _player->PlayerTalkClass->SendQuestGiverRequestItems(quest, packet.QuestGiverGUID, _player->CanRewardQuest(quest, false), false);
+        else                                            // no items required
+            _player->PlayerTalkClass->SendQuestGiverOfferReward(quest, packet.QuestGiverGUID, true);
     }
 }
 
