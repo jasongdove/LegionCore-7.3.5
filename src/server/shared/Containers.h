@@ -148,7 +148,7 @@ namespace Trinity
         template<class C>
         void RandomShuffle(C& container)
         {
-            std::shuffle(std::begin(container), std::end(container), SFMTEngine::Instance());
+            std::shuffle(std::begin(container), std::end(container), RandomEngine::Instance());
         }
 
         /**
@@ -166,7 +166,7 @@ namespace Trinity
             std::vector<std::reference_wrapper<const T>> vec(list.begin(), list.end());
         
             // shuffle (the references in) the vector
-            std::shuffle(vec.begin(), vec.end(), SFMTEngine::Instance());
+            std::shuffle(vec.begin(), vec.end(), RandomEngine::Instance());
         
             // copy the shuffled sequence into a new list
             std::list<T> shuffled_list { vec.begin(), vec.end() };

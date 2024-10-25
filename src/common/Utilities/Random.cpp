@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -16,53 +16,47 @@
  */
 
 #include "Random.h"
-#include "Common.h"
 #include "Errors.h"
-#include "SFMT.h"
-#include <boost/thread/tss.hpp>
+#include "SFMTRand.h"
+#include <memory>
+#include <random>
 
-static boost::thread_specific_ptr<SFMTRand> sfmtRand;
-static SFMTEngine engine;
+static thread_local std::unique_ptr<SFMTRand> sfmtRand;
+static RandomEngine engine;
 
 static SFMTRand* GetRng()
 {
-    SFMTRand* rand = sfmtRand.get();
+    if (!sfmtRand)
+        sfmtRand = std::make_unique<SFMTRand>();
 
-    if (!rand)
-    {
-        rand = new SFMTRand();
-        sfmtRand.reset(rand);
-    }
-
-    return rand;
+    return sfmtRand.get();
 }
 
 int32 irand(int32 min, int32 max)
 {
-    if (min > max)
-        return int32(GetRng()->IRandom(max, min));
-    return int32(GetRng()->IRandom(min, max));
+    ASSERT(max >= min);
+    std::uniform_int_distribution<int32> uid(min, max);
+    return uid(engine);
 }
 
 uint32 urand(uint32 min, uint32 max)
 {
-    if (min > max)
-        return GetRng()->URandom(max, min);
-    return GetRng()->URandom(min, max);
+    ASSERT(max >= min);
+    std::uniform_int_distribution<uint32> uid(min, max);
+    return uid(engine);
 }
 
 uint32 urandms(uint32 min, uint32 max)
 {
-    if (min > max)
-        return GetRng()->URandom(max * IN_MILLISECONDS, min * IN_MILLISECONDS);
-    return GetRng()->URandom(min * IN_MILLISECONDS, max * IN_MILLISECONDS);
+    ASSERT(std::numeric_limits<uint32>::max() / Milliseconds::period::den >= max);
+    return urand(min * Milliseconds::period::den, max * Milliseconds::period::den);
 }
 
 float frand(float min, float max)
 {
-    if (min > max)
-        return float(GetRng()->Random() * (min - max) + max);
-    return float(GetRng()->Random() * (max - min) + min);
+    ASSERT(max >= min);
+    std::uniform_real_distribution<float> urd(min, max);
+    return urd(engine);
 }
 
 Milliseconds randtime(Milliseconds min, Milliseconds max)
@@ -75,26 +69,28 @@ Milliseconds randtime(Milliseconds min, Milliseconds max)
 
 uint32 rand32()
 {
-    return GetRng()->BRandom();
+    return GetRng()->RandomUInt32();
 }
 
-double rand_norm()
+float rand_norm()
 {
-    return GetRng()->Random();
+    std::uniform_real_distribution<float> urd;
+    return urd(engine);
 }
 
-double rand_chance()
+float rand_chance()
 {
-    return GetRng()->Random() * 100.0;
+    std::uniform_real_distribution<float> urd(0.0f, 100.0f);
+    return urd(engine);
 }
 
 uint32 urandweighted(size_t count, double const* chances)
 {
     std::discrete_distribution<uint32> dd(chances, chances + count);
-    return dd(SFMTEngine::Instance());
+    return dd(engine);
 }
 
-SFMTEngine& SFMTEngine::Instance()
+RandomEngine& RandomEngine::Instance()
 {
     return engine;
 }
