@@ -189,8 +189,6 @@ m_achievementMgr(sf::safe_ptr<AchievementMgr<Player>>(this))
 
     m_session = session;
 
-    m_divider.Clear();
-
     m_ExtraFlags = 0;
 
     m_spellModTakingSpell = NULL;

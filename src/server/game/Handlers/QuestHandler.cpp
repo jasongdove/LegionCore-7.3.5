@@ -106,29 +106,29 @@ void WorldSession::HandleQuestGiverAcceptQuest(WorldPackets::Quest::QuestGiverAc
     else
         object = ObjectAccessor::FindPlayer(packet.QuestGiverGUID);
 
-#define CLOSE_GOSSIP_CLEAR_DIVIDER() \
+#define CLOSE_GOSSIP_CLEAR_SHARING_INFO() \
     do { \
         _player->PlayerTalkClass->SendCloseGossip(); \
-        _player->SetDivider(ObjectGuid::Empty); \
+        _player->ClearQuestSharingInfo(); \
     } while (0)
 
     // no or incorrect quest giver
     if (!object)
     {
-        CLOSE_GOSSIP_CLEAR_DIVIDER();
+        CLOSE_GOSSIP_CLEAR_SHARING_INFO();
         return;
     }
 
     if (Player* playerQuestObject = object->ToPlayer())
     {
-        if ((_player->GetDivider().IsEmpty() && _player->GetDivider() != packet.QuestGiverGUID) ||  !playerQuestObject->CanShareQuest(packet.QuestID))
+        if ((_player->GetPlayerSharingQuest().IsEmpty() && _player->GetPlayerSharingQuest() != packet.QuestGiverGUID) ||  !playerQuestObject->CanShareQuest(packet.QuestID))
         {
-            CLOSE_GOSSIP_CLEAR_DIVIDER();
+            CLOSE_GOSSIP_CLEAR_SHARING_INFO();
             return;
         }
         if (!_player->IsInSameRaidWith(playerQuestObject))
         {
-            CLOSE_GOSSIP_CLEAR_DIVIDER();
+            CLOSE_GOSSIP_CLEAR_SHARING_INFO();
             return;
         }
     }
@@ -136,7 +136,7 @@ void WorldSession::HandleQuestGiverAcceptQuest(WorldPackets::Quest::QuestGiverAc
     {
         if (!object->hasQuest(packet.QuestID))
         {
-            CLOSE_GOSSIP_CLEAR_DIVIDER();
+            CLOSE_GOSSIP_CLEAR_SHARING_INFO();
             return;
         }
     }
@@ -144,7 +144,7 @@ void WorldSession::HandleQuestGiverAcceptQuest(WorldPackets::Quest::QuestGiverAc
     // some kind of WPE protection
     if (!_player->CanInteractWithQuestGiver(object))
     {
-        CLOSE_GOSSIP_CLEAR_DIVIDER();
+        CLOSE_GOSSIP_CLEAR_SHARING_INFO();
         return;
     }
 
@@ -153,17 +153,17 @@ void WorldSession::HandleQuestGiverAcceptQuest(WorldPackets::Quest::QuestGiverAc
         // prevent cheating
         if (!GetPlayer()->CanTakeQuest(quest, true))
         {
-            CLOSE_GOSSIP_CLEAR_DIVIDER();
+            CLOSE_GOSSIP_CLEAR_SHARING_INFO();
             return;
         }
 
-        if (!_player->GetDivider().IsEmpty())
+        if (!_player->GetPlayerSharingQuest().IsEmpty())
         {
-            Player* player = ObjectAccessor::FindPlayer(_player->GetDivider());
+            Player* player = ObjectAccessor::FindPlayer(_player->GetPlayerSharingQuest());
             if (player)
             {
                 player->SendPushToPartyResponse(_player, QUEST_PARTY_MSG_ACCEPT_QUEST);
-                _player->SetDivider(ObjectGuid::Empty);
+                _player->ClearQuestSharingInfo();
             }
         }
 
@@ -184,7 +184,7 @@ void WorldSession::HandleQuestGiverAcceptQuest(WorldPackets::Quest::QuestGiverAc
 
                         if (player->CanTakeQuest(quest, true))
                         {
-                            player->SetDivider(_player->GetGUID());
+                            player->SetQuestSharingInfo(_player->GetGUID(), quest->GetQuestId());
 
                             //need confirmation that any gossip window will close
                             player->PlayerTalkClass->SendCloseGossip();
@@ -204,9 +204,9 @@ void WorldSession::HandleQuestGiverAcceptQuest(WorldPackets::Quest::QuestGiverAc
         }
     }
 
-    CLOSE_GOSSIP_CLEAR_DIVIDER();
+    CLOSE_GOSSIP_CLEAR_SHARING_INFO();
 
-#undef CLOSE_GOSSIP_CLEAR_DIVIDER
+#undef CLOSE_GOSSIP_CLEAR_SHARING_INFO
 }
 
 void WorldSession::HandleQuestGiverQueryQuest(WorldPackets::Quest::QuestGiverQueryQuest& packet)
@@ -563,7 +563,7 @@ void WorldSession::HandleQuestConfirmAccept(WorldPackets::Quest::QuestConfirmAcc
         if (!quest->HasFlag(QUEST_FLAGS_PARTY_ACCEPT))
             return;
 
-        Player* originalPlayer = ObjectAccessor::FindPlayer(_player->GetDivider());
+        Player* originalPlayer = ObjectAccessor::FindPlayer(_player->GetPlayerSharingQuest());
         if (!originalPlayer)
             return;
 
@@ -584,7 +584,7 @@ void WorldSession::HandleQuestConfirmAccept(WorldPackets::Quest::QuestConfirmAcc
                 _player->CastSpell(_player, quest->SourceSpellID, true);
         }
 
-        _player->SetDivider(ObjectGuid::Empty);
+        _player->ClearQuestSharingInfo();
     }
 }
 
@@ -698,7 +698,7 @@ void WorldSession::HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty&
             continue;
         }
 
-        if (!player->GetDivider().IsEmpty())
+        if (!player->GetPlayerSharingQuest().IsEmpty())
         {
             _player->SendPushToPartyResponse(player, QUEST_PARTY_MSG_BUSY);
             continue;
@@ -713,7 +713,7 @@ void WorldSession::HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty&
             player->PlayerTalkClass->SendQuestGiverRequestItems(quest, _player->GetGUID(), player->CanCompleteRepeatableQuest(quest), true);
         else
         {
-            player->SetDivider(_player->GetGUID());
+            player->SetQuestSharingInfo(_player->GetGUID(), quest->GetQuestId());
             player->PlayerTalkClass->SendQuestGiverQuestDetails(quest, player->GetGUID(), true, false);
         }
     }
@@ -721,13 +721,13 @@ void WorldSession::HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty&
 
 void WorldSession::HandleQuestPushResult(WorldPackets::Quest::QuestPushResult& packet)
 {
-    if (!_player->GetDivider().IsEmpty())
+    if (!_player->GetPlayerSharingQuest().IsEmpty())
     {
-        if (_player->GetDivider() == packet.SenderGUID)
-            if (Player* player = ObjectAccessor::FindPlayer(_player->GetDivider()))
+        if (_player->GetPlayerSharingQuest() == packet.SenderGUID)
+            if (Player* player = ObjectAccessor::FindPlayer(_player->GetPlayerSharingQuest()))
                 player->SendPushToPartyResponse(_player, static_cast<QuestShareMessages>(packet.Result));
 
-        _player->SetDivider(ObjectGuid::Empty);
+        _player->ClearQuestSharingInfo();
     }
 }
 
@@ -752,7 +752,7 @@ void WorldSession::HandleAdventureJournalOpenQuest(WorldPackets::Quest::Adventur
     if (_player->hasQuest(entry->QuestID) || !_player->CanTakeQuest(quest, true))
         return;
 
-    _player->SetDivider(_player->GetGUID());
+    _player->SetQuestSharingInfo(_player->GetGUID(), quest->GetQuestId());
     PlayerMenu menu(this);
     menu.SendQuestGiverQuestDetails(quest, _player->GetGUID(), true, false);
 }

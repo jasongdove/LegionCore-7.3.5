@@ -421,7 +421,7 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, ObjectGuid npcGU
 
     WorldPackets::Quest::QuestGiverQuestDetails packet;
     packet.QuestGiverGUID = npcGUID;
-    packet.InformUnit = player->GetDivider();
+    packet.InformUnit = player->GetPlayerSharingQuest();
     packet.QuestID = quest->GetQuestId();
     packet.QuestTitle = questLogTitle;
     packet.LogDescription = questLogDescription;

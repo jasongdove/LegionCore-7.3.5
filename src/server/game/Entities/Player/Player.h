@@ -2033,11 +2033,12 @@ class Player : public Unit, public GridObject<Player>
         void ResetWorldQuest(uint32 QuestID = 0);
         void ClearWorldQuest();
 
-        ObjectGuid GetDivider() { return m_divider; }
-        void SetDivider(ObjectGuid guid) { m_divider = guid; }
+        uint32 GetSharedQuestID() const { return m_sharedQuestId; }
+        ObjectGuid GetPlayerSharingQuest() const { return m_playerSharingQuest; }
+        void SetQuestSharingInfo(ObjectGuid guid, uint32 id) { m_playerSharingQuest = guid; m_sharedQuestId = id; }
+        void ClearQuestSharingInfo() { m_playerSharingQuest = ObjectGuid::Empty; m_sharedQuestId = 0; }
 
         uint32 GetInGameTime() { return m_ingametime; }
-
         void SetInGameTime(uint32 time) { m_ingametime = time; }
 
         void AddTimedQuest(uint32 quest_id) { m_timedquests.insert(quest_id); }
@@ -3299,7 +3300,8 @@ class Player : public Unit, public GridObject<Player>
         RewardedQuestSet m_accuntQuests;
         QuestStatusSaveMap m_RewardedQuestsSave;
 
-        ObjectGuid m_divider;
+        ObjectGuid m_playerSharingQuest;
+        uint32 m_sharedQuestId;
         uint32 m_ingametime;
 
         /*********************************************************/
