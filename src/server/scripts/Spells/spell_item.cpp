@@ -2616,7 +2616,7 @@ class spell_item_slightly_chewed_insult_book : public SpellScript
             return;
 
         text = DB2Manager::GetBroadcastTextValue(entry, player->GetSession()->GetSessionDbLocaleIndex());
-        player->Yell(text, LANG_UNIVERSAL, NULL);
+        player->Yell(text, LANG_UNIVERSAL, false);
     }
 
     void Register() override
@@ -2641,8 +2641,8 @@ class spell_gamons_heroic_spirit : public SpellScript
             return;
 
         text = DB2Manager::GetBroadcastTextValue(entry, player->GetSession()->GetSessionDbLocaleIndex());
-        player->Yell(text, LANG_UNIVERSAL, NULL);
-        player->PlayDistanceSound(38282, NULL);
+        player->Yell(text, LANG_UNIVERSAL, false);
+        player->PlayDistanceSound(38282, nullptr);
     }
 
     void Register() override

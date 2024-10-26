@@ -860,7 +860,7 @@ void BossAI::_EnterCombat()
         if (!instance->CheckRequiredBosses(_bossId, me->GetEntry()))
         {
             EnterEvadeMode();
-            AddDelayedEvent(200, [=]() -> void
+            AddDelayedEvent(200, [=, this]() -> void
             {
                 if (instance)
                     instance->RepopPlayersAtGraveyard();

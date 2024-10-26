@@ -7481,7 +7481,7 @@ void Player::RepopAtGraveyard(bool outInstance /*= false*/)
     
     if (ClosestGrave && ClosestGrave->MapID == 1101) //deathmatch instant rev
     {
-        AddDelayedEvent(1000, [=]() -> void
+        AddDelayedEvent(1000, [=, this]() -> void
         {
             RemoveAllAurasOnDeath();
             ResurrectPlayer(1.0f);
@@ -7511,7 +7511,7 @@ bool Player::CanJoinConstantChannelInZone(ChatChannelsEntry const* channel, Area
 
 void Player::JoinedChannel(Channel* c)
 {
-    AddDelayedEvent(100, [=]() -> void
+    AddDelayedEvent(100, [=, this]() -> void
     {
         m_channels.push_back(c);
     });
@@ -7519,7 +7519,7 @@ void Player::JoinedChannel(Channel* c)
 
 void Player::LeftChannel(Channel* c)
 {
-    AddDelayedEvent(100, [=]() -> void
+    AddDelayedEvent(100, [=, this]() -> void
     {
         m_channels.remove(c);
     });
@@ -10050,7 +10050,7 @@ void Player::UpdateArea(uint32 newArea)
 
 
     uint32 newAreaForUpdate = m_areaId;
-    AddDelayedEvent(100, [=]() -> void
+    AddDelayedEvent(100, [=, this]() -> void
     {
         UpdateAchievementCriteria(CRITERIA_TYPE_ENTER_AREA, newArea);
         UpdateAchievementCriteria(CRITERIA_TYPE_LEAVE_AREA, newAreaForUpdate);
@@ -10443,7 +10443,7 @@ void Player::_ApplyItemMods(Item* item, uint8 slot, bool apply)
     if (!apply)
         _ApplyOrRemoveItemEquipDependentAuras(item->GetGUID(), false);
     else
-        AddDelayedEvent(100, [=]() -> void
+        AddDelayedEvent(100, [=, this]() -> void
         {
             if (item)
                 _ApplyOrRemoveItemEquipDependentAuras(item->GetGUID(), true);
@@ -20561,7 +20561,7 @@ void Player::ItemAddedQuestCheck(uint32 entry, uint32 count)
         }
     }
     
-    AddDelayedEvent(100, [=]() -> void
+    AddDelayedEvent(100, [=, this]() -> void
     {
         UpdateForQuestWorldObjects();
     });
@@ -20607,7 +20607,7 @@ void Player::ItemRemovedQuestCheck(uint32 entry, uint32 count)
         }
     }
    
-    AddDelayedEvent(100, [=]() -> void
+    AddDelayedEvent(100, [=, this]() -> void
     {
         UpdateForQuestWorldObjects();
     });

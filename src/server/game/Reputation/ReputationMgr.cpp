@@ -251,7 +251,7 @@ void ReputationMgr::ModifyParagonReputation(FactionEntry const* factionEntry, in
                         _player->AddQuest(quest, _player);
             }
 
-            _player->AddDelayedEvent(200, [=]() -> void
+            _player->AddDelayedEvent(200, [=, this]() -> void
             {
                 SendState(faction);
             });

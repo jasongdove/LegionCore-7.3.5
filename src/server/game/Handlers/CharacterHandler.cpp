@@ -820,7 +820,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
     SetMap(pCurrChar->GetMap());
     GetMap()->AddSession(sess);
 
-    AddDelayedEvent(100, [=]() -> void
+    AddDelayedEvent(100, [=, this]() -> void
     {
         auto player = GetPlayer();
         if (!player)

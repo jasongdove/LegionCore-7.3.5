@@ -323,7 +323,7 @@ uint32 BattlegroundQueue::GetAverageQueueWaitTime(GroupQueueInfo* ginfo, uint8 b
 
 void BattlegroundQueue::RemovePlayer(ObjectGuid guid, bool decreaseInvitedCount)
 {
-    AddDelayedEvent(10, [=]() -> void
+    AddDelayedEvent(10, [=, this]() -> void
     {
         RemovePlayerQueue(guid, decreaseInvitedCount);
     });

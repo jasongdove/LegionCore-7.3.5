@@ -35,11 +35,8 @@ enum SmartEscortState
     SMART_ESCORT_PAUSED     = 0x004                         //will not proceed with waypoints before state is removed
 };
 
-enum SmartEscortVars
-{
-    SMART_ESCORT_MAX_PLAYER_DIST        = 50,
-    SMART_MAX_AID_DIST    = SMART_ESCORT_MAX_PLAYER_DIST / 2,
-};
+static float constexpr SMART_ESCORT_MAX_PLAYER_DIST = 50;
+static float constexpr SMART_MAX_AID_DIST = SMART_ESCORT_MAX_PLAYER_DIST / 2.f;
 
 class SmartAI : public CreatureAI
 {

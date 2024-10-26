@@ -417,7 +417,7 @@ int MySQLConnection::ExecuteTransaction(std::shared_ptr<TransactionBase> transac
     {
         if (!std::visit([this](auto&& data) { return this->Execute(TransactionData::ToExecutable(data)); }, itr->query))
         {
-            TC_LOG_WARN("sql.sql", "Transaction aborted. %u queries not executed.", queries.size());
+            TC_LOG_WARN("sql.sql", "Transaction aborted. %zu queries not executed.", queries.size());
             int errorCode = GetLastError();
             RollbackTransaction();
             return errorCode;

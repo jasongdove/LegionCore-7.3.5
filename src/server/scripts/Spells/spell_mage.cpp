@@ -655,7 +655,8 @@ class spell_mage_icicle : public AuraScript
     {
         if (Unit* caster = GetCaster())
         {
-            if (iceLanceTarget = caster->GetAnyDataContainer().GetValue<ObjectGuid>("IceLanceTarget", ObjectGuid::Empty))
+            iceLanceTarget = caster->GetAnyDataContainer().GetValue<ObjectGuid>("IceLanceTarget", ObjectGuid::Empty);
+            if (iceLanceTarget)
                 return true;
         }
         return false;

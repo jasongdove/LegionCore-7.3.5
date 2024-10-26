@@ -265,7 +265,7 @@ void Arena::CheckWinConditions()
 
 void Arena::ApplyDampeningIfNeeded()
 {
-    auto applyDampening([=]() -> void
+    auto applyDampening([=, this]() -> void
     {
         for (auto const& itr : GetPlayers())
             if (auto const& player = GetPlayer(itr, "ApplyDampeningIfNeeded"))

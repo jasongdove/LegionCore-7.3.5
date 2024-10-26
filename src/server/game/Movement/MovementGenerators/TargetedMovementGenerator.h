@@ -122,7 +122,7 @@ class FollowMovementGenerator : public TargetedMovementGenerator<T, FollowMoveme
         void AddUnitStateMove(T&) override;
         bool HasLostTarget(T&) const override { return false; };
         void ReachTarget(T&) override;
-        bool EnableWalking() const;
+        bool EnableWalking() const override;
         void MovementInform(T&) override;
 
     private:

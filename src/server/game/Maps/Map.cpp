@@ -201,7 +201,7 @@ void Map::VisitNearbyCellsOf(WorldObject* obj)
     }
 }
 
-void Map::updateCollected(std::vector<WorldObject*>& objectsToUpdate, uint32 diff, volatile uint32 _mapId, volatile uint32 _instanceId)
+void Map::updateCollected(std::vector<WorldObject*>& objectsToUpdate, uint32 diff, uint32 _mapId, uint32 _instanceId)
 {
     if (b_isMapUnload)
         return;
@@ -5315,7 +5315,7 @@ void Map::AddToMapWait(Object* obj)
     i_objectsAddToMap.emplace(obj);
 }
 
-void Map::UpdateLoop(volatile uint32 _mapID)
+void Map::UpdateLoop(uint32 _mapID)
 {
     cds::threading::Manager::attachThread();
 

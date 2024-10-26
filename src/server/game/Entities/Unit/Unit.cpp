@@ -13008,7 +13008,7 @@ uint32 Unit::SpellDamageBonusTaken(Unit* caster, SpellInfo const* spellProto, ui
     float TakenTotalMod = 1.0f;
     SpellSchoolMask schoolMask = spellProto->GetSchoolMask();
 
-    TakenTotalMod *= caster->GetTotalAuraMultiplier(SPELL_AURA_MOD_DAMAGE_TAKEN_FROM_CASTER, [=](AuraEffect const* aurEff) -> bool
+    TakenTotalMod *= caster->GetTotalAuraMultiplier(SPELL_AURA_MOD_DAMAGE_TAKEN_FROM_CASTER, [=, this](AuraEffect const* aurEff) -> bool
     {
         if (aurEff->GetCasterGUID() == GetGUID() && (aurEff->GetMiscValue() & schoolMask))
             return true;
@@ -13222,7 +13222,7 @@ bool Unit::isSpellCrit(Unit* victim, SpellInfo const* spellProto, SpellSchoolMas
                     crit_chance += victim->GetTotalAuraModifier(SPELL_AURA_MOD_ATTACKER_SPELL_AND_WEAPON_CRIT_CHANCE);
                 }
 
-                crit_chance += victim->GetTotalAuraModifier(SPELL_AURA_MOD_CRIT_CHANCE_FOR_CASTER, [=](AuraEffect const* aurEff) -> bool
+                crit_chance += victim->GetTotalAuraModifier(SPELL_AURA_MOD_CRIT_CHANCE_FOR_CASTER, [=, this](AuraEffect const* aurEff) -> bool
                 {
                     return (aurEff->GetCasterGUID() == GetGUID() && aurEff->IsAffectingSpell(spellProto));
                 });
@@ -14163,7 +14163,7 @@ uint32 Unit::MeleeDamageBonusTaken(Unit* attacker, uint32 pdamage, WeaponAttackT
     float TakenTotalMod = 1.0f;
     SpellSchoolMask schoolMask = spellProto ? spellProto->GetSchoolMask() : SPELL_SCHOOL_MASK_NORMAL;
 
-    TakenTotalMod *= attacker->GetTotalAuraMultiplier(SPELL_AURA_MOD_DAMAGE_TAKEN_FROM_CASTER, [=](AuraEffect const* aurEff) -> bool
+    TakenTotalMod *= attacker->GetTotalAuraMultiplier(SPELL_AURA_MOD_DAMAGE_TAKEN_FROM_CASTER, [=, this](AuraEffect const* aurEff) -> bool
     {
         if (aurEff->GetCasterGUID() == GetGUID() && (aurEff->GetMiscValue() & schoolMask))
             return true;
@@ -14201,7 +14201,7 @@ uint32 Unit::MeleeDamageBonusTaken(Unit* attacker, uint32 pdamage, WeaponAttackT
     // ..taken
     TakenTotalMod *= GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, GetMeleeDamageSchoolMask());
 
-    TakenTotalMod *= GetTotalAuraMultiplier(SPELL_AURA_INCREASE_SCHOOL_DAMAGE_TAKEN, [=](AuraEffect const* aurEff) -> bool
+    TakenTotalMod *= GetTotalAuraMultiplier(SPELL_AURA_INCREASE_SCHOOL_DAMAGE_TAKEN, [=, this](AuraEffect const* aurEff) -> bool
     {
         return (aurEff->GetCasterGUID() == attacker->GetGUID() && ((aurEff->GetMiscValue() & GetMeleeDamageSchoolMask()) != 0));
     });

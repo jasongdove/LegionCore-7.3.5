@@ -6393,7 +6393,7 @@ void Spell::TakeReagents()
         // if CastItem is also spell reagent
         if (castItemTemplate && castItemTemplate->GetId() == itemid)
         {
-            itemcount += std::count_if(std::begin(castItemTemplate->Effects), std::end(castItemTemplate->Effects), [=](ItemEffectEntry const* entry) -> bool
+            itemcount += std::count_if(std::begin(castItemTemplate->Effects), std::end(castItemTemplate->Effects), [=, this](ItemEffectEntry const* entry) -> bool
             {
                 return entry->Charges < 0 && abs(m_CastItem->GetSpellCharges(entry->LegacySlotIndex)) < 2;
             });

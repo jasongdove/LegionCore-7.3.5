@@ -1401,7 +1401,7 @@ struct spell_pal_at_aura_of_sacrifice : public AreaTriggerAI
     {
         SetAuraMastery(Num);
         SetTimer();
-        return NULL;
+        return 0;
     }
 
     void OnUnitEnter(Unit* /*unit*/) override

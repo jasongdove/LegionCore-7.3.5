@@ -104,99 +104,99 @@ class DummyEntryCheckPredicate
 struct ScriptedAI : public CreatureAI
 {
     explicit ScriptedAI(Creature* creature);
-    virtual ~ScriptedAI() {}
+    virtual ~ScriptedAI() { }
 
     // *************
-    //CreatureAI Functions
+    // CreatureAI Functions
     // *************
 
-    void InitializeAI();
+    void InitializeAI() override;
     void AttackStartNoMove(Unit* target);
-    void AttackStart(Unit* who);
+    void AttackStart(Unit* who) override;
 
     // Called at any Damage from any attacker (before damage apply)
     void DamageTaken(Unit* /*attacker*/, uint32& /*damage*/, DamageEffectType dmgType) override { }
 
-    //Called at World update tick
-    virtual void UpdateAI(uint32 diff);
+    // Called at World update tick
+    virtual void UpdateAI(uint32 diff) override;
 
-    //Called at creature death
-    void JustDied(Unit* /*killer*/) {}
+    // Called at creature death
+    void JustDied(Unit* /*killer*/) override { }
 
-    void RecalcStats() {}
+    void RecalcStats() override { }
 
-    void ComonOnHome() {}
+    void ComonOnHome() override { }
 
-    //Called at creature killing another unit
-    void KilledUnit(Unit* /*victim*/) {}
+    // Called at creature killing another unit
+    void KilledUnit(Unit* /*victim*/) override { }
 
     // Called when the creature summon successfully other creature
-    void JustSummoned(Creature* /*summon*/) {}
-    
+    void JustSummoned(Creature* /*summon*/) override { }
+
     // Called when the creature summon successfully gameobject
-    void JustSummonedGO(GameObject* /*summon*/) {}
+    void JustSummonedGO(GameObject* /*summon*/) override { }
 
     // Called when a summoned creature is despawned
-    void SummonedCreatureDespawn(Creature* /*summon*/) {}
+    void SummonedCreatureDespawn(Creature* /*summon*/) override { }
 
     // Called when hit by a spell
-    void SpellHit(Unit* /*caster*/, SpellInfo const* /*spell*/) {}
+    void SpellHit(Unit* /*caster*/, SpellInfo const* /*spell*/) override { }
 
     // Called when spell hits a target
-    void SpellHitTarget(Unit* /*target*/, SpellInfo const* /*spell*/) {}
+    void SpellHitTarget(Unit* /*target*/, SpellInfo const* /*spell*/) override { }
 
     /// Called when spell miss a target
-    void SpellMissTarget(Unit* /*target*/, SpellInfo const* /*spellInfo*/, SpellMissInfo /*missInfo*/) { }
+    void SpellMissTarget(Unit* /*target*/, SpellInfo const* /*spellInfo*/, SpellMissInfo /*missInfo*/) override { }
 
-    //Called at waypoint reached or PointMovement end
-    void MovementInform(uint32 /*type*/, uint32 /*id*/) {}
+    // Called at waypoint reached or PointMovement end
+    void MovementInform(uint32 /*type*/, uint32 /*id*/) override { }
 
     // Called when AI is temporarily replaced or put back when possess is applied or removed
-    void OnPossess(bool /*apply*/) {}
+    void OnPossess(bool /*apply*/) { }
 
     // Called at any threat added from any attacker (before threat apply)
-    void OnAddThreat(Unit* /*victim*/, float& /*fThreat*/, SpellSchoolMask /*schoolMask*/, SpellInfo const* /*threatSpell*/) {}
+    void OnAddThreat(Unit* /*victim*/, float& /*fThreat*/, SpellSchoolMask /*schoolMask*/, SpellInfo const* /*threatSpell*/) override { }
 
     // *************
     // Variables
     // *************
 
-    //Pointer to creature we are manipulating
+    // Pointer to creature we are manipulating
     Creature* me;
 
-    //For fleeing
+    // For fleeing
     bool IsFleeing;
 
     // *************
-    //Pure virtual functions
+    // Pure virtual functions
     // *************
 
-    //Called at creature reset either by death or evade
-    void Reset() {}
+    // Called at creature reset either by death or evade
+    void Reset() override { }
 
-    //Called at creature aggro either by MoveInLOS or Attack Start
-    void EnterCombat(Unit* /*victim*/) {}
+    // Called at creature aggro either by MoveInLOS or Attack Start
+    void EnterCombat(Unit* /*victim*/) override { }
 
     // *************
-    //AI Helper Functions
+    // AI Helper Functions
     // *************
 
-    //Start movement toward victim
+    // Start movement toward victim
     void DoStartMovement(Unit* target, float distance = 0.0f, float angle = 0.0f);
 
-    //Start no movement on victim
+    // Start no movement on victim
     void DoStartNoMovement(Unit* target);
 
-    //Stop attack of current victim
+    // Stop attack of current victim
     void DoStopAttack();
 
-    //Cast spell by spell info
+    // Cast spell by spell info
     void DoCastSpell(Unit* target, SpellInfo const* spellInfo, bool triggered = false);
 
-    //Plays a sound to all nearby players
+    // Plays a sound to all nearby players
     void DoPlaySoundToSet(WorldObject* source, uint32 soundId);
 
-    //Drops all threat to 0%. Does not remove players from the threat list
+    // Drops all threat to 0%. Does not remove players from the threat list
     void DoResetThreat();
 
     float DoGetThreat(Unit* unit);
@@ -205,23 +205,23 @@ struct ScriptedAI : public CreatureAI
     void DoTeleportTo(float x, float y, float z, uint32 time = 0);
     void DoTeleportTo(float const pos[4]);
 
-    //Teleports a player without dropping threat (only teleports to same map)
+    // Teleports a player without dropping threat (only teleports to same map)
     void DoTeleportPlayer(Unit* unit, float x, float y, float z, float o);
     void DoTeleportAll(float x, float y, float z, float o);
 
-    //Returns friendly unit with the most amount of hp missing from max hp
+    // Returns friendly unit with the most amount of hp missing from max hp
     Unit* DoSelectLowestHpFriendly(float range, uint32 minHPDiff = 1);
 
-    //Returns a list of friendly CC'd units within range
+    // Returns a list of friendly CC'd units within range
     std::list<Creature*> DoFindFriendlyCC(float range);
 
-    //Returns a list of all friendly units missing a specific buff within range
+    // Returns a list of all friendly units missing a specific buff within range
     std::list<Creature*> DoFindFriendlyMissingBuff(float range, uint32 spellId);
 
-    //Return a player with at least minimumRange from me
+    // Return a player with at least minimumRange from me
     Player* GetPlayerAtMinimumRange(float minRange);
 
-    //Spawns a creature relative to me
+    // Spawns a creature relative to me
     Creature* DoSpawnCreature(uint32 entry, float offsetX, float offsetY, float offsetZ, float angle, uint32 type, uint32 despawntime);
 
     void SummonCreatureDelay(uint32 delayTimer, uint32 entry, const Position &pos, TempSummonType spawnType = TEMPSUMMON_MANUAL_DESPAWN, uint32 despawnTime = 0)
@@ -235,16 +235,16 @@ struct ScriptedAI : public CreatureAI
     float GetHealthPct(uint32 damage) const;
     float GetHealthPctWithHeal(uint32 heal) const;
 
-    //Returns spells that meet the specified criteria from the creatures spell list
+    // Returns spells that meet the specified criteria from the creatures spell list
     SpellInfo const* SelectSpell(Unit* target, uint32 school, uint32 mechanic, SelectTargetType targets, uint32 powerCostMin, uint32 powerCostMax, float rangeMin, float rangeMax, SelectEffect effect);
 
     void SetEquipmentSlots(bool loadDefault, int32 mainHand = EQUIP_NO_CHANGE, int32 offHand = EQUIP_NO_CHANGE, int32 ranged = EQUIP_NO_CHANGE);
 
-    //Generally used to control if MoveChase() is to be used or not in AttackStart(). Some creatures does not chase victims
+    // Generally used to control if MoveChase() is to be used or not in AttackStart(). Some creatures does not chase victims
     void SetCombatMovement(bool allowMovement);
     bool IsCombatMovementAllowed() const;
 
-    bool EnterEvadeIfOutOfCombatArea(uint32 const diff);
+    bool EnterEvadeIfOutOfCombatArea(uint32 diff);
     bool CheckHomeDistToEvade(uint32 diff, float dist = 0.0f, float x = 0.0f, float y = 0.0f, float z = 0.0f, bool onlyZ = false);
 
     // return true for heroic mode. i.e.
@@ -328,11 +328,11 @@ struct ScriptedAI : public CreatureAI
 
 struct Scripted_NoMovementAI : public ScriptedAI
 {
-    Scripted_NoMovementAI(Creature* creature) : ScriptedAI(creature) {}
+    Scripted_NoMovementAI(Creature* creature) : ScriptedAI(creature) { }
     virtual ~Scripted_NoMovementAI() {}
 
     //Called at each attack of me by any victim
-    void AttackStart(Unit* target);
+    void AttackStart(Unit* target) override;
 };
 
 class BossAI : public ScriptedAI
@@ -401,12 +401,12 @@ class WorldBossAI : public ScriptedAI
 {
     public:
         WorldBossAI(Creature* creature);
-        virtual ~WorldBossAI() {}
+        virtual ~WorldBossAI() { }
 
-        void JustSummoned(Creature* summon);
-        void SummonedCreatureDespawn(Creature* summon);
+        void JustSummoned(Creature* summon) override;
+        void SummonedCreatureDespawn(Creature* summon) override;
 
-        virtual void UpdateAI(uint32 diff);
+        virtual void UpdateAI(uint32 diff) override;
 
         // Hook used to execute events scheduled into EventMap without the need
         // to override UpdateAI
@@ -414,9 +414,9 @@ class WorldBossAI : public ScriptedAI
         // is supposed to run more than once
         virtual void ExecuteEvent(uint32 const /*eventId*/) { }
 
-        void Reset() { _Reset(); }
-        void EnterCombat(Unit* /*who*/) { _EnterCombat(); }
-        void JustDied(Unit* /*killer*/) { _JustDied(); }
+        void Reset() override { _Reset(); }
+        void EnterCombat(Unit* /*who*/) override { _EnterCombat(); }
+        void JustDied(Unit* /*killer*/) override { _JustDied(); }
 
     protected:
         void _Reset();
@@ -431,13 +431,13 @@ class BrawlersBossAI : public ScriptedAI
 {
     public:
         BrawlersBossAI(Creature* creature);
-        virtual ~BrawlersBossAI() {}
+        virtual ~BrawlersBossAI() { }
 
-        void JustSummoned(Creature* summon);
+        void JustSummoned(Creature* summon) override;
 
-        void JustDied(Unit* who) { _Reset(); if (who) _WinRound(); }
-        void EnterEvadeMode() { _Reset(); _LoseRound();}
-        void KilledUnit(Unit*  who);
+        void JustDied(Unit* who) override { _Reset(); if (who) _WinRound(); }
+        void EnterEvadeMode() override { _Reset(); _LoseRound();}
+        void KilledUnit(Unit*  who) override;
 
     protected:
         void _Reset();

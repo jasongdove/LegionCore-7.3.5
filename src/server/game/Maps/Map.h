@@ -581,7 +581,7 @@ class Map
         // Update object in map
         void AddUpdateObject(Object* obj);
         void RemoveUpdateObject(Object* obj);
-        void UpdateLoop(volatile uint32 _mapID);
+        void UpdateLoop(uint32 _mapID);
         uint32 GetUpdateTime() const;
         uint32 GetSessionTime() const;
         void SetMapUpdateInterval();
@@ -638,7 +638,7 @@ class Map
         uint32 m_activeEntry;
         uint32 m_activeEncounter;
 
-        void updateCollected(std::vector<WorldObject*>& objectsToUpdate, uint32 diff, volatile uint32 _mapId, volatile uint32 _instanceId);
+        void updateCollected(std::vector<WorldObject*>& objectsToUpdate, uint32 diff, uint32 _mapId, uint32 _instanceId);
         std::map<uint32, std::vector<WorldObject*>> i_objectUpdater[2][2];
         std::set<WorldObject*> i_objectTest;
         void VisitNearbyCellsOf(WorldObject* obj);

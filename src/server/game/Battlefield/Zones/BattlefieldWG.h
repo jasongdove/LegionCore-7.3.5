@@ -41,10 +41,11 @@ typedef std::set<WGWorkshop*> Workshop;
 typedef std::set<Group*> GroupSet;
 //typedef std::set<WintergraspCapturePoint *> CapturePointSet; unused ?
 
+static float constexpr POS_X_CENTER = 5100.f;
+
 enum WintergrastData
 {
     WG_MARK_OF_HONOR                             = 43589,
-    POS_X_CENTER                                 = 5100,
     BATTLEFIELD_WG_ZONEID                        = 4197,             // Wintergrasp
     BATTLEFIELD_WG_MAPID                         = 571               // Northrend
 };
