@@ -17,6 +17,7 @@
  */
 
 #include "CellImpl.h"
+#include "GameTime.h"
 #include "GossipDef.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
@@ -24,8 +25,8 @@
 #include "MapManager.h"
 #include "MapRefManager.h"
 #include "ObjectMgr.h"
-#include "ScriptedCreature.h"
 #include "ScriptMgr.h"
+#include "ScriptedCreature.h"
 #include "ScriptsData.h"
 #include "Transport.h"
 #include "WaypointManager.h"
@@ -57,7 +58,7 @@ void Map::ScriptsStart(ScriptMapMap const& scripts, uint32 id, Object* source, O
         sa.script = &iter->second;
         {
             std::lock_guard<std::recursive_mutex> _lock(m_scriptScheduleLock);
-            m_scriptSchedule.insert(std::make_pair(time_t(sWorld->GetGameTime() + iter->first), sa));
+            m_scriptSchedule.insert(std::make_pair(time_t(GameTime::GetGameTime() + iter->first), sa));
         }
         if (iter->first == 0)
             immedScript = true;
@@ -90,7 +91,7 @@ void Map::ScriptCommandStart(ScriptInfo const& script, uint32 delay, Object* sou
     sa.script = &script;
     {
         std::lock_guard<std::recursive_mutex> _lock(m_scriptScheduleLock);
-        m_scriptSchedule.insert(std::make_pair(time_t(sWorld->GetGameTime() + delay), sa));
+        m_scriptSchedule.insert(std::make_pair(time_t(GameTime::GetGameTime() + delay), sa));
     }
 
     sScriptMgr->IncreaseScheduledScriptsCount();
@@ -297,7 +298,7 @@ void Map::ScriptsProcess()
     ///- Process overdue queued scripts
     ScriptScheduleMap::iterator iter = m_scriptSchedule.begin();
     // ok as multimap is a *sorted* associative container
-    while (!m_scriptSchedule.empty() && (iter->first <= sWorld->GetGameTime()))
+    while (!m_scriptSchedule.empty() && (iter->first <= GameTime::GetGameTime()))
     {
         ScriptAction const& step = iter->second;
 

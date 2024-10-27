@@ -16,20 +16,21 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Common.h"
-#include "ObjectMgr.h"
-#include "Player.h"
-#include "World.h"
-#include "DatabaseEnv.h"
-#include "ScriptMgr.h"
-#include "AccountMgr.h"
 #include "AuctionHouseMgr.h"
+#include "AccountMgr.h"
 #include "AuctionHouseBot.h"
+#include "AuctionHousePackets.h"
+#include "Common.h"
+#include "DatabaseEnv.h"
+#include "GameTime.h"
 #include "Item.h"
+#include "ItemPackets.h"
 #include "Language.h"
 #include "Log.h"
-#include "ItemPackets.h"
-#include "AuctionHousePackets.h"
+#include "ObjectMgr.h"
+#include "Player.h"
+#include "ScriptMgr.h"
+#include "World.h"
 
 enum eAuctionHouse
 {
@@ -464,7 +465,7 @@ bool AuctionHouseObject::RemoveAuction(AuctionEntry* auction, uint32 /*itemEntry
 
 void AuctionHouseObject::Update()
 {
-    time_t curTime = sWorld->GetGameTime();
+    time_t curTime = GameTime::GetGameTime();
     ///- Handle expired auctions
 
     // If storage is empty, no need to update. next == NULL in this case.
@@ -549,7 +550,7 @@ void AuctionHouseObject::BuildListOwnerItems(WorldPackets::AuctionHouse::Auction
 void AuctionHouseObject::BuildListAuctionItems(WorldPackets::AuctionHouse::AuctionListItemsResult& packet, Player* player, std::wstring const& searchedname, uint32 listfrom, uint8 levelmin, uint8 levelmax, bool usable, Optional<AuctionSearchFilters> const& filters, uint32 quality)
 {
     LocaleConstant localeConstant = player->GetSession()->GetSessionDbLocaleIndex();
-    time_t curTime = sWorld->GetGameTime();
+    time_t curTime = GameTime::GetGameTime();
 
     for (AuctionEntryMap::const_iterator itr = AuctionsMap.begin(); itr != AuctionsMap.end(); ++itr)
     {
@@ -637,7 +638,7 @@ void AuctionHouseObject::BuildListAuctionItems(WorldPackets::AuctionHouse::Aucti
 
 void AuctionHouseObject::BuildReplicate(WorldPackets::AuctionHouse::AuctionReplicateResponse& auctionReplicateResult, Player* player, uint32 global, uint32 cursor, uint32 tombstone, uint32 count)
 {
-    time_t curTime = sWorld->GetGameTime();
+    time_t curTime = GameTime::GetGameTime();
 
     auto throttleItr = GetAllThrottleMap.find(player->GetGUID());
     if (throttleItr != GetAllThrottleMap.end())
@@ -697,7 +698,7 @@ void AuctionEntry::BuildAuctionInfo(std::vector<WorldPackets::AuctionHouse::Auct
     auctionItem.Charges = item->GetSpellCharges();
     auctionItem.Count = item->GetCount();
     auctionItem.DeleteReason = 0; // Always 0 ?
-    auctionItem.DurationLeft = (expire_time - time(nullptr)) * IN_MILLISECONDS;
+    auctionItem.DurationLeft = (expire_time - GameTime::GetGameTime()) * IN_MILLISECONDS;
     auctionItem.EndTime = expire_time;
     auctionItem.Flags = 0; // todo
     auctionItem.ItemGuid = item->GetGUID();

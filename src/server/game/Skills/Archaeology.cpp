@@ -683,7 +683,7 @@ bool Player::SolveResearchProject(uint32 spellId, SpellCastTargets& targets)
 
     WorldPackets::Misc::ResearchComplete packet;
     packet.Research.ProjectID = entry->ID;
-    packet.Research.FirstCompleted = time(nullptr);
+    packet.Research.FirstCompleted = GameTime::GetGameTime();
     packet.Research.CompletionCount = AddCompletedProject(entry);
     SendDirectMessage(packet.Write());
 

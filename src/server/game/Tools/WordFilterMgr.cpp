@@ -494,7 +494,7 @@ bool WordFilterMgr::AddComplaintForUser(const ObjectGuid & offender, const Objec
     if (text.empty())
         return false;
 
-    if (info.m_muteTime > time(NULL) && info.m_muteCount >= 2) // just banned maximum ??
+    if (info.m_muteTime > GameTime::GetGameTime() && info.m_muteCount >= 2) // just banned maximum ??
         return false;
 
     if (info.m_complaintsByUsers.find(complainant) != info.m_complaintsByUsers.end())
@@ -544,7 +544,7 @@ bool WordFilterMgr::AddComplaintForUser(const ObjectGuid & offender, const Objec
         {
             sWorld->MuteAccount(accountid, sWorld->getIntConfig(config), ss.str().c_str(), "Server");
 
-            info.m_muteTime = time(NULL) + sWorld->getIntConfig(config)*MINUTE;
+            info.m_muteTime = GameTime::GetGameTime() + sWorld->getIntConfig(config)*MINUTE;
         }
 
         ++info.m_muteCount;

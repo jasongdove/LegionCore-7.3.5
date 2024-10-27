@@ -313,7 +313,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petEntry, uint32 petnumber, bool c
             break;
     }
 
-    SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(time(nullptr))); // cast can't be helped here
+    SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(GameTime::GetGameTime())); // cast can't be helped here
     SetCreatorGUID(owner->GetGUID());
 
     InitStatsForLevel(petlevel);
@@ -408,7 +408,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petEntry, uint32 petnumber, bool c
         if (m_removed)
             return;
 
-        uint32 timediff = uint32(time(nullptr) - lastSaveTime);
+        uint32 timediff = uint32(GameTime::GetGameTime() - lastSaveTime);
         _LoadAuras(holder.GetPreparedResult(PetLoadQueryHolder::AURAS), holder.GetPreparedResult(PetLoadQueryHolder::AURA_EFFECTS), timediff);
 
         // load action bar, if data broken will fill later by default spells.
@@ -561,7 +561,7 @@ void Pet::SavePetToDB(PetSaveMode mode)
         stmt->setUInt32(10, curhealth);
         stmt->setUInt32(11, curmana);
         stmt->setString(12, actionBar);
-        stmt->setUInt32(13, time(nullptr));
+        stmt->setUInt32(13, GameTime::GetGameTime());
         stmt->setUInt32(14, GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL));
         stmt->setUInt8(15, getPetType());
         stmt->setUInt16(16, GetSpecialization());
@@ -590,7 +590,7 @@ void Pet::FillPetInfo(PetStable::PetInfo* petInfo) const
     petInfo->Health = GetHealth();
     petInfo->Mana = GetPower(POWER_MANA);
     petInfo->ActionBar = GenerateActionBarData();
-    petInfo->LastSaveTime = time(nullptr);
+    petInfo->LastSaveTime = GameTime::GetGameTime();
     petInfo->CreatedBySpellId = GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL);
     petInfo->Type = getPetType();
     petInfo->SpecializationId = GetSpecialization();
@@ -669,7 +669,7 @@ void Pet::Update(uint32 diff)
     {
         case CORPSE:
         {
-            if (getPetType() != HUNTER_PET || m_corpseRemoveTime <= time(nullptr))
+            if (getPetType() != HUNTER_PET || m_corpseRemoveTime <= GameTime::GetGameTime())
             {
                 Remove(PET_SAVE_NOT_IN_SLOT);               //hunters' pets never get removed because of death, NEVER!
                 m_isUpdate = false;
@@ -1126,7 +1126,7 @@ void Pet::_LoadSpellCooldowns()
 
     if (result)
     {
-        time_t curTime = time(nullptr);
+        time_t curTime = GameTime::GetGameTime();
 
         WorldPackets::Spells::SpellCooldown cooldowns;
         cooldowns.Caster = GetGUID();
@@ -1169,7 +1169,7 @@ void Pet::_SaveSpellCooldowns(CharacterDatabaseTransaction& trans)
     stmt->setUInt32(0, m_charmInfo->GetPetNumber());
     trans->Append(stmt);
 
-    time_t curTime = time(nullptr);
+    time_t curTime = GameTime::GetGameTime();
 
     // remove oudated and save active
     for (auto itr = m_CreatureSpellCooldowns.begin(); itr != m_CreatureSpellCooldowns.end();)
@@ -2290,7 +2290,7 @@ void Pet::CheckSpecialization()
 
 void Pet::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs)
 {
-    time_t curTime = time(nullptr);
+    time_t curTime = GameTime::GetGameTime();
 
     WorldPackets::Spells::SpellCooldown cooldowns;
     cooldowns.Caster = GetGUID();

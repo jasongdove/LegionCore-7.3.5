@@ -242,7 +242,7 @@ void GroupMgr::LoadGroups()
             if (!difficultyEntry || difficultyEntry->InstanceType != mapEntry->InstanceType)
                 continue;
 
-            if (resetTime <= time(nullptr))
+            if (resetTime <= GameTime::GetGameTime())
             {
                 CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_GROUP_INSTANCE_BY_GUID);
                 stmt->setUInt64(0, guid);

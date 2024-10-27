@@ -26,7 +26,7 @@
 #include "Chat.h"
 #include "World.h"
 
-inline float GetAge(uint64 t) { return float(time(nullptr) - t) / DAY; }
+inline float GetAge(uint64 t) { return float(GameTime::GetGameTime() - t) / DAY; }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // GM ticket
@@ -34,7 +34,7 @@ GmTicket::GmTicket(): _id(0), _mapId(0), _createTime(0), _lastModifiedTime(0), _
 {
 }
 
-GmTicket::GmTicket(Player* player, WorldPackets::Ticket::SupportTicketSubmitBug& packet) : _createTime(time(nullptr)), _lastModifiedTime(time(nullptr)), _completed(false), _escalatedStatus(TICKET_UNASSIGNED), _viewed(false)
+GmTicket::GmTicket(Player* player, WorldPackets::Ticket::SupportTicketSubmitBug& packet) : _createTime(GameTime::GetGameTime()), _lastModifiedTime(GameTime::GetGameTime()), _completed(false), _escalatedStatus(TICKET_UNASSIGNED), _viewed(false)
 {
     _id = sTicketMgr->GenerateTicketId();
     _playerName = player->GetName();
@@ -115,7 +115,7 @@ void GmTicket::DeleteFromDB()
 
 std::string GmTicket::FormatMessageString(ChatHandler& handler, bool detailed) const
 {
-    time_t curTime = time(nullptr);
+    time_t curTime = GameTime::GetGameTime();
 
     std::stringstream ss;
     std::string nameLink = handler.playerLink(_playerName);
@@ -175,7 +175,7 @@ void GmTicket::TeleportTo(Player* player) const
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Ticket manager
-TicketMgr::TicketMgr() : _status(true), _lastTicketId(0), _lastSurveyId(0), _openTicketCount(0), _lastChange(time(nullptr)) { }
+TicketMgr::TicketMgr() : _status(true), _lastTicketId(0), _lastSurveyId(0), _openTicketCount(0), _lastChange(GameTime::GetGameTime()) { }
 
 TicketMgr::~TicketMgr()
 {

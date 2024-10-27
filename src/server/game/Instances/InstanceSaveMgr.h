@@ -20,6 +20,7 @@
 #define _INSTANCESAVEMGR_H
 
 #include "DBCEnums.h"
+#include "GameTime.h"
 #include "ObjectDefines.h"
 #include <safe_ptr.h>
 
@@ -98,7 +99,7 @@ class InstanceSave
         void SetExtended(bool extended) { m_extended = extended; }
         bool GetExtended() const { return m_extended; }
 
-        bool SaveIsOld() const { return m_resetTime && m_resetTime <= time(nullptr); }
+        bool SaveIsOld() const { return m_resetTime && m_resetTime <= GameTime::GetGameTime(); }
 
         /* currently it is possible to omit this information from this structure
            but that would depend on a lot of things that can easily change in future */

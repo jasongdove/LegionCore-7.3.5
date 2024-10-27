@@ -36,7 +36,7 @@
 
 Warden::Warden(WorldSession* session) : _session(session), _inputCrypto(16), _outputCrypto(16), _state(WARDEN_NOT_INITIALIZED), _currentSessionFlagged(false), _checkSequenceIndex(0)
 {
-    _lastUpdateTime = getMSTime();
+    _lastUpdateTime = GameTime::GetGameTimeMS();
     _currentModule = nullptr;
 
     CreateTimers();
@@ -184,7 +184,7 @@ void Warden::RequestHash()
 
 void Warden::Update()
 {
-    uint32 currentUpdateTime = getMSTime();
+    uint32 currentUpdateTime = GameTime::GetGameTimeMS();
     const uint32 diff = currentUpdateTime - _lastUpdateTime;
     _lastUpdateTime = currentUpdateTime;
 

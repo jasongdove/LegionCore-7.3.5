@@ -492,7 +492,7 @@ void WorldSession::HandleGuildRewardsQueryOpcode(WorldPackets::Guild::RequestGui
         std::vector<GuildReward> const& rewards = sGuildMgr->GetGuildRewards();
 
         WorldPackets::Guild::GuildRewardList rewardList;
-        rewardList.Version = time(nullptr);
+        rewardList.Version = GameTime::GetGameTime();
         rewardList.RewardItems.reserve(rewards.size());
 
         for (const auto& reward : rewards)

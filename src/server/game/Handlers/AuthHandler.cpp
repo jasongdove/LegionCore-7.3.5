@@ -54,7 +54,7 @@ void WorldSession::SendAuthResponse(uint8 code, bool queued /*= false*/, uint32 
         response.SuccessInfo->CurrencyID = GetBattlePayMgr()->GetShopCurrency();
         response.SuccessInfo->VirtualRealms.emplace_back(GetVirtualRealmAddress(), true, false, sObjectMgr->GetRealmName(realm.Id.Realm), sObjectMgr->GetNormalizedRealmName(realm.Id.Realm));
         response.SuccessInfo->AvailableClasses = &sObjectMgr->GetClassExpansionRequirements();
-        response.SuccessInfo->Time = int32(time(nullptr));
+        response.SuccessInfo->Time = int32(GameTime::GetGameTime());
 
 
             for (auto& templ : charTemplateData)

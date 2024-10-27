@@ -2275,7 +2275,7 @@ public:
         //data.Encounter->EncounterID = 1704;
         //data.Encounter->Expansion = CURRENT_EXPANSION;
         //data.Encounter->DifficultyID = 16;
-        //data.Encounter->StartTime = time(nullptr);
+        //data.Encounter->StartTime = GameTime::GetGameTime();
         //data.Encounter->CombatDuration = 7 * MINUTE;
         //data.Encounter->EndTime = data.Encounter->StartTime + data.Encounter->CombatDuration;
         //data.Encounter->Success = true;

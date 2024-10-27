@@ -65,7 +65,7 @@ void BattlegroundTwinPeaks::PostUpdateImpl(uint32 diff)
         if (GetElapsedTime() >= Minutes(17))
             Battleground::BattlegroundTimedWin(2);
         //else if (GetElapsedTime() > Minutes(3))
-        //    UpdateWorldState(WorldStates::BG_WS_CURRENT_TIMER, int32(time(nullptr) + std::chrono::duration_cast<Seconds>(Minutes(15) - GetElapsedTime()).count()));
+        //    UpdateWorldState(WorldStates::BG_WS_CURRENT_TIMER, int32(GameTime::GetGameTime() + std::chrono::duration_cast<Seconds>(Minutes(15) - GetElapsedTime()).count()));
 
         for (uint8 team = TEAM_ALLIANCE; team < MAX_TEAMS; ++team)
         {
@@ -199,7 +199,7 @@ void BattlegroundTwinPeaks::StartingEventOpenDoors()
     StartTimedAchievement(CRITERIA_TIMED_TYPE_EVENT2, BG_EVENT_START_BATTLE);
 
     UpdateWorldState(WorldStates::BG_WS_ENABLE_TIMER, 1);
-    UpdateWorldState(WorldStates::BG_WS_CURRENT_TIMER, int32(time(nullptr) + std::chrono::duration_cast<Seconds>(Minutes(15)).count()));
+    UpdateWorldState(WorldStates::BG_WS_CURRENT_TIMER, int32(GameTime::GetGameTime() + std::chrono::duration_cast<Seconds>(Minutes(15)).count()));
 }
 
 bool BattlegroundTwinPeaks::SetupBattleground()
@@ -293,7 +293,7 @@ void BattlegroundTwinPeaks::FillInitialWorldStates(WorldPackets::WorldState::Ini
         }
 
         packet.Worldstates.emplace_back(WorldStates::BG_WS_ENABLE_TIMER, 1);
-        packet.Worldstates.emplace_back(WorldStates::BG_WS_CURRENT_TIMER, int32(time(nullptr) + std::chrono::duration_cast<Seconds>(Minutes(15) - GetElapsedTime()).count()));
+        packet.Worldstates.emplace_back(WorldStates::BG_WS_CURRENT_TIMER, int32(GameTime::GetGameTime() + std::chrono::duration_cast<Seconds>(Minutes(15) - GetElapsedTime()).count()));
     }
     else
     {

@@ -3934,11 +3934,11 @@ public:
         case GOSSIP_ACTION_INFO_DEF + 2:
         {
             auto itr = RewardsPreview.find(player->GetGUID());
-            if ((itr != RewardsPreview.end() && time(NULL) - (*itr).second >= 90) || itr == RewardsPreview.end())
+            if ((itr != RewardsPreview.end() && GameTime::GetGameTime() - (*itr).second >= 90) || itr == RewardsPreview.end())
             {
                 if (auto prev = player->SummonCreature(542002, creature->GetPosition(), TEMPSUMMON_TIMED_DESPAWN, 90000, 0, player->GetGUID()))
                 {
-                    RewardsPreview[player->GetGUID()] = time(NULL);
+                    RewardsPreview[player->GetGUID()] = GameTime::GetGameTime();
                     prev->AddPlayerInPersonnalVisibilityList(player->GetGUID());
                     prev->GetMotionMaster()->MoveFollow(player, 1.f, 2.f);
                 }

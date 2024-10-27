@@ -574,9 +574,9 @@ void Scenario::SendStepUpdate(Player* player, bool full)
                 progress.Quantity = treeProgress.Counter;
                 progress.Player = ObjectGuid::Create<HighGuid::Scenario>(0, GetScenarioId(), 1); // whats the fuck ?
                 progress.Flags = 0;
-                progress.Date = time(nullptr) - treeProgress.date;
-                progress.TimeFromStart = time(nullptr) - treeProgress.date;
-                progress.TimeFromCreate = time(nullptr) - treeProgress.date;
+                progress.Date = GameTime::GetGameTime() - treeProgress.date;
+                progress.TimeFromStart = GameTime::GetGameTime() - treeProgress.date;
+                progress.TimeFromCreate = GameTime::GetGameTime() - treeProgress.date;
                 state.Progress.push_back(progress);
             }
         }

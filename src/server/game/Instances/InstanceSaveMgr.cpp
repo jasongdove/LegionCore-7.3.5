@@ -133,7 +133,7 @@ InstanceSave* InstanceSaveManager::AddInstanceSave(uint32 mapId, uint32 instance
     // for normal instances if no creatures are killed the instance will reset in two hours
     if (entry->InstanceType != MAP_RAID && difficulty <= DIFFICULTY_NORMAL)
     {
-        time_t _resetTime = time(nullptr) + 2 * HOUR;
+        time_t _resetTime = GameTime::GetGameTime() + 2 * HOUR;
         // normally this will be removed soon after in InstanceMap::Add, prevent error
         ScheduleReset(true, _resetTime, InstResetEvent(0, mapId, difficulty, instanceId));
     }
@@ -376,7 +376,7 @@ void InstanceSaveManager::ScheduleReset(bool add, time_t time, InstResetEvent ev
 
 void InstanceSaveManager::Update()
 {
-    time_t now = time(nullptr);
+    time_t now = GameTime::GetGameTime();
 
     _resetTimeLock.lock();
     while (!m_resetTimeQueue.empty())
@@ -468,12 +468,12 @@ void InstanceSaveManager::ResetOrWarnAll(uint32 mapid, Difficulty difficulty, Ch
                 itr->second->SetExtended(false);
                 ++itr;
             }
-            else if ((itr->second->GetResetTime() + MONTH) <= time(nullptr))
+            else if ((itr->second->GetResetTime() + MONTH) <= GameTime::GetGameTime())
                 _ResetSave(itr);
             else
                 ++itr;
 
-            // TC_LOG_DEBUG("server.loading", "InstanceSaveMgr::ResetOrWarnAll mapid %u, difficulty %u time %u GetResetTime %u", mapid, difficulty, time(NULL), (itr->second->GetResetTime() + MONTH));
+            // TC_LOG_DEBUG("server.loading", "InstanceSaveMgr::ResetOrWarnAll mapid %u, difficulty %u time %u GetResetTime %u", mapid, difficulty, GameTime::GetGameTime(), (itr->second->GetResetTime() + MONTH));
         }
         else
             ++itr;
@@ -483,7 +483,7 @@ void InstanceSaveManager::ResetOrWarnAll(uint32 mapid, Difficulty difficulty, Ch
     CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_INSTANCE_BY_MAP_DIFF);
     stmt->setUInt16(0, uint16(mapid));
     stmt->setUInt8(1, uint8(difficulty));
-    stmt->setUInt32(2, time(nullptr));
+    stmt->setUInt32(2, GameTime::GetGameTime());
     trans->Append(stmt);
 
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_GROUP_INSTANCE_BY_MAP_DIFF);

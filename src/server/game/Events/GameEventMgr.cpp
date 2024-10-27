@@ -17,22 +17,23 @@
  */
 
 #include "GameEventMgr.h"
-#include "World.h"
-#include "ObjectMgr.h"
-#include "WorldPacket.h"
-#include "PoolMgr.h"
+#include "BattlegroundMgr.h"
+#include "DatabaseEnv.h"
+#include "GameObjectAI.h"
+#include "GameTime.h"
 #include "Language.h"
 #include "Log.h"
 #include "MapManager.h"
-#include <WowTime.hpp>
-#include "Player.h"
-#include "BattlegroundMgr.h"
-#include "UnitAI.h"
-#include "GameObjectAI.h"
-#include "DatabaseEnv.h"
-#include "QuestData.h"
-#include "WorldStateMgr.h"
+#include "ObjectMgr.h"
 #include "OutdoorPvPMgr.h"
+#include "Player.h"
+#include "PoolMgr.h"
+#include "QuestData.h"
+#include "UnitAI.h"
+#include "World.h"
+#include "WorldPacket.h"
+#include "WorldStateMgr.h"
+#include <WowTime.hpp>
 
 static uint32 timerConstant = 946684800; // 01/01/2000 00:00:00
 
@@ -53,7 +54,7 @@ bool GameEventMgr::CheckOneGameEvent(uint16 entry) const
     default:
     case GAMEEVENT_NORMAL:
     {
-        time_t currenttime = time(nullptr);
+        time_t currenttime = GameTime::GetGameTime();
         // Get the event information
         return mGameEvent[entry].start < currenttime
             && currenttime < mGameEvent[entry].end
@@ -70,7 +71,7 @@ bool GameEventMgr::CheckOneGameEvent(uint16 entry) const
         // if inactive world event, check the prerequisite events
     case GAMEEVENT_WORLD_INACTIVE:
     {
-        time_t currenttime = time(nullptr);
+        time_t currenttime = GameTime::GetGameTime();
         for (auto itr = mGameEvent[entry].prerequisite_events.begin(); itr != mGameEvent[entry].prerequisite_events.end(); ++itr)
         {
             if ((mGameEvent[*itr].state != GAMEEVENT_WORLD_NEXTPHASE && mGameEvent[*itr].state != GAMEEVENT_WORLD_FINISHED) ||   // if prereq not in nextphase or finished state, then can't start this one
@@ -86,7 +87,7 @@ bool GameEventMgr::CheckOneGameEvent(uint16 entry) const
 
 uint32 GameEventMgr::NextCheck(uint16 entry) const
 {
-    time_t currenttime = time(nullptr);
+    time_t currenttime = GameTime::GetGameTime();
 
     // for NEXTPHASE state world events, return the delay to start the next event, so the followup event will be checked correctly
     if ((mGameEvent[entry].state == GAMEEVENT_WORLD_NEXTPHASE || mGameEvent[entry].state == GAMEEVENT_WORLD_FINISHED) && mGameEvent[entry].nextstart >= currenttime)
@@ -144,7 +145,7 @@ bool GameEventMgr::StartEvent(uint16 event_id, bool overwrite)
         ApplyNewEvent(event_id);
         if (overwrite)
         {
-            mGameEvent[event_id].start = time(nullptr);
+            mGameEvent[event_id].start = GameTime::GetGameTime();
             if (data.end <= data.start)
                 data.end = data.start + data.length;
         }
@@ -242,7 +243,7 @@ void GameEventMgr::StopEvent(uint16 event_id, bool overwrite)
 
     if (overwrite && !serverwide_evt)
     {
-        data.start = time(nullptr) - data.length * MINUTE;
+        data.start = GameTime::GetGameTime() - data.length * MINUTE;
         if (data.end <= data.start)
             data.end = data.start + data.length;
     }
@@ -272,7 +273,7 @@ void GameEventMgr::StopEvent(uint16 event_id, bool overwrite)
 
     if (event_id == 308) //Un'goro Madness (Micro-Holiday)
     {
-        time_t t = time(nullptr);
+        time_t t = GameTime::GetGameTime();
         struct tm * now = localtime(&t);
         uint16 new_year = (now->tm_year + 1900) + 1;
 
@@ -312,7 +313,7 @@ void GameEventMgr::LoadFromDB()
             pGameEvent.start = time_t(starttime);
             uint64 endtime = fields[2].GetUInt64();
             if (fields[2].IsNull())
-                endtime = sWorld->GetGameTime() + 63072000; // add 2 years to current date
+                endtime = GameTime::GetGameTime() + 63072000; // add 2 years to current date
             pGameEvent.end = time_t(endtime);
             pGameEvent.occurence = fields[3].GetUInt64();
             pGameEvent.length = fields[4].GetUInt64();
@@ -1118,7 +1119,7 @@ void GameEventMgr::StartArenaSeason()
 
 uint32 GameEventMgr::Update()                               // return the next event delay in ms
 {
-    time_t currenttime = time(nullptr);
+    time_t currenttime = GameTime::GetGameTime();
     uint32 nextEventDelay = max_ge_check_delay;             // 1 day
     std::set<uint16> activate, deactivate;
     for (size_t itr = 1; itr < mGameEvent.size(); ++itr)
@@ -1767,7 +1768,7 @@ bool GameEventMgr::CheckOneGameEventConditions(uint16 event_id)
     // set the followup events' start time
     if (!mGameEvent[event_id].nextstart)
     {
-        time_t currenttime = time(nullptr);
+        time_t currenttime = GameTime::GetGameTime();
         mGameEvent[event_id].nextstart = currenttime + mGameEvent[event_id].length * 60;
     }
     return true;
@@ -1869,7 +1870,7 @@ bool GameEventMgr::IsHolidayActive(int32 holidayID, uint32& expirationTime) cons
             if (!choosedDuration)
                 choosedDuration = 24;
 
-            time_t l_CurrentTime = sWorld->GetGameTime();
+            time_t l_CurrentTime = GameTime::GetGameTime();
             struct tm l_LocalTime;
             l_LocalTime.tm_isdst = -1;
 
@@ -1976,6 +1977,6 @@ bool GameEventMgr::IsHolidayActive(int32 holidayID, uint32& expirationTime) cons
 
 uint32 GameEventMgr::GetCountOfRepeatEvent(uint32 event) const
 {
-    time_t currenttime = time(nullptr);
+    time_t currenttime = GameTime::GetGameTime();
     return ceil(float(currenttime - mGameEvent[event].start) / float(mGameEvent[event].occurence * MINUTE));
 }

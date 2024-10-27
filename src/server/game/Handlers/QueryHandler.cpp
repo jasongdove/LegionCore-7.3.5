@@ -47,7 +47,7 @@ void WorldSession::HandleQueryTime(WorldPackets::Query::QueryTime& /*packet*/)
 void WorldSession::SendQueryTimeResponse()
 {
     WorldPackets::Query::QueryTimeResponse queryTimeResponse;
-    queryTimeResponse.CurrentTime = time(nullptr);
+    queryTimeResponse.CurrentTime = GameTime::GetGameTime();
     SendPacket(queryTimeResponse.Write());
 }
 

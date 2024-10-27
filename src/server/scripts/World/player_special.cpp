@@ -513,7 +513,7 @@ public:
 
             uint32 notSpeakTime = penaltyTime;
 
-            int64 muteTime = time(NULL) + notSpeakTime * MINUTE;
+            int64 muteTime = GameTime::GetGameTime() + notSpeakTime * MINUTE;
             player->GetSession()->m_muteTime = muteTime;
             stmt->setInt64(0, muteTime);
             ChatHandler(player).PSendSysMessage(LANG_YOUR_CHAT_DISABLED, notSpeakTime, reasonStr.str().c_str());
@@ -598,7 +598,7 @@ public:
         auto itr = timers.find(player->GetGUID());
 
         if (itr != timers.end())
-            if (time(NULL) - (*itr).second< 1)
+            if (GameTime::GetGameTime() - (*itr).second< 1)
                 return;
 
         if (player->isBeingLoaded() || player->IsBeingTeleported())
@@ -607,7 +607,7 @@ public:
         if (player->GetMapId() != 1669)
             return;
 
-        timers[player->GetGUID()] = time(NULL);
+        timers[player->GetGUID()] = GameTime::GetGameTime();
         for (const auto pos : windikarPos)
             if (player->GetDistance2d(pos.GetPositionX(), pos.GetPositionY()) <= 90.0f)
             {

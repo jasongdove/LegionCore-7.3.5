@@ -129,10 +129,10 @@ void WorldSession::HandleSendMail(WorldPackets::Mail::SendMail& packet)
     
     if (!packet.Info.SendMoney && packet.Info.Attachments.empty())
     {
-        if (!player->CanSpeak() && player->GetSession()->m_muteTime - time(nullptr) <= 10*MINUTE)
+        if (!player->CanSpeak() && player->GetSession()->m_muteTime - GameTime::GetGameTime() <= 10*MINUTE)
         {
             // player->SendMailResult(0, MAIL_SEND, MAIL_ERR_MAIL_ATTACHMENT_INVALID);
-            std::string timeStr = secsToTimeString(player->GetSession()->m_muteTime - time(nullptr));
+            std::string timeStr = secsToTimeString(player->GetSession()->m_muteTime - GameTime::GetGameTime());
             player->GetSession()->SendNotification(GetTrinityString(LANG_WAIT_BEFORE_SPEAKING), timeStr.c_str());
             return;
         }
@@ -361,7 +361,7 @@ void WorldSession::HandleMailReturnToSender(WorldPackets::Mail::MailReturnToSend
 {
     Player* player = _player;
     Mail* m = player->GetMail(packet.MailID);
-    if (!m || m->state == MAIL_STATE_DELETED || m->deliver_time > time(nullptr) || m->sender != packet.SenderGUID.GetCounter())
+    if (!m || m->state == MAIL_STATE_DELETED || m->deliver_time > GameTime::GetGameTime() || m->sender != packet.SenderGUID.GetCounter())
     {
         player->SendMailResult(packet.MailID, MAIL_RETURNED_TO_SENDER, MAIL_ERR_INTERNAL_ERROR);
         return;
@@ -420,7 +420,7 @@ void WorldSession::HandleMailTakeItem(WorldPackets::Mail::MailTakeItem& packet)
 
     uint32 AttachID = packet.AttachID;
     Mail* m = player->GetMail(packet.MailID);
-    if (!m || m->state == MAIL_STATE_DELETED || m->deliver_time > time(nullptr))
+    if (!m || m->state == MAIL_STATE_DELETED || m->deliver_time > GameTime::GetGameTime())
     {
         player->SendMailResult(packet.MailID, MAIL_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR);
         return;
@@ -522,7 +522,7 @@ void WorldSession::HandleMailTakeMoney(WorldPackets::Mail::MailTakeMoney& packet
         return;
 
     Mail* m = player->GetMail(packet.MailID);
-    if ((!m || m->state == MAIL_STATE_DELETED || m->deliver_time > time(nullptr)) || (packet.Money > 0 && m->money != packet.Money))
+    if ((!m || m->state == MAIL_STATE_DELETED || m->deliver_time > GameTime::GetGameTime()) || (packet.Money > 0 && m->money != packet.Money))
     {
         player->SendMailResult(packet.MailID, MAIL_MONEY_TAKEN, MAIL_ERR_INTERNAL_ERROR);
         return;
@@ -564,7 +564,7 @@ void WorldSession::HandleGetMailList(WorldPackets::Mail::MailGetList& packet)
     Trinity::VisitNearbyObject(player, 5.0f, searcher);
 
     WorldPackets::Mail::MailListResult response;
-    time_t cur_time = time(nullptr);
+    time_t cur_time = GameTime::GetGameTime();
 
     // create bit stream
     for (auto itr = player->GetMailBegin(); itr != player->GetMailEnd(); ++itr)
@@ -594,7 +594,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPackets::Mail::MailCreateTextIt
     Player* player = _player;
 
     Mail* m = player->GetMail(packet.MailID);
-    if (!m || (m->body.empty() && !m->mailTemplateId) || m->state == MAIL_STATE_DELETED || m->deliver_time > time(nullptr))
+    if (!m || (m->body.empty() && !m->mailTemplateId) || m->state == MAIL_STATE_DELETED || m->deliver_time > GameTime::GetGameTime())
     {
         player->SendMailResult(packet.MailID, MAIL_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR);
         return;
@@ -658,7 +658,7 @@ void WorldSession::HandleQueryNextMailTime(WorldPackets::Mail::MailQueryNextMail
     {
         result.NextMailTime = 0.0f;
 
-        time_t now = time(nullptr);
+        time_t now = GameTime::GetGameTime();
         std::set<ObjectGuid::LowType> sentSenders;
 
         for (auto itr = _player->GetMailBegin(); itr != _player->GetMailEnd(); ++itr)

@@ -993,7 +993,7 @@ uint32 GarrisonMgr::GetShipmentID(GarrShipment const* shipment)
     if (shipment->cEntry->GarrBuildingType != GARR_BTYPE_TRADING_POST)
         return shipment->ShipmentID;
 
-    if (time(nullptr) > _randShipment[shipment->ContainerID].Timer)
+    if (GameTime::GetGameTime() > _randShipment[shipment->ContainerID].Timer)
     {
         uint32 count = sDB2Manager._charShipmentConteiner.count(shipment->ContainerID);
         if (!count)
@@ -1012,7 +1012,7 @@ uint32 GarrisonMgr::GetShipmentID(GarrShipment const* shipment)
             i++;
         }
 
-        _randShipment[shipment->ContainerID].Timer = time(nullptr) + DAY;
+        _randShipment[shipment->ContainerID].Timer = GameTime::GetGameTime() + DAY;
     }
 
     return _randShipment[shipment->ContainerID].ShipmentID;

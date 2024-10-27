@@ -1103,7 +1103,7 @@ void InstanceScript::ResetChallengeMode()
     if (_challenge)
         _challenge->ResetGo();
 
-    instance->m_respawnChallenge = time(nullptr); // For respawn all mobs
+    instance->m_respawnChallenge = GameTime::GetGameTime(); // For respawn all mobs
     RepopPlayersAtGraveyard();
     instance->SetSpawnMode(DIFFICULTY_MYTHIC_DUNGEON);
 }
@@ -1374,7 +1374,7 @@ void InstanceScript::StartEncounterLogging(uint32 encounterId)
     _logData.Encounter->EncounterStarded = true;
     _logData.Encounter->EncounterID = encounterId;
     _logData.Encounter->DifficultyID = instance->GetDifficultyID();
-    _logData.Encounter->StartTime = uint32(time(nullptr));
+    _logData.Encounter->StartTime = uint32(GameTime::GetGameTime());
 
     for (const auto& itr : instance->GetPlayers())
     {
@@ -1404,8 +1404,8 @@ void InstanceScript::LogCompletedEncounter(bool success)
         return;
 
     _logData.Encounter.emplace();
-    _logData.Encounter->CombatDuration = uint32(time(nullptr)) - _logData.Encounter->StartTime;
-    _logData.Encounter->EndTime = uint32(time(nullptr));
+    _logData.Encounter->CombatDuration = uint32(GameTime::GetGameTime()) - _logData.Encounter->StartTime;
+    _logData.Encounter->EndTime = uint32(GameTime::GetGameTime());
     _logData.Encounter->Success = success;
 
     instance->ApplyOnEveryPlayer([&](Player* player)

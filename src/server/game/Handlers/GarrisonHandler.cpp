@@ -78,7 +78,7 @@ void WorldSession::HandleGarrisonMissionBonusRoll(WorldPackets::Garrison::Garris
         if (mission->PacketInfo.State != MISSION_STATE_WAITING_BONUS && mission->PacketInfo.State != MISSION_STATE_WAITING_OWERMAX_BONUS)
             return false;
 
-        if (mission->PacketInfo.StartTime + mission->PacketInfo.Duration > time(nullptr))
+        if (mission->PacketInfo.StartTime + mission->PacketInfo.Duration > GameTime::GetGameTime())
             return false;
 
         return true;
@@ -145,7 +145,7 @@ void WorldSession::HandleGarrisonCompleteMission(WorldPackets::Garrison::Garriso
             if (mission->PacketInfo.State != MISSION_STATE_IN_PROGRESS)
                 return;
 
-            if (mission->PacketInfo.StartTime + mission->PacketInfo.Duration <= time(nullptr))
+            if (mission->PacketInfo.StartTime + mission->PacketInfo.Duration <= GameTime::GetGameTime())
                 mission->Complete(_player);
         }
     }

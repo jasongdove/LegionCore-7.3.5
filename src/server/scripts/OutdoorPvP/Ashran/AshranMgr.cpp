@@ -730,14 +730,14 @@ void OutdoorPvPAshran::HandlePlayerEnterMap(ObjectGuid guid, uint32 zoneID)
     if (player->getLevel() < PlayerMinLevel)
     {
         if (m_PlayersWillBeKick[player->GetTeamId()].count(player->GetGUID()) == 0)
-            m_PlayersWillBeKick[player->GetTeamId()][player->GetGUID()] = uint32(time(nullptr)) + 10;
+            m_PlayersWillBeKick[player->GetTeamId()][player->GetGUID()] = uint32(GameTime::GetGameTime()) + 10;
         return;
     }
 
     if (m_PlayersInWar[player->GetTeamId()].count(player->GetGUID()) || m_InvitedPlayers[player->GetTeamId()].count(player->GetGUID()))
         return;
 
-    m_InvitedPlayers[player->GetTeamId()][player->GetGUID()] = uint32(time(nullptr)) + AshranTimeForInvite;
+    m_InvitedPlayers[player->GetTeamId()][player->GetGUID()] = uint32(GameTime::GetGameTime()) + AshranTimeForInvite;
     sLFGMgr->LeaveLfg(player->GetGUID());
 
     player->CastSpell(player, SpellLootable, true);
@@ -1124,7 +1124,7 @@ bool OutdoorPvPAshran::Update(uint32 p_Diff)
 
         for (PlayerTimerMap::iterator l_Iter = l_TempList[l_Team].begin(); l_Iter != l_TempList[l_Team].end(); ++l_Iter)
         {
-            if ((*l_Iter).second <= time(NULL))
+            if ((*l_Iter).second <= GameTime::GetGameTime())
             {
                 if (Player* l_Player = sObjectAccessor->FindPlayer((*l_Iter).first))
                 {
@@ -1140,7 +1140,7 @@ bool OutdoorPvPAshran::Update(uint32 p_Diff)
 
         for (PlayerTimerMap::iterator l_Iter = l_TempList[l_Team].begin(); l_Iter != l_TempList[l_Team].end(); ++l_Iter)
         {
-            if ((*l_Iter).second <= time(NULL))
+            if ((*l_Iter).second <= GameTime::GetGameTime())
             {
                 if (Player* l_Player = sObjectAccessor->FindPlayer((*l_Iter).first))
                 {
@@ -1207,7 +1207,7 @@ void OutdoorPvPAshran::ScheduleNextBattle(uint32 p_Diff)
         else
         {
             m_MaxBattleTime = 10 * MINUTE * IN_MILLISECONDS;
-            SendUpdateWorldState(WorldStateTimeRemainingForBoss, uint32(time(nullptr)) + m_MaxBattleTime / IN_MILLISECONDS);
+            SendUpdateWorldState(WorldStateTimeRemainingForBoss, uint32(GameTime::GetGameTime()) + m_MaxBattleTime / IN_MILLISECONDS);
 
             if (m_CurrentBattleState == WorldStateHighWarlordVolrath)
             {
@@ -1542,13 +1542,13 @@ void OutdoorPvPAshran::FillInitialWorldStates(WorldPackets::WorldState::InitWorl
 
     if (m_CurrentBattleState == WorldStateGrandMarshalTrembladeBattle)
     {
-        packet.Worldstates.emplace_back(WorldStateTimeRemainingForBoss, int32(time(NULL) + m_MaxBattleTime / IN_MILLISECONDS));
+        packet.Worldstates.emplace_back(WorldStateTimeRemainingForBoss, int32(GameTime::GetGameTime() + m_MaxBattleTime / IN_MILLISECONDS));
         packet.Worldstates.emplace_back(WorldStateSlayVolrath, int32(WorldStateDisabled));
         packet.Worldstates.emplace_back(WorldStateSlayTremblade, int32(WorldStateEnabled));
     }
     else if (m_CurrentBattleState == WorldStateHighWarlordVolrath)
     {
-        packet.Worldstates.emplace_back(WorldStateTimeRemainingForBoss, int32(time(NULL) + m_MaxBattleTime / IN_MILLISECONDS));
+        packet.Worldstates.emplace_back(WorldStateTimeRemainingForBoss, int32(GameTime::GetGameTime() + m_MaxBattleTime / IN_MILLISECONDS));
         packet.Worldstates.emplace_back(WorldStateSlayVolrath, int32(WorldStateEnabled));
         packet.Worldstates.emplace_back(WorldStateSlayTremblade, int32(WorldStateDisabled));
     }
@@ -1569,7 +1569,7 @@ void OutdoorPvPAshran::FillInitialWorldStates(WorldPackets::WorldState::InitWorl
             if (m_NextBattleTimer)
             {
                 packet.Worldstates.emplace_back(WorldStateNextBattleEnabled, int32(WorldStateEnabled));
-                packet.Worldstates.emplace_back(WorldStateNextBattleTimestamp, int32(time(NULL) + m_NextBattleTimer / IN_MILLISECONDS));
+                packet.Worldstates.emplace_back(WorldStateNextBattleTimestamp, int32(GameTime::GetGameTime() + m_NextBattleTimer / IN_MILLISECONDS));
                 packet.Worldstates.emplace_back(WorldStateControlTheFlag, int32(WorldStateDisabled));
             }
             else
@@ -2007,7 +2007,7 @@ void OutdoorPvPAshran::SetBattleState(uint32 p_NewState)
         SendUpdateWorldState(WorldStateHighWarlordVolrath, WorldStateDisabled);
     }
 
-    SendUpdateWorldState(WorldStateNextBattleTimestamp, uint32(time(nullptr)) + m_NextBattleTimer / IN_MILLISECONDS);
+    SendUpdateWorldState(WorldStateNextBattleTimestamp, uint32(GameTime::GetGameTime()) + m_NextBattleTimer / IN_MILLISECONDS);
     SendUpdateWorldState(WorldStateNextBattleEnabled, WorldStateEnabled);
     SendUpdateWorldState(WorldStateControlTheFlag, WorldStateDisabled);
 }

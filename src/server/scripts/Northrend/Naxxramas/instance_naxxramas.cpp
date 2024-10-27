@@ -445,7 +445,7 @@ public:
                 }
                 else if (value == DONE)
                 {
-                    time_t now = time(NULL);
+                    time_t now = GameTime::GetGameTime();
 
                     if (minHorsemenDiedTime == 0)
                         minHorsemenDiedTime = now;

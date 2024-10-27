@@ -103,7 +103,7 @@ void RestMgr::SetRestFlag(RestFlag restFlag, uint32 triggerID)
 
     if (!oldRestMask && _restFlagMask) // only set flag/time on the first rest state
     {
-        _restTime = time(nullptr);
+        _restTime = GameTime::GetGameTime();
         _player->SetFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_RESTING);
     }
 

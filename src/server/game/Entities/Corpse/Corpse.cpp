@@ -35,7 +35,7 @@ Corpse::Corpse(CorpseType type) : WorldObject(type != CORPSE_BONES), m_type(type
     m_valuesCount = CORPSE_END;
     _dynamicValuesCount = CORPSE_DYNAMIC_END;
 
-    m_time = time(nullptr);
+    m_time = GameTime::GetGameTime();
 
     lootForBody = false;
     lootRecipient = nullptr;
@@ -178,7 +178,7 @@ time_t const& Corpse::GetGhostTime() const
 
 void Corpse::ResetGhostTime()
 {
-    m_time = time(nullptr);
+    m_time = GameTime::GetGameTime();
 }
 
 CorpseType Corpse::GetType() const

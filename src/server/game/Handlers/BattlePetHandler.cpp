@@ -87,7 +87,7 @@ void WorldSession::HandleModifyName(WorldPackets::BattlePet::ModifyName& packet)
         return;
     }
 
-    uint32 timeStamp = packet.Name.empty() ? 0 : time(nullptr);
+    uint32 timeStamp = packet.Name.empty() ? 0 : GameTime::GetGameTime();
 
     if (auto battlePet = _player->GetBattlePet(packet.BattlePetGUID))
     {
@@ -1242,7 +1242,7 @@ void WorldSession::SendPetBattleQueueStatus(uint32 ticketTime, uint32 tcketID, u
     if (status != LFB_LEAVE_QUEUE)
     {
         statusUpdate.Msg.ClientWaitTime = avgWaitTime;
-        statusUpdate.Msg.AverageWaitTime = time(nullptr) - ticketTime;
+        statusUpdate.Msg.AverageWaitTime = GameTime::GetGameTime() - ticketTime;
     }
 
     //statusUpdate.Msg.SlotResult; std::vector<uint32> 

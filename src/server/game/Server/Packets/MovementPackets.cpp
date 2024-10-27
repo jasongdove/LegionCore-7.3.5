@@ -67,7 +67,7 @@ ByteBuffer& operator<<(ByteBuffer& data, MovementInfo& movementInfo)
 
 ByteBuffer& operator>>(ByteBuffer& data, MovementInfo& movementInfo)
 {
-    movementInfo.MoveTime = getMSTime();
+    movementInfo.MoveTime = GameTime::GetGameTimeMS();
     data >> movementInfo.Guid;
     data >> movementInfo.ClientMoveTime;
     data >> movementInfo.Pos.PositionXYZOStream();
@@ -97,7 +97,7 @@ ByteBuffer& operator>>(ByteBuffer& data, MovementInfo& movementInfo)
     {
         data >> movementInfo.fall.fallTime;
         data >> movementInfo.fall.JumpVelocity;
-        movementInfo.fall.lastTimeUpdate = getMSTime();
+        movementInfo.fall.lastTimeUpdate = GameTime::GetGameTimeMS();
 
         movementInfo.fall.hasFallDirection = data.ReadBit();
         if (movementInfo.fall.hasFallDirection)

@@ -81,7 +81,7 @@ namespace WorldPackets
             uint64 ShipmentID = 0;
             uint32 ShipmentRecID = 0;
             uint32 BuildingTypeID = 0;
-            time_t CreationTime = time(nullptr);
+            time_t CreationTime = GameTime::GetGameTime();
             int32 ShipmentDuration = 0;
 
             bool finished = false;

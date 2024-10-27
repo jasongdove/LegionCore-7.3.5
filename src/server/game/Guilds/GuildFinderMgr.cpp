@@ -32,7 +32,7 @@ MembershipRequest::MembershipRequest(MembershipRequest const& settings) : _comme
 }
 
 MembershipRequest::MembershipRequest(ObjectGuid const& playerGUID, ObjectGuid const& guildId, uint32 availability, uint32 classRoles, uint32 playStyle, std::string& comment, time_t submitTime) : _guildId(guildId), _playerGUID(playerGUID), _time(submitTime), _comment(comment), _availability(availability), _classRoles(classRoles), _playStyle(playStyle) {}
-MembershipRequest::MembershipRequest() : _time(time(nullptr)), _availability(0), _classRoles(0), _playStyle(0) { }
+MembershipRequest::MembershipRequest() : _time(GameTime::GetGameTime()), _availability(0), _classRoles(0), _playStyle(0) { }
 
 time_t MembershipRequest::GetSubmitTime() const
 {
@@ -421,8 +421,8 @@ void GuildFinderMgr::SendApplicantListUpdate(Guild& guild)
         data.ClassRoles = x.GetClassRoles();
         data.PlayStyle = x.GetPlayStyle();
         data.Availability = x.GetAvailability();
-        data.SecondsSinceCreated = time(nullptr) - x.GetSubmitTime();
-        data.SecondsUntilExpiration = x.GetExpiryTime() - time(nullptr);
+        data.SecondsSinceCreated = GameTime::GetGameTime() - x.GetSubmitTime();
+        data.SecondsUntilExpiration = x.GetExpiryTime() - GameTime::GetGameTime();
         if (CharacterInfo const* charInfo = sWorld->GetCharacterInfo(data.RecruitGUID))
         {
             data.Name = charInfo->Name;
@@ -455,8 +455,8 @@ void GuildFinderMgr::SendMembershipRequestListUpdate(Player& player)
         data.ClassRoles = x.GetClassRoles();
         data.PlayStyle = x.GetPlayStyle();
         data.Availability = x.GetAvailability();
-        data.SecondsSinceCreated = time(nullptr) - x.GetSubmitTime();
-        data.SecondsUntilExpiration = x.GetExpiryTime() - time(nullptr);
+        data.SecondsSinceCreated = GameTime::GetGameTime() - x.GetSubmitTime();
+        data.SecondsUntilExpiration = x.GetExpiryTime() - GameTime::GetGameTime();
         if (CharacterInfo const* charInfo = sWorld->GetCharacterInfo(data.RecruitGUID))
         {
             data.Name = charInfo->Name;

@@ -253,7 +253,7 @@ void BattlegroundWarsongGulch::StartingEventOpenDoors()
     StartTimedAchievement(CRITERIA_TIMED_TYPE_EVENT2, BG_EVENT_START_BATTLE);
 
     UpdateWorldState(WorldStates::BG_WS_ENABLE_TIMER, 1);
-    UpdateWorldState(WorldStates::BG_WS_CURRENT_TIMER, int32(time(nullptr) + std::chrono::duration_cast<Seconds>(Minutes(15)).count()));
+    UpdateWorldState(WorldStates::BG_WS_CURRENT_TIMER, int32(GameTime::GetGameTime() + std::chrono::duration_cast<Seconds>(Minutes(15)).count()));
 }
 
 bool BattlegroundWarsongGulch::SetupBattleground()
@@ -394,7 +394,7 @@ void BattlegroundWarsongGulch::FillInitialWorldStates(WorldPackets::WorldState::
         }
 
         packet.Worldstates.emplace_back(WorldStates::BG_WS_ENABLE_TIMER, 1);
-        packet.Worldstates.emplace_back(WorldStates::BG_WS_CURRENT_TIMER, int32(time(nullptr) + std::chrono::duration_cast<Seconds>(Minutes(15) - GetElapsedTime()).count()));
+        packet.Worldstates.emplace_back(WorldStates::BG_WS_CURRENT_TIMER, int32(GameTime::GetGameTime() + std::chrono::duration_cast<Seconds>(Minutes(15) - GetElapsedTime()).count()));
     }
     else
     {

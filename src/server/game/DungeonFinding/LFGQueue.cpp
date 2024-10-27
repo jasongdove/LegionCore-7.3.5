@@ -548,7 +548,7 @@ LfgCompatibility LFGQueue::CheckCompatibility(GuidList check)
     }
 
     // Create a new proposal
-    proposal.cancelTime = time(nullptr) + LFG_TIME_PROPOSAL;
+    proposal.cancelTime = GameTime::GetGameTime() + LFG_TIME_PROPOSAL;
     proposal.leader.Clear();
     proposal.dungeonId = Trinity::Containers::SelectRandomContainerElement(proposalDungeons);
     proposal.encounters = sLFGMgr->GetCompletedMask(gguid);
@@ -676,7 +676,7 @@ LfgQueueData const* LFGQueue::GetQueueData(ObjectGuid guid)
 time_t LFGQueue::GetJoinTime(ObjectGuid guid)
 {
     LfgQueueDataContainer::const_iterator itr = QueueDataStore.find(guid);
-    return itr != QueueDataStore.end() ? itr->second.joinTime : time(nullptr);
+    return itr != QueueDataStore.end() ? itr->second.joinTime : GameTime::GetGameTime();
 }
 
 uint8 LFGQueue::GetQueueType(ObjectGuid guid)
@@ -691,7 +691,7 @@ uint8 LFGQueue::GetQueueSubType(ObjectGuid guid)
     return itr != QueueDataStore.end() ? itr->second.subType : LFG_QUEUE_DUNGEON;
 }
 
-LfgQueueData::LfgQueueData() : joinTime(time_t(time(nullptr))), type(LFG_TYPE_DUNGEON), subType(LFG_QUEUE_DUNGEON)
+LfgQueueData::LfgQueueData() : joinTime(time_t(GameTime::GetGameTime())), type(LFG_TYPE_DUNGEON), subType(LFG_QUEUE_DUNGEON)
 {
     tanks = tanksNeeded = minTanksNeeded = LFG_TANKS_NEEDED;
     healers = healerNeeded = minHealerNeeded = LFG_HEALERS_NEEDED;

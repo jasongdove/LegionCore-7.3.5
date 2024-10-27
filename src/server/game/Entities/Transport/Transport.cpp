@@ -884,10 +884,10 @@ bool StaticTransport::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* m
     if (!m_goValue.Transport.StopFrames->empty() && transportPeriod)
     {
         hasStopFrame = true;
-        deltaTimer = getMSTime() % transportPeriod;
+        deltaTimer = GameTime::GetGameTimeMS() % transportPeriod;
 
         // Need transport offset for offlike use
-        SetUInt32Value(GAMEOBJECT_FIELD_LEVEL, getMSTime() - deltaTimer);
+        SetUInt32Value(GAMEOBJECT_FIELD_LEVEL, GameTime::GetGameTimeMS() - deltaTimer);
 
         // moveSpeed = float((*m_goValue.Transport.StopFrames)[0]) / (isMapObject ? 60000.0f : 20000.0f);
     }
@@ -949,7 +949,7 @@ void StaticTransport::Update(uint32 diff)
 
     if (hasStopFrame)
     {
-        UpdateUInt32Value(GAMEOBJECT_FIELD_LEVEL, getMSTime());
+        UpdateUInt32Value(GAMEOBJECT_FIELD_LEVEL, GameTime::GetGameTimeMS());
         FrameUpdateTimer += diff;
         if (FrameUpdateTimer >= (isMapObject ? 60000.0f : 20000.0f))
         {
@@ -969,7 +969,7 @@ void StaticTransport::Update(uint32 diff)
         }
     }
     else
-        progress = getMSTime() % transportPeriod;
+        progress = GameTime::GetGameTimeMS() % transportPeriod;
 
     SetUInt16Value(OBJECT_FIELD_DYNAMIC_FLAGS, 1, int16(float(progress) / float(transportPeriod) * 65535.0f), false);
 

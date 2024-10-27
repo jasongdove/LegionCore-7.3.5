@@ -16,10 +16,11 @@
  */
 
 #include "DB2Structure.h"
-#include <WowTime.hpp>
+#include "GameTime.h"
+#include "QuestData.h"
 #include "ReputationPackets.h"
 #include "WorldStateMgr.h"
-#include "QuestData.h"
+#include <WowTime.hpp>
 
 bool AreaTableEntry::IsSanctuary() const
 {
@@ -356,7 +357,7 @@ static std::function<int32(Player const*, int32, int32)> WorldStateExpressionFun
         [](Player const* /*player*/, int32 /*arg1*/, int32 /*arg2*/) -> int32
     {
         MS::Utilities::WowTime time;
-        time.SetUTCTimeFromPosixTime(sWorld->GetGameTime());
+        time.SetUTCTimeFromPosixTime(GameTime::GetGameTime());
 
         return time.Month + 1;
     },
@@ -364,7 +365,7 @@ static std::function<int32(Player const*, int32, int32)> WorldStateExpressionFun
         [](Player const* /*player*/, int32 /*arg1*/, int32 /*arg2*/) -> int32
     {
         MS::Utilities::WowTime time;
-        time.SetUTCTimeFromPosixTime(sWorld->GetGameTime());
+        time.SetUTCTimeFromPosixTime(GameTime::GetGameTime());
 
         return time.MonthDay + 1;
     },
@@ -372,7 +373,7 @@ static std::function<int32(Player const*, int32, int32)> WorldStateExpressionFun
         [](Player const* /*player*/, int32 /*arg1*/, int32 /*arg2*/) -> int32
     {
         MS::Utilities::WowTime time;
-        time.SetUTCTimeFromPosixTime(sWorld->GetGameTime());
+        time.SetUTCTimeFromPosixTime(GameTime::GetGameTime());
 
         return time.GetHourAndMinutes();
     },
@@ -385,7 +386,7 @@ static std::function<int32(Player const*, int32, int32)> WorldStateExpressionFun
         [](Player const* /*player*/, int32 /*arg1*/, int32 /*arg2*/) -> int32
     {
         MS::Utilities::WowTime time;
-        time.SetUTCTimeFromPosixTime(sWorld->GetGameTime());
+        time.SetUTCTimeFromPosixTime(GameTime::GetGameTime());
 
         if (time.Hour <= 12)
             return time.Hour;
@@ -419,7 +420,7 @@ static std::function<int32(Player const*, int32, int32)> WorldStateExpressionFun
         if (!l_ChoosedDuration)
             l_ChoosedDuration = 24;
 
-        time_t l_CurrentTime = sWorld->GetGameTime();
+        time_t l_CurrentTime = GameTime::GetGameTime();
         struct tm l_LocalTime;
         l_LocalTime.tm_isdst = -1;
 
@@ -525,7 +526,7 @@ static std::function<int32(Player const*, int32, int32)> WorldStateExpressionFun
         if (!l_ChoosedDuration)
             l_ChoosedDuration = 24;
 
-        time_t l_CurrentTime = sWorld->GetGameTime();
+        time_t l_CurrentTime = GameTime::GetGameTime();
         struct tm l_LocalTime;
         l_LocalTime.tm_isdst = -1;
 
@@ -651,12 +652,12 @@ static std::function<int32(Player const*, int32, int32)> WorldStateExpressionFun
         /// WorldStateExpressionFunctions::TimerCurrentTime
         [](Player const* /*player*/, int32 /*arg1*/, int32 /*arg2*/) -> int32
     {
-        return time(nullptr);
+        return GameTime::GetGameTime();
     },
         /// WorldStateExpressionFunctions::WeekNumber
         [](Player const* /*player*/, int32 /*arg1*/, int32 /*arg2*/) -> int32
     {
-        time_t time = sWorld->GetGameTime();
+        time_t time = GameTime::GetGameTime();
         return 0/*(time - sWorld->GetServerRaidOrigin()) / WEEK*/;
     },
         /// WorldStateExpressionFunctions::None2

@@ -245,7 +245,7 @@ Item::Item()
     m_valuesCount = ITEM_END;
     _dynamicValuesCount = ITEM_DYNAMIC_END;
 
-    m_lastPlayedTimeUpdate = time(nullptr);
+    m_lastPlayedTimeUpdate = GameTime::GetGameTime();
 
     m_refundRecipient.Clear();
 
@@ -454,7 +454,7 @@ void Item::SaveToDB(CharacterDatabaseTransaction& trans)
             stmt->setUInt8(++index, GetUInt32Value(ITEM_FIELD_CONTEXT));
 
             if (uState == ITEM_NEW)
-                stmt->setUInt32(++index, time(nullptr));
+                stmt->setUInt32(++index, GameTime::GetGameTime());
             
             stmt->setBool(++index, GetDonateItem());
 
@@ -2142,7 +2142,7 @@ void Item::UpdatePlayedTime(Player* owner)
     // Get current played time
     uint32 current_playtime = GetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME);
     // Calculate time elapsed since last played time update
-    time_t curtime = time(nullptr);
+    time_t curtime = GameTime::GetGameTime();
     auto elapsed = uint32(curtime - m_lastPlayedTimeUpdate);
     uint32 new_playtime = current_playtime + elapsed;
     // Check if the refund timer has expired yet
@@ -2163,7 +2163,7 @@ void Item::UpdatePlayedTime(Player* owner)
 
 uint32 Item::GetPlayedTime()
 {
-    return GetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME) + uint32(time(nullptr) - m_lastPlayedTimeUpdate);
+    return GetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME) + uint32(GameTime::GetGameTime() - m_lastPlayedTimeUpdate);
 }
 
 bool Item::IsRefundExpired()

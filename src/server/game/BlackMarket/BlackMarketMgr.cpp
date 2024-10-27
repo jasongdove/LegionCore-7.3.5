@@ -101,7 +101,7 @@ void BlackMarketMgr::LoadAuctions()
     }
 
     uint32 count = 0;
-    _LastUpdate = time(nullptr);
+    _LastUpdate = GameTime::GetGameTime();
 
     CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     do
@@ -129,7 +129,7 @@ void BlackMarketMgr::LoadAuctions()
 void BlackMarketMgr::Update(bool updateTime)
 {
     CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
-    time_t now = time(nullptr);
+    time_t now = GameTime::GetGameTime();
     for (auto itr = mAuctions.begin(); itr != mAuctions.end();)
     {
         BlackMarketEntry* auction = itr->second;
@@ -344,7 +344,7 @@ bool BlackMarketTemplate::LoadFromDB(Field* fields)
 void BlackMarketEntry::Initialize(int32 marketId)
 {
     _marketId = marketId;
-    _startTime = time(nullptr);
+    _startTime = GameTime::GetGameTime();
 }
 
 BlackMarketTemplate* BlackMarketEntry::GetTemplate() const
@@ -389,7 +389,7 @@ void BlackMarketEntry::SetBidder(ObjectGuid::LowType bidder)
 
 time_t BlackMarketEntry::GetSecondsRemaining() const
 {
-    return std::max(0, int32(GetExpirationTime()) - int32(time(nullptr)));
+    return std::max(0, int32(GetExpirationTime()) - int32(GameTime::GetGameTime()));
 }
 
 time_t BlackMarketEntry::GetExpirationTime() const

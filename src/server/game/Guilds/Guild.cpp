@@ -133,7 +133,7 @@ Guild* Guild::GuildNewsLog::GetGuild() const
     return _guild;
 }
 
-Guild::LogEntry::LogEntry(ObjectGuid::LowType guildId, uint32 guid) : m_guildId(guildId), m_guid(guid), m_timestamp(::time(nullptr))
+Guild::LogEntry::LogEntry(ObjectGuid::LowType guildId, uint32 guid) : m_guildId(guildId), m_guid(guid), m_timestamp(::GameTime::GetGameTime())
 {
 }
 
@@ -176,7 +176,7 @@ void Guild::EventLogEntry::WritePacket(WorldPackets::Guild::GuildEventLogQueryRe
     eventEntry.PlayerGUID = ObjectGuid::Create<HighGuid::Player>(m_playerGuid1);
     eventEntry.OtherGUID = ObjectGuid::Create<HighGuid::Player>(m_playerGuid2);
     eventEntry.TransactionType = uint8(m_eventType);
-    eventEntry.TransactionDate = uint32(::time(nullptr) - m_timestamp);
+    eventEntry.TransactionDate = uint32(::GameTime::GetGameTime() - m_timestamp);
     eventEntry.RankID = uint8(m_newRank);
     packet.Entry.push_back(eventEntry);
 }
@@ -234,7 +234,7 @@ void Guild::BankEventLogEntry::WritePacket(WorldPackets::Guild::GuildBankLogQuer
 
     WorldPackets::Guild::GuildBankLogEntry bankLogEntry;
     bankLogEntry.PlayerGUID = ObjectGuid::Create<HighGuid::Player>(m_playerGuid);
-    bankLogEntry.TimeOffset = int32(time(nullptr) - m_timestamp);
+    bankLogEntry.TimeOffset = int32(GameTime::GetGameTime() - m_timestamp);
     bankLogEntry.EntryType = int8(m_eventType);
 
     if ((hasItem && m_itemStackCount > 1) || itemMoved)
@@ -659,7 +659,7 @@ void Guild::Member::ProfessionInfo::GenerateRecipesMask(std::set<uint32> const& 
 }
 
 Guild::Member::Member(ObjectGuid::LowType const& guildId, ObjectGuid guid, uint32 rankId) : m_guildId(guildId), m_guid(guid), m_zoneId(0), m_level(0), m_class(0), m_gender(GENDER_MALE),
-m_flags(GUILDMEMBER_STATUS_NONE), m_logoutTime(::time(nullptr)), m_accountId(0), m_rankId(rankId), m_achievementPoints(0), m_totalReputation(0)
+m_flags(GUILDMEMBER_STATUS_NONE), m_logoutTime(::GameTime::GetGameTime()), m_accountId(0), m_rankId(rankId), m_achievementPoints(0), m_totalReputation(0)
 {
     memset(m_bankWithdraw, 0, (GUILD_BANK_MAX_TABS + 1) * sizeof(int32));
 }
@@ -786,7 +786,7 @@ void Guild::Member::ChangeRank(uint8 newRank)
 
 void Guild::Member::UpdateLogoutTime()
 {
-    m_logoutTime = ::time(nullptr);
+    m_logoutTime = ::GameTime::GetGameTime();
 }
 
 void Guild::Member::SaveToDB(CharacterDatabaseTransaction& trans) const
@@ -919,7 +919,7 @@ uint32 Guild::Member::GetBankRemainingValue(uint8 tabId, const Guild* guild) con
         if ((guild->_GetRankBankTabRights(m_rankId, tabId) & GUILD_BANK_RIGHT_VIEW_TAB) != GUILD_BANK_RIGHT_VIEW_TAB)
             return 0;
 
-    auto curTime = uint32(::time(nullptr) / MINUTE); // minutes
+    auto curTime = uint32(::GameTime::GetGameTime() / MINUTE); // minutes
     if (curTime > m_bankRemaining[tabId].resetTime + 24 * HOUR / MINUTE)
     {
         auto& rv = const_cast <RemainingValue&> (m_bankRemaining[tabId]);
@@ -1401,7 +1401,7 @@ bool Guild::Create(Player* pLeader, std::string const& name)
     m_info = "";
     m_motd = "No message set.";
     m_bankMoney = 0;
-    m_createdDate = ::time(nullptr);
+    m_createdDate = ::GameTime::GetGameTime();
     _level = 25;
 
     _CreateLogHolders();
@@ -1514,7 +1514,7 @@ void Guild::Disband()
 
 void Guild::SaveToDB(bool withMembers)
 {
-    if (m_lastSave > time(nullptr)) // Prevent save if guild already saved
+    if (m_lastSave > GameTime::GetGameTime()) // Prevent save if guild already saved
         return;
 
     CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
@@ -1540,7 +1540,7 @@ void Guild::SaveToDB(bool withMembers)
 
     CharacterDatabase.CommitTransaction(trans);
 
-    m_lastSave = time(nullptr) + (sWorld->getIntConfig(CONFIG_GUILD_SAVE_INTERVAL) * MINUTE);
+    m_lastSave = GameTime::GetGameTime() + (sWorld->getIntConfig(CONFIG_GUILD_SAVE_INTERVAL) * MINUTE);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1586,7 +1586,7 @@ void Guild::SendRoster(WorldSession* session /*= nullptr*/)
         memberData.AreaID = int32(onlineMember ? onlineMember->GetCurrentZoneID() : member->GetZoneId());
         memberData.PersonalAchievementPoints = int32(onlineMember ? onlineMember->GetAchievementPoints() : member->GetAchievementPoints());
         memberData.GuildReputation = int32(member->GetTotalReputation());
-        memberData.LastSave = float(onlineMember ? 0.0f : float(::time(nullptr) - member->GetLogoutTime()) / DAY);
+        memberData.LastSave = float(onlineMember ? 0.0f : float(::GameTime::GetGameTime() - member->GetLogoutTime()) / DAY);
 
         for (uint8 i = 0; i < MAX_GUILD_PROFESSIONS; ++i)
         {

@@ -117,7 +117,7 @@ void PetBattleSystem::JoinQueue(Player* player)
 
     auto ticket = new LFBTicket();
     ticket->State = LFBState::LFB_STATE_QUEUED;
-    ticket->JoinTime = time(nullptr);
+    ticket->JoinTime = GameTime::GetGameTime();
     ticket->TicketID = 1;
     ticket->MatchingOpponent = nullptr;
     ticket->ProposalAnswer = LFBAnswer::LFB_ANSWER_PENDING;
@@ -242,7 +242,7 @@ void PetBattleSystem::Update(uint32 diff)
             if (count > 0)
                 continue;
 
-            auto queuedTime = uint32(time(nullptr) - ticket->JoinTime);
+            auto queuedTime = uint32(GameTime::GetGameTime() - ticket->JoinTime);
             auto oldNumber = _LFBNumWaitTimeAvg++;
             _LFBAvgWaitTime = int32((_LFBAvgWaitTime * oldNumber + queuedTime) / _LFBNumWaitTimeAvg);
 
@@ -290,8 +290,8 @@ void PetBattleSystem::Update(uint32 diff)
                             l_Left->State = LFBState::LFB_STATE_PROPOSAL;
                             l_Right->State = LFBState::LFB_STATE_PROPOSAL;
 
-                            l_Left->ProposalTime = time(nullptr);
-                            l_Right->ProposalTime = time(nullptr);
+                            l_Left->ProposalTime = GameTime::GetGameTime();
+                            l_Right->ProposalTime = GameTime::GetGameTime();
 
                             leftPlayer->GetSession()->SendPetBattleQueueStatus(l_Left->JoinTime, l_Left->TicketID, LFBUpdateStatus::LFB_PROPOSAL_BEGIN, _LFBAvgWaitTime);
                             rightPlayer->GetSession()->SendPetBattleQueueStatus(l_Right->JoinTime, l_Right->TicketID, LFBUpdateStatus::LFB_PROPOSAL_BEGIN, _LFBAvgWaitTime);
@@ -476,7 +476,7 @@ void PetBattleSystem::Update(uint32 diff)
                         }
                     }
                     /// Proposal expired
-                    if ((time(nullptr) - ticket->ProposalTime) > PETBATTLE_LFB_PROPOSAL_TIMEOUT)
+                    if ((GameTime::GetGameTime() - ticket->ProposalTime) > PETBATTLE_LFB_PROPOSAL_TIMEOUT)
                     {
                         l_Left->MatchingOpponent = nullptr;
                         l_Right->MatchingOpponent = nullptr;

@@ -444,7 +444,7 @@ Corpse* ObjectAccessor::ConvertCorpseForPlayer(ObjectGuid player_guid, bool insi
 
 void ObjectAccessor::RemoveOldCorpses()
 {
-    time_t now = time(nullptr);
+    time_t now = GameTime::GetGameTime();
     Player2CorpsesMapType::iterator next;
     for (Player2CorpsesMapType::iterator itr = i_player2corpse.begin(); itr != i_player2corpse.end(); itr = next)
     {

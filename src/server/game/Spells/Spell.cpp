@@ -99,7 +99,7 @@ m_blocked(0), m_channelTargetEffectMask(0), m_spellState(SPELL_STATE_NULL), m_ti
 m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_currentExecutedEffect(SPELL_EFFECT_NONE)
 {
     if (!m_castedTime)
-        m_castedTime = getMSTime();
+        m_castedTime = GameTime::GetGameTimeMS();
 
     m_delayMoment = triggerData.delay;
     m_spellGuid = triggerData.spellGuid;

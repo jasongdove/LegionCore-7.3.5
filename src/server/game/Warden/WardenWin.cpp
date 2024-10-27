@@ -453,7 +453,7 @@ void WardenWin::RequestBaseData()
     _session->SendPacket(&pkt);
 
     // while only for checks packet (0x02)
-    _lastPacketSendTime = getMSTime();
+    _lastPacketSendTime = GameTime::GetGameTimeMS();
     // update check timer and set client response timer if not tick
     RestartTimer(1, urand(40, 60) * IN_MILLISECONDS);
     //if (!IsTimerActive(2))
@@ -561,7 +561,7 @@ void WardenWin::HandleData(ByteBuffer &buff)
 {
     TC_LOG_DEBUG("warden", "WARDEN: Handle common data");
 
-    _lastPacketRecvTime = getMSTime();
+    _lastPacketRecvTime = GameTime::GetGameTimeMS();
 
     // stop client response wait timer
     StopTimer(2);

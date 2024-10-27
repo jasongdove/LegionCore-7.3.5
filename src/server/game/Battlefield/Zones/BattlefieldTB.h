@@ -495,7 +495,7 @@ struct BfTBGameObjectBuilding
         m_TB->OnDestroyed();
 
         m_TB->SetTimer(m_TB->GetTimer() + 5 * 60 * 1000);
-        m_TB->SendUpdateWorldState(WorldStates::BG_WS_BATTLE_TIMER, (time(nullptr) + m_TB->GetTimer() / 1000));
+        m_TB->SendUpdateWorldState(WorldStates::BG_WS_BATTLE_TIMER, (GameTime::GetGameTime() + m_TB->GetTimer() / 1000));
 
         for (int i = 0; i < BUILDING_MAX_DIFF; i++)
         {

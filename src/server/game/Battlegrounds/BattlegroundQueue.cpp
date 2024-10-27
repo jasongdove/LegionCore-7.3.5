@@ -181,7 +181,7 @@ GroupQueueInfo* BattlegroundQueue::AddGroup(Player* leader, Group* grp, uint16 B
     ginfo->JoinType = JoinType;
     ginfo->IsRated = isRated;
     ginfo->IsInvitedToBGInstanceGUID = 0;
-    ginfo->JoinTime                  = time(nullptr);
+    ginfo->JoinTime                  = GameTime::GetGameTime();
     ginfo->RemoveInviteTime          = 0;
 
     if (_team)
@@ -214,7 +214,7 @@ GroupQueueInfo* BattlegroundQueue::AddGroup(Player* leader, Group* grp, uint16 B
 
     TC_LOG_DEBUG("bg.battleground", "Adding Group to BattlegroundQueue bgTypeId : %u, bracketID : %u, bracket_type: %u, mmr: %i, index : %u", BgTypeId, bracketEntry->RangeIndex, bracket, ginfo->MatchmakerRating, index);
 
-    uint32 lastOnlineTime = time(nullptr);
+    uint32 lastOnlineTime = GameTime::GetGameTime();
 
     if (isRated && sWorld->getBoolConfig(CONFIG_ARENA_QUEUE_ANNOUNCER_ENABLE))
         sWorld->SendWorldText(LANG_ARENA_QUEUE_ANNOUNCE_WORLD_JOIN, ginfo->JoinType, ginfo->JoinType, ginfo->MatchmakerRating);
@@ -279,7 +279,7 @@ GroupQueueInfo* BattlegroundQueue::AddGroup(Player* leader, Group* grp, uint16 B
 
 void BattlegroundQueue::PlayerInvitedToBGUpdateAverageWaitTime(GroupQueueInfo* ginfo, uint8 bracketID)
 {
-    uint32 timeInQueue = getMSTimeDiff(ginfo->JoinTime, time(nullptr)) * IN_MILLISECONDS;
+    uint32 timeInQueue = getMSTimeDiff(ginfo->JoinTime, GameTime::GetGameTime()) * IN_MILLISECONDS;
     uint8 team_index = TEAM_ALLIANCE;
     if (!ginfo->JoinType)
     {
@@ -464,7 +464,7 @@ bool BattlegroundQueue::InviteGroupToBG(GroupQueueInfo* ginfo, Battleground* bg,
         if (bg->IsArena() && bg->IsRated())
             bg->SetGroupForTeam(ginfo->Team, ginfo->GroupId);
 
-        ginfo->RemoveInviteTime = time(nullptr) + (bg->IsArena() ? ARENA_INVITE_ACCEPT_WAIT_TIME : BG_INVITE_ACCEPT_WAIT_TIME);
+        ginfo->RemoveInviteTime = GameTime::GetGameTime() + (bg->IsArena() ? ARENA_INVITE_ACCEPT_WAIT_TIME : BG_INVITE_ACCEPT_WAIT_TIME);
 
         for (auto itr = ginfo->Players.begin(); itr != ginfo->Players.end(); ++itr)
         {
@@ -591,7 +591,7 @@ bool BattlegroundQueue::CheckPremadeMatch(uint8 bracketID, uint32 MinPlayersPerT
         }
     }
 
-    uint32 time_before = time(nullptr) - sWorld->getIntConfig(CONFIG_BATTLEGROUND_PREMADE_GROUP_WAIT_FOR_MATCH);
+    uint32 time_before = GameTime::GetGameTime() - sWorld->getIntConfig(CONFIG_BATTLEGROUND_PREMADE_GROUP_WAIT_FOR_MATCH);
     for (uint32 i = TEAM_ALLIANCE; i < MAX_TEAMS; i++)
     {
         if (!_queuedGroups[bracketID][MS::Battlegrounds::QueueGroupTypes::PremadeAlliance + i].empty())
@@ -957,7 +957,7 @@ bool BattlegroundQueue::CalculateSoloQTeams(uint8 bracketID)
                 continue;
             }
             PlayerQueueInfo& info = _queuedPlayers[(*iter)->Players.begin()->first];
-            info.LastOnlineTime = time(nullptr);
+            info.LastOnlineTime = GameTime::GetGameTime();
             info.GroupInfo = group1;
             group1->Players[(*iter)->Players.begin()->first] = &info;
         }
@@ -973,7 +973,7 @@ bool BattlegroundQueue::CalculateSoloQTeams(uint8 bracketID)
                 continue;
             }
             PlayerQueueInfo& info = _queuedPlayers[(*iter)->Players.begin()->first];
-            info.LastOnlineTime = time(nullptr);
+            info.LastOnlineTime = GameTime::GetGameTime();
             info.GroupInfo = group2;
             group2->Players[(*iter)->Players.begin()->first] = &info;
         }
@@ -994,7 +994,7 @@ bool BattlegroundQueue::CalculateSoloQTeams(uint8 bracketID)
 
 bool BattlegroundQueue::SelectRatedTeams(uint32 bracket_id, GroupQueueInfo* & team1, GroupQueueInfo* & team2)
 {
-    uint32 discardTime = time(nullptr) >= sBattlegroundMgr->GetRatingDiscardTimer() ? time(nullptr) - sBattlegroundMgr->GetRatingDiscardTimer() : 0;
+    uint32 discardTime = GameTime::GetGameTime() >= sBattlegroundMgr->GetRatingDiscardTimer() ? GameTime::GetGameTime() - sBattlegroundMgr->GetRatingDiscardTimer() : 0;
 
     GroupQueueInfo* selectedTeam1 = nullptr;
     GroupQueueInfo* selectedTeam2 = nullptr;
@@ -1018,7 +1018,7 @@ bool BattlegroundQueue::SelectRatedTeams(uint32 bracket_id, GroupQueueInfo* & te
         uint32 selectedRating = selectedTeam->MatchmakerRating;
 
         float periodic = sGameEventMgr->IsActiveEvent(194) ? 300 : 60; // if it is night time -> period longer for avoid sleavers
-        float mmrSteps = floor(float((time(nullptr) - selectedTeam->JoinTime) / periodic)); 
+        float mmrSteps = floor(float((GameTime::GetGameTime() - selectedTeam->JoinTime) / periodic));
         uint32 mmrMaxDiff = mmrSteps * 100;
 
         uint32 MinRating = (selectedRating <= sBattlegroundMgr->GetMaxRatingDifference()) ? 0 : selectedRating - sBattlegroundMgr->GetMaxRatingDifference();

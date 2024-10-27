@@ -267,7 +267,7 @@ void WorldSession::HandleAuctionSellItem(WorldPackets::AuctionHouse::AuctionSell
             AH->Bidder = ObjectGuid::Empty;
             AH->bid = 0;
             AH->buyout = packet.BuyoutPrice;
-            AH->expire_time = time(nullptr) + auctionTime;
+            AH->expire_time = GameTime::GetGameTime() + auctionTime;
             AH->deposit = deposit;
             AH->auctionHouseEntry = auctionHouseEntry;
 
@@ -313,7 +313,7 @@ void WorldSession::HandleAuctionSellItem(WorldPackets::AuctionHouse::AuctionSell
         AH->Bidder = ObjectGuid::Empty;
         AH->bid = 0;
         AH->buyout = packet.BuyoutPrice;
-        AH->expire_time = time(nullptr) + auctionTime;
+        AH->expire_time = GameTime::GetGameTime() + auctionTime;
         AH->deposit = deposit;
         AH->auctionHouseEntry = auctionHouseEntry;
 

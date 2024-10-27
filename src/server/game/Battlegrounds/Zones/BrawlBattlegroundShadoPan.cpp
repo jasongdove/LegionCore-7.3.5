@@ -48,7 +48,7 @@ void BrawlBattlegroundShadoPan::StartingEventOpenDoors()
         });
 
     UpdateWorldState(WorldStates::ARENA_SHOW_END_TIMER, 1);
-    UpdateWorldState(WorldStates::ARENA_END_TIMER, int32(time(nullptr) + std::chrono::duration_cast<Seconds>(Minutes(15)).count()));
+    UpdateWorldState(WorldStates::ARENA_END_TIMER, int32(GameTime::GetGameTime() + std::chrono::duration_cast<Seconds>(Minutes(15)).count()));
 }
 
 bool BrawlBattlegroundShadoPan::SetupBattleground()
@@ -153,7 +153,7 @@ void BrawlBattlegroundShadoPan::FillInitialWorldStates(WorldPackets::WorldState:
     if (GetStatus() == STATUS_IN_PROGRESS)
     {
         packet.Worldstates.emplace_back(WorldStates::ARENA_SHOW_END_TIMER, 1);
-        packet.Worldstates.emplace_back(WorldStates::ARENA_END_TIMER, int32(time(nullptr) + std::chrono::duration_cast<Seconds>(Minutes(15) - GetElapsedTime()).count()));
+        packet.Worldstates.emplace_back(WorldStates::ARENA_END_TIMER, int32(GameTime::GetGameTime() + std::chrono::duration_cast<Seconds>(Minutes(15) - GetElapsedTime()).count()));
     }
     else
     {

@@ -3512,7 +3512,7 @@ public:
     {
         npc_ashran_speedy_horde_racerAI(Creature* creature) : CosmeticAI(creature), m_MoveIndex{0}
         {
-            m_CheckCooldown = uint32(time(nullptr) + 5);
+            m_CheckCooldown = uint32(GameTime::GetGameTime() + 5);
         }
 
         uint8 m_MoveIndex;

@@ -22,13 +22,15 @@ Comment: All server related commands
 Category: commandscripts
 EndScriptData */
 
-#include "ScriptMgr.h"
+#include "Anticheat.h"
 #include "Chat.h"
 #include "Config.h"
-#include "ObjectAccessor.h"
-#include "MapManager.h"
+#include "GameTime.h"
 #include "GitRevision.h"
-#include "Anticheat.h"
+#include "MapManager.h"
+#include "ObjectAccessor.h"
+#include "ScriptMgr.h"
+#include "UpdateTime.h"
 
 class server_commandscript : public CommandScript
 {
@@ -112,8 +114,8 @@ public:
         uint32 queuedClientsNum     = sWorld->GetQueuedSessionCount();
         uint32 maxActiveClientsNum  = sWorld->GetMaxActiveSessionCount();
         uint32 maxQueuedClientsNum  = sWorld->GetMaxQueuedSessionCount();
-        std::string uptime          = secsToTimeString(sWorld->GetUptime());
-        uint32 updateTime           = sWorld->GetUpdateTime();
+        std::string uptime          = secsToTimeString(GameTime::GetUptime());
+        uint32 updateTime           = sWorldUpdateTime.GetLastUpdateTime();
         uint32 updateTimeMap        = 0;
         uint32 updateSessionTime    = 0;
         if (auto const& session = handler->GetSession())
@@ -431,7 +433,7 @@ public:
         if (newTime < 0)
             return false;
 
-        sWorld->SetRecordDiffInterval(newTime);
+        sWorldUpdateTime.SetRecordUpdateTimeInterval(newTime);
         printf("Record diff every %u ms\n", newTime);
 
         return true;

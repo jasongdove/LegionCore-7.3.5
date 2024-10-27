@@ -413,7 +413,7 @@ void BattlegroundStrandOfTheAncients::PostUpdateImpl(uint32 diff)
                 SendChatMessage(c, TEXT_ROUND_STARTED);
 
             TotalTime = 0;
-            m_EndTimestamp = time(nullptr) + BG_SA_ROUNDLENGTH / IN_MILLISECONDS;
+            m_EndTimestamp = GameTime::GetGameTime() + BG_SA_ROUNDLENGTH / IN_MILLISECONDS;
             ToggleTimer();
             DemolisherStartState(false);
             Status = BG_SA_ROUND_ONE;
@@ -437,7 +437,7 @@ void BattlegroundStrandOfTheAncients::PostUpdateImpl(uint32 diff)
                 SendChatMessage(sender, TEXT_ROUND_STARTED);
 
             TotalTime = 0;
-            m_EndTimestamp = time(nullptr) + EndRoundTimer / IN_MILLISECONDS;
+            m_EndTimestamp = GameTime::GetGameTime() + EndRoundTimer / IN_MILLISECONDS;
             ToggleTimer();
             DemolisherStartState(false);
             Status = BG_SA_ROUND_TWO;
@@ -1018,11 +1018,11 @@ void BattlegroundStrandOfTheAncients::UpdateDemolisherSpawns()
                     // Demolisher is not in list
                     if (DemoliserRespawnList.find(i) == DemoliserRespawnList.end())
                     {
-                        DemoliserRespawnList[i] = getMSTime() + 30000;
+                        DemoliserRespawnList[i] = GameTime::GetGameTimeMS() + 30000;
                     }
                     else
                     {
-                        if (DemoliserRespawnList[i] < getMSTime())
+                        if (DemoliserRespawnList[i] < GameTime::GetGameTimeMS())
                         {
                             Demolisher->Relocate(BG_SA_NpcSpawnlocs[i][0], BG_SA_NpcSpawnlocs[i][1],
                                 BG_SA_NpcSpawnlocs[i][2], BG_SA_NpcSpawnlocs[i][3]);

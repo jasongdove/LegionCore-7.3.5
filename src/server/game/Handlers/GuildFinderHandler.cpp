@@ -35,7 +35,7 @@ void WorldSession::HandleLFGuildAddRecruit(WorldPackets::Guild::LFGuildAddRecrui
     if (!(packet.PlayStyle & ALL_PLAY_STYLES) || packet.PlayStyle > ALL_PLAY_STYLES)
         return;
 
-    sGuildFinderMgr->AddMembershipRequest(packet.GuildGUID, MembershipRequest(GetPlayer()->GetGUID(), packet.GuildGUID, packet.Availability, packet.ClassRoles, packet.PlayStyle, packet.Comment, time(nullptr)));
+    sGuildFinderMgr->AddMembershipRequest(packet.GuildGUID, MembershipRequest(GetPlayer()->GetGUID(), packet.GuildGUID, packet.Availability, packet.ClassRoles, packet.PlayStyle, packet.Comment, GameTime::GetGameTime()));
 }
 
 void WorldSession::HandleLFGuildBrowse(WorldPackets::Guild::LFGuildBrowse& packet)
@@ -120,7 +120,7 @@ void WorldSession::HandleLFGuildGetApplications(WorldPackets::Guild::LFGuildGetA
             data.ClassRoles = guildSettings.GetClassRoles();
             data.PlayStyle = guildSettings.GetPlayStyle();
             data.Availability = guildSettings.GetAvailability();
-            data.SecondsSinceCreated = time(nullptr) - v.GetSubmitTime();
+            data.SecondsSinceCreated = GameTime::GetGameTime() - v.GetSubmitTime();
             data.GuildName = guild->GetName();
             data.Comment = v.GetComment();
             application.Applications.push_back(data);
@@ -146,8 +146,8 @@ void WorldSession::HandleLFGuildGetRecruits(WorldPackets::Guild::LFGuildGetRecru
         data.ClassRoles = x.GetClassRoles();
         data.PlayStyle = x.GetPlayStyle();
         data.Availability = x.GetAvailability();
-        data.SecondsSinceCreated = time(nullptr) - x.GetSubmitTime();
-        data.SecondsUntilExpiration = x.GetExpiryTime() - time(nullptr);
+        data.SecondsSinceCreated = GameTime::GetGameTime() - x.GetSubmitTime();
+        data.SecondsUntilExpiration = x.GetExpiryTime() - GameTime::GetGameTime();
         if (CharacterInfo const* charInfo = sWorld->GetCharacterInfo(data.RecruitGUID))
         {
             data.Name = charInfo->Name;

@@ -39,7 +39,7 @@ void WorldSession::HandleComplaint(WorldPackets::Ticket::Complaint& packet)
         stmt->setUInt64(index++, complaintId);
         stmt->setUInt64(index++, GetPlayer()->GetGUIDLow());
         stmt->setUInt32(index++, GetAccountId());
-        stmt->setUInt32(index++, time(NULL));
+        stmt->setUInt32(index++, GameTime::GetGameTime());
         stmt->setUInt64(index++, packet.Offender.PlayerGuid.GetGUIDLow());
         stmt->setUInt8(index++, packet.ComplaintType);
         stmt->setUInt32(index++, packet.MailID);

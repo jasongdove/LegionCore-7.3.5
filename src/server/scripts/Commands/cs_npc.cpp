@@ -754,7 +754,7 @@ public:
         uint32 Entry = target->GetEntry();
         CreatureTemplate const* cInfo = target->GetCreatureTemplate();
 
-        int64 curRespawnDelay = target->GetRespawnTimeEx()-time(NULL);
+        int64 curRespawnDelay = target->GetRespawnTimeEx()-GameTime::GetGameTime();
         if (curRespawnDelay < 0)
             curRespawnDelay = 0;
         std::string curRespawnDelayStr = secsToTimeString(uint64(curRespawnDelay), true);

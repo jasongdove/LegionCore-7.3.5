@@ -247,7 +247,7 @@ void BattlegroundMgr::BuildBattlegroundStatusQueued(WorldPackets::Battleground::
     battlefieldStatus->AsGroup = asGroup;
     battlefieldStatus->SuspendedQueue = true;
     battlefieldStatus->EligibleForMatchmaking = false;
-    battlefieldStatus->WaitTime = getMSTimeDiff(joinTime, time(nullptr)) * IN_MILLISECONDS;
+    battlefieldStatus->WaitTime = getMSTimeDiff(joinTime, GameTime::GetGameTime()) * IN_MILLISECONDS;
 }
 
 void BattlegroundMgr::BuildBattlegroundStatusFailed(WorldPackets::Battleground::BattlefieldStatusFailed* battlefieldStatus, Battleground* bg, Player* player, uint32 queueSlot, uint8 result, ObjectGuid const* errorGuid /*= nullptr*/)
@@ -1094,7 +1094,7 @@ uint8 BattlegroundMgr::GetBrawlIternalGroup() const
 
     time_t start = mktime(&time);
     time_t end = start + 168 * 60 * 60;
-    time_t now = std::time(NULL);
+    time_t now = GameTime::GetGameTime();
 
     uint32 mod = uint32(ceil((double(now) - double(end)) / double(168 * 2 * 60 * 60)));
 
@@ -1118,7 +1118,7 @@ bool BattlegroundMgr::IsBrawlActive(uint32& expirationTime) const
 
     time_t start = mktime(&time);
     time_t end = start + 168 * 60 * 60;
-    time_t now = std::time(NULL);
+    time_t now = GameTime::GetGameTime();
 
     uint32 mod = uint32(ceil((double(now) - double(end)) / double(168 * 2 * 60 * 60)));
 

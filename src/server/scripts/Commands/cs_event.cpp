@@ -114,8 +114,8 @@ public:
         std::string endTimeStr = TimeToTimestampStr(eventData.end);
 
         uint32 delay = sGameEventMgr->NextCheck(eventId);
-        time_t nextTime = time(NULL) + delay;
-        std::string nextStr = nextTime >= eventData.start && nextTime < eventData.end ? TimeToTimestampStr(time(NULL) + delay) : "-";
+        time_t nextTime = GameTime::GetGameTime() + delay;
+        std::string nextStr = nextTime >= eventData.start && nextTime < eventData.end ? TimeToTimestampStr(GameTime::GetGameTime() + delay) : "-";
 
         std::string occurenceStr = secsToTimeString(eventData.occurence * MINUTE);
         std::string lengthStr = secsToTimeString(eventData.length * MINUTE);
@@ -230,8 +230,8 @@ public:
             char const* active = activeEvents.find(id) != activeEvents.end() ? handler->GetTrinityString(LANG_ACTIVE) : "";
 
             uint32 delay = sGameEventMgr->NextCheck(id);
-            time_t nextTime = time(NULL) + delay;
-            std::string nextStr = nextTime >= eventData.start && nextTime < eventData.end ? TimeToTimestampStr(time(NULL) + delay) : "-";
+            time_t nextTime = GameTime::GetGameTime() + delay;
+            std::string nextStr = nextTime >= eventData.start && nextTime < eventData.end ? TimeToTimestampStr(GameTime::GetGameTime() + delay) : "-";
 
             if (handler->GetSession() && nextStr.length() > 1)
                 handler->PSendSysMessage(LANG_EVENTS_INFO, id, id, eventData.description.c_str(), active, nextStr.c_str());

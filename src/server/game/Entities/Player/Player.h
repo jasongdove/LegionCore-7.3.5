@@ -19,14 +19,22 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
+#include "../../Vignette/VignetteMgr.h"
 #include "AchievementMgr.h"
 #include "Bag.h"
 #include "Battleground.h"
+#include "CUFProfile.h"
 #include "Common.h"
 #include "DBCEnums.h"
+#include "DatabaseEnvFwd.h"
+#include "EquipementSet.h"
+#include "GameTime.h"
+#include "GridObject.h"
 #include "GroupReference.h"
+#include "HashFuctor.h"
 #include "Item.h"
 #include "ItemTemplate.h"
+#include "LogsSystem.h"
 #include "MapReference.h"
 #include "Object.h"
 #include "Packets/VehiclePackets.h"
@@ -38,15 +46,8 @@
 #include "SpellMgr.h"
 #include "Unit.h"
 #include "Util.h"
-#include "GridObject.h"
-#include "DatabaseEnvFwd.h"
-#include "HashFuctor.h"
-#include "CUFProfile.h"
-#include <safe_ptr.h>
-#include "../../Vignette/VignetteMgr.h"
-#include "EquipementSet.h"
-#include "LogsSystem.h"
 #include <queue>
+#include <safe_ptr.h>
 
 class SpectatorAddonMsg;
 struct Mail;
@@ -1330,8 +1331,8 @@ struct DigSite
 
 struct CompletedProject
 {
-    CompletedProject() : entry(nullptr), count(1), date(time(nullptr)) { }
-    CompletedProject(ResearchProjectEntry const* _entry) : entry(_entry), count(1), date(time(nullptr)) { }
+    CompletedProject() : entry(nullptr), count(1), date(GameTime::GetGameTime()) { }
+    CompletedProject(ResearchProjectEntry const* _entry) : entry(_entry), count(1), date(GameTime::GetGameTime()) { }
 
     ResearchProjectEntry const* entry;
     uint32 count;

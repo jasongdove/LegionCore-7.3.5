@@ -309,7 +309,7 @@ bool Garrison::LoadFromDB(PreparedQueryResult const& garrison, PreparedQueryResu
                 offerDuration = missionInfoEntry->OfferDuration;
 
             // time is over
-            if (!StartTime && offerDuration && (offerTime + offerDuration <= time(nullptr)))
+            if (!StartTime && offerDuration && (offerTime + offerDuration <= GameTime::GetGameTime()))
             {
                 CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_GARRISON_MISSIONS_DB_ID);
                 stmt->setUInt64(0, dbId);
@@ -470,9 +470,9 @@ bool Garrison::LoadFromDB(PreparedQueryResult const& garrison, PreparedQueryResu
     }
 
     ///!< check generator mission immidieatly.
-    if (time(nullptr) > _MissionGen)
+    if (GameTime::GetGameTime() > _MissionGen)
     {
-        _MissionGen = time(nullptr) + DAY;
+        _MissionGen = GameTime::GetGameTime() + DAY;
         GenerateRandomMission();
     }
 
@@ -986,7 +986,7 @@ void Garrison::Update(uint32 diff)
     {
         for (WorldPackets::Garrison::Shipment &ship_data : _shipments[data.first])
         {
-            if (ship_data.finished || ship_data.end > time(nullptr))
+            if (ship_data.finished || ship_data.end > GameTime::GetGameTime())
                 continue;
 
             ship_data.finished = true;
@@ -1005,9 +1005,9 @@ void Garrison::Update(uint32 diff)
         }
     }
 
-    if (time(nullptr) > _MissionGen)
+    if (GameTime::GetGameTime() > _MissionGen)
     {
-        _MissionGen = time(nullptr) + DAY;
+        _MissionGen = GameTime::GetGameTime() + DAY;
         GenerateRandomMission();
     }
 }
@@ -1202,7 +1202,7 @@ void Garrison::PlaceBuilding(uint32 garrPlotInstanceId, uint32 garrBuildingId, b
     {
         placeBuildingResult.BuildingInfo.GarrPlotInstanceID = garrPlotInstanceId;
         placeBuildingResult.BuildingInfo.GarrBuildingID = garrBuildingId;
-        placeBuildingResult.BuildingInfo.TimeBuilt = time(nullptr);
+        placeBuildingResult.BuildingInfo.TimeBuilt = GameTime::GetGameTime();
 
         Plot* plot = GetPlot(garrPlotInstanceId);
 
@@ -1299,7 +1299,7 @@ void Garrison::CancelBuildingConstruction(uint32 garrPlotInstanceId)
             placeBuildingResult.Result = GARRISON_SUCCESS;
             placeBuildingResult.BuildingInfo.GarrPlotInstanceID = garrPlotInstanceId;
             placeBuildingResult.BuildingInfo.GarrBuildingID = restored->ID;
-            placeBuildingResult.BuildingInfo.TimeBuilt = time(nullptr);
+            placeBuildingResult.BuildingInfo.TimeBuilt = GameTime::GetGameTime();
             placeBuildingResult.BuildingInfo.Active = true;
 
             plot->SetBuildingInfo(placeBuildingResult.BuildingInfo, _owner);
@@ -1574,7 +1574,7 @@ void Garrison::AddMission(uint32 missionRecID, bool sendLog/* = true*/)
     Mission& mission = _missions[missionEntry->GarrTypeID][dbId];
     mission.PacketInfo.DbID = dbId;
     mission.PacketInfo.RecID = missionRecID;
-    mission.PacketInfo.OfferTime = time(nullptr);
+    mission.PacketInfo.OfferTime = GameTime::GetGameTime();
     mission.PacketInfo.OfferDuration = 0;
     mission.PacketInfo.StartTime = 0;
     mission.PacketInfo.TravelDuration = 0;
@@ -2611,13 +2611,13 @@ uint32 Garrison::GetResNumber() const
     if (!_lastResTaken)
         return default_resource_num;
 
-    uint32 res = (time(nullptr) - _lastResTaken) / (min_counter * MINUTE);
+    uint32 res = (GameTime::GetGameTime() - _lastResTaken) / (min_counter * MINUTE);
     return res > limit_cap ? limit_cap : res;
 }
 
 void Garrison::UpdateResTakenTime()
 {
-    _lastResTaken = time(nullptr);
+    _lastResTaken = GameTime::GetGameTime();
 
     CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
     SaveToDB(trans);
@@ -2806,7 +2806,7 @@ void Garrison::StartClassHallUpgrade(uint32 tallentID)
     WorldPackets::Garrison::GarrisonResearchTalent data;
     data.GarrTypeID = 3;
     data.TalentID = tallentID;
-    data.ResearchTime = time(nullptr);
+    data.ResearchTime = GameTime::GetGameTime();
     _owner->SendDirectMessage(data.Write());
 
     AddTalentToStore(tallentID, data.ResearchTime, toRemove ? GarrisonConst::ClassHallTalentFlag::CLASS_HALL_TALENT_CHANGE : GarrisonConst::ClassHallTalentFlag::CLASS_HALL_TALENT_IN_RESEARCH, DB_STATE_NEW);
@@ -2855,7 +2855,7 @@ void Garrison::AddTalentToStore(uint32 talentID, uint32 _time, uint32 flags, Obj
     if (talentEntry->GarrAbilityID)
         _abilities.insert(talentEntry->GarrAbilityID);
 
-    if (time(nullptr) < researchTime)
+    if (GameTime::GetGameTime() < researchTime)
         talentResearchTimer = researchTime;
     else
     {
@@ -2879,7 +2879,7 @@ bool Garrison::hasTallent(uint32 talentID) const
         if (data.GarrTalentID == talentID)
         {
             uint32 const researchTime = data.Flags & GarrisonConst::ClassHallTalentFlag::CLASS_HALL_TALENT_CHANGE ? talentEntry->RespecDurationSecs : talentEntry->ResearchDurationSecs;
-            return time(nullptr) > (researchTime + data.ResearchStartTime);
+            return GameTime::GetGameTime() > (researchTime + data.ResearchStartTime);
         }
     }
 
@@ -3040,7 +3040,7 @@ void Garrison::CreateShipment(ObjectGuid const& guid, uint32 count)
 
 void Garrison::CreateGarrisonShipment(uint32 shipmentID)
 {
-    uint64 dbID = PlaceShipment(shipmentID, time(nullptr));
+    uint64 dbID = PlaceShipment(shipmentID, GameTime::GetGameTime());
 
     WorldPackets::Garrison::CreateShipmentResponse shipmentResponse;
     shipmentResponse.ShipmentRecID = shipmentID;
@@ -3094,7 +3094,7 @@ uint64 Garrison::PlaceShipment(uint32 shipmentID, uint32 start, uint32 end/* = 0
     ObjectDBState state = DB_STATE_UNCHANGED;
 
     if (!start)
-        start = time(nullptr);
+        start = GameTime::GetGameTime();
 
     // find last finishing time.
     if (!end)
@@ -3252,7 +3252,7 @@ void Garrison::CompleteShipments(GameObject *go)
 void Garrison::FreeShipmentChest(uint32 idx)
 {
     if (!GetSpecialSpawnBuildingTime(idx))
-        SetBuildingData(idx, BUILDING_DATA_SPECIAL_SPAWN, time(nullptr) + DAY);
+        SetBuildingData(idx, BUILDING_DATA_SPECIAL_SPAWN, GameTime::GetGameTime() + DAY);
 
     ShipmentSet &set = _shipments[idx];
     for (auto itr = set.begin(); itr != set.end();)
@@ -3278,7 +3278,7 @@ uint32 Garrison::GetSpecialSpawnBuildingTime(uint32 idx)
 {
     if (uint32 _time = GetBuildingData(idx, BUILDING_DATA_SPECIAL_SPAWN))
     {
-        int diff = _time - time(nullptr);
+        int diff = _time - GameTime::GetGameTime();
         if (diff > 0)
             return diff;
     }

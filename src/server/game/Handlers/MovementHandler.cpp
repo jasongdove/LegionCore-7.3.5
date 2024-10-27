@@ -169,7 +169,7 @@ void WorldSession::HandleWorldPortAck()
         if (MapDifficultyEntry const* mapDiff = sDB2Manager.GetMapDifficultyData(mEntry->ID, diff))
             if (mapDiff->GetRaidDuration())
                 if (time_t timeReset = sWorld->getInstanceResetTime(mapDiff->GetRaidDuration()))
-                    player->SendInstanceResetWarning(mEntry->ID, diff, uint32(timeReset - time(nullptr)));
+                    player->SendInstanceResetWarning(mEntry->ID, diff, uint32(timeReset - GameTime::GetGameTime()));
 
         allowMount = mInstance->AllowMount;
     }
@@ -229,7 +229,7 @@ void WorldSession::HandleMoveTeleportAck(WorldPackets::Movement::MoveTeleportAck
 
     if (Unit* mover = _player->m_mover)
     {
-        mover->m_movementInfo.MoveTime = getMSTime();
+        mover->m_movementInfo.MoveTime = GameTime::GetGameTimeMS();
         mover->m_movementInfo.ClientMoveTime = packet.ClientMoveTime;
         mover->m_movementInfo.Pos = mover->GetPosition();
 

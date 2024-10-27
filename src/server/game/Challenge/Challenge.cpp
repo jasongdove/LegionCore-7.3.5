@@ -433,7 +433,7 @@ void Challenge::Complete()
     challengeData->ID = sObjectMgr->GetGenerator<HighGuid::Scenario>()->Generate();
     challengeData->MapID = _mapID;
     challengeData->RecordTime = _challengeTimer;
-    challengeData->Date = time(nullptr);
+    challengeData->Date = GameTime::GetGameTime();
     challengeData->ChallengeLevel = _challengeLevel;
     challengeData->TimerLevel = _rewardLevel;
     challengeData->ChallengeID = _challengeEntry ? _challengeEntry->ID : 0;
@@ -451,7 +451,7 @@ void Challenge::Complete()
         ChallengeMember member;
         member.guid = player->GetGUID();
         member.specId = player->GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID);
-        member.Date = time(nullptr);
+        member.Date = GameTime::GetGameTime();
         member.ChallengeLevel = _challengeLevel;
         if (InstanceScript* script = GetInstanceScript())
             member.ChestID = script->_challengeChest.GetEntry();

@@ -392,12 +392,12 @@ uint32 GlobalCooldownMgr::GetGlobalCooldownEnd(SpellInfo const * spellInfo)
 bool GlobalCooldownMgr::HasGlobalCooldown(SpellInfo const* spellInfo)
 {
     GlobalCooldownList::const_iterator itr = m_GlobalCooldowns.find(spellInfo->Categories.StartRecoveryCategory);
-    return itr != m_GlobalCooldowns.end() && itr->second.duration && getMSTimeDiff(itr->second.cast_time, getMSTime()) < itr->second.duration;
+    return itr != m_GlobalCooldowns.end() && itr->second.duration && getMSTimeDiff(itr->second.cast_time, GameTime::GetGameTimeMS()) < itr->second.duration;
 }
 
 void GlobalCooldownMgr::AddGlobalCooldown(SpellInfo const* spellInfo, uint32 gcd, uint32 time/* = 0*/)
 {
-    m_GlobalCooldowns[spellInfo->Categories.StartRecoveryCategory] = GlobalCooldown(gcd, time ? time : (getMSTime() - 120));
+    m_GlobalCooldowns[spellInfo->Categories.StartRecoveryCategory] = GlobalCooldown(gcd, time ? time : (GameTime::GetGameTimeMS() - 120));
 }
 
 void GlobalCooldownMgr::CancelGlobalCooldown(SpellInfo const* spellInfo)
@@ -16494,7 +16494,7 @@ DiminishingLevels Unit::GetDiminishing(DiminishingGroup group)
             return DIMINISHING_LEVEL_1;
 
         // If last spell was casted more than 15 seconds ago - reset the count.
-        if (i->stack == 0 && getMSTimeDiff(i->hitTime, getMSTime()) > DiminishingDuration())
+        if (i->stack == 0 && getMSTimeDiff(i->hitTime, GameTime::GetGameTimeMS()) > DiminishingDuration())
         {
             i->hitCount = DIMINISHING_LEVEL_1;
             return DIMINISHING_LEVEL_1;
@@ -16507,7 +16507,7 @@ DiminishingLevels Unit::GetDiminishing(DiminishingGroup group)
 
 uint32 Unit::DiminishingDuration() const
 {
-    uint32 MSTime = getMSTime();
+    uint32 MSTime = GameTime::GetGameTimeMS();
     if (MSTime > 5000)
     {
         uint32 checktime = MSTime / 5000;
@@ -16529,7 +16529,7 @@ void Unit::IncrDiminishing(DiminishingGroup group)
             i->hitCount += 1;
         return;
     }
-    m_Diminishing.push_back(DiminishingReturn(group, getMSTime(), DIMINISHING_LEVEL_2));
+    m_Diminishing.push_back(DiminishingReturn(group, GameTime::GetGameTimeMS(), DIMINISHING_LEVEL_2));
 }
 
 float Unit::ApplyDiminishingToDuration(DiminishingGroup group, int32 &duration, Unit* caster, DiminishingLevels Level, int32 limitduration)
@@ -16607,7 +16607,7 @@ void Unit::ApplyDiminishingAura(DiminishingGroup group, bool apply)
             i->stack -= 1;
             // Remember time after last aura from group removed
             if (i->stack == 0)
-                i->hitTime = getMSTime();
+                i->hitTime = GameTime::GetGameTimeMS();
         }
         break;
     }
@@ -17779,7 +17779,7 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* target, uint32 procFlag, u
     HealInfo healInfo = HealInfo(actor, actionTarget, dmgInfoProc->GetDamage(), procSpell, procSpell ? SpellSchoolMask(procSpell->GetMisc(m_spawnMode)->MiscData.SchoolMask) : SPELL_SCHOOL_MASK_NORMAL);
     ProcEventInfo eventInfo = ProcEventInfo(actor, actionTarget, target, procFlag, 0, 0, procExtra, spell, dmgInfoProc, &healInfo);
 
-    std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point now = GameTime::GetGameTimeSteadyPoint();
     ProcTriggeredList procTriggered;
     // Fill procTriggered list
     for (AuraApplicationMap::const_iterator itr = GetAppliedAuras().begin(); itr!= GetAppliedAuras().end(); ++itr)
@@ -22462,7 +22462,7 @@ void Unit::SetStunned(bool apply)
 void Unit::SetRooted(bool apply)
 {
     m_movementInfo.ChangePosition(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
-    m_movementInfo.UpdateTime(getMSTime());
+    m_movementInfo.UpdateTime(GameTime::GetGameTimeMS());
 
     if (apply)
     {
@@ -22704,7 +22704,7 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
                             GetCharmInfo()->SetPetNumber(sObjectMgr->GeneratePetNumber(), true);
 
                         // if charmed two demons the same session, the 2nd gets the 1st one's name
-                        SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(time(nullptr))); // cast can't be helped
+                        SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(GameTime::GetGameTime())); // cast can't be helped
                     }
                 }
                 charmer->ToPlayer()->CharmSpellInitialize();
@@ -25602,7 +25602,7 @@ void Unit::SendTeleportPacket(Position &destPos)
     //{
         packet.movementInfo->Guid = GetGUID(); 
         packet.movementInfo->Pos.Relocate(destPos);
-        packet.movementInfo->MoveIndex = getMSTime();
+        packet.movementInfo->MoveIndex = GameTime::GetGameTimeMS();
     //}
 
     broadcastSource->SendMessageToSet(packet.Write(), false);

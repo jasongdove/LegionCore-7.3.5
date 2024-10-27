@@ -459,7 +459,7 @@ bool WorldSession::Update(uint32 diff, Map* map)
             canLogout = false;
         }
 
-        time_t currTime = time(nullptr);
+        time_t currTime = GameTime::GetGameTime();
         ///- If necessary, log the player out
         if (ShouldLogOut(currTime) && m_playerLoading.IsEmpty())
         {
@@ -1374,7 +1374,7 @@ void WorldSession::LookupPlayerSearchCommand(PreparedQueryResult result, int32 l
             }
 
             if (banTime >= 0)
-                chH.PSendSysMessage(LANG_PINFO_BAN, banTime > 0 ? secsToTimeString(banTime - time(NULL), true).c_str() : "permanently", bannedby.c_str(), banreason.c_str());
+                chH.PSendSysMessage(LANG_PINFO_BAN, banTime > 0 ? secsToTimeString(banTime - GameTime::GetGameTime(), true).c_str() : "permanently", bannedby.c_str(), banreason.c_str());
         }
 
         if (result2)

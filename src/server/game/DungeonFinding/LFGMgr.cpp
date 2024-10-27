@@ -310,7 +310,7 @@ void LFGMgr::LoadLFGDungeons(bool reload /* = false */)
 
 void LFGMgr::Update(uint32 diff)
 {
-    time_t currTime = time(nullptr);
+    time_t currTime = GameTime::GetGameTime();
 
     if (!isOptionEnabled(LFG_OPTION_ENABLE_DUNGEON_FINDER | LFG_OPTION_ENABLE_RAID_BROWSER))
         return;
@@ -417,7 +417,7 @@ void LFGMgr::Update(uint32 diff)
     if (m_QueueTimer > LFG_QUEUEUPDATE_INTERVAL)
     {
         m_QueueTimer = 0;
-        time_t currTime_ = time(nullptr);
+        time_t currTime_ = GameTime::GetGameTime();
         for (auto& i : QueuesStore)
             for (auto& itr : i)
                 itr.second.UpdateQueueTimers(currTime_);
@@ -645,7 +645,7 @@ void LFGMgr::JoinLfg(Player* player, uint8 roles, LfgDungeonSet& dungeons)
     ticket.RequesterGuid = playerGuid;
     ticket.Id = queueId;
     ticket.Type = WorldPackets::LFG::RideType::Lfg;
-    ticket.Time = int32(time(nullptr));
+    ticket.Time = int32(GameTime::GetGameTime());
 
     std::string debugNames;
     if (group)
@@ -655,7 +655,7 @@ void LFGMgr::JoinLfg(Player* player, uint8 roles, LfgDungeonSet& dungeons)
         // Create new rolecheck
         LfgRoleCheck& roleCheck = RoleChecksStore[groupGuid];
         roleCheck.roles.clear();
-        roleCheck.cancelTime = time_t(time(nullptr)) + LFG_TIME_ROLECHECK;
+        roleCheck.cancelTime = time_t(GameTime::GetGameTime()) + LFG_TIME_ROLECHECK;
         roleCheck.state = LFG_ROLECHECK_INITIALITING;
         roleCheck.leader = playerGuid;
         roleCheck.dungeons = dungeons;
@@ -699,7 +699,7 @@ void LFGMgr::JoinLfg(Player* player, uint8 roles, LfgDungeonSet& dungeons)
         LfgRolesMap rolesMap;
         rolesMap[playerGuid] = roles;
         LFGQueue& queue = GetQueue(playerGuid, queueId);
-        queue.AddQueueData(playerGuid, time(nullptr), dungeons, rolesMap);
+        queue.AddQueueData(playerGuid, GameTime::GetGameTime(), dungeons, rolesMap);
         queue.queueId = queueId;
 
         if (!isContinueDungeonRequest)
@@ -988,7 +988,7 @@ void LFGMgr::UpdateRoleCheck(ObjectGuid gguid, ObjectGuid guid /* = 0 */, uint8 
         else
         {
             LFGQueue& queue = GetQueue(gguid, queueId);
-            queue.AddQueueData(gguid, time(nullptr), roleCheck.dungeons, roleCheck.roles);
+            queue.AddQueueData(gguid, GameTime::GetGameTime(), roleCheck.dungeons, roleCheck.roles);
             queue.queueId = queueId;
         }
         RoleChecksStore.erase(itRoleCheck);
@@ -1386,7 +1386,7 @@ void LFGMgr::InitBoot(ObjectGuid gguid, ObjectGuid kicker, ObjectGuid victim, st
 
     LfgPlayerBoot& boot = BootsStore[gguid];
     boot.inProgress = true;
-    boot.cancelTime = time_t(time(nullptr)) + LFG_TIME_BOOT;
+    boot.cancelTime = time_t(GameTime::GetGameTime()) + LFG_TIME_BOOT;
     boot.reason = reason;
     boot.victim = victim;
     boot.votesNeeded = GetVotesNeededForKick(gguid);
@@ -1931,7 +1931,7 @@ LfgLockMap LFGMgr::GetLockedDungeons(ObjectGuid guid)
         LockData lockData;
         if (dungeon->expansion > expansion)
             lockData.status = LFG_LOCKSTATUS_INSUFFICIENT_EXPANSION;
-        else if (dungeon->difficulty > DIFFICULTY_NORMAL && pBind && pBind->perm && pSave && pSave->GetResetTime() > time(nullptr) && !dungeon->dbc->IsScenario() && !dungeon->dbc->IsRaidFinder())
+        else if (dungeon->difficulty > DIFFICULTY_NORMAL && pBind && pBind->perm && pSave && pSave->GetResetTime() > GameTime::GetGameTime() && !dungeon->dbc->IsScenario() && !dungeon->dbc->IsRaidFinder())
             lockData.status = LFG_LOCKSTATUS_RAID_LOCKED;
         else if (DisableMgr::IsDisabledFor(DISABLE_TYPE_LFG, dungeon->id, player))
             lockData.status = LFG_LOCKSTATUS_RAID_LOCKED;
@@ -2322,7 +2322,7 @@ void LFGMgr::InitiBattlgroundCheckRoles(Group* group, ObjectGuid playerGuid, uin
     std::lock_guard<std::recursive_mutex> _lock(m_lock);
     auto& roleCheck = RoleChecksStore[group->GetGUID()];
     roleCheck.roles.clear();
-    roleCheck.cancelTime = time_t(time(nullptr)) + LFG_TIME_ROLECHECK;
+    roleCheck.cancelTime = time_t(GameTime::GetGameTime()) + LFG_TIME_ROLECHECK;
     roleCheck.state = LFG_ROLECHECK_INITIALITING;
     roleCheck.leader = playerGuid;
     roleCheck.dungeons = {};
@@ -2339,7 +2339,7 @@ void LFGMgr::InitiBattlgroundCheckRoles(Group* group, ObjectGuid playerGuid, uin
     ticket.RequesterGuid = playerGuid;
     ticket.Id = queueId;
     ticket.Type = WorldPackets::LFG::RideType::Battlegrounds;
-    ticket.Time = int32(time(nullptr));
+    ticket.Time = int32(GameTime::GetGameTime());
 
     for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
     {
@@ -2503,7 +2503,7 @@ void LFGMgr::SendLfgBootProposalUpdate(ObjectGuid guid, LfgPlayerBoot const& boo
         bootPlayer.Info.Target = boot.victim;
         bootPlayer.Info.TotalVotes = votesNum;
         bootPlayer.Info.BootVotes = agreeNum;
-        bootPlayer.Info.TimeLeft = (boot.cancelTime - time(nullptr)) / 1000;
+        bootPlayer.Info.TimeLeft = (boot.cancelTime - GameTime::GetGameTime()) / 1000;
         bootPlayer.Info.VotesNeeded = boot.votesNeeded;
         bootPlayer.Info.Reason = boot.reason;
         player->AddUpdatePacket(bootPlayer.Write());

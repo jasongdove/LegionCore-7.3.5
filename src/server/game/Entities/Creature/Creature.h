@@ -21,6 +21,7 @@
 
 #include "Common.h"
 #include "CreatureData.h"
+#include "GameTime.h"
 #include "GridObject.h"
 #include "LootMgr.h"
 #include "MapObject.h"
@@ -466,7 +467,7 @@ struct VendorItemData
 struct VendorItemCount
 {
     explicit VendorItemCount(uint32 _item, uint32 _count)
-        : itemId(_item), count(_count), lastIncrementTime(time(nullptr)) {}
+        : itemId(_item), count(_count), lastIncrementTime(GameTime::GetGameTime()) {}
 
     uint32 itemId;
     uint32 count;
@@ -722,7 +723,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
 
         time_t const& GetRespawnTime() const { return m_respawnTime; }
         time_t GetRespawnTimeEx() const;
-        void SetRespawnTime(uint32 respawn) { m_respawnTime = respawn ? time(nullptr) + respawn : 0; }
+        void SetRespawnTime(uint32 respawn) { m_respawnTime = respawn ? GameTime::GetGameTime() + respawn : 0; }
         void Respawn(bool force = false, uint32 timer = 3);
         void SaveRespawnTime() override;
 

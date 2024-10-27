@@ -4981,7 +4981,7 @@ void Map::SaveCreatureRespawnTime(ObjectGuid::LowType const& dbGuid, time_t resp
     _creatureRespawnTimes[dbGuid] = respawnTime;
     i_lockCreatureRespawn.unlock();
 
-    if (respawnTime > (time(nullptr) + 900))
+    if (respawnTime > (GameTime::GetGameTime() + 900))
     {
         CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_REP_CREATURE_RESPAWN);
         stmt->setUInt64(0, dbGuid);
@@ -5018,7 +5018,7 @@ void Map::SaveGORespawnTime(ObjectGuid::LowType const& dbGuid, time_t respawnTim
     _goRespawnTimes[dbGuid] = respawnTime;
     i_lockGoRespawn.unlock();
 
-    if (respawnTime > (time(nullptr) + 900))
+    if (respawnTime > (GameTime::GetGameTime() + 900))
     {
         CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_REP_GO_RESPAWN);
         stmt->setUInt64(0, dbGuid);

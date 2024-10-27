@@ -59,7 +59,7 @@ void Arena::PostUpdateImpl(uint32 diff)
         CheckWinConditions();
 
     if (elapsedTime > Minutes(2))
-        UpdateWorldState(ARENA_END_TIMER, int32(time(nullptr) + std::chrono::duration_cast<Seconds>(Minutes(25) - elapsedTime).count()));
+        UpdateWorldState(ARENA_END_TIMER, int32(GameTime::GetGameTime() + std::chrono::duration_cast<Seconds>(Minutes(25) - elapsedTime).count()));
 
     ModifyStartDelayTime(Milliseconds(diff));
 }
@@ -157,7 +157,7 @@ void Arena::RemovePlayer(Player* /*player*/, ObjectGuid /*guid*/, uint32 /*team*
 void Arena::FillInitialWorldStates(WorldPackets::WorldState::InitWorldStates& packet)
 {
     packet.Worldstates.emplace_back(ARENA_SHOW_END_TIMER, GetStatus() == STATUS_IN_PROGRESS);
-    packet.Worldstates.emplace_back(ARENA_END_TIMER, int32(time(nullptr) + std::chrono::duration_cast<Seconds>(Minutes(25) - GetElapsedTime()).count()));
+    packet.Worldstates.emplace_back(ARENA_END_TIMER, int32(GameTime::GetGameTime() + std::chrono::duration_cast<Seconds>(Minutes(25) - GetElapsedTime()).count()));
     packet.Worldstates.emplace_back(ARENA_ALIVE_PLAYERS_GREEN, GetAlivePlayersCountByTeam(HORDE));
     packet.Worldstates.emplace_back(ARENA_ALIVE_PLAYERS_GOLD, GetAlivePlayersCountByTeam(ALLIANCE));
     packet.Worldstates.emplace_back(BG_RV_WORLD_STATE, 1);

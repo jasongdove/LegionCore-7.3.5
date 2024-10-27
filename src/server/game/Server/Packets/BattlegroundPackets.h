@@ -18,6 +18,7 @@
 #ifndef BattlegroundPackets_h__
 #define BattlegroundPackets_h__
 
+#include "GameTime.h"
 #include "Packet.h"
 #include "Packets/LFGPackets.h"
 #include "BattlegroundDefines.h" // remove this shit -_-
@@ -373,7 +374,7 @@ namespace WorldPackets
 
             WorldPacket const* Write() override;
 
-            uint32 ServerTime = getMSTime();
+            uint32 ServerTime = GameTime::GetGameTimeMS();
             uint16 MaxPoints = 0;
         };
 

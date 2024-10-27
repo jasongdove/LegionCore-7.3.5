@@ -604,7 +604,7 @@ void Creature::RemoveCorpse(bool setSpawnTime)
     if (getDeathState() != CORPSE)
         return;
 
-    m_corpseRemoveTime = time(nullptr);
+    m_corpseRemoveTime = GameTime::GetGameTime();
     setDeathState(DEAD);
     RemoveAllAuras();
     UpdateObjectVisibility();
@@ -616,7 +616,7 @@ void Creature::RemoveCorpse(bool setSpawnTime)
 
     // Should get removed later, just keep "compatibility" with scripts
     if (setSpawnTime)
-        m_respawnTime = time(nullptr) + respawnDelay;
+        m_respawnTime = GameTime::GetGameTime() + respawnDelay;
 
     float x, y, z, o;
     GetRespawnPosition(x, y, z, &o);
@@ -1020,7 +1020,7 @@ void Creature::Update(uint32 diff)
             break;
         case DEAD:
         {
-            time_t now = time(nullptr);
+            time_t now = GameTime::GetGameTime();
             if (m_respawnTime <= now)
             {
                 bool allowed = IsAIEnabled ? AI()->CanRespawn() : true;     // First check if there are any scripts that object to us respawning
@@ -1062,7 +1062,7 @@ void Creature::Update(uint32 diff)
                 }
                 else m_groupLootTimer -= diff;
             }
-            else if (m_corpseRemoveTime <= time(nullptr))
+            else if (m_corpseRemoveTime <= GameTime::GetGameTime())
             {
                 RemoveCorpse(false);
                 TC_LOG_DEBUG("entities.unit", "Removing corpse... %u ", GetUInt32Value(OBJECT_FIELD_ENTRY_ID));
@@ -2434,7 +2434,7 @@ bool Creature::IsInvisibleDueToDespawn() const
     if (Unit::IsInvisibleDueToDespawn())
         return true;
 
-    if (IsAlive() || isDying() || m_corpseRemoveTime > time(nullptr))
+    if (IsAlive() || isDying() || m_corpseRemoveTime > GameTime::GetGameTime())
         return false;
 
     return true;
@@ -2549,7 +2549,7 @@ void Creature::setDeathState(DeathState s)
         if (HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
             SetHover(false);
 
-        m_corpseRemoveTime = time(nullptr) + m_corpseDelay;
+        m_corpseRemoveTime = GameTime::GetGameTime() + m_corpseDelay;
         int32 _respawnDelay = m_respawnDelay;
 
         if (sWorld->getBoolConfig(CONFIG_RESPAWN_FROM_PLAYER_ENABLED))
@@ -2567,7 +2567,7 @@ void Creature::setDeathState(DeathState s)
                 }
             }
         }
-        m_respawnTime = time(nullptr) + _respawnDelay + m_corpseDelay;
+        m_respawnTime = GameTime::GetGameTime() + _respawnDelay + m_corpseDelay;
 
         // always save boss respawn time at death to prevent crash cheating
         if (sWorld->getBoolConfig(CONFIG_SAVE_RESPAWN_TIME_IMMEDIATELY) || isWorldBoss())
@@ -2644,7 +2644,7 @@ void Creature::Respawn(bool force, uint32 timer /*= 3*/)
         if (!isSummon())
         {
             if (timer)
-                m_respawnTime = time(nullptr) + timer;
+                m_respawnTime = GameTime::GetGameTime() + timer;
 
             return;
         }
@@ -2731,8 +2731,8 @@ void Creature::ForcedDespawn(uint32 timeMSToDespawn /*= 0*/, Seconds const& forc
         }
         else
         {
-            m_corpseRemoveTime = time(nullptr);
-            m_respawnTime = time(nullptr) + forceRespawnTimer.count();
+            m_corpseRemoveTime = GameTime::GetGameTime();
+            m_respawnTime = GameTime::GetGameTime() + forceRespawnTimer.count();
         }
     }
     else if (IsAlive())
@@ -3398,12 +3398,12 @@ void Creature::AddCreatureSpellCooldown(uint32 spellid)
     //TC_LOG_DEBUG("misc", "Creature::AddCreatureSpellCooldown cooldown %i, baseCD %i", cooldown, baseCD);
 
     if (cooldown)
-        _AddCreatureSpellCooldown(spellid, time(nullptr) + cooldown/IN_MILLISECONDS);
+        _AddCreatureSpellCooldown(spellid, GameTime::GetGameTime() + cooldown/IN_MILLISECONDS);
     else if(baseCD)
-        _AddCreatureSpellCooldown(spellid, time(nullptr) + baseCD/IN_MILLISECONDS);
+        _AddCreatureSpellCooldown(spellid, GameTime::GetGameTime() + baseCD/IN_MILLISECONDS);
 
     if (spellInfo->Categories.Category)
-        _AddCreatureCategoryCooldown(spellInfo->Categories.Category, time(nullptr));
+        _AddCreatureCategoryCooldown(spellInfo->Categories.Category, GameTime::GetGameTime());
 }
 
 bool Creature::HasCategoryCooldown(uint32 spell_id) const
@@ -3413,7 +3413,7 @@ bool Creature::HasCategoryCooldown(uint32 spell_id) const
         return false;
 
     auto itr = m_CreatureCategoryCooldowns.find(spellInfo->Categories.Category);
-    return(itr != m_CreatureCategoryCooldowns.end() && time_t(itr->second + (spellInfo->Cooldowns.CategoryRecoveryTime / IN_MILLISECONDS)) > time(nullptr));
+    return(itr != m_CreatureCategoryCooldowns.end() && time_t(itr->second + (spellInfo->Cooldowns.CategoryRecoveryTime / IN_MILLISECONDS)) > GameTime::GetGameTime());
 }
 
 bool Creature::HasSchoolMaskCooldown(SpellSchoolMask schoolMask) const
@@ -3426,7 +3426,7 @@ bool Creature::HasSchoolMaskCooldown(SpellSchoolMask schoolMask) const
             if (itr == m_CreatureSchoolCooldowns.end())
                 continue;
 
-            if ((*itr).second >= time(NULL))
+            if ((*itr).second >= GameTime::GetGameTime())
                 return true;
         }
     }
@@ -3436,7 +3436,7 @@ bool Creature::HasSchoolMaskCooldown(SpellSchoolMask schoolMask) const
 uint32 Creature::_GetSpellCooldownDelay(uint32 spell_id) const
 {
     auto itr = m_CreatureSpellCooldowns.find(spell_id);
-    time_t t = time(nullptr);
+    time_t t = GameTime::GetGameTime();
     return uint32(itr != m_CreatureSpellCooldowns.end() && itr->second > t ? itr->second - t : 0);
 }
 
@@ -3450,13 +3450,13 @@ void Creature::RemoveCreatureSpellCooldown(uint32 spell_id)
 bool Creature::HasCreatureSpellCooldown(uint32 spell_id) const
 {
     auto itr = m_CreatureSpellCooldowns.find(spell_id);
-    return (itr != m_CreatureSpellCooldowns.end() && itr->second > time(nullptr)) || HasCategoryCooldown(spell_id);
+    return (itr != m_CreatureSpellCooldowns.end() && itr->second > GameTime::GetGameTime()) || HasCategoryCooldown(spell_id);
 }
 
 bool Creature::HasSpellCooldown(uint32 spell_id)
 {
     CreatureSpellCooldowns::const_iterator itr = m_CreatureProcCooldowns.find(spell_id);
-    return (itr != m_CreatureProcCooldowns.end() && itr->second > time(nullptr));
+    return (itr != m_CreatureProcCooldowns.end() && itr->second > GameTime::GetGameTime());
 }
 
 bool Creature::HasSpell(uint32 spellID)
@@ -3470,7 +3470,7 @@ bool Creature::HasSpell(uint32 spellID)
 
 time_t Creature::GetRespawnTimeEx() const
 {
-    time_t now = time(nullptr);
+    time_t now = GameTime::GetGameTime();
     if (m_respawnTime > now)
         return m_respawnTime;
     return now;
@@ -3515,7 +3515,7 @@ void Creature::AllLootRemovedFromCorpse()
 {
     if (!HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE))
     {
-        time_t now = time(nullptr);
+        time_t now = GameTime::GetGameTime();
         if (m_corpseRemoveTime <= now)
             return;
 
@@ -3528,7 +3528,7 @@ void Creature::AllLootRemovedFromCorpse()
 
         // corpse skinnable, but without skinning flag, and then skinned, corpse will despawn next update
         if (cinfo && cinfo->SkinLootId)
-            m_corpseRemoveTime = time(nullptr);
+            m_corpseRemoveTime = GameTime::GetGameTime();
         else
             m_corpseRemoveTime -= diff;
     }
@@ -3575,7 +3575,7 @@ uint32 Creature::GetVendorItemCurrentCount(VendorItem const* vItem)
 
     VendorItemCount* vCount = &*itr;
 
-    time_t ptime = time(nullptr);
+    time_t ptime = GameTime::GetGameTime();
 
     if (time_t(vCount->lastIncrementTime + vItem->incrtime) <= ptime)
     {
@@ -3614,7 +3614,7 @@ uint32 Creature::UpdateVendorItemCurrentCount(VendorItem const* vItem, uint32 us
 
     VendorItemCount* vCount = &*itr;
 
-    time_t ptime = time(nullptr);
+    time_t ptime = GameTime::GetGameTime();
 
     if (time_t(vCount->lastIncrementTime + vItem->incrtime) <= ptime)
     {
@@ -3817,7 +3817,7 @@ void Creature::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs
 {
     for (uint8 i = 0; (1 << i) < SPELL_SCHOOL_MASK_ALL; ++i)
         if ((1 << i) & idSchoolMask)
-            m_CreatureSchoolCooldowns[(1 << i)] = time(nullptr) + unTimeMs / IN_MILLISECONDS;
+            m_CreatureSchoolCooldowns[(1 << i)] = GameTime::GetGameTime() + unTimeMs / IN_MILLISECONDS;
 }
 
 bool Creature::IsNoDamage() const

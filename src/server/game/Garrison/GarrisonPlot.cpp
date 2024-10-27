@@ -9,7 +9,7 @@
 
 bool Building::CanActivate() const
 {
-    if (PacketInfo && PacketInfo->TimeBuilt + sGarrBuildingStore.AssertEntry(PacketInfo->GarrBuildingID)->BuildSeconds <= time(nullptr))
+    if (PacketInfo && PacketInfo->TimeBuilt + sGarrBuildingStore.AssertEntry(PacketInfo->GarrBuildingID)->BuildSeconds <= GameTime::GetGameTime())
         return true;
 
     return false;
@@ -152,7 +152,7 @@ GameObject* Plot::CreateGameObject(Map* map, GarrisonFactionIndex faction, Garri
                     if (auto specTime = garrison->GetSpecialSpawnBuildingTime(buildingEtry->BuildingType))
                     {
                         // fix this? this is probably incorrect as GetSpecialSpawnBuildingTime already returns a diff
-                        int32 d = specTime - time(nullptr);
+                        int32 d = specTime - GameTime::GetGameTime();
                         if (d > 0)
                             linkGO->SetRespawnTime(d);
                     }

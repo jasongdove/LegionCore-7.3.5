@@ -250,7 +250,7 @@ void WorldSession::HandleChatMessage(ChatMsg type, uint32 lang, std::string msg,
 
     if (!sender->CanSpeak() && type != CHAT_MSG_DND)
     {
-        std::string timeStr = secsToTimeString(m_muteTime - time(nullptr));
+        std::string timeStr = secsToTimeString(m_muteTime - GameTime::GetGameTime());
         SendNotification(GetTrinityString(LANG_WAIT_BEFORE_SPEAKING), timeStr.c_str());
         return;
     }
@@ -763,7 +763,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPackets::Chat::CTextEmote& packet)
 
     if (!player->CanSpeak())
     {
-        SendNotification(GetTrinityString(LANG_WAIT_BEFORE_SPEAKING), secsToTimeString(m_muteTime - time(nullptr)).c_str());
+        SendNotification(GetTrinityString(LANG_WAIT_BEFORE_SPEAKING), secsToTimeString(m_muteTime - GameTime::GetGameTime()).c_str());
         return;
     }
 

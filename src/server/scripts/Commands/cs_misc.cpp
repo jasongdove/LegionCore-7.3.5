@@ -2016,10 +2016,10 @@ public:
         }
 
         if (muteTime > 0)
-            handler->PSendSysMessage(LANG_PINFO_MUTE, secsToTimeString(muteTime - time(NULL), true).c_str());
+            handler->PSendSysMessage(LANG_PINFO_MUTE, secsToTimeString(muteTime - GameTime::GetGameTime(), true).c_str());
 
         if (banTime >= 0)
-            handler->PSendSysMessage(LANG_PINFO_BAN, banTime > 0 ? secsToTimeString(banTime - time(NULL), true).c_str() : "permanently", bannedby.c_str(), banreason.c_str());
+            handler->PSendSysMessage(LANG_PINFO_BAN, banTime > 0 ? secsToTimeString(banTime - GameTime::GetGameTime(), true).c_str() : "permanently", bannedby.c_str(), banreason.c_str());
 
         std::string raceStr, ClassStr;
         switch (race)
@@ -2241,7 +2241,7 @@ public:
         int64 muteTime;
 
         // Target is online, mute will be in effect right away.
-        if (activemute > time(NULL) && notSpeakTime > 0)
+        if (activemute > GameTime::GetGameTime() && notSpeakTime > 0)
         {
             if(notSpeakTime < 4294967295)
             {
@@ -2256,7 +2256,7 @@ public:
             if(notSpeakTime < 0)
                 muteTime = 4294967295;
             else
-                muteTime = time(NULL) + notSpeakTime * MINUTE;
+                muteTime = GameTime::GetGameTime() + notSpeakTime * MINUTE;
             LoginDatabase.PQuery("UPDATE account SET mutetime = " UI64FMTD " WHERE id = %u", uint64(muteTime), accountId);
             if (target)
                 target->GetSession()->m_muteTime = muteTime;

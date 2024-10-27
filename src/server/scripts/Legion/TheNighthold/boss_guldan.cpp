@@ -902,7 +902,7 @@ public:
                     case 2:
                         damage = 0;
 
-                        if (time(NULL) - lastTimeDestroyer > 10)
+                        if (GameTime::GetGameTime() - lastTimeDestroyer > 10)
                         {
                             healthEventMythic = 0;
                             isDead = true;
@@ -1234,7 +1234,7 @@ public:
                         Talk(SAY_STORM);
                         DoCast(SPELL_STORM_OF_THE_DESTROYER);
                         
-                        lastTimeDestroyer = time(NULL);
+                        lastTimeDestroyer = GameTime::GetGameTime();
                         DoVisualCircle(0.0f, 10.0f);
                         
                         events.RescheduleEvent(EVENT_STORM_OF_DESTROYER, stormTimer.popAndSafeLast());

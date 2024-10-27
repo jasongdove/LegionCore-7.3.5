@@ -25,7 +25,7 @@
 void WorldSession::HandleCalendarGetCalendar(WorldPackets::Calendar::CalendarGetCalendar& /*packet*/)
 {
     ObjectGuid guid = _player->GetGUID();
-    time_t currTime = time(nullptr);
+    time_t currTime = GameTime::GetGameTime();
 
     WorldPackets::Calendar::CalendarSendCalendar packet;
     packet.ServerTime = currTime;
@@ -100,7 +100,7 @@ void WorldSession::HandleCalendarAddEvent(WorldPackets::Calendar::CalendarAddEve
 {
     ObjectGuid guid = _player->GetGUID();
 
-    if (packet.EventInfo.Time < (time(nullptr) - time_t(86400L)))
+    if (packet.EventInfo.Time < (GameTime::GetGameTime() - time_t(86400L)))
         return;
 
     // Strip invisible characters for non-addon messages
@@ -154,7 +154,7 @@ void WorldSession::HandleCalendarUpdateEvent(WorldPackets::Calendar::CalendarUpd
 {
     auto oldEventTime = time_t(0);
 
-    if (packet.EventInfo.Time < (time(nullptr) - time_t(86400L)))
+    if (packet.EventInfo.Time < (GameTime::GetGameTime() - time_t(86400L)))
         return;
 
     // Strip invisible characters for non-addon messages
@@ -198,7 +198,7 @@ void WorldSession::HandleCalendarCopyEvent(WorldPackets::Calendar::CalendarCopyE
 {
     ObjectGuid guid = _player->GetGUID();
 
-    if (packet.Date < (time(nullptr) - time_t(86400L)))
+    if (packet.Date < (GameTime::GetGameTime() - time_t(86400L)))
         return;
 
     if (CalendarEvent* oldEvent = sCalendarMgr->GetEvent(packet.EventID))
@@ -325,7 +325,7 @@ void WorldSession::HandleCalendarEventSignup(WorldPackets::Calendar::CalendarEve
         }
 
         CalendarInviteStatus status = packet.Tentative ? CALENDAR_STATUS_TENTATIVE : CALENDAR_STATUS_SIGNED_UP;
-        CalendarInvite* invite = new CalendarInvite(sCalendarMgr->GetFreeInviteId(), packet.EventID, guid, guid, time(nullptr), status, CALENDAR_RANK_PLAYER, "");
+        CalendarInvite* invite = new CalendarInvite(sCalendarMgr->GetFreeInviteId(), packet.EventID, guid, guid, GameTime::GetGameTime(), status, CALENDAR_RANK_PLAYER, "");
         sCalendarMgr->AddInvite(calendarEvent, invite);
         sCalendarMgr->SendCalendarClearPendingAction(guid);
     }
@@ -348,7 +348,7 @@ void WorldSession::HandleCalendarEventRsvp(WorldPackets::Calendar::CalendarEvent
         if (CalendarInvite* invite = sCalendarMgr->GetInvite(packet.InviteID))
         {
             invite->SetStatus(CalendarInviteStatus(packet.Status));
-            invite->SetResponseTime(time(nullptr));
+            invite->SetResponseTime(GameTime::GetGameTime());
 
             sCalendarMgr->UpdateInvite(invite);
             sCalendarMgr->SendCalendarEventStatus(*calendarEvent, *invite);

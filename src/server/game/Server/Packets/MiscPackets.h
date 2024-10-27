@@ -775,7 +775,7 @@ namespace WorldPackets
         struct TaskProgress
         {
             std::vector<uint16> Counts;
-            time_t FailureTime = time(nullptr);
+            time_t FailureTime = GameTime::GetGameTime();
             uint32 TaskID = 0;
             uint32 Flags = 0;
         };

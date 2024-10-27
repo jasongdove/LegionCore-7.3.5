@@ -2,6 +2,7 @@
 #ifndef MovementInfo_h__
 #define MovementInfo_h__
 
+#include "GameTime.h"
 #include "ObjectGuid.h"
 #include "Position.h"
 
@@ -80,7 +81,7 @@ struct MovementInfo
     {
         Guid.Clear();
         Pos.Relocate(0.0f, 0.0f, 0.0f, 0.0f);
-        MoveTime = getMSTime();
+        MoveTime = GameTime::GetGameTimeMS();
         memset(MoveFlags, 0, sizeof(MoveFlags));
         transport.Reset();
         fall.Reset();

@@ -993,7 +993,7 @@ void AchievementMgr<Player>::LoadFromDB(PreparedQueryResult achievementResult, P
 
     if (criteriaResult)
     {
-        time_t now = time(nullptr);
+        time_t now = GameTime::GetGameTime();
         do
         {
             Field* fields = criteriaResult->Fetch();
@@ -1075,7 +1075,7 @@ void AchievementMgr<Player>::LoadFromDB(PreparedQueryResult achievementResult, P
 
     if (criteriaAccountResult)
     {
-        time_t now = time(nullptr);
+        time_t now = GameTime::GetGameTime();
         do
         {
             Field* fields = criteriaAccountResult->Fetch();
@@ -1195,7 +1195,7 @@ void AchievementMgr<Guild>::LoadFromDB(PreparedQueryResult achievementResult, Pr
 
     if (criteriaResult)
     {
-        time_t now = time(nullptr);
+        time_t now = GameTime::GetGameTime();
         do
         {
             Field* fields = criteriaResult->Fetch();
@@ -1416,7 +1416,7 @@ void AchievementMgr<T>::SendAchievementEarned(AchievementEntry const* achievemen
     achievementEarned.Earner = firstPlayerOnAccountGuid;
     achievementEarned.EarnerNativeRealm = achievementEarned.EarnerVirtualRealm = GetVirtualRealmAddress();
     achievementEarned.AchievementID = achievement->ID;
-    achievementEarned.Time = time(nullptr);
+    achievementEarned.Time = GameTime::GetGameTime();
     player->AddUpdatePacketInRange(achievementEarned.Write());
 }
 
@@ -1442,7 +1442,7 @@ void AchievementMgr<Guild>::SendAchievementEarned(AchievementEntry const* achiev
     WorldPackets::Achievement::GuildAchievementEarned guildAchievementEarned;
     guildAchievementEarned.AchievementID = achievement->ID;
     guildAchievementEarned.GuildGUID = GetOwner()->GetGUID();
-    guildAchievementEarned.TimeEarned = time(nullptr);
+    guildAchievementEarned.TimeEarned = GameTime::GetGameTime();
     SendPacket(guildAchievementEarned.Write());
 }
 
@@ -1519,7 +1519,7 @@ void AchievementMgr<Guild>::SendCriteriaUpdate(CriteriaProgress const* progress,
     guildCriteriaProgressdata.CriteriaID = progress->criteria->ID;
     guildCriteriaProgressdata.DateCreated = progress->date;
     guildCriteriaProgressdata.DateStarted = progress->date;
-    guildCriteriaProgressdata.DateUpdated = ::time(nullptr) - progress->date;
+    guildCriteriaProgressdata.DateUpdated = ::GameTime::GetGameTime() - progress->date;
     guildCriteriaProgressdata.Quantity = progress->Counter;
     guildCriteriaProgressdata.PlayerGUID = progress->PlayerGUID;
     guildCriteriaProgressdata.Flags = 0;
@@ -2493,7 +2493,7 @@ bool AchievementMgr<T>::SetCriteriaProgress(CriteriaTree const* tree, uint32 cha
         return false;
 
     CriteriaTree const* treeParent = sAchievementMgr->GetCriteriaTree(progress->parent ? progress->parent->ID : 0);
-    progress->date = time(nullptr); // set the date to the latest update.
+    progress->date = GameTime::GetGameTime(); // set the date to the latest update.
 
     //if (!achievement)
         //return;
@@ -2658,7 +2658,7 @@ void AchievementMgr<T>::CompletedAchievement(AchievementEntry const* achievement
             SendAchievementEarned(achievement);
 
         ca = &_completedAchievements[achievement->ID];
-        ca->date = time(nullptr);
+        ca->date = GameTime::GetGameTime();
         ca->first_guid = GetOwner()->GetGUIDLow();
         ca->changed = true;
         _completedAchievementsArr[achievement->ID] = ca;
@@ -2788,7 +2788,7 @@ void AchievementMgr<Guild>::CompletedAchievement(AchievementEntry const* achieve
         SendAchievementEarned(achievement);
 
         ca = &_completedAchievements[achievement->ID];
-        ca->date = time(nullptr);
+        ca->date = GameTime::GetGameTime();
         ca->changed = true;
         _completedAchievementsArr[achievement->ID] = ca;
 
@@ -3020,7 +3020,7 @@ void AchievementMgr<Guild>::SendAchievementInfo(Player* receiver, uint32 achieve
         guildCriteriaProgress.CriteriaID = criteriaTree->CriteriaID;
         guildCriteriaProgress.DateCreated = itr->second.date;
         guildCriteriaProgress.DateStarted = itr->second.date;
-        guildCriteriaProgress.DateUpdated = ::time(nullptr) - itr->second.date;
+        guildCriteriaProgress.DateUpdated = ::GameTime::GetGameTime() - itr->second.date;
         guildCriteriaProgress.Quantity = itr->second.Counter;
         guildCriteriaProgress.PlayerGUID = itr->second.PlayerGUID;
         guildCriteriaProgress.Flags = 0;

@@ -1,8 +1,9 @@
-#include "ScriptMgr.h"
-#include "GameObject.h"
-#include "GameObjectAI.h"
 #include "CreatureAIImpl.h"
 #include "GameEventMgr.h"
+#include "GameObject.h"
+#include "GameObjectAI.h"
+#include "GameTime.h"
+#include "ScriptMgr.h"
 #include "World.h"
 
 enum FireworksShowTypeObjects
@@ -741,7 +742,7 @@ struct go_cheer_speaker : public GameObjectAI
     {
         events.Update(diff);
 
-        time_t time = sWorld->GetGameTime();
+        time_t time = GameTime::GetGameTime();
         tm localTm;
         localtime_r(&time, &localTm);
 

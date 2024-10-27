@@ -1212,7 +1212,7 @@ class spell_hun_blink_strikes : public SpellScriptLoader
                     if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(130392)) // Blink Strikes
                     {
                         caster->CastSpell(target, 130393, true);
-                        caster->_AddCreatureSpellCooldown(130393, time(NULL) + time_t(spellInfo->Effects[EFFECT_3]->BasePoints));
+                        caster->_AddCreatureSpellCooldown(130393, GameTime::GetGameTime() + time_t(spellInfo->Effects[EFFECT_3]->BasePoints));
                     }
                 }
             }

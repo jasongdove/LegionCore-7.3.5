@@ -700,25 +700,25 @@ struct npc_bgss_capitains : ScriptedAI
             firstAzeritDone = true;
 
             sCreatureTextMgr->SendChat(me, 4, target, CHAT_MSG_ADDON, LANG_ADDON, TEXT_RANGE_MAP, 0, me->GetEntry() == 131773 ? HORDE : ALLIANCE);
-            lastTimeWas = time(NULL);
+            lastTimeWas = GameTime::GetGameTime();
             textCooldown = urand(20, 40);
             break;
         case 11: // sometimes tell about new azerit
             if (!firstAzeritDone)
                 return;
 
-            if (time(NULL) - lastTimeWas < textCooldown)
+            if (GameTime::GetGameTime() - lastTimeWas < textCooldown)
                 return;
 
             sCreatureTextMgr->SendChat(me, urand(0, 1) == 1 ? 6 : 4, target, CHAT_MSG_ADDON, LANG_ADDON, TEXT_RANGE_MAP, 0, me->GetEntry() == 131773 ? HORDE : ALLIANCE);
-            lastTimeWas = time(NULL);
+            lastTimeWas = GameTime::GetGameTime();
             textCooldown = urand(30, 80);
             break;
         case 9: // resurrect
-            if (time(NULL) - lastTimeWasRes < 10)
+            if (GameTime::GetGameTime() - lastTimeWasRes < 10)
                 return;
 
-            lastTimeWasRes = time(NULL);
+            lastTimeWasRes = GameTime::GetGameTime();
             sCreatureTextMgr->SendChat(me, 9, target, CHAT_MSG_ADDON, LANG_ADDON, TEXT_RANGE_NORMAL, 0, me->GetEntry() == 131773 ? HORDE : ALLIANCE);
             break;
         }

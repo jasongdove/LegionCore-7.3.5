@@ -790,7 +790,7 @@ void Aura::CalculateDurationFromDummy(int32 &duration)
 
 Aura::Aura(SpellInfo const* spellproto, WorldObject* owner, Unit* caster, Item* castItem, ObjectGuid casterGUID, uint16 stackAmount, SpellPowerCost* powerCost) :
 m_damage_amount(0), TimeMod(1.0f), m_spellInfo(spellproto), m_casterGuid(!casterGUID.IsEmpty() ? casterGUID : caster->GetGUID()), m_castItemGuid(castItem ? castItem->GetGUID() : ObjectGuid::Empty),
-m_applyTime(time(nullptr)), m_applyMSTime(getMSTime()), m_owner(owner), m_SpellVisual(0), m_timeCla(0), m_updateTargetMapInterval(0), m_casterLevel(caster ? caster->GetLevelForTarget(owner) : m_spellInfo->SpellLevel),
+m_applyTime(GameTime::GetGameTime()), m_applyMSTime(GameTime::GetGameTimeMS()), m_owner(owner), m_SpellVisual(0), m_timeCla(0), m_updateTargetMapInterval(0), m_casterLevel(caster ? caster->GetLevelForTarget(owner) : m_spellInfo->SpellLevel),
 m_procCharges(0), m_stackAmount(stackAmount ? stackAmount: 1), m_diffMode(caster ? caster->GetSpawnMode() : 0), m_customData(0), m_isRemoved(0), m_auraId(spellproto->Id), _triggeredCastFlags(0)
 {
     m_powerCost.assign(MAX_POWERS + 1, 0);
@@ -2841,7 +2841,7 @@ bool Aura::IsProcOnCooldown() const
 {
     /*if (m_procCooldown)
     {
-        if (m_procCooldown > time(NULL))
+        if (m_procCooldown > GameTime::GetGameTime())
             return true;
     }*/
     return false;
@@ -2849,7 +2849,7 @@ bool Aura::IsProcOnCooldown() const
 
 void Aura::AddProcCooldown(uint32 /*msec*/)
 {
-    //m_procCooldown = time(NULL) + msec;
+    //m_procCooldown = GameTime::GetGameTime() + msec;
 }
 
 void Aura::PrepareProcToTrigger(AuraApplication* /*aurApp*/, ProcEventInfo& /*eventInfo*/)

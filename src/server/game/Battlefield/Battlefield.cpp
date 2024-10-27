@@ -92,7 +92,7 @@ void Battlefield::HandlePlayerEnterZone(ObjectGuid guid, uint32 /*zone*/)
             InvitePlayerToWar(player);
         else
         {
-            m_PlayersWillBeKick[player->GetTeamId()][player->GetGUID()] = time(nullptr) + 10;
+            m_PlayersWillBeKick[player->GetTeamId()][player->GetGUID()] = GameTime::GetGameTime() + 10;
             InvitePlayerToQueue(player);
         }
     }
@@ -185,7 +185,7 @@ bool Battlefield::Update(uint32 diff)
         //            next = itr;
         //            ++next;
 
-        //            if ((*itr).second <= time(nullptr))
+        //            if ((*itr).second <= GameTime::GetGameTime())
         //                KickPlayerFromBattlefield((*itr).first);
         //        }
 
@@ -195,7 +195,7 @@ bool Battlefield::Update(uint32 diff)
         //        {
         //            next = itr;
         //            ++next;
-        //            if ((*itr).second <= time(nullptr))
+        //            if ((*itr).second <= GameTime::GetGameTime())
         //                KickPlayerFromBattlefield((*itr).first);
         //        }
 
@@ -279,7 +279,7 @@ void Battlefield::InvitePlayersInZoneToWar()
                 if (m_PlayersInWar[player->GetTeamId()].size() + m_InvitedPlayers[player->GetTeamId()].size() < m_MaxPlayer)
                     InvitePlayerToWar(player);
                 else // Battlefield is full of players
-                    m_PlayersWillBeKick[player->GetTeamId()][player->GetGUID()] = time(nullptr) + 10;
+                    m_PlayersWillBeKick[player->GetTeamId()][player->GetGUID()] = GameTime::GetGameTime() + 10;
             }
         }
 }
@@ -301,7 +301,7 @@ void Battlefield::InvitePlayerToWar(Player* player)
     if (player->getLevel() < m_MinLevel)
     {
         if (m_PlayersWillBeKick[player->GetTeamId()].count(player->GetGUID()) == 0)
-            m_PlayersWillBeKick[player->GetTeamId()][player->GetGUID()] = time(nullptr) + 10;
+            m_PlayersWillBeKick[player->GetTeamId()][player->GetGUID()] = GameTime::GetGameTime() + 10;
 
         return;
     }
@@ -310,7 +310,7 @@ void Battlefield::InvitePlayerToWar(Player* player)
         return;
 
     m_PlayersWillBeKick[player->GetTeamId()].erase(player->GetGUID());
-    m_InvitedPlayers[player->GetTeamId()][player->GetGUID()] = time(nullptr) + m_TimeForAcceptInvite;
+    m_InvitedPlayers[player->GetTeamId()][player->GetGUID()] = GameTime::GetGameTime() + m_TimeForAcceptInvite;
     player->GetSession()->SendBfInvitePlayerToWar(GetQueueID(), m_AreaID, m_TimeForAcceptInvite);
 }
 

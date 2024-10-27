@@ -16,36 +16,37 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "DatabaseEnv.h"
+#include "AccountMgr.h"
+#include "AreaTriggerData.h"
+#include "ArtifactPackets.h"
+#include "AuthenticationPackets.h"
 #include "BattlePayMgr.h"
-#include "Mail.h"
-#include "ObjectMgr.h"
-#include "QuestData.h"
-#include "CharacterPackets.h"
-#include "PlayerDefines.h"
-#include "CharacterData.h"
-#include "GlobalFunctional.h"
-#include "ScriptMgr.h"
-#include "GuildMgr.h"
-#include "GuildFinderMgr.h"
-#include "PlayerDump.h"
-#include "Chat.h"
-#include "MiscPackets.h"
+#include "BattlegroundPackets.h"
 #include "CalendarPackets.h"
+#include "CharacterData.h"
+#include "CharacterPackets.h"
+#include "Chat.h"
+#include "ClientConfigPackets.h"
+#include "DatabaseEnv.h"
+#include "GameEventMgr.h"
+#include "GameTime.h"
+#include "GitRevision.h"
+#include "GlobalFunctional.h"
+#include "GuildFinderMgr.h"
+#include "GuildMgr.h"
 #include "InstanceSaveMgr.h"
 #include "InstanceScript.h"
-#include "AuthenticationPackets.h"
-#include "ClientConfigPackets.h"
+#include "LoginQueryHolder.h"
+#include "Mail.h"
+#include "MiscPackets.h"
+#include "ObjectMgr.h"
+#include "PlayerDefines.h"
+#include "PlayerDump.h"
+#include "QuestData.h"
+#include "ScriptMgr.h"
+#include "SocialMgr.h"
 #include "SystemPackets.h"
 #include "WorldStateMgr.h"
-#include "AreaTriggerData.h"
-#include "SocialMgr.h"
-#include "AccountMgr.h"
-#include "BattlegroundPackets.h"
-#include "GitRevision.h"
-#include "ArtifactPackets.h"
-#include "LoginQueryHolder.h"
-#include "GameEventMgr.h"
 
 void WorldSession::HandleCharEnum(PreparedQueryResult result, bool isDeleted)
 {
@@ -699,7 +700,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
 
     WorldPackets::ClientConfig::AccountDataTimes accountDataTimes;
     accountDataTimes.PlayerGuid = playerGuid;
-    accountDataTimes.ServerTime = uint32(sWorld->GetGameTime());
+    accountDataTimes.ServerTime = uint32(GameTime::GetGameTime());
     for (uint32 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
         accountDataTimes.AccountTimes[i] = uint32(GetAccountData(AccountDataType(i))->Time);
 
@@ -906,7 +907,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
         stmt2->setUInt32(0, GetAccountId());
         LoginDatabase.Execute(stmt2);
 
-        player->SetInGameTime(getMSTime());
+        player->SetInGameTime(GameTime::GetGameTimeMS());
 
         if (auto group = player->GetGroup())
         {
@@ -948,7 +949,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
             player->ApplyModFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_IN_PVP, false);
             player->ApplyModFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_PVP_TIMER, true);
             if (!player->pvpInfo.inHostileArea && player->IsPvP())
-                player->pvpInfo.endTimer = time(nullptr);
+                player->pvpInfo.endTimer = GameTime::GetGameTime();
         }
 
         if (player->HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_CONTESTED_PVP))
@@ -2122,7 +2123,7 @@ void WorldSession::HandleLogoutRequest(WorldPackets::Character::LogoutRequest& /
         player->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
     }
 
-    LogoutRequest(time(nullptr));
+    LogoutRequest(GameTime::GetGameTime());
 }
 
 void WorldSession::HandleLogoutInstant(WorldPackets::Character::LogoutInstant& /*packet*/)
@@ -2182,7 +2183,7 @@ void WorldSession::HandleUndeleteCharacter(WorldPackets::Character::UndeleteChar
         if (result)
         {
             auto lastUndelete = result->Fetch()[0].GetUInt32();
-            if (lastUndelete && (lastUndelete + uint32(MONTH) > time(nullptr)))
+            if (lastUndelete && (lastUndelete + uint32(MONTH) > GameTime::GetGameTime()))
             {
                 SendUndeleteCharacterResponse(CHARACTER_UNDELETE_RESULT_ERROR_COOLDOWN, undeleteInfo.get());
                 return;
@@ -2262,7 +2263,7 @@ void WorldSession::HandleUndeleteCooldownStatusCallback(PreparedQueryResult cons
     uint32 cooldown = 0;
     if (result)
     {
-        auto now = uint32(time(nullptr));
+        auto now = uint32(GameTime::GetGameTime());
         auto undeleteTime = result->Fetch()[0].GetUInt32() + uint32(MONTH);
         if (undeleteTime > now)
             cooldown = std::max<uint32>(0, undeleteTime - now);

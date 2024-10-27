@@ -969,8 +969,8 @@ void BattlefieldWG::FillInitialWorldStates(WorldPackets::WorldState::InitWorldSt
     packet.Worldstates.emplace_back(WorldStates::BATTLEFIELD_WG_WORLD_STATE_ACTIVE, IsWarTime()? 0 : 1); // Note: cleanup these two, their names look awkward
     packet.Worldstates.emplace_back(WorldStates::BATTLEFIELD_WG_WORLD_STATE_SHOW_WORLDSTATE, IsWarTime() ? 1 : 0);
 
-    packet.Worldstates.emplace_back(static_cast<WorldStates>(ClockWorldState[0]), IsWarTime() ? (uint32(time(nullptr) + (m_Timer / 1000))) : 0);
-    packet.Worldstates.emplace_back(static_cast<WorldStates>(ClockWorldState[1]), !IsWarTime() ? (uint32(time(nullptr) + (m_Timer / 1000))) : 0);
+    packet.Worldstates.emplace_back(static_cast<WorldStates>(ClockWorldState[0]), IsWarTime() ? (uint32(GameTime::GetGameTime() + (m_Timer / 1000))) : 0);
+    packet.Worldstates.emplace_back(static_cast<WorldStates>(ClockWorldState[1]), !IsWarTime() ? (uint32(GameTime::GetGameTime() + (m_Timer / 1000))) : 0);
 
     packet.Worldstates.emplace_back(WorldStates::BATTLEFIELD_WG_WORLD_STATE_VEHICLE_H, GetData(BATTLEFIELD_WG_DATA_VEHICLE_H));
     packet.Worldstates.emplace_back(WorldStates::BATTLEFIELD_WG_WORLD_STATE_MAX_VEHICLE_H, GetData(BATTLEFIELD_WG_DATA_MAX_VEHICLE_H));

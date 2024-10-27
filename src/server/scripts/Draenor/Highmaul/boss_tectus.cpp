@@ -306,7 +306,7 @@ struct boss_tectus : public BossAI
             }
             case MoteKilled:
             {
-                m_Instance->SetData(TectusAchievement, uint32(time(nullptr)));
+                m_Instance->SetData(TectusAchievement, uint32(GameTime::GetGameTime()));
 
                 ++m_MoteKilled;
 

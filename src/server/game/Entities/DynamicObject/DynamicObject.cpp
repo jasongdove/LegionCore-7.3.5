@@ -147,7 +147,7 @@ bool DynamicObject::CreateDynamicObject(ObjectGuid::LowType guidlow, Unit* caste
 
     SetUInt32Value(DYNAMICOBJECT_FIELD_SPELL_ID, spellId);
     SetFloatValue(DYNAMICOBJECT_FIELD_RADIUS, G3D::fuzzyEq(radius, 0.0f) ? 1.0f : radius);
-    SetUInt32Value(DYNAMICOBJECT_FIELD_CAST_TIME, getMSTime());
+    SetUInt32Value(DYNAMICOBJECT_FIELD_CAST_TIME, GameTime::GetGameTimeMS());
 
     if (IsWorldObject())
         setActive(true);    //must before add to map to be put in world container

@@ -471,7 +471,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
             *data << uint32(unit->m_movementInfo.MoveTime);
         else
         {
-            *data << uint32(getMSTime() + 1000);                       // time / counter
+            *data << uint32(GameTime::GetGameTimeMS() + 1000);                       // time / counter
             const_cast<Unit*>(unit)->m_movementInfo.ChangePosition(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetOrientation());
         }
         *data << float(unit->GetPositionX());
@@ -558,7 +558,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
         if (go && go->ToTransport()) // PathProgress
             *data << uint32(go->GetPathProgress());
         else
-            *data << uint32(getMSTime()); // ServerTime
+            *data << uint32(GameTime::GetGameTimeMS()); // ServerTime
     }
 
     if (VehicleCreate)
@@ -1699,7 +1699,7 @@ void WorldObject::Relocate(float x, float y, float z, float orientation)
     m_orientation = orientation;
 
     m_movementInfo.ChangePosition(x, y, z, orientation);
-    m_movementInfo.UpdateTime(getMSTime());
+    m_movementInfo.UpdateTime(GameTime::GetGameTimeMS());
     /*if (Transport* t = GetTransport())
     {
         t->CalculatePassengerOffset(x, y, z);
@@ -1788,7 +1788,7 @@ float WorldObject::GetDistanceToZOnfall()
     GetFirstCollisionPosition(pos, PET_FOLLOW_DIST, 0.f);
     auto zNow = pos.m_positionX;
     if (auto lastUpdateTime = m_movementInfo.fall.lastTimeUpdate)
-        zNow = pos.m_positionZ - Movement::computeFallElevation(Movement::MSToSec(getMSTime() - lastUpdateTime), false) - 5.0f;
+        zNow = pos.m_positionZ - Movement::computeFallElevation(Movement::MSToSec(GameTime::GetGameTimeMS() - lastUpdateTime), false) - 5.0f;
     return zNow - GetHeight(pos.m_positionX, pos.m_positionY, MAX_HEIGHT, true);
 }
 
@@ -3437,7 +3437,7 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
     bool _checkZ = true;
     if (isFalling) // Allowed point in air if we falling
     {
-        float z_now = m_movementInfo.fall.lastTimeUpdate ? (pos.m_positionZ - Movement::computeFallElevation(Movement::MSToSec(getMSTime() - m_movementInfo.fall.lastTimeUpdate), false) - 5.0f) : pos.m_positionZ;
+        float z_now = m_movementInfo.fall.lastTimeUpdate ? (pos.m_positionZ - Movement::computeFallElevation(Movement::MSToSec(GameTime::GetGameTimeMS() - m_movementInfo.fall.lastTimeUpdate), false) - 5.0f) : pos.m_positionZ;
         if ((z_now - ground) > 10.0f)
         {
             destz = z_now;

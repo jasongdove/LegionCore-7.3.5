@@ -30,8 +30,8 @@ void WorldSession::HandleRequestLeaders(WorldPackets::ChallengeMode::RequestLead
     result.MapID = packet.MapId;
     result.ChallengeID = packet.ChallengeID;
 
-    result.LastGuildUpdate = time(nullptr);
-    result.LastRealmUpdate = time(nullptr);
+    result.LastGuildUpdate = GameTime::GetGameTime();
+    result.LastRealmUpdate = GameTime::GetGameTime();
 
     if (auto bestGuild = sChallengeMgr->BestGuildChallenge(_player->GetGuildId(), packet.ChallengeID))
     {

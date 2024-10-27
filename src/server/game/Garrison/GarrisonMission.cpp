@@ -110,7 +110,7 @@ void Mission::Start(Player* owner, std::vector<uint64> const &followers)
     PacketInfo.SuccesChance = garrison->GetMissionSuccessChance(this, missionEntry);
     PacketInfo.Duration = missionEntry->MissionDuration;
     PacketInfo.OfferDuration = missionEntry->OfferDuration;
-    PacketInfo.StartTime = time(nullptr);
+    PacketInfo.StartTime = GameTime::GetGameTime();
     DbState = DB_STATE_CHANGED;
 
     WorldPackets::Garrison::GarrisonStartMissionResult missionRes;
