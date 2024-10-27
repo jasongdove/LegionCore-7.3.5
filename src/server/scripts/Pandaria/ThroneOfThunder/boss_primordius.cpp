@@ -115,9 +115,9 @@ uint32 const pimpairmutatespells[4] =
 
 enum CreatureTexts
 {
-    SAY_PULL = 1,   //Прекрасная плоть, да-да-да, отдайте её нам!…  35742
-    SAY_EVOLUTION,  //Она разрывает нас изнутри!  36112
-    SAY_DIED,       //Снова нас разрывают на куски… снова в эту холодную тьму…  35743
+    SAY_PULL = 1,   //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ-пїЅпїЅ-пїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ!пїЅ  35742
+    SAY_EVOLUTION,  //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ!  36112
+    SAY_DIED,       //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ  35743
 };
 
 class boss_primordius : public CreatureScript
@@ -184,8 +184,7 @@ public:
                 DoCast(me, SPELL_MUTATED_ABOMINATION, true);
 
             //need trigger for spawn, and fast despawn AT(pool from living fluids)
-            Position pos;
-            me->GetPosition(&pos);
+            Position pos = me->GetPosition();
             me->SummonCreature(NPC_AT_CASTER_STALKER, pos);
         }
 

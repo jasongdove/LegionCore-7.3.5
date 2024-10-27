@@ -328,7 +328,7 @@ bool BattlegroundBattleForGilneas::SetupBattleground()
     }
 
     for (uint8 i = GILNEAS_BG_SPIRIT_ALIANCE; i <= GILNEAS_BG_SPIRIT_HORDE; ++i)
-        if (!AddSpiritGuide(i, BgBfgSpiritGuidePos[i].GetPositionX(), BgBfgSpiritGuidePos[i].GetPositionY(), BgBfgSpiritGuidePos[i].GetPositionZ(), BgBfgSpiritGuidePos[i].GetOrientation(), i == GILNEAS_BG_SPIRIT_ALIANCE ? Team::ALLIANCE : Team::HORDE))
+        if (!AddSpiritGuide(i, BgBfgSpiritGuidePos[i], i == GILNEAS_BG_SPIRIT_ALIANCE ? Team::ALLIANCE : Team::HORDE))
             return false;
 
     return true;

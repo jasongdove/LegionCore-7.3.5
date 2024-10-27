@@ -301,8 +301,8 @@ struct boss_aggramar : BossAI
                 float angle = me->GetRelativeAngle(target) - 1.57f;
                 for (uint8 i = 0; i < 3; ++i)
                 {
-                    me->GetNearPosition(pos, 5.0f, angle);
-                    pos.m_orientation = me->GetAngle(pos.GetPositionX(), pos.GetPositionY());
+                    pos = me->GetNearPosition(5.0f, angle);
+                    pos.SetOrientation(me->GetAngle(pos.GetPositionX(), pos.GetPositionY()));
                     me->CastSpell(pos, SPELL_WAKE_OF_FLAME_AT, true);
                     angle += 1.57f;
                 }
@@ -325,8 +325,8 @@ struct boss_aggramar : BossAI
             case SPELL_WAKE_OF_FLAME_FILTER:
             {
                 Position pos;
-                me->GetNearPosition(pos, 5.0f, me->GetRelativeAngle(target));
-                pos.m_orientation = me->GetAngle(pos.GetPositionX(), pos.GetPositionY());
+                pos = me->GetNearPosition(5.0f, me->GetRelativeAngle(target));
+                pos.SetOrientation(me->GetAngle(pos.GetPositionX(), pos.GetPositionY()));
                 me->CastSpell(pos, SPELL_WAKE_OF_FLAME_AT, true);
                 break;
             }
@@ -389,7 +389,7 @@ struct boss_aggramar : BossAI
 
             for (uint8 i = 0; i < 6; ++i)
             {
-                me->GetNearPosition(pos, 50.0f, angle);
+                pos = me->GetNearPosition(50.0f, angle);
                 me->CastSpellDelay(pos, SPELL_SUMMON_EMBER, true, 3000 + (i * delay));
                 angle += 1.046f;
             }
@@ -398,7 +398,7 @@ struct boss_aggramar : BossAI
 
             for (uint8 i = 0; i < 2; ++i)
             {
-                me->GetNearPosition(pos, 15.0f, angle);
+                pos = me->GetNearPosition(15.0f, angle);
                 me->CastSpellDelay(pos, SPELL_SUMMON_FLAMES, true, 4000);
                 angle += 3.14f;
             }
@@ -953,7 +953,7 @@ class spell_aggramar_command_empowered_flare : public SpellScript
         for (uint8 i = 0; i < maxCount; ++i)
         {
             GetHitDest()->SimplePosXYRelocationByAngle(pos, 5.0f, angle);
-            pos.m_orientation = GetHitDest()->GetAngle(pos.GetPositionX(), pos.GetPositionY());
+            pos.SetOrientation(GetHitDest()->GetAngle(pos.GetPositionX(), pos.GetPositionY()));
             GetCaster()->CastSpell(pos, SPELL_WAKE_OF_FLAME_AT, true);
             angle += 6.28f / maxCount;
         }

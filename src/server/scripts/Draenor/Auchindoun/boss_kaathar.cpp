@@ -682,8 +682,7 @@ public:
                 }
                 case EventHallowedGround:
                 {
-                    Position l_Position;
-                    me->GetRandomNearPosition(l_Position, 20.0f);
+                    Position l_Position = me->GetRandomNearPosition(20.0f);
                     me->SummonCreature(TriggerHallowedGround, l_Position, TEMPSUMMON_TIMED_DESPAWN, 30 * IN_MILLISECONDS);
                     events.RescheduleEvent(EventHallowedGround, 8 * IN_MILLISECONDS);
                     break;
@@ -738,8 +737,8 @@ public:
 
                     for (uint8 l_I = 0; l_I <= 10; l_I++)
                     {
-                        float l_PosX = me->GetPositionX() + (l_I + 1) * cos(me->m_orientation);;
-                        float l_PosY = me->GetPositionY() + l_I * sin(me->m_orientation);
+                        float l_PosX = me->GetPositionX() + (l_I + 1) * cos(me->GetOrientation());;
+                        float l_PosY = me->GetPositionY() + l_I * sin(me->GetOrientation());
 
                         l_PosX += frand(0.5f, 1.8f);
                         l_PosY += frand(0.7f, 1.9f);

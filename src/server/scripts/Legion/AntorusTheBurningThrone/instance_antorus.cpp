@@ -513,7 +513,7 @@ public:
             for (auto gravYard : availableGravs)
             {
                 WorldSafeLocsEntry const* tempGrav = sWorldSafeLocsStore.LookupEntry(gravYard);
-                Position pos(tempGrav->Loc);
+                Position pos(tempGrav->Loc.X, tempGrav->Loc.Y, tempGrav->Loc.Z, tempGrav->Loc.O);
 
                 if (!dist || playerPosition.GetExactDist(&pos) < dist)
                 {
@@ -525,13 +525,11 @@ public:
             //Argus: phase 4
             if (IsAllowingRelease)
             {
-                loc_res_pla.Relocate(x, y, z);
-                loc_res_pla.SetMapId(1712);
+                loc_res_pla.WorldRelocate(1712, x, y, z);
             }
             else if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
             {
-                loc_res_pla.Relocate(gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-                loc_res_pla.SetMapId(gy->MapID);
+                loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
             }
 
             return &loc_res_pla;

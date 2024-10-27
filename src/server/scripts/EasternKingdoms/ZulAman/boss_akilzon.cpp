@@ -197,7 +197,7 @@ class npc_akilzon_soaring_eagle : public CreatureScript
             void Reset()
             {
                 me->SetCanFly(true);
-                me->GetPosition(&homePos);
+                homePos = me->GetPosition();
                 events.Reset();
             }
             

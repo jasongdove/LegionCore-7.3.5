@@ -636,7 +636,7 @@ void BattlegroundMgr::CreateInitialBattlegrounds()
         data.MaxGroupSize = bl->MaxGroupSize;
         uint32 startId = fields[1].GetUInt32();
         if (WorldSafeLocsEntry const* start = sWorldSafeLocsStore.LookupEntry(startId))
-            data.TeamStartLoc[TEAM_ALLIANCE].SetPosition(start->Loc);
+            data.TeamStartLoc[TEAM_ALLIANCE] = Position(start->Loc.X, start->Loc.Y, start->Loc.Z, start->Loc.O);
         else if (!MS::Battlegrounds::IsRandomGeneratedBg(data.bgTypeId))
         {
             TC_LOG_ERROR("sql.sql", "Table `battleground_template` for id %u have non-existed WorldSafeLocs.dbc id %u in field `AllianceStartLoc`. BG not created.", data.bgTypeId, startId);
@@ -645,7 +645,7 @@ void BattlegroundMgr::CreateInitialBattlegrounds()
 
         startId = fields[2].GetUInt32();
         if (WorldSafeLocsEntry const* start = sWorldSafeLocsStore.LookupEntry(startId))
-            data.TeamStartLoc[TEAM_HORDE].SetPosition(start->Loc);
+            data.TeamStartLoc[TEAM_HORDE] = Position(start->Loc.X, start->Loc.Y, start->Loc.Z, start->Loc.O);
         else if (!MS::Battlegrounds::IsRandomGeneratedBg(data.bgTypeId))
         {
             TC_LOG_ERROR("sql.sql", "Table `battleground_template` for id %u have non-existed WorldSafeLocs.dbc id %u in field `HordeStartLoc`. BG not created.", data.bgTypeId, startId);

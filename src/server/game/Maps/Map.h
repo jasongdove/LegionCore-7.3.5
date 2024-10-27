@@ -540,7 +540,7 @@ class Map
 
         float GetWaterOrGroundLevel(std::set<uint32> const& phases, float x, float y, float z, float* ground = nullptr, bool swim = false) const;
         float GetHeight(std::set<uint32> const& phases, float x, float y, float z, bool vmap = true, float maxSearchDist = DEFAULT_HEIGHT_SEARCH, DynamicTreeCallback* dCallback = nullptr) const;
-        bool isInLineOfSight(float x1, float y1, float z1, float x2, float y2, float z2, std::set<uint32> const& phases, DynamicTreeCallback* dCallback = nullptr) const;
+        bool isInLineOfSight(float x1, float y1, float z1, float x2, float y2, float z2, std::set<uint32> const& phases, VMAP::ModelIgnoreFlags ignoreFlags, DynamicTreeCallback* dCallback = nullptr) const;
         void Balance() { _dynamicTree.balance(); }
         void RemoveGameObjectModel(GameObjectModel const& model) { _dynamicTree.remove(model); }
         void InsertGameObjectModel(GameObjectModel const& model) { _dynamicTree.insert(model); }

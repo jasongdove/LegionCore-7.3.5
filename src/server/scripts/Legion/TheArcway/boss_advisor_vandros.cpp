@@ -261,7 +261,7 @@ public:
             events.RescheduleEvent(EVENT_1, 8000);
             DoCast(me, SPELL_PULSE_VISUAL, true);
             Position pos;
-            me->GetRandomNearPosition(pos, 10.0f);
+            pos = me->GetRandomNearPosition(10.0f);
             me->GetMotionMaster()->MovePoint(1, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
         }
 
@@ -421,7 +421,7 @@ public:
                 if (Unit* summon = me->SummonCreature(AddSum, x, y, z, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000))
                 {
                     float angle = i * static_cast<float>(M_PI);
-                    me->GetNearPosition(pos, 5.0f, angle);
+                    pos = me->GetNearPosition(5.0f, angle);
                     summon->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), 193852, true);
                 }
             }

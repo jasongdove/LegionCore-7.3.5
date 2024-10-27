@@ -535,7 +535,7 @@ public:
                 events.Reset();
 
                 //Position pos;
-                //mine->GetNearPosition(pos, 1.0f, 0.0f);
+                //pos = mine->GetNearPosition(1.0f, 0.0f);
                 me->GetMotionMaster()->MovePoint(EVENT_POINT_MINE, mine->m_positionX, mine->m_positionY, mine->m_positionZ);
                 me->HandleEmoteCommand(EMOTE_FIND_MINE);
             }else if (HasEscortState(STATE_ESCORT_PAUSED))
@@ -1974,8 +1974,7 @@ public:
 
             events.Reset();
 
-            Position pos;
-            me->GetNearPosition(pos, 4.0f, 0.0f);
+            Position pos = me->GetNearPosition(4.0f, 0.0f);
 
             if (TempSummon* summon = me->SummonCreature(NPC_OOMLOT_SHAMAN, pos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1000))
             {

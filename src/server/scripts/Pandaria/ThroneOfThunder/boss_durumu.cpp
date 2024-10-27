@@ -1230,8 +1230,7 @@ public:
                 {
                     if (Player* pl = me->GetPlayer(*me, targetGuid))
                     {
-                        Position pos;
-                        pl->GetPosition(&pos);
+                        Position pos = pl->GetPosition();
                         uint32 conespell = GetConeSpellEntry();
                         uint32 npceyebeamtarget = GetEyeBeamTargetEntry();
                         if (Creature* conetarget = durumu->SummonCreature(npceyebeamtarget, pos))

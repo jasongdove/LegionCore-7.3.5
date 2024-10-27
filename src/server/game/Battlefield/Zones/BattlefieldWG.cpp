@@ -66,7 +66,7 @@ bool BattlefieldWG::SetupBattlefield()
 
     m_tenacityStack = 0;
 
-    KickPosition.Relocate(5728.117f, 2714.346f, 697.733f, 0.0f, 0.0f);
+    KickPosition.Relocate(5728.117f, 2714.346f, 697.733f, 0.0f);
     KickPosition.m_mapId = m_MapId;
 
     RegisterZone(m_AreaID);
@@ -161,8 +161,7 @@ bool BattlefieldWG::SetupBattlefield()
     // Spawn turrets and hide them per default
     for (uint8 i = 0; i < WG_MAX_TURRET; i++)
     {
-        Position towerCannonPos;
-        WGTurret[i].GetPosition(&towerCannonPos);
+        Position towerCannonPos = WGTurret[i].GetPosition();
         if (Creature* creature = SpawnCreature(NPC_TOWER_CANNON, towerCannonPos, TEAM_ALLIANCE))
         {
             CanonList.insert(creature->GetGUID());

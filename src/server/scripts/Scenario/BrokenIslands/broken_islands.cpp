@@ -690,7 +690,7 @@ public:
                     destTarget.m_positionZ = 0.09f;
                     m->LoadGrid(461.8785f, 2032.679f);
                 }
-                destTarget.m_orientation = 0.5030039f;
+                destTarget.SetOrientation(0.5030039);
 
                 m->LoadGrid(destTarget.m_positionX, destTarget.m_positionY);
 

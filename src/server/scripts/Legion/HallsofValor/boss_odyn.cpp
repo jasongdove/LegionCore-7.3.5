@@ -191,7 +191,7 @@ public:
                     for (uint8 i = 0; i < 3; i++)
                     {
                         angle = 0.0f + (i * 2);
-                        target->GetNearPosition(pos, 1.0f, angle);
+                        pos = target->GetNearPosition(1.0f, angle);
                         me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_GLOWING_FRAGMENT, true);
                     }
                     target->ToCreature()->DespawnOrUnsummon(1000);

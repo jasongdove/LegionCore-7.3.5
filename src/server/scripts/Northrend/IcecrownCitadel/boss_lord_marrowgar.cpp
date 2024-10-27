@@ -307,7 +307,7 @@ class npc_coldflame : public CreatureScript
                         float ang = me->GetAngle(ownerPos) - static_cast<float>(M_PI);
                         Position::NormalizeOrientation(ang);
                         me->SetOrientation(ang);
-                        owner->GetNearPosition(pos, 2.5f, 0.0f);
+                        pos = owner->GetNearPosition(2.5f, 0.0f);
                     }
                 }
                 else
@@ -320,7 +320,7 @@ class npc_coldflame : public CreatureScript
                     }
 
                     me->SetOrientation(owner->GetAngle(target));
-                    owner->GetNearPosition(pos, owner->GetObjectSize() / 2.0f, 0.0f);
+                    pos = owner->GetNearPosition(owner->GetObjectSize() / 2.0f, 0.0f);
                 }
 
                 me->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), me->GetPositionZ(), me->GetOrientation());
@@ -333,8 +333,7 @@ class npc_coldflame : public CreatureScript
 
                 if (_events.ExecuteEvent() == EVENT_COLDFLAME_TRIGGER)
                 {
-                    Position newPos;
-                    me->GetNearPosition(newPos, 5.5f, 0.0f);
+                    Position newPos = me->GetNearPosition(5.5f, 0.0f);
                     me->NearTeleportTo(newPos.GetPositionX(), newPos.GetPositionY(), me->GetPositionZ(), me->GetOrientation());
                     DoCast(SPELL_COLDFLAME_SUMMON);
                     _events.ScheduleEvent(EVENT_COLDFLAME_TRIGGER, 450);

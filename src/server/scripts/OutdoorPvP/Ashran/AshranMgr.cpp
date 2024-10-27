@@ -1129,9 +1129,9 @@ bool OutdoorPvPAshran::Update(uint32 p_Diff)
                 if (Player* l_Player = sObjectAccessor->FindPlayer((*l_Iter).first))
                 {
                     if (l_Player->GetTeamId() == TEAM_HORDE)
-                        l_Player->TeleportTo(AshranNeutralMapID, g_HordeTeleportPos.m_positionX, g_HordeTeleportPos.m_positionY, g_HordeTeleportPos.m_positionZ, g_HordeTeleportPos.m_orientation);
+                        l_Player->TeleportTo(WorldLocation(AshranNeutralMapID, g_HordeTeleportPos));
                     else
-                        l_Player->TeleportTo(AshranNeutralMapID, g_AllianceTeleportPos.m_positionX, g_AllianceTeleportPos.m_positionY, g_AllianceTeleportPos.m_positionZ, g_AllianceTeleportPos.m_orientation);
+                        l_Player->TeleportTo(WorldLocation(AshranNeutralMapID, g_AllianceTeleportPos));
                 }
             }
         }
@@ -1145,9 +1145,9 @@ bool OutdoorPvPAshran::Update(uint32 p_Diff)
                 if (Player* l_Player = sObjectAccessor->FindPlayer((*l_Iter).first))
                 {
                     if (l_Player->GetTeamId() == TEAM_HORDE)
-                        l_Player->TeleportTo(AshranNeutralMapID, g_HordeTeleportPos.m_positionX, g_HordeTeleportPos.m_positionY, g_HordeTeleportPos.m_positionZ, g_HordeTeleportPos.m_orientation);
+                        l_Player->TeleportTo(WorldLocation(AshranNeutralMapID, g_HordeTeleportPos));
                     else
-                        l_Player->TeleportTo(AshranNeutralMapID, g_AllianceTeleportPos.m_positionX, g_AllianceTeleportPos.m_positionY, g_AllianceTeleportPos.m_positionZ, g_AllianceTeleportPos.m_orientation);
+                        l_Player->TeleportTo(WorldLocation(AshranNeutralMapID, g_AllianceTeleportPos));
                 }
             }
         }
@@ -1649,9 +1649,9 @@ void OutdoorPvPAshran::HandleBFMGREntryInviteResponse(bool accepted, Player* pla
     else
     {
         if (player->GetTeamId() == TEAM_HORDE)
-            player->TeleportTo(AshranNeutralMapID, g_HordeTeleportPos.m_positionX, g_HordeTeleportPos.m_positionY, g_HordeTeleportPos.m_positionZ, g_HordeTeleportPos.m_orientation);
+            player->TeleportTo(WorldLocation(AshranNeutralMapID, g_HordeTeleportPos));
         else
-            player->TeleportTo(AshranNeutralMapID, g_AllianceTeleportPos.m_positionX, g_AllianceTeleportPos.m_positionY, g_AllianceTeleportPos.m_positionZ, g_AllianceTeleportPos.m_orientation);
+            player->TeleportTo(WorldLocation(AshranNeutralMapID, g_AllianceTeleportPos));
     }
 }
 
@@ -1699,7 +1699,7 @@ void OutdoorPvPAshran::HandleArtifactDrop(Unit* p_Unit, uint32 p_Time)
     {
         if (p_Unit)
         {
-            go_type const l_GoType = {AncientArtifact, AshranMapID, p_Unit->m_positionX, p_Unit->m_positionY, p_Unit->m_positionZ, p_Unit->m_orientation, 0.0f, 0.0f, 0.0f, 0.0f};
+            go_type const l_GoType = {AncientArtifact, AshranMapID, p_Unit->GetPositionX(), p_Unit->GetPositionY(), p_Unit->GetPositionZ(), p_Unit->GetOrientation(), 0.0f, 0.0f, 0.0f, 0.0f};
             AddObject(AncientArtifactSpawn, l_GoType);
             m_AncientArtifactTime = p_Time;
         }

@@ -34,7 +34,7 @@ bool BattlefieldTB::SetupBattlefield()
     m_TimeForAcceptInvite = 20;                                                          //in second
     m_StartGroupingTimer = 15*60*1000;                                                   //in ms
     m_StartGrouping=false;
-    KickPosition.Relocate(5728.117f, 2714.346f, 697.733f, 0.0f, 0.0f);
+    KickPosition.Relocate(5728.117f, 2714.346f, 697.733f, 0.0f);
     KickPosition.m_mapId = m_MapId;
     RegisterZone(m_AreaID);
     m_Data32.resize(BATTLEFIELD_TB_DATA_MAX);
@@ -354,11 +354,11 @@ void BattlefieldTB::OnBattleStart()
                 if (plr->GetTeamId() == GetDefenderTeam())
                 {
                     uint32 k = urand(0, 3);
-                    plr->TeleportTo(732, TbDefencerStartPosition[k].m_positionX, TbDefencerStartPosition[k].m_positionY, TbDefencerStartPosition[k].m_positionZ, TbDefencerStartPosition[k].m_orientation);
+                    plr->TeleportTo(WorldLocation(732, TbDefencerStartPosition[k]));
                     plr->CastSpell(plr, 88473, true);
                 }
                 else
-                    plr->TeleportTo(732, TbDefencerStartPosition[4].m_positionX, TbDefencerStartPosition[4].m_positionY, TbDefencerStartPosition[4].m_positionZ, TbDefencerStartPosition[4].m_orientation);
+                    plr->TeleportTo(WorldLocation(732, TbDefencerStartPosition[4]));
             }
         }
     }

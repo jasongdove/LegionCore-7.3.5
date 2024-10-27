@@ -1006,8 +1006,7 @@ public:
 
         void EnterCombat(Unit* /*p_Attacker*/) override
         {
-            Position l_Pos;
-            me->GetPosition(&l_Pos);
+            Position l_Pos = me->GetPosition();
             me->SetHomePosition(l_Pos);
 
             m_Events.ScheduleEvent(EventWildGrowth, 5000);
@@ -1181,11 +1180,7 @@ public:
             {
                 if (Creature* l_Creature = me->FindNearestCreature(LifelessAncient, 20.0f))
                 {
-                    Position l_Pos;
-                    l_Pos.m_positionX = l_Creature->GetPositionX();
-                    l_Pos.m_positionY = l_Creature->GetPositionY();
-                    l_Pos.m_positionZ = l_Creature->GetPositionZ();
-                    l_Pos.m_orientation = l_Creature->GetOrientation();
+                    Position l_Pos = l_Creature->GetPosition();
 
                     /// Creating the circle path from the center
                     Movement::MoveSplineInit l_Init(*me);

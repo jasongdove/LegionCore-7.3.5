@@ -1519,9 +1519,9 @@ class spell_tos_lingering_eruption : public AuraScript
             float angle = 0.5f;
             for (uint8 i = 0; i < 3; ++i)
             {
-                GetUnitOwner()->GetNearPosition(pos, 5.0f, angle);
+                pos = GetUnitOwner()->GetNearPosition(5.0f, angle);
                 GetUnitOwner()->CastSpell(pos, SPELL_ERUPTING_ORB_AT, true);
-                GetUnitOwner()->GetNearPosition(pos, 5.0f, -angle);
+                pos = GetUnitOwner()->GetNearPosition(5.0f, -angle);
                 GetUnitOwner()->CastSpell(pos, SPELL_ERUPTING_ORB_AT, true);
                 angle += 1.0f;
             }

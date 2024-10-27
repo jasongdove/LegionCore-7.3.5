@@ -172,8 +172,7 @@ struct boss_echo_of_tyrande : public BossAI
             if (Player* target = ObjectAccessor::GetPlayer(*me, moonlanceGUID))
             {
                 summon->SetOrientation(me->GetAngle(target));
-                Position pos;
-                summon->GetNearPosition(pos, 15.0f, 0.0f);
+                Position pos = summon->GetNearPosition(15.0f, 0.0f);
                 summon->GetMotionMaster()->MovePoint(POINT_MOONLANCE, pos);
             }
             else
@@ -327,8 +326,7 @@ struct boss_echo_of_tyrande : public BossAI
             {
                 if (auto player = me->FindNearestPlayer(500.0f, true))
                 {
-                    Position pos;
-                    player->GetRandomNearPosition(pos, frand(15.0f, 20.0f));
+                    Position pos = player->GetRandomNearPosition(frand(15.0f, 20.0f));
                     uint32 entry = NPC_TIME_TWISTED_NIGHTSABER_1;
                     switch (urand(1, eventphase))
                     {
@@ -450,13 +448,12 @@ struct npc_echo_of_tyrande_moonlance : public ScriptedAI
         {
             if (me->GetEntry() == NPC_MOONLANCE_1)
             {
-                Position pos1_1, pos1_2, pos2_1, pos2_2, pos3_1, pos3_2;
-                me->GetNearPosition(pos1_1, 3.0f, -(M_PI / 4.0f));
-                me->GetNearPosition(pos1_2, 30.0f, -(M_PI / 4.0f));
-                me->GetNearPosition(pos2_1, 3.0f, 0.0f);
-                me->GetNearPosition(pos2_2, 30.0f, 0.0f);
-                me->GetNearPosition(pos3_1, 3.0f, (M_PI / 4.0f));
-                me->GetNearPosition(pos3_2, 30.0f, (M_PI / 4.0f));
+                Position pos1_1 = me->GetNearPosition(3.0f, -(M_PI / 4.0f));
+                Position pos1_2 = me->GetNearPosition(30.0f, -(M_PI / 4.0f));
+                Position pos2_1 = me->GetNearPosition(3.0f, 0.0f);
+                Position pos2_2 = me->GetNearPosition(30.0f, 0.0f);
+                Position pos3_1 = me->GetNearPosition(3.0f, (M_PI / 4.0f));
+                Position pos3_2 = me->GetNearPosition(30.0f, (M_PI / 4.0f));
 
                 if (auto lance1 = me->SummonCreature(NPC_MOONLANCE_2_1, pos1_1, TEMPSUMMON_TIMED_DESPAWN, 30000))
                     lance1->GetMotionMaster()->MovePoint(POINT_MOONLANCE, pos1_2);

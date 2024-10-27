@@ -30,17 +30,26 @@ namespace Movement
         MoveSpline& move_spline = *unit.movespline;
         bool transport = !unit.GetTransGUID().IsEmpty();
 
-        Location real_position(unit.GetPositionX(), unit.GetPositionY(), unit.GetPositionZ(), unit.GetOrientation());
-        // Elevators also use MOVEMENTFLAG_ONTRANSPORT but we do not keep track of their position changes
-        //if (unit.GetTransGUID())
-        if (unit.m_movementInfo.transport.Guid) //for vehicle too
-            real_position = unit.GetTransOffset();
+        Location real_position;
 
         // there is a big chance that current position is unknown if current state is not finalized, need compute it
         // this also allows calculate spline position and update map position in much greater intervals
         // Don't compute for transport movement if the unit is in a motion between two transports
         if (!move_spline.Finalized() && move_spline.onTransport == transport)
             real_position = move_spline.ComputePosition();
+        else
+        {
+            Position pos;
+            if (!transport)
+                pos = unit.GetPosition();
+            else
+                pos = unit.m_movementInfo.transport.Pos;
+
+            real_position.x = pos.GetPositionX();
+            real_position.y = pos.GetPositionY();
+            real_position.z = pos.GetPositionZ();
+            real_position.orientation = unit.GetOrientation();
+        }
 
         // should i do the things that user should do? - no.
         if (args.path.empty())

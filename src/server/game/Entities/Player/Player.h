@@ -2833,8 +2833,6 @@ class Player : public Unit, public GridObject<Player>
         PlayerCheatData* _cheatData;
         PlayerCheatData* GetCheatData() const { return _cheatData; }
         void OnDisconnected();
-        void RelocateToLastClientPosition();
-        void GetSafePosition(float &x, float &y, float &z, Transport* onTransport = NULL) const;
 
         std::string GetShortDescription() const;
 
@@ -2884,7 +2882,7 @@ class Player : public Unit, public GridObject<Player>
 
         // Recall position
         WorldLocation m_recallLoc;
-        void   SaveRecallPosition();
+        void SaveRecallPosition() { m_recallLoc.WorldRelocate(*this); }
 
         void SetHomebind(WorldLocation const& loc, uint32 area_id);
         void SendBindPointUpdate();

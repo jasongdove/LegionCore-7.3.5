@@ -107,9 +107,6 @@ m_itemTarget(nullptr), m_itemTargetGUID(spellCastRequest.Target.Item), m_objectT
         else
             pos = &m_dst._position;
 
-        if (m_caster && m_dst._position.GetMapId() == MAPID_INVALID)
-            m_dst._position.SetMapId(m_caster->GetMapId());
-
         pos->Relocate(spellCastRequest.Target.DstLocation->Location);
         if (spellCastRequest.Target.Orientation)
             pos->SetOrientation(*spellCastRequest.Target.Orientation);
@@ -313,16 +310,12 @@ void SpellCastTargets::SetDst(Position const& pos)
 {
     m_dst = SpellDestination(pos);
     m_targetMask |= TARGET_FLAG_DEST_LOCATION;
-    if (m_caster && m_dst._position.GetMapId() == MAPID_INVALID)
-        m_dst._position.SetMapId(m_caster->GetMapId());
 }
 
 void SpellCastTargets::SetDst(WorldObject const& wObj)
 {
     m_dst = SpellDestination(wObj);
     m_targetMask |= TARGET_FLAG_DEST_LOCATION;
-    if (m_caster)
-        m_dst._position.SetMapId(m_caster->GetMapId());
 }
 
 void SpellCastTargets::SetDst(const SpellDestination& spellDest)
@@ -335,23 +328,12 @@ void SpellCastTargets::SetDst(SpellCastTargets const& spellTargets)
 {
     m_dst = spellTargets.m_dst;
     m_targetMask |= TARGET_FLAG_DEST_LOCATION;
-    if (m_caster && m_dst._position.GetMapId() == MAPID_INVALID)
-        m_dst._position.SetMapId(m_caster->GetMapId());
 }
 
 void SpellCastTargets::ModDst(Position const& pos)
 {
     ASSERT(m_targetMask & TARGET_FLAG_DEST_LOCATION);
-
-    if (m_dst._transportGUID)
-    {
-        Position offset;
-        m_dst._position.GetPositionOffsetTo(pos, offset);
-        m_dst._transportOffset.RelocateOffset(offset);
-    }
-    m_dst._position.Relocate(pos);
-    if (m_caster && m_dst._position.GetMapId() == MAPID_INVALID)
-        m_dst._position.SetMapId(m_caster->GetMapId());
+    m_dst.Relocate(pos);
 }
 
 void SpellCastTargets::RemoveDst()

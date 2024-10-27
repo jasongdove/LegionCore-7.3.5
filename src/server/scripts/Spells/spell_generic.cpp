@@ -6808,7 +6808,7 @@ class spell_gen_command_dread_reflections : public AuraScript
                         {
                             if (AreaTrigger* areaObj = itr)
                             {
-                                caster->CastSpell(areaObj->GetPositionX(), areaObj->GetPositionY(), areaObj->GetPositionZH(), 246464, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER), castItem);
+                                caster->CastSpell(areaObj->GetPositionX(), areaObj->GetPositionY(), areaObj->GetPositionZ(), 246464, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER), castItem);
                             }
                         }
                     }
@@ -7889,8 +7889,7 @@ class spell_hearthstation_horde : public AuraScript
         if (!caster)
             return;
 
-        Position pos;
-        caster->GetFirstCollisionPosition(pos, 1.4f, 0.0f);
+        Position pos = caster->GetFirstCollisionPosition(1.4f, 0.0f);
         if (auto sum = caster->SummonCreature(123794, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), caster->GetOrientation(), TEMPSUMMON_MANUAL_DESPAWN))
             guid = sum->GetGUID();
     }
@@ -7925,8 +7924,7 @@ class spell_hearthstation_alliance : public AuraScript
         if (!caster)
             return;
 
-        Position pos;
-        caster->GetFirstCollisionPosition(pos, 1.4f, 0.0f);
+        Position pos = caster->GetFirstCollisionPosition(1.4f, 0.0f);
         if (auto sum = caster->SummonCreature(123793, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), caster->GetOrientation(), TEMPSUMMON_MANUAL_DESPAWN))
             guid = sum->GetGUID();
     }

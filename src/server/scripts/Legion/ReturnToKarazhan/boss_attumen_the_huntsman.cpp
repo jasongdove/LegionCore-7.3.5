@@ -175,14 +175,14 @@ public:
 
                 for (uint8 i = 0; i < 11; i++)
                 {
-                    me->GetNearPosition(pos1, dist, angle + frand(-M_PI/2, M_PI/2));
+                    pos1 = me->GetNearPosition(dist, angle + frand(-M_PI/2, M_PI/2));
                     me->CastSpell(pos1, SPELL_SPECTRAL_CHARGE_AT, true);
                     dist += 4;
                 }
 
                 for (uint8 i = 0; i < 6; i++)
                 {
-                    me->GetNearPosition(pos2, dist, angle2 + frand(-M_PI/2, M_PI/2));
+                    pos2 = me->GetNearPosition(dist, angle2 + frand(-M_PI/2, M_PI/2));
                     me->CastSpell(pos2, SPELL_SPECTRAL_CHARGE_AT, true);
                     dist2 += 4;
                 }
@@ -307,8 +307,7 @@ public:
                     case EVENT_MOVING_TO_HUNTSMAN:
                         if (Creature* huntsman = me->FindNearestCreature(NPC_ATTUMEN_THE_HUNTSMAN, 80.0f))
                         {
-                            Position pos;
-                            huntsman->GetNearPosition(pos, 6.0f, frand(0.0f, 6.28f));
+                            Position pos = huntsman->GetNearPosition(6.0f, frand(0.0f, 6.28f));
                             me->GetMotionMaster()->MovePoint(1, pos);
                         }
                         break;

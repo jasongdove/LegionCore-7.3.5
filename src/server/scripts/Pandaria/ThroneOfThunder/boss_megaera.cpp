@@ -614,8 +614,7 @@ public:
                         {
                             if (!(*itr)->HasAura(SPELL_TORRENT_OF_ICE_T) && IsPlayerRangeDDOrHeal(*itr))
                             {
-                                Position pos;
-                                (*itr)->GetPosition(&pos);
+                                Position pos = (*itr)->GetPosition();
                                 if (Creature* ar = me->SummonCreature(NPC_ACID_RAIN, pos, TEMPSUMMON_TIMED_DESPAWN, 15000))
                                     DoCast(ar, SPELL_ACID_RAIN_TR_M);
                                 havetarget = true;
@@ -626,8 +625,7 @@ public:
                         {
                             std::list<Player*>::iterator itr = pllist.begin();
                             std::advance(itr, urand(0, pllist.size() - 1));
-                            Position pos;
-                            (*itr)->GetPosition(&pos);
+                            Position pos = (*itr)->GetPosition();
                             if (Creature* ar = me->SummonCreature(NPC_ACID_RAIN, pos, TEMPSUMMON_TIMED_DESPAWN, 15000))
                                 DoCast(ar, SPELL_ACID_RAIN_TR_M);
                         }

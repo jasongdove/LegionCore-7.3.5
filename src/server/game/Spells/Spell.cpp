@@ -220,7 +220,7 @@ m_skipCheck(triggerData.skipCheck), m_spellMissMask(0), m_auraScaleMask(0), m_cu
     m_failedArg[1] = -1;
     m_isDamageSpell = false;
 
-    m_caster->GetPosition(&visualPos);
+    visualPos = m_caster->GetPosition();
 
     memset(m_miscData, 0, sizeof(m_miscData));
     memset(m_castFlags, 0, sizeof(m_castFlags));
@@ -1353,7 +1353,7 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
             if (canHitTargetInLOS && m_caster->IsCreature() && dist < 200.0f)
                 m_caster->GetNearPoint2D(pos, dist, angle, false);
             else
-                m_caster->GetFirstCollisionPosition(pos, dist, angle);
+                pos = m_caster->GetFirstCollisionPosition(dist, angle);
 
             dest.Relocate(pos);
             break;
@@ -1390,8 +1390,7 @@ void Spell::SelectImplicitGotoMoveTargets(SpellEffIndex effIndex, SpellImplicitT
     else if (m_caster->HasUnitMovementFlag(MOVEMENTFLAG_STRAFE_RIGHT))
         angle = static_cast<float>(-M_PI / 2);
 
-    Position pos;
-    m_caster->GetFirstCollisionPosition(pos, std::max(m_spellInfo->GetEffect(effIndex, m_diffMode)->CalcRadius(m_caster), m_caster->GetObjectSize()), angle);
+    Position pos = m_caster->GetFirstCollisionPosition(std::max(m_spellInfo->GetEffect(effIndex, m_diffMode)->CalcRadius(m_caster), m_caster->GetObjectSize()), angle);
     m_targets.SetDst(*m_caster);
     m_targets.ModDst(pos);
 }
@@ -1427,12 +1426,12 @@ void Spell::SelectImplicitTargetDestTargets(SpellEffIndex effIndex, SpellImplici
         target->GetNearPoint2D(pos, dist, angle);
     else
     {
-        target->GetNearPosition(pos, dist, angle);
+        pos = target->GetNearPosition(dist, angle);
 
         if ((m_spellInfo->GetEffect(effIndex, m_diffMode)->TargetA.GetTarget() == TARGET_DEST_TARGET_BACK || m_spellInfo->GetEffect(effIndex, m_diffMode)->TargetB.GetTarget() == TARGET_DEST_TARGET_BACK) &&
             /* m_spellInfo->HasAttribute(SPELL_ATTR0_ABILITY) && */ (fabs(pos.GetPositionZ() - target->GetPositionZ()) > 15.0f))
         {
-            m_caster->GetFirstCollisionPosition(pos, m_caster->GetExactDist2d(target) - dist, m_caster->GetRelativeAngle(target));
+            pos = m_caster->GetFirstCollisionPosition(m_caster->GetExactDist2d(target) - dist, m_caster->GetRelativeAngle(target));
         }
     }
     

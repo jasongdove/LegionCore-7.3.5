@@ -228,7 +228,7 @@ struct boss_kingaroth : BossAI
             case SPELL_RUINER_FILTER:
             {
                 Position pos;
-                me->GetNearPosition(pos, 35.0f, me->GetRelativeAngle(target));
+                pos = me->GetNearPosition(35.0f, me->GetRelativeAngle(target));
                 me->CastSpell(pos, SPELL_RUINER_SUMMON, true);
                 break;
             }
@@ -417,7 +417,7 @@ struct boss_kingaroth : BossAI
                         float angle = frand(0.0f, 6.28f);
                         for (uint8 i = 0; i < 5; ++i)
                         {
-                            me->GetNearPosition(pos, 40.0f, angle);
+                            pos = me->GetNearPosition(40.0f, angle);
                             angle += frand(1.0f, 1.25f);
                             me->CastSpell(pos, SPELL_RUINATION_SUMMON, true);
                             me->CastSpell(pos, SPELL_RUINATION_MISSILE, true);
@@ -523,7 +523,7 @@ struct npc_kingaroth_ruiner : public ScriptedAI
 
             for (uint8 i = 0; i < 6; ++i)
             {
-                caster->GetNearPosition(pos, 35.0f, angle);
+                pos = caster->GetNearPosition(35.0f, angle);
                 path[i] = G3D::Vector3(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
                 angle += direction;
             }
@@ -720,7 +720,7 @@ struct npc_kingaroth_garothi : public ScriptedAI
         if (spellId == SPELL_INITIALIZING)
         {
             Position pos;
-            me->GetNearPosition(pos, 40.0f, 0.0f);
+            pos = me->GetNearPosition(40.0f, 0.0f);
             me->GetMotionMaster()->MovePoint(1, pos);
         }
     }
@@ -859,8 +859,7 @@ class spell_kingaroth_diabolic_bomb : public SpellScript
         if (!GetCaster())
             return;
 
-        WorldLocation loc;
-        GetCaster()->GetNearPosition(loc, frand(23.0f, 45.0f), frand(0.0f, 6.28f));
+        WorldLocation loc = WorldLocation(GetCaster()->GetMapId(), GetCaster()->GetNearPosition(frand(23.0f, 45.0f), frand(0.0f, 6.28f)));
         SetExplTargetDest(loc);
     }
 

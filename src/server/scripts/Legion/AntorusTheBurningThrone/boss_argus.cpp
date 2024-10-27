@@ -1067,11 +1067,11 @@ struct npc_arugs_edge_of_obliteration : ScriptedAI
         if (spell->Id == SPELL_EDGE_OF_OBLITERATION_FILTER)
         {
             float angle = me->GetRelativeAngle(target);
-            me->GetNearPosition(pos, 70.0f, angle);
+            pos = me->GetNearPosition(70.0f, angle);
 
             if (centrPos.GetExactDist2d(&pos) > 50.0f)
             {
-                me->GetNearPosition(pos, 50.0f, angle);
+                pos = me->GetNearPosition(50.0f, angle);
             }
             me->SetFacingTo(me->GetAngle(pos.GetPositionX(), pos.GetPositionY()));
             DoCast(me, SPELL_EDGE_OF_OBLITERATION_AT, true);
@@ -1100,7 +1100,7 @@ struct npc_arugs_edge_of_obliteration : ScriptedAI
 
                 if (IsMythicEdge)
                 {
-                    me->GetNearPosition(pos, 90.0f, 0.0f);
+                    pos = me->GetNearPosition(90.0f, 0.0f);
                     me->CastSpell(pos, SPELL_EDGE_OF_ANNIHILATION_DMG, true);
                     me->CastSpell(pos, SPELL_EDGE_OF_ANNIHILATION_CHARGE, true);
                     me->AddDelayedEvent(3000, [this]() -> void { me->DespawnOrUnsummon(); });
@@ -2181,8 +2181,7 @@ class spell_argus_rent_soul : public SpellScript
         if (!GetCaster() || !GetHitUnit())
             return;
 
-        Position pos;
-        GetHitUnit()->GetFirstCollisionPosition(pos, frand(10.0f, 25.0f), frand(0.0f, 6.28f));
+        Position pos = GetHitUnit()->GetFirstCollisionPosition(frand(10.0f, 25.0f), frand(0.0f, 6.28f));
         GetCaster()->CastSpell(pos, SPELL_RENT_SOUL_MISSILE, true, nullptr, nullptr, GetHitUnit()->GetGUID());
     }
 

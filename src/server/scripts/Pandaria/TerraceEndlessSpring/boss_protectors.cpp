@@ -1418,8 +1418,7 @@ class mob_minion_of_fear_controller : public CreatureScript
                 {
                     case EVENT_SPAWN_MINION_OF_FEAR:
                     {
-                        Position pos;
-                        me->GetPosition(&pos);
+                        Position pos = me->GetPosition();
                         me->SummonCreature(NPC_MINION_OF_FEAR, pos);
                         events.ScheduleEvent(EVENT_SPAWN_MINION_OF_FEAR, 12000);
                         break;

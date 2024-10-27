@@ -4249,8 +4249,7 @@ class npc_frozen_orb : public CreatureScript
 
                 if (Unit* owner = creature->GetAnyOwner())
                 {
-                    Position pos;
-                    owner->GetFirstCollisionPosition(pos, 40.0f, 0.0f);
+                    Position pos = owner->GetFirstCollisionPosition(40.0f, 0.0f);
                     x = pos.GetPositionX();
                     y = pos.GetPositionY();
                     z = pos.GetPositionZ();
@@ -6481,7 +6480,7 @@ struct npc_flightmasters_whistle_mount : public ScriptedAI
             return;
 
         Position pos;
-        me->GetNearPosition(pos, 45.0f, 20.0f);
+        pos = me->GetNearPosition(45.0f, 20.0f);
         me->GetMotionMaster()->MovePoint(0, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + 5);
 
         ObjectGuid playerGUID = player->GetGUID();
@@ -7352,8 +7351,7 @@ struct npc_train_wrecker : public ScriptedAI
                     _target = target->GetGUID();
                     me->SetWalk(true);
 
-                    Position pos;
-                    target->GetNearPosition(pos, 0.0f, target->GetAngle(me));
+                    Position pos = target->GetNearPosition(0.0f, target->GetAngle(me));
 
                     me->GetMotionMaster()->MovePoint(MOVEID_CHASE, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
                 }

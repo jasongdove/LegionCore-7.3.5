@@ -123,7 +123,7 @@ struct boss_corborus : public BossAI
 
                     if (IsHeroic())
                     {
-                        target->GetPosition(&barragePos);
+                        barragePos = target->GetPosition();
                         events.RescheduleEvent(EVENT_CRYSTAL_BARRAGE_H, 4000);
                     }
                 }

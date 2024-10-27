@@ -495,7 +495,7 @@ class spell_rog_killing_spree : public SpellScriptLoader
                 if (Unit* caster = GetCaster())
                 {
                     caster->CastSpell(caster, 61851, true);
-                    caster->GetPosition(&pos);
+                    pos = caster->GetPosition();
                 }
             }
 
@@ -1364,8 +1364,7 @@ class spell_rog_death_from_above_jump : public SpellScript
         {
             if (auto target = GetExplTargetUnit())
             {
-                Position pos;
-                GetCaster()->GetPosition(&pos);
+                Position pos = GetCaster()->GetPosition();
                 pos.m_positionZ = GetCaster()->GetHeight(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
                 GetCaster()->MovePositionToFirstCollision(pos, GetCaster()->GetExactDist2d(target) - target->GetObjectSize(), GetCaster()->GetRelativeAngle(target));
                 GetSpell()->destTarget->Relocate(pos);

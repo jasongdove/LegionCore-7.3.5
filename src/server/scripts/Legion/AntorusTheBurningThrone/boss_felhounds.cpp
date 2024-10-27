@@ -646,7 +646,7 @@ struct npc_felhounds_fharg : public boss_felhounds_encounters
                     if (auto shatug = instance->instance->GetCreature(instance->GetGuidData(NPC_SHATUG)))
                     {
                         Position pos;
-                        me->GetNearPosition(pos, 10.0f, me->GetRelativeAngle(shatug));
+                        pos = me->GetNearPosition(10.0f, me->GetRelativeAngle(shatug));
                         if (auto summon = me->SummonCreature(NPC_MOLTEN_TOUCH, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + 10.0f, pos.GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 15 * IN_MILLISECONDS))
                         {
                             me->AddDelayedCombat(1800, [this, summon]() -> void
@@ -694,8 +694,7 @@ class spell_felhounds_consuming_sphere : public SpellScript
         if (!GetCaster())
             return;
 
-        WorldLocation pos;
-        GetCaster()->GetNearPosition(pos, 50.0f, GetCaster()->GetRelativeAngle(GetExplTargetDest()));
+        WorldLocation pos = WorldLocation(GetCaster()->GetMapId(), GetCaster()->GetNearPosition(50.0f, GetCaster()->GetRelativeAngle(GetExplTargetDest())));
         GetSpell()->destAtTarget = pos;
 
         if (GetCaster()->GetMap()->IsMythicRaid())

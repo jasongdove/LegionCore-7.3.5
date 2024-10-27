@@ -207,7 +207,7 @@ struct boss_archmage_sol : public BossAI
                 float range = float(urand(10, 30));
                 float ang = float(urand(0, 5));
                 Position pos;
-                me->GetNearPosition(pos, range, ang);
+                pos = me->GetNearPosition(range, ang);
                 me->SummonCreature(NPC_FROZEN_RAIN, pos);
                 events.RescheduleEvent(EVENT_FROZEN_RAIN, 10000, 0, PHASE_FROST);
                 break;

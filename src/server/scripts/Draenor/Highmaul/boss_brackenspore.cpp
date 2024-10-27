@@ -454,8 +454,7 @@ struct boss_brackenspore : public BossAI
         /// Update moves here, avoid some movements problems during Infesting Spores
         if (me->getVictim() && !me->IsWithinMeleeRange(me->getVictim()) && me->HasAura(SpellInfestingSpores))
         {
-            Position pos;
-            me->getVictim()->GetPosition(&pos);
+            Position pos = me->getVictim()->GetPosition();
 
             me->GetMotionMaster()->Clear();
             me->GetMotionMaster()->MovePoint(0, pos);

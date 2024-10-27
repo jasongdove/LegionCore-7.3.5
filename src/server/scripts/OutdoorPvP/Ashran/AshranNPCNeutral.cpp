@@ -532,8 +532,7 @@ public:
 
                 if (Creature* l_SLG = Creature::GetCreature(*me, l_Ashran->GetGenericMoPGuid(l_Ashran->GetCurrentBattleType())))
                 {
-                    Position l_Pos;
-                    l_SLG->GetPosition(&l_Pos);
+                    Position l_Pos = l_SLG->GetPosition();
                     me->GetMotionMaster()->MoveJump(l_Pos.m_positionX, l_Pos.m_positionY, l_Pos.m_positionZ, 100.0f, 100.0f, me->GetOrientation(), 1);
                 }
             }
@@ -545,8 +544,7 @@ public:
             {
                 me->CastSpell(me, SpellOgreicLanding, true);
 
-                Position l_Pos;
-                me->GetPosition(&l_Pos);
+                Position l_Pos = me->GetPosition();
                 me->SetHomePosition(l_Pos);
             }
         }

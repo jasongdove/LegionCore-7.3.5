@@ -1103,12 +1103,12 @@ class npc_ragnaros_firelands_sulfuras_smash : public CreatureScript
                 {
                     Position startPos[3];
                     Position endPos[3];
-                    me->GetNearPosition(startPos[0], 1.0f, -(M_PI / 2.0f));
-                    me->GetNearPosition(startPos[1], 1.0f, -(M_PI / 2.0f));
-                    me->GetNearPosition(startPos[2], 1.0f, 0.0f);
-                    me->GetNearPosition(endPos[0], 100.0f, -(M_PI / 2.0f));
-                    me->GetNearPosition(endPos[1], 100.0f, 0.0f);
-                    me->GetNearPosition(endPos[2], 100.0f, (M_PI / 2.0f));
+                    startPos[0] = me->GetNearPosition(1.0f, -(M_PI / 2.0f));
+                    startPos[1] = me->GetNearPosition(1.0f, -(M_PI / 2.0f));
+                    startPos[2] = me->GetNearPosition(1.0f, 0.0f);
+                    endPos[0] = me->GetNearPosition(100.0f, -(M_PI / 2.0f));
+                    endPos[1] = me->GetNearPosition(100.0f, 0.0f);
+                    endPos[2] = me->GetNearPosition(100.0f, (M_PI / 2.0f));
 
                     for (uint8 i = 0; i < 3; ++i)
                         SendLavaWave(startPos[i], endPos[i]);
@@ -2064,8 +2064,7 @@ class npc_ragnaros_firelands_dreadflame_spawn : public CreatureScript
 
             uint32 GetNextDreadflame()
             {
-                Position myPos;
-                me->GetPosition(&myPos);
+                Position myPos = me->GetPosition();
                 float f_dist = myPos.GetExactDist(&floorPos[0]);
                 uint32 iFound = 0;
                 for (uint32 i = 0; i < MAX_FLOOR_POS; ++i)

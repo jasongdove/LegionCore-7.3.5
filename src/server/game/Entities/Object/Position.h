@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -18,19 +18,20 @@
 #ifndef Trinity_game_Position_h__
 #define Trinity_game_Position_h__
 
-#include "Common.h"
-#include <vector>
+#include "Define.h"
+#include <string>
+#include <cmath>
 
 class ByteBuffer;
-class Transport;
 
-struct Position
+struct TC_GAME_API Position
 {
-    Position(float x = 0, float y = 0, float z = 0, float o = 0, float h = 0);
-    Position(Position const& loc);
-    Position(G3D::Vector3 const& vect);
-    Position(DBCPosition4D const& dbcLoc);
+    Position(float x = 0, float y = 0, float z = 0, float o = 0)
+        : m_positionX(x), m_positionY(y), m_positionZ(z), m_orientation(NormalizeOrientation(o)) { }
 
+    Position(Position const& loc) { Relocate(loc); }
+
+    // streamer tags
     struct XY;
     struct XYZ;
     struct XYZO;
@@ -51,104 +52,235 @@ struct Position
         Position* Pos;
     };
 
-    void operator +=(Position pos);
+    float m_positionX;
+    float m_positionY;
+    float m_positionZ;
+    // Better to limit access to _orientation field, to guarantee the value is normalized
+private:
+    float m_orientation;
 
-    void Clear();
+public:
+    void operator+=(Position pos);
+    bool operator==(Position const &a);
 
-    virtual void Relocate(float x, float y);
-    virtual void Relocate(float x, float y, float z);
-    virtual void Relocate(float x, float y, float z, float orientation);
-    virtual void Relocate(float x, float y, float z, float orientation, float positionH);
-
-    virtual void Relocate(Position const& pos);
-    virtual void Relocate(Position const* pos);
-
-    void SetPosition(DBCPosition2D pos);
-    void SetPosition(DBCPosition3D pos);
-    void SetPosition(DBCPosition4D pos);
-
-    void RelocateOffset(Position const& offset);
-    void SetOrientation(float orientation);
-    void SetPositionH(float positionH);
-
-    float GetPositionX() const;
-    float GetPositionY() const;
-    float GetPositionZ() const;
-    float GetPositionH() const;
-    float GetOrientation() const;
-    float GetPositionZH() const;
-
-    virtual Position GetPosition() const;
-    virtual void GetPosition(float& x, float& y, Transport* transport = nullptr) const;
-    virtual void GetPosition(float& x, float& y, float& z, Transport* transport = nullptr) const;
-    virtual void GetPosition(float& x, float& y, float& z, float& o, Transport* transport = nullptr) const;
-    virtual void GetPosition(Position* pos, Transport* transport = nullptr) const;
-
-    Streamer<XY> PositionXYStream();
-    ConstStreamer<XY> PositionXYStream() const;
-    Streamer<XYZ> PositionXYZStream();
-    ConstStreamer<XYZ> PositionXYZStream() const;
-    Streamer<XYZO> PositionXYZOStream();
-    ConstStreamer<XYZO> PositionXYZOStream() const;
-    Streamer<PackedXYZ> PositionPackedXYZStream();
-    ConstStreamer<PackedXYZ> PositionPackedXYZStream() const;
-
-    bool IsPositionValid() const;
-
-    float GetExactDist2dSq(float x, float y) const;
-    float GetExactDist2d(float x, float y) const;
-    float GetExactDist2dSq(Position const* pos) const;
-    float GetExactDist2d(Position const* pos) const;
-    float GetExactDistSq(float x, float y, float z) const;
-    float GetExactDist(float x, float y, float z) const;
-    float GetExactDistSq(Position const* pos) const;
-    float GetExactDistSq(Position const& pos) const;
-    float GetExactDist(Position const* pos) const;
-    float GetExactDist(Position const& pos) const;
-
-    void GetPositionOffsetTo(Position const& endPos, Position & retOffset) const;
-
-    float GetAngle(Position const* pos) const;
-    float GetAngle(float x, float y) const;
-    float GetRelativeAngle(Position const* pos) const;
-    float GetRelativeAngle(float x, float y) const;
-    float ToAbsoluteAngle(float relAngle) const { return NormalizeOrientation(relAngle + m_orientation); }
-    void GetSinCos(float x, float y, float &vsin, float &vcos) const;
-    bool IsInDegreesRange(float x, float y, float degresA, float degresB, bool relative = false) const;
-    float GetDegreesAngel(float x, float y, bool relative = false) const;
-
-    Position GetRandPointBetween(Position const& B) const;
-    void SimplePosXYRelocationByAngle(Position &pos, float dist, float angle, bool relative = false) const;
-
-    bool IsInDist2d(float x, float y, float dist) const;
-    bool IsInDist2d(Position const* pos, float dist) const;
-    bool IsInDist(float x, float y, float z, float dist) const;
-    bool IsInDist(Position const* pos, float dist) const;
-    bool HasInArc(float arcangle, Position const* pos) const;
-    bool HasInLine(WorldObject const* target, float width) const;
-    bool IsWithinBox(Position const& center, float xradius, float yradius, float zradius) const;
-    std::string ToString() const;
+    inline bool operator!=(Position const &a)
+    {
+        return !(operator==(a));
+    }
 
     Position operator-(Position const& rkVector) const;
     float magnitude() const;
     float length() const;
 
-    bool IsLinesCross(Position const &pos11, Position const &pos12, Position const &pos21, Position const &pos22, Position * dest = nullptr) const;
-    bool IsPointInBox(Position const& centerBox, std::vector<Position> box, Position const& point) const;
-    void GeneratePointInBox(Position centerBox, std::vector<Position> box, std::vector<Position>& points, uint32 count = 1) const;
-    void GenerateNonDuplicatePoints(std::list<Position>& randPosList, Position const& centerPos, uint8 maxPoint, float randMin, float randMax, float minDist) const;
+    void Relocate(float x, float y)
+    {
+        m_positionX = x; m_positionY = y;
+    }
+
+    void Relocate(float x, float y, float z)
+    {
+        m_positionX = x; m_positionY = y; m_positionZ = z;
+    }
+
+    void Relocate(float x, float y, float z, float orientation)
+    {
+        m_positionX = x; m_positionY = y; m_positionZ = z; SetOrientation(orientation);
+    }
+
+    void Relocate(Position const &pos)
+    {
+        m_positionX = pos.m_positionX; m_positionY = pos.m_positionY; m_positionZ = pos.m_positionZ; SetOrientation(pos.m_orientation);
+    }
+
+    void Relocate(Position const* pos)
+    {
+        m_positionX = pos->m_positionX; m_positionY = pos->m_positionY; m_positionZ = pos->m_positionZ; SetOrientation(pos->m_orientation);
+    }
+
+    void RelocateOffset(Position const &offset);
+
+    void SetOrientation(float orientation)
+    {
+        m_orientation = NormalizeOrientation(orientation);
+    }
+
+    float GetPositionX() const { return m_positionX; }
+    float GetPositionY() const { return m_positionY; }
+    float GetPositionZ() const { return m_positionZ; }
+    float GetOrientation() const { return m_orientation; }
+
+    void GetPosition(float &x, float &y) const
+    {
+        x = m_positionX; y = m_positionY;
+    }
+
+    void GetPosition(float &x, float &y, float &z) const
+    {
+        x = m_positionX; y = m_positionY; z = m_positionZ;
+    }
+
+    void GetPosition(float &x, float &y, float &z, float &o) const
+    {
+        x = m_positionX; y = m_positionY; z = m_positionZ; o = m_orientation;
+    }
+
+    Position GetPosition() const { return *this; }
+
+    Streamer<XY> PositionXYStream() { return Streamer<XY>(*this); }
+    ConstStreamer<XY> PositionXYStream() const { return ConstStreamer<XY>(*this); }
+    Streamer<XYZ> PositionXYZStream() { return Streamer<XYZ>(*this); }
+    ConstStreamer<XYZ> PositionXYZStream() const { return ConstStreamer<XYZ>(*this); }
+    Streamer<XYZO> PositionXYZOStream() { return Streamer<XYZO>(*this); }
+    ConstStreamer<XYZO> PositionXYZOStream() const { return ConstStreamer<XYZO>(*this); }
+    Streamer<PackedXYZ> PositionPackedXYZStream() { return Streamer<PackedXYZ>(*this); }
+    ConstStreamer<PackedXYZ> PositionPackedXYZStream() const { return ConstStreamer<PackedXYZ>(*this); }
+
+    bool IsPositionValid() const;
+
+    float GetExactDist2dSq(const float x, const float y) const
+    {
+        float dx = m_positionX - x; float dy = m_positionY - y; return dx*dx + dy*dy;
+    }
+
+    float GetExactDist2d(const float x, const float y) const;
+
+    float GetExactDist2dSq(Position const& pos) const
+    {
+        float dx = m_positionX - pos.m_positionX; float dy = m_positionY - pos.m_positionY; return dx*dx + dy*dy;
+    }
+
+    float GetExactDist2d(Position const& pos) const
+    {
+        return std::sqrt(GetExactDist2dSq(pos));
+    }
+
+    float GetExactDist2dSq(Position const* pos) const
+    {
+        float dx = m_positionX - pos->m_positionX; float dy = m_positionY - pos->m_positionY; return dx*dx + dy*dy;
+    }
+
+    float GetExactDist2d(Position const* pos) const;
+
+    float GetExactDistSq(float x, float y, float z) const
+    {
+        float dz = m_positionZ - z; return GetExactDist2dSq(x, y) + dz*dz;
+    }
+
+    float GetExactDist(float x, float y, float z) const;
+
+    float GetExactDistSq(Position const& pos) const
+    {
+        float dx = m_positionX - pos.m_positionX; float dy = m_positionY - pos.m_positionY; float dz = m_positionZ - pos.m_positionZ; return dx*dx + dy*dy + dz*dz;
+    }
+
+    float GetExactDist(Position const& pos) const
+    {
+        return std::sqrt(GetExactDistSq(pos));
+    }
+
+    float GetExactDistSq(Position const* pos) const
+    {
+        float dx = m_positionX - pos->m_positionX; float dy = m_positionY - pos->m_positionY; float dz = m_positionZ - pos->m_positionZ; return dx*dx + dy*dy + dz*dz;
+    }
+
+    float GetExactDist(Position const* pos) const;
+
+    void GetPositionOffsetTo(Position const & endPos, Position & retOffset) const;
+    Position GetPositionWithOffset(Position const& offset) const;
+
+    float GetAngle(Position const* pos) const;
+    float GetAngle(Position const& pos) const
+    {
+        return GetAngle(pos.m_positionX, pos.m_positionY);
+    }
+    float GetAngle(float x, float y) const;
+    float GetRelativeAngle(Position const* pos) const
+    {
+        return GetAngle(pos) - m_orientation;
+    }
+
+    float GetRelativeAngle(float x, float y) const { return GetAngle(x, y) - m_orientation; }
+    float ToAbsoluteAngle(float relAngle) const { return NormalizeOrientation(relAngle + m_orientation); }
+    void GetSinCos(float x, float y, float &vsin, float &vcos) const;
+
+    void SimplePosXYRelocationByAngle(Position &pos, float dist, float angle, bool relative = false) const;
+
+    bool IsInDist2d(float x, float y, float dist) const
+    {
+        return GetExactDist2dSq(x, y) < dist * dist;
+    }
+
+    bool IsInDist2d(Position const* pos, float dist) const
+    {
+        return GetExactDist2dSq(pos) < dist * dist;
+    }
+
+    bool IsInDist(float x, float y, float z, float dist) const
+    {
+        return GetExactDistSq(x, y, z) < dist * dist;
+    }
+
+    bool IsInDist(Position const* pos, float dist) const
+    {
+        return GetExactDistSq(pos) < dist * dist;
+    }
+
+    bool IsWithinBox(const Position& center, float xradius, float yradius, float zradius) const;
+    bool HasInArc(float arcangle, Position const* pos, float border = 2.0f) const;
+    bool HasInLine(Position const* pos, float width) const;
+    std::string ToString() const;
 
     // modulos a radian orientation to the range of 0..2PI
     static float NormalizeOrientation(float o);
 
-    static float NormalizePitch(float o);
-
-    float m_positionX{};
-    float m_positionY{};
-    float m_positionZ{};
-    float m_positionH{};
-    float m_orientation{};
+    bool IsLinesCross(Position const &pos11, Position const &pos12, Position const &pos21, Position const &pos22, Position * dest = nullptr) const;
+    bool IsPointInBox(Position const& centerBox, std::vector<Position> box, Position const& point) const;
+    void GenerateNonDuplicatePoints(std::list<Position>& randPosList, Position const& centerPos, uint8 maxPoint, float randMin, float randMax, float minDist) const;
 };
+
+#define MAPID_INVALID 0xFFFFFFFF
+
+class TC_GAME_API WorldLocation : public Position
+{
+public:
+    explicit WorldLocation(uint32 mapId = MAPID_INVALID, float x = 0.f, float y = 0.f, float z = 0.f, float o = 0.f)
+        : Position(x, y, z, o), m_mapId(mapId) { }
+
+    WorldLocation(uint32 mapId, Position const& position)
+        : Position(position), m_mapId(mapId) { }
+
+    WorldLocation(WorldLocation const& loc)
+        : Position(loc), m_mapId(loc.GetMapId()) { }
+
+    void WorldRelocate(WorldLocation const& loc)
+    {
+        m_mapId = loc.GetMapId();
+        Relocate(loc);
+    }
+
+    void WorldRelocate(uint32 mapId = MAPID_INVALID, float x = 0.f, float y = 0.f, float z = 0.f, float o = 0.f)
+    {
+        m_mapId = mapId;
+        Relocate(x, y, z, o);
+    }
+
+    WorldLocation GetWorldLocation() const
+    {
+        return *this;
+    }
+
+    uint32 GetMapId() const { return m_mapId; }
+
+    uint32 m_mapId;
+};
+
+TC_GAME_API ByteBuffer& operator<<(ByteBuffer& buf, Position::ConstStreamer<Position::XY> const& streamer);
+TC_GAME_API ByteBuffer& operator>>(ByteBuffer& buf, Position::Streamer<Position::XY> const& streamer);
+TC_GAME_API ByteBuffer& operator<<(ByteBuffer& buf, Position::ConstStreamer<Position::XYZ> const& streamer);
+TC_GAME_API ByteBuffer& operator>>(ByteBuffer& buf, Position::Streamer<Position::XYZ> const& streamer);
+TC_GAME_API ByteBuffer& operator<<(ByteBuffer& buf, Position::ConstStreamer<Position::XYZO> const& streamer);
+TC_GAME_API ByteBuffer& operator>>(ByteBuffer& buf, Position::Streamer<Position::XYZO> const& streamer);
+TC_GAME_API ByteBuffer& operator<<(ByteBuffer& buf, Position::ConstStreamer<Position::PackedXYZ> const& streamer);
 
 template<class Tag>
 struct TaggedPosition
@@ -162,45 +294,12 @@ struct TaggedPosition
         return *this;
     }
 
-    Position operator-(Position const& rkVector) const
-    {
-        return Position(Pos.m_positionX - rkVector.m_positionX, Pos.m_positionY - rkVector.m_positionY, Pos.m_positionZ - rkVector.m_positionZ);
-    }
-
     operator Position() const { return Pos; }
 
     friend ByteBuffer& operator<<(ByteBuffer& buf, TaggedPosition const& tagged) { return buf << Position::ConstStreamer<Tag>(tagged.Pos); }
-    friend ByteBuffer& operator >> (ByteBuffer& buf, TaggedPosition& tagged) { return buf >> Position::Streamer<Tag>(tagged.Pos); }
+    friend ByteBuffer& operator>>(ByteBuffer& buf, TaggedPosition& tagged) { return buf >> Position::Streamer<Tag>(tagged.Pos); }
 
     Position Pos;
 };
-
-#define MAPID_INVALID 0xFFFFFFFF
-
-class WorldLocation : public Position
-{
-public:
-    explicit WorldLocation(uint32 _mapid = MAPID_INVALID, float _x = 0, float _y = 0, float _z = 0, float _o = 0);
-    explicit WorldLocation(uint32 _mapid, Position const& pos);
-    WorldLocation(WorldLocation const& loc);
-
-    void WorldRelocate(WorldLocation const& loc);
-    void WorldRelocate(uint32 _mapId = MAPID_INVALID, float _x = 0.f, float _y = 0.f, float _z = 0.f, float _o = 0.f);
-
-    uint32 GetMapId() const;
-    void SetMapId(uint32 _mapid);
-
-    WorldLocation GetWorldLocation() const;
-
-    uint32 m_mapId{};
-};
-
-ByteBuffer& operator<<(ByteBuffer& buf, Position::ConstStreamer<Position::XY> const& streamer);
-ByteBuffer& operator>>(ByteBuffer& buf, Position::Streamer<Position::XY> const& streamer);
-ByteBuffer& operator<<(ByteBuffer& buf, Position::ConstStreamer<Position::XYZ> const& streamer);
-ByteBuffer& operator>>(ByteBuffer& buf, Position::Streamer<Position::XYZ> const& streamer);
-ByteBuffer& operator<<(ByteBuffer& buf, Position::ConstStreamer<Position::XYZO> const& streamer);
-ByteBuffer& operator>>(ByteBuffer& buf, Position::Streamer<Position::XYZO> const& streamer);
-ByteBuffer& operator<<(ByteBuffer& buf, Position::ConstStreamer<Position::PackedXYZ> const& streamer);
 
 #endif // Trinity_game_Position_h__

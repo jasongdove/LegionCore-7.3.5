@@ -489,18 +489,19 @@ public:
 
     void SpawnBGObject(uint32 type, uint32 respawntime);
 
-    bool AddObject(uint32 type, uint32 entry, Position pos, Position rotation = { }, uint32 respawnTime = 0, GOState goState = GO_STATE_READY);
+    bool AddObject(uint32 type, uint32 entry, Position const& pos, Position const& rotation, uint32 respawnTime = 0, GOState goState = GO_STATE_READY);
+    bool AddObject(uint32 type, uint32 entry, Position const& pos, G3D::Quat const& rotation, uint32 respawnTime = 0, GOState goState = GO_STATE_READY);
     bool AddObject(uint32 type, uint32 entry, float x, float y, float z, float o, float rotation0, float rotation1, float rotation2, float rotation3, uint32 respawnTime = 0, GOState goState = GO_STATE_READY);
 
-    Creature* AddCreature(uint32 entry, uint32 type, uint32 teamval, Position pos, uint32 respawntime = 0, Transport* transport = nullptr);
+    Creature* AddCreature(uint32 entry, uint32 type, uint32 teamval, Position const& pos, uint32 respawntime = 0, Transport* transport = nullptr);
     Creature* AddCreature(uint32 entry, uint32 type, uint32 teamval, float x, float y, float z, float o, uint32 respawntime = 0, Transport* transport = nullptr);
 
     bool DelCreature(uint32 type);
     bool DelObject(uint32 type);
 
     bool AddSpiritGuide(uint32 type, DBCPosition4D loc, TeamId team);
-    bool AddSpiritGuide(uint32 type, Position pos, TeamId team);
-    bool AddSpiritGuide(uint32 type, float x, float y, float z, float o, uint32 team);
+    bool AddSpiritGuide(uint32 type, Position const& pos, uint32 team);
+    bool AddSpiritGuide(uint32 type, float x, float y, float z, float o, TeamId team);
     int32 GetObjectType(ObjectGuid guid);
 
     void DoorsOpen(uint32 type1, uint32 type2);

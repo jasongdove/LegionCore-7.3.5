@@ -14,8 +14,7 @@ struct instance_dreadblades : public InstanceScript
 
     WorldLocation* GetClosestGraveYard(float x, float y, float z) override
     {
-        loc_res_pla.Relocate(x, y, z);
-        loc_res_pla.SetMapId(1545);
+        loc_res_pla.WorldRelocate(1545, x, y, z);
 
         uint32 graveyardId = 5299;
 
@@ -34,8 +33,7 @@ struct instance_dreadblades : public InstanceScript
 
         if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
         {
-            loc_res_pla.Relocate(gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-            loc_res_pla.SetMapId(gy->MapID);
+            loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
         }
         return &loc_res_pla;
     }
@@ -50,15 +48,13 @@ struct instance_violethold_mage : public InstanceScript
 
     WorldLocation* GetClosestGraveYard(float x, float y, float z) override
     {
-        loc_res_pla.Relocate(x, y, z);
-        loc_res_pla.SetMapId(1494);
+        loc_res_pla.WorldRelocate(1494, x, y, z);
 
         uint32 graveyardId = 5294;
 
         if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
         {
-            loc_res_pla.Relocate(gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-            loc_res_pla.SetMapId(gy->MapID);
+            loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
         }
         return &loc_res_pla;
     }
@@ -73,15 +69,13 @@ struct instance_priest_mage_nexus_art : public InstanceScript
 
     WorldLocation* GetClosestGraveYard(float x, float y, float z) override
     {
-        loc_res_pla.Relocate(x, y, z);
-        loc_res_pla.SetMapId(1583);
+        loc_res_pla.WorldRelocate(1583, x, y, z);
 
         uint32 graveyardId = 5442;
 
         if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
         {
-            loc_res_pla.Relocate(gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-            loc_res_pla.SetMapId(gy->MapID);
+            loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
         }
         return &loc_res_pla;
     }
@@ -96,15 +90,13 @@ struct instance_nightborne_sunwell : public InstanceScript
 
     WorldLocation* GetClosestGraveYard(float x, float y, float z) override
     {
-        loc_res_pla.Relocate(x, y, z);
-        loc_res_pla.SetMapId(1840);
+        loc_res_pla.WorldRelocate(1840, x, y, z);
 
         uint32 graveyardId = 6303;
 
         if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
         {
-            loc_res_pla.Relocate(gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-            loc_res_pla.SetMapId(gy->MapID);
+            loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
         }
         return &loc_res_pla;
     }
@@ -119,15 +111,13 @@ struct instance_faronaar_mage : public InstanceScript
 
     WorldLocation* GetClosestGraveYard(float x, float y, float z) override
     {
-        loc_res_pla.Relocate(x, y, z);
-        loc_res_pla.SetMapId(1616);
+        loc_res_pla.WorldRelocate(1616, x, y, z);
 
         uint32 graveyardId = 5511;
 
         if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
         {
-            loc_res_pla.Relocate(gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-            loc_res_pla.SetMapId(gy->MapID);
+            loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
         }
         return &loc_res_pla;
     }
@@ -142,15 +132,13 @@ struct instance_ruins_of_falanaar_feral : public InstanceScript
 
     WorldLocation* GetClosestGraveYard(float x, float y, float z) override
     {
-        loc_res_pla.Relocate(x, y, z);
-        loc_res_pla.SetMapId(1612);
+        loc_res_pla.WorldRelocate(1612, x, y, z);
 
         uint32 graveyardId = 5514;
 
         if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
         {
-            loc_res_pla.Relocate(gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-            loc_res_pla.SetMapId(gy->MapID);
+            loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
         }
         return &loc_res_pla;
     }

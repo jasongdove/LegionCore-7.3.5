@@ -1259,8 +1259,7 @@ class spell_lord_rhyolith_magma_flow : public SpellScriptLoader
 
                 for (float a = 0; a <= 2 * M_PI; a += M_PI / 2)
                 {
-                    Position pos;
-                    GetCaster()->GetNearPosition(pos, 1.0f * count, a + frand(-0.05f, 0.05f));
+                    Position pos = GetCaster()->GetNearPosition(1.0f * count, a + frand(-0.05f, 0.05f));
                     GetCaster()->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_MAGMA_FLOW_AREA, true);
                 }
             }

@@ -97,7 +97,7 @@ public:
                 {
                     changePos = true;
                     Position pos;
-                    me->GetNearPosition(pos, 20.0f, 0.0f);
+                    pos = me->GetNearPosition(20.0f, 0.0f);
                     me->SetHomePosition(pos);
                 }
             }
@@ -337,7 +337,7 @@ public:
                 {
                     Position pos;
                     float dist = frand(5.0, 15.0f);
-                    tyrosus->GetNearPosition(pos, dist, frand(3.0f, 6.0f));
+                    pos = tyrosus->GetNearPosition(dist, frand(3.0f, 6.0f));
                     summon->GetMotionMaster()->MovePoint(1, pos);
                     summon->SetHomePosition(pos);
                 }
@@ -359,7 +359,7 @@ public:
                     Position pos;
                     for (uint8 i = 0; i < 2; i++)
                     {
-                        tyrosus->GetNearPosition(pos, 10.0f, frand(0.0f, 6.28f));
+                        pos = tyrosus->GetNearPosition(10.0f, frand(0.0f, 6.28f));
                         me->SummonCreature(NPC_BURNING_CRUSHER, pos);
                     }
                     events.RescheduleEvent(EVENT_5, 2000);

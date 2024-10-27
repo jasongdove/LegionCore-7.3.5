@@ -1045,10 +1045,6 @@ bool VehicleJoinEvent::Execute(uint64, uint32)
     vehicle->RemovePendingEventsForSeat(Seat->first);
     vehicle->RemovePendingEventsForPassenger(Passenger);
 
-    bool newTPos = true;
-    if (Passenger->m_movementInfo.transport.Pos.m_positionX != 0.0f || Passenger->m_movementInfo.transport.Pos.m_positionY != 0.0f || Passenger->m_movementInfo.transport.Pos.m_positionZ != 0.0f || Passenger->m_movementInfo.transport.Pos.m_orientation != 0.0f)
-        newTPos = false;
-
     Passenger->m_vehicle = vehicle;
 
     Seat->second.Passenger.Guid = Passenger->GetGUID();
@@ -1096,8 +1092,7 @@ bool VehicleJoinEvent::Execute(uint64, uint32)
             Passenger->AddUnitState(UNIT_STATE_ONVEHICLE);
         }
 
-    if (newTPos)
-        Passenger->m_movementInfo.transport.Pos.SetPosition(veSeat->AttachmentOffset);
+    Passenger->m_movementInfo.transport.Pos.Relocate(veSeat->AttachmentOffset.X, veSeat->AttachmentOffset.Y, veSeat->AttachmentOffset.Z);
     Passenger->m_movementInfo.transport.MoveTime = 0; // 1 for player
     Passenger->m_movementInfo.transport.VehicleSeatIndex = Seat->first;
     Passenger->m_movementInfo.transport.Guid = Target->GetGUID();

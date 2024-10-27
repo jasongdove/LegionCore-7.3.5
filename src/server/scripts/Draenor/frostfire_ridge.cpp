@@ -109,8 +109,7 @@ public:
                     }
                     else
                     {
-                        Position pos;
-                        go->GetRandomNearPosition(pos, 5.0f);
+                        Position pos = go->GetRandomNearPosition(5.0f);
                         if (TempSummon* summon = go->SummonCreature(NPC_TREE, pos))
                             treeGUID = summon->GetGUID();
                     }
@@ -171,8 +170,7 @@ public:
             me->PlayDirectSound(SOUNDID, player);
             if (Creature *tree = player->FindNearestCreature(NPC_TREE, 10.0f))
             {
-                Position pos;
-                tree->GetRandomNearPosition(pos, 5.0f);
+                Position pos = tree->GetRandomNearPosition(5.0f);
                 me->GetMotionMaster()->MovePoint(1, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
                 treeGUID = tree->GetGUID();
             }

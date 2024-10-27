@@ -174,7 +174,7 @@ public:
             roomCenter.m_positionX = 1046.941f;
             roomCenter.m_positionY = -2560.606f;
             roomCenter.m_positionZ = 174.9552f;
-            roomCenter.m_orientation = 4.33f;
+            roomCenter.SetOrientation(4.33f);
             waterDamageTimer = 250;
             wiseMariGUID.Clear();
 
@@ -265,8 +265,7 @@ public:
                     {
                         if (wiseMari->IsAlive() || wiseMari->isInCombat())
                         {
-                            Position pos;
-                            player->GetPosition(&pos);
+                            Position pos = player->GetPosition();
 
                             if ((player->GetDistance(roomCenter) < 20.00f && roomCenter.HasInArc(M_PI, &pos)) || (!roomCenter.HasInArc(M_PI, &pos) && player->GetDistance(roomCenter) < 14.00f))
                                 if (player->GetPositionZ() > 174.05f && player->GetPositionZ() < 174.23f)

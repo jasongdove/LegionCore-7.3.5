@@ -1694,8 +1694,7 @@ class spell_foundational_collapse : public SpellScriptLoader
                 if (!GetCaster())
                     return;
 
-                Position pos;
-                GetCaster()->GetRandomNearPosition(pos, 27.0f);
+                Position pos = GetCaster()->GetRandomNearPosition(27.0f);
                 GetCaster()->CastSpell(pos, GetSpellInfo()->Effects[EFFECT_0]->TriggerSpell, true);
             }
 

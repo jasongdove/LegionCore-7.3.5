@@ -350,7 +350,7 @@ class spell_atbt_anihilation : public SpellScript
         for (uint8 i = 0; i < 3; ++i)
         {
             Position pos(caster->GetPosition());
-            caster->GetFirstCollisionPosition(pos, 15.0f * frand(0.3f, 1.0f), static_cast<float>(rand_norm()) * static_cast<float>(2.0f * M_PI));
+            pos = caster->GetFirstCollisionPosition(15.0f * frand(0.3f, 1.0f), static_cast<float>(rand_norm()) * static_cast<float>(2.0f * M_PI));
             caster->CastSpell(pos, 252742, false);
             caster->CastSpell(pos, 252741, false);
         }

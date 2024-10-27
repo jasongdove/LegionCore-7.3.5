@@ -456,8 +456,8 @@ public:
                 if (!saved)
                     graveyardId = gravYard;
 
-                Position pos1(temp->Loc);
-                Position pos2(saved->Loc);
+                Position pos1(temp->Loc.X, temp->Loc.Y, temp->Loc.Z, temp->Loc.O);
+                Position pos2(saved->Loc.X, saved->Loc.Y, saved->Loc.Z, saved->Loc.O);
                 if (playerPosition.GetExactDist(&pos1) < playerPosition.GetExactDist(&pos2))
                     graveyardId = gravYard;
             }
@@ -468,8 +468,8 @@ public:
                 WorldSafeLocsEntry const* saved = sWorldSafeLocsStore.LookupEntry(graveyardId);
                 if (temp)
                 {
-                    Position pos1(temp->Loc);
-                    Position pos2(saved->Loc);
+                    Position pos1(temp->Loc.X, temp->Loc.Y, temp->Loc.Z, temp->Loc.O);
+                    Position pos2(saved->Loc.X, saved->Loc.Y, saved->Loc.Z, saved->Loc.O);
                     if (playerPosition.GetExactDist(&pos1) < playerPosition.GetExactDist(&pos2))
                         graveyardId = 6015;
                 }
@@ -477,8 +477,7 @@ public:
 
             if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
             {
-                loc_res_pla.Relocate(gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-                loc_res_pla.SetMapId(gy->MapID);
+                loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
             }
 
             return &loc_res_pla;

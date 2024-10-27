@@ -991,8 +991,7 @@ public:
 
         void EnterCombat(Unit* /*p_Attacker*/) override
         {
-            Position l_Pos;
-            me->GetPosition(&l_Pos);
+            Position l_Pos = me->GetPosition();
             me->SetHomePosition(l_Pos);
 
             m_Events.ScheduleEvent(EventFracture, 5000);

@@ -2600,8 +2600,7 @@ public:
                 {
                     GetCaster()->SetFacingToObject(pl);
                     pl->CastSpell(pl, SPELL_FLASH_DUMMY, true);
-                    Position pos;
-                    GetCaster()->GetPosition(&pos);
+                    Position pos = GetCaster()->GetPosition();
                     GetCaster()->SummonCreature(NPC_FLASH_STALKER, pos, TEMPSUMMON_TIMED_DESPAWN, 2000);
                 }
             }

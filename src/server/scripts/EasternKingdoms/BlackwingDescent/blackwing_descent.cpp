@@ -1604,7 +1604,7 @@ public:
                 case EVENT_JUMP_TO:
                     if (Creature* cloud = me->FindNearestCreature(NPC_CHEMICAL_CLOUD, 200.0f))
                     {
-                        me->GetPosition(&homepos);
+                        homepos = me->GetPosition();
                         me->JumpTo(cloud, 20.0f);
                         events.RescheduleEvent(EVENT_GRIP_OF_DEATH, 2000);
                     }

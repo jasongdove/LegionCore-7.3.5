@@ -1168,8 +1168,7 @@ public:
                     caster->ToPlayer()->GetQuestStatus(QUEST_GREAT_BANK_HEIST) != QUEST_STATUS_INCOMPLETE)
                     return;
 
-                Position pos;
-                caster->GetPosition(&pos);
+                Position pos = caster->GetPosition();
                 TempSummon* summon = caster->GetMap()->SummonCreature(35486, pos, NULL, 0, caster);
 
                 //

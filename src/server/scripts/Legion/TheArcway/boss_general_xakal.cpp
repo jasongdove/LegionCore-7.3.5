@@ -92,7 +92,7 @@ public:
                 case SPELL_SHADOW_SLASH:
                     Position pos;
                     angle = me->GetRelativeAngle(target);
-                    me->GetNearPosition(pos, 1.0f, angle);
+                    pos = me->GetNearPosition(1.0f, angle);
                     pos.SimplePosXYRelocationByAngle(shadowPos, 1.0f, angle);
                     DoCast(target, SPELL_SHADOW_SLASH_AT);
                     break;
@@ -153,7 +153,7 @@ public:
                     {
                         Talk(SAY_SUM);
                         Position pos;
-                        me->GetRandomNearPosition(pos, 30.0f);
+                        pos = me->GetRandomNearPosition(30.0f);
                         me->SummonCreature(NPC_DREAD_FELBAT, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + 20.0f);
                         events.RescheduleEvent(EVENT_SUM_FELBAT, 22000);
                         break;

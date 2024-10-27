@@ -478,8 +478,8 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
         *data << float(unit->GetPositionY());
         *data << float(unit->GetPositionZ());
         *data << float(G3D::fuzzyEq(unit->GetOrientation(), 0.0f) ? 0.0f : Position::NormalizeOrientation(unit->GetOrientation()));
-        *data << float(unit->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING) || unit->m_movementInfo.HasExtraMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING) ? Position::NormalizePitch(unit->m_movementInfo.pitch) : 0.0f);
-        *data << float(/*unit->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_SPLINE_ELEVATION) ? unit->m_movementInfo.splineElevation : */0.0f);
+        *data << float(unit->m_movementInfo.pitch);
+        *data << float(unit->m_movementInfo.splineElevation);
 
         *data << uint32(unit->m_movementInfo.RemoveForcesIDs.size());
         *data << uint32(0);                                             // MoveIndex
@@ -1636,107 +1636,6 @@ void WorldObject::SetTratsport(Transport* transport, Unit* owner)
     }
 }
 
-Position WorldObject::GetPosition() const
-{
-    return Position::GetPosition();
-}
-
-void WorldObject::GetPosition(float& x, float& y, Transport* transport) const
-{
-    if (transport)
-    {
-        x = m_movementInfo.transport.Pos.GetPositionX();
-        y = m_movementInfo.transport.Pos.GetPositionY();
-        return;
-    }
-    Position::GetPosition(x, y);
-}
-
-void WorldObject::GetPosition(float& x, float& y, float& z, Transport* transport) const
-{
-    if (transport)
-    {
-        x = m_movementInfo.transport.Pos.GetPositionX();
-        y = m_movementInfo.transport.Pos.GetPositionY();
-        z = m_movementInfo.transport.Pos.GetPositionZH();
-        return;
-    }
-    Position::GetPosition(x, y, z);
-}
-
-void WorldObject::GetPosition(float& x, float& y, float& z, float& o, Transport* transport) const
-{
-    if (transport)
-    {
-        x = m_movementInfo.transport.Pos.GetPositionX();
-        y = m_movementInfo.transport.Pos.GetPositionY();
-        z = m_movementInfo.transport.Pos.GetPositionZH();
-        o = m_movementInfo.transport.Pos.GetOrientation();
-        return;
-    }
-    Position::GetPosition(x, y, z, o);
-}
-
-void WorldObject::GetPosition(Position* pos, Transport* transport) const
-{
-    if (transport)
-    {
-        if (pos)
-            pos->Relocate(m_movementInfo.transport.Pos);
-        return;
-    }
-    Position::GetPosition(pos);
-}
-
-void WorldObject::Relocate(float x, float y, float z, float orientation)
-{
-    if(!Trinity::IsValidMapCoord(x, y, z))
-        return;
-
-    m_positionX = x;
-    m_positionY = y;
-    m_positionZ = z;
-    m_orientation = orientation;
-
-    m_movementInfo.ChangePosition(x, y, z, orientation);
-    m_movementInfo.UpdateTime(GameTime::GetGameTimeMS());
-    /*if (Transport* t = GetTransport())
-    {
-        t->CalculatePassengerOffset(x, y, z);
-        m_movementInfo.t_pos.x = x;
-        m_movementInfo.t_pos.y = y;
-        m_movementInfo.t_pos.z = z;
-    }*/
-}
-
-void WorldObject::Relocate(float x, float y, float z)
-{
-    Relocate(x, y, z, GetOrientation());
-}
-
-void WorldObject::Relocate(float x, float y)
-{
-    Relocate(x, y, m_positionZ, GetOrientation());
-}
-
-void WorldObject::Relocate(const Position &pos)
-{
-    Relocate(pos.m_positionX, pos.m_positionY, pos.m_positionZ, pos.m_orientation);
-}
-
-void WorldObject::Relocate(const Position* pos)
-{
-    Relocate(pos->m_positionX, pos->m_positionY, pos->m_positionZ, pos->m_orientation);
-}
-
-void WorldObject::SetOrientation(float orientation)
-{
-    m_orientation = orientation;
-
-    if (Unit* unit = ToUnit())
-        unit->m_movementInfo.ChangeOrientation(orientation);
-}
-
 Transport* WorldObject::GetTransport() const
 {
     return m_transport;
@@ -1784,8 +1683,7 @@ void WorldObject::SetTransport(Transport* t)
 
 float WorldObject::GetDistanceToZOnfall()
 {
-    Position pos;
-    GetFirstCollisionPosition(pos, PET_FOLLOW_DIST, 0.f);
+    Position pos = GetFirstCollisionPosition(PET_FOLLOW_DIST, 0.f);
     auto zNow = pos.m_positionX;
     if (auto lastUpdateTime = m_movementInfo.fall.lastTimeUpdate)
         zNow = pos.m_positionZ - Movement::computeFallElevation(Movement::MSToSec(GameTime::GetGameTimeMS() - lastUpdateTime), false) - 5.0f;
@@ -1932,7 +1830,7 @@ float WorldObject::GetDistance2d(float x, float y) const
 
 float WorldObject::GetDistanceZ(const WorldObject* obj) const
 {
-    float dz = fabs(GetPositionZH() - obj->GetPositionZH());
+    float dz = fabs(GetPositionZ() - obj->GetPositionZ());
     float sizefactor = GetObjectSize() + obj->GetObjectSize();
     float dist = dz - sizefactor;
     return dist > 0 ? dist : 0;
@@ -2018,60 +1916,73 @@ bool WorldObject::_IsWithinDist(WorldObject const* obj, float dist2compare, bool
     float distsq = dx*dx + dy*dy;
     if (is3D)
     {
-        float dz = GetPositionZH() - obj->GetPositionZH();
+        float dz = GetPositionZ() - obj->GetPositionZ();
         distsq += dz*dz;
     }
 
     return distsq < maxdist * maxdist;
 }
 
-bool WorldObject::IsWithinLOSInMap(const WorldObject* obj) const
+bool WorldObject::IsWithinLOSInMap(const WorldObject* obj, VMAP::ModelIgnoreFlags ignoreFlags) const
 {
     if (!IsInMap(obj))
         return false;
 
-    float ox, oy, oz;
-    if (GetTransport() && GetTransport() == obj->GetTransport())
-    {
-        if (Transport* transport = GetTransport())
-        {
-            obj->GetPosition(ox, oy, oz, transport);
-            Position pos;
-            GetPosition(&pos, transport);
-            if (GameObjectModel* _model = transport->m_model)
-            {
-                G3D::Vector3 pos1(pos.m_positionX, pos.m_positionY, pos.m_positionZ + 2.f);
-                G3D::Vector3 pos2(ox, oy, oz + 2.f);
-                transport->CalculatePassengerPosition(pos1.x, pos1.y, pos1.z);
-                transport->CalculatePassengerPosition(pos2.x, pos2.y, pos2.z);
-                return _model->isInLineOfSight(pos1, pos2, GetPhases(), IsPlayer() || IsUnitOwnedByPlayer());
-            }
-        }
-    }
-    obj->GetPosition(ox, oy, oz);
-    return IsWithinLOS(ox, oy, oz);
+//    float ox, oy, oz;
+//    if (GetTransport() && GetTransport() == obj->GetTransport())
+//    {
+//        if (Transport* transport = GetTransport())
+//        {
+//            obj->GetPosition(ox, oy, oz, transport);
+//            Position pos;
+//            GetPosition(&pos, transport);
+//            if (GameObjectModel* _model = transport->m_model)
+//            {
+//                G3D::Vector3 pos1(pos.m_positionX, pos.m_positionY, pos.m_positionZ + 2.f);
+//                G3D::Vector3 pos2(ox, oy, oz + 2.f);
+//                transport->CalculatePassengerPosition(pos1.x, pos1.y, pos1.z);
+//                transport->CalculatePassengerPosition(pos2.x, pos2.y, pos2.z);
+//                return _model->isInLineOfSight(pos1, pos2, GetPhases(), IsPlayer() || IsUnitOwnedByPlayer());
+//            }
+//        }
+//    }
+//    obj->GetPosition(ox, oy, oz);
+
+    float x, y, z;
+    if (obj->GetTypeId() == TYPEID_PLAYER)
+        obj->GetPosition(x, y, z);
+    else
+        obj->GetHitSpherePointFor(GetPosition(), x, y, z);
+
+    return IsWithinLOS(x, y, z, ignoreFlags);
 }
 
-bool WorldObject::IsWithinLOS(float ox, float oy, float oz) const
+bool WorldObject::IsWithinLOS(float ox, float oy, float oz, VMAP::ModelIgnoreFlags ignoreFlags) const
 {
     if (IsInWorld())
     {
-        if (Transport* transport = GetTransport())
-        {
-            Position pos;
-            GetPosition(&pos, transport);
-            if (GameObjectModel* _model = transport->m_model)
-            {
-                G3D::Vector3 pos1(pos.m_positionX, pos.m_positionY, pos.m_positionZ + 2.f);
-                G3D::Vector3 pos2(ox, oy, oz + 2.f);
-                transport->CalculatePassengerPosition(pos1.x, pos1.y, pos1.z);
-                // transport->CalculatePassengerPosition(pos2.x, pos2.y, pos2.z);
-                return _model->isInLineOfSight(pos1, pos2, GetPhases(), IsPlayer() || IsUnitOwnedByPlayer());
-            }
-        }
-        if (!GetMap())
-            return false;
-        return GetMap()->isInLineOfSight(GetPositionX(), GetPositionY(), GetPositionZH() + 2.f, ox, oy, oz + 2.f, GetPhases());
+//        if (Transport* transport = GetTransport())
+//        {
+//            Position pos;
+//            GetPosition(&pos, transport);
+//            if (GameObjectModel* _model = transport->m_model)
+//            {
+//                G3D::Vector3 pos1(pos.m_positionX, pos.m_positionY, pos.m_positionZ + 2.f);
+//                G3D::Vector3 pos2(ox, oy, oz + 2.f);
+//                transport->CalculatePassengerPosition(pos1.x, pos1.y, pos1.z);
+//                // transport->CalculatePassengerPosition(pos2.x, pos2.y, pos2.z);
+//                return _model->isInLineOfSight(pos1, pos2, GetPhases(), IsPlayer() || IsUnitOwnedByPlayer());
+//            }
+//        }
+//        if (!GetMap())
+//            return false;
+        float x, y, z;
+        if (GetTypeId() == TYPEID_PLAYER)
+            GetPosition(x, y, z);
+        else
+            GetHitSpherePointFor({ ox, oy, oz }, x, y, z);
+
+        return GetMap()->isInLineOfSight(x, y, z + 2.f, ox, oy, oz + 2.f, GetPhases(), ignoreFlags);
     }
 
     return true;
@@ -2140,7 +2051,7 @@ bool WorldObject::GetDistanceOrder(WorldObject const* obj1, WorldObject const* o
     float distsq1 = dx1*dx1 + dy1*dy1;
     if (is3D)
     {
-        float dz1 = GetPositionZH() - obj1->GetPositionZH();
+        float dz1 = GetPositionZ() - obj1->GetPositionZ();
         distsq1 += dz1*dz1;
     }
 
@@ -2149,7 +2060,7 @@ bool WorldObject::GetDistanceOrder(WorldObject const* obj1, WorldObject const* o
     float distsq2 = dx2*dx2 + dy2*dy2;
     if (is3D)
     {
-        float dz2 = GetPositionZH() - obj2->GetPositionZH();
+        float dz2 = GetPositionZ() - obj2->GetPositionZ();
         distsq2 += dz2*dz2;
     }
 
@@ -2163,7 +2074,7 @@ bool WorldObject::IsInRange(WorldObject const* obj, float minRange, float maxRan
     float distsq = dx*dx + dy*dy;
     if (is3D)
     {
-        float dz = GetPositionZH() - obj->GetPositionZH();
+        float dz = GetPositionZ() - obj->GetPositionZ();
         distsq += dz*dz;
     }
 
@@ -2205,7 +2116,7 @@ bool WorldObject::IsInRange3d(float x, float y, float z, float minRange, float m
 {
     float dx = GetPositionX() - x;
     float dy = GetPositionY() - y;
-    float dz = GetPositionZH() - z;
+    float dz = GetPositionZ() - z;
     float distsq = dx*dx + dy*dy + dz*dz;
 
     float sizefactor = GetObjectSize();
@@ -3316,12 +3227,8 @@ void WorldObject::GetNearPoint2D(Position &pos, float distance2d, float angle, b
 void WorldObject::GetNearPoint(WorldObject const* searcher, float &x, float &y, float &z, float searcher_size, float distance2d, float absAngle) const
 {
     GetNearPoint2D(x, y, distance2d + searcher_size, absAngle);
-    z = GetPositionZH() + (searcher ? searcher->GetPositionH() : 0.0f);
-
-    if (!searcher)
-        UpdateAllowedPositionZ(x, y, z);
-    else if (!searcher->ToCreature() || !searcher->GetMap()->Instanceable())
-        searcher->UpdateAllowedPositionZ(x, y, z);
+    z = GetPositionZ();
+    (searcher ? searcher : this)->UpdateAllowedPositionZ(x, y, z);
 
     // if detection disabled, return first point
     if (!sWorld->getBoolConfig(CONFIG_DETECT_POS_COLLISION))
@@ -3340,8 +3247,8 @@ void WorldObject::GetNearPoint(WorldObject const* searcher, float &x, float &y, 
     for (float angle = float(M_PI) / 8; angle < float(M_PI) * 2; angle += float(M_PI) / 8)
     {
         GetNearPoint2D(x, y, distance2d + searcher_size, absAngle + angle);
-        z = GetPositionZ() + 2.0f;
-        UpdateAllowedPositionZ(x, y, z);
+        z = GetPositionZ();
+        (searcher ? searcher : this)->UpdateAllowedPositionZ(x, y, z);
         if (IsWithinLOS(x, y, z))
             return;
     }
@@ -3402,10 +3309,11 @@ void WorldObject::MovePosition(Position &pos, float dist, float angle)
     pos.SetOrientation(GetOrientation());
 }
 
-void WorldObject::GetNearPosition(Position& pos, float dist, float angle)
+Position WorldObject::GetNearPosition(float dist, float angle)
 {
-    GetPosition(&pos);
+    Position pos = GetPosition();
     MovePosition(pos, dist, angle);
+    return pos;
 }
 
 void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float angle)
@@ -3633,16 +3541,11 @@ void WorldObject::MovePositionToTransportCollision(Position &pos, float dist, fl
     pos.SetOrientation(GetOrientation());
 }
 
-void WorldObject::GetFirstCollisionPosition(Position& pos, float dist, float angle)
+Position WorldObject::GetFirstCollisionPosition(float dist, float angle)
 {
-    if (Transport* transport = GetTransport())
-    {
-        GetPosition(&pos, transport);
-        MovePositionToTransportCollision(pos, dist, angle);
-        return;
-    }
-    GetPosition(&pos);
+    Position pos = GetPosition();
     MovePositionToFirstCollision(pos, dist, angle);
+    return pos;
 }
 
 void WorldObject::MovePositionToCollisionBetween(Position &pos, float distMin, float distMax, float angle)
@@ -3716,16 +3619,11 @@ void WorldObject::MovePositionToCollisionBetween(Position &pos, float distMin, f
     pos.SetOrientation(GetOrientation());
 }
 
-void WorldObject::GetCollisionPositionBetween(Position& pos, float distMin, float distMax, float angle)
+Position WorldObject::GetRandomNearPosition(float radius)
 {
-    GetPosition(&pos);
-    MovePositionToCollisionBetween(pos, distMin, distMax, angle);
-}
-
-void WorldObject::GetRandomNearPosition(Position& pos, float radius)
-{
-    GetPosition(&pos);
-    MovePosition(pos, radius * static_cast<float>(rand_norm()), static_cast<float>(rand_norm()) * static_cast<float>(2 * M_PI));
+    Position pos = GetPosition();
+    MovePosition(pos, radius * (float)rand_norm(), (float)rand_norm() * static_cast<float>(2 * M_PI));
+    return pos;
 }
 
 void WorldObject::GetContactPoint(const WorldObject* obj, float& x, float& y, float& z, float distance2d) const
@@ -3743,7 +3641,7 @@ void WorldObject::GenerateCollisionNonDuplicatePoints(std::list<Position>& randP
     while (randPosList.size() < maxPoint)
     {
         badPos = false;
-        GetFirstCollisionPosition(pos, frand(randMin, randMax), frand(0.0f, 6.28f));
+        pos = GetFirstCollisionPosition(frand(randMin, randMax), frand(0.0f, 6.28f));
         ++traiCount;
 
         for (auto _pos : randPosList)

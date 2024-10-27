@@ -238,8 +238,8 @@ class Battlefield : public ZoneScript
         BfGraveyard* GetGraveyardById(uint32 id);
 
         Creature* SpawnCreature(uint32 entry, float x, float y, float z, float o, TeamId team);
-        Creature* SpawnCreature(uint32 entry, Position pos, TeamId team);
-        GameObject* SpawnGameObject(uint32 entry, Position const pos);
+        Creature* SpawnCreature(uint32 entry, Position const& pos, TeamId team);
+        GameObject* SpawnGameObject(uint32 entry, Position const& pos);
         GameObject* SpawnGameObject(uint32 entry, float x, float y, float z, float o);
 
         virtual void OnBattleStart() {};

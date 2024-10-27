@@ -865,10 +865,9 @@ void Creature::UpdateMovementFlags()
 //        return;
 
     // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)
-    float ground = GetMap()->GetHeight(GetPositionX(), GetPositionY(), GetPositionZH());
+    float ground = GetMap()->GetHeight(GetPhases(), GetPositionX(), GetPositionY(), GetPositionZMinusOffset());
 
-    bool canHover = CanHover();
-    bool isInAir = !IsFalling() && (G3D::fuzzyGt(GetPositionZ(), ground + (canHover ? GetFloatValue(UNIT_FIELD_HOVER_HEIGHT) : 0.0f) + GROUND_HEIGHT_TOLERANCE) || G3D::fuzzyGt(GetPositionZ(), ground - GROUND_HEIGHT_TOLERANCE)); // Can be underground too, prevent the falling
+    bool isInAir = (G3D::fuzzyGt(GetPositionZMinusOffset(), ground + 0.05f) || G3D::fuzzyLt(GetPositionZMinusOffset(), ground - 0.05f)); // Can be underground too, prevent the falling
 
     // Creature has a flight state enabled in db
     if (GetMovementTemplate().IsFlightAllowed() && (isInAir || !GetMovementTemplate().IsGroundAllowed()) && !IsFalling())
@@ -1745,7 +1744,7 @@ void Creature::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
     {
         data.posX = GetPositionX();
         data.posY = GetPositionY();
-        data.posZ = GetPositionZH();
+        data.posZ = GetPositionZMinusOffset();
         data.orientation = GetOrientation();
     }
     else
@@ -1794,7 +1793,7 @@ void Creature::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
     stmt->setUInt8(index++, GetCurrentEquipmentId());
     stmt->setFloat(index++,  GetPositionX());
     stmt->setFloat(index++,  GetPositionY());
-    stmt->setFloat(index++,  GetPositionZH());
+    stmt->setFloat(index++,  GetPositionZ());
     stmt->setFloat(index++,  GetOrientation());
     stmt->setUInt32(index++, m_respawnDelay);
     stmt->setFloat(index++,  m_respawnradius);

@@ -741,7 +741,7 @@ bool Unit::IsWithinCombatRange(const Unit* obj, float dist2compare) const
 
     float dx = GetPositionX() - obj->GetPositionX();
     float dy = GetPositionY() - obj->GetPositionY();
-    float dz = GetPositionZH() - obj->GetPositionZH();
+    float dz = GetPositionZ() - obj->GetPositionZ();
     float distsq = dx * dx + dy * dy + dz * dz;
 
     float sizefactor = GetCombatReach() + obj->GetCombatReach();
@@ -757,7 +757,7 @@ bool Unit::IsWithinMeleeRange(const Unit* obj, float dist) const
 
     float dx = GetPositionX() - obj->GetPositionX();
     float dy = GetPositionY() - obj->GetPositionY();
-    float dz = GetPositionZH() - obj->GetPositionZH();
+    float dz = GetPositionZMinusOffset() - obj->GetPositionZMinusOffset();
     float distsq = dx*dx + dy*dy + dz*dz;
 
     float sizefactor = GetMeleeReach() + obj->GetMeleeReach();
@@ -6722,8 +6722,7 @@ void Unit::ReCreateAreaTriggerObjects()
         if (areaTrigger)
             continue;
 
-        Position pos;
-        GetPosition(&pos);
+        Position pos = GetPosition();
         uint32 triggerEntry = (*i)->GetMiscValue();
 
         areaTrigger = new AreaTrigger;
@@ -18920,7 +18919,7 @@ Unit* Unit::GetNearbyVictim(Unit* exclude, float dist, bool IsInFront, bool IsNe
 
             if (Nearby)
             {
-                (*itr)->GetPosition(&pos);
+                pos = (*itr)->GetPosition();
                 float dist2 = GetDistance(pos);
 
                 if (nearbydist > dist2)
@@ -18933,7 +18932,7 @@ Unit* Unit::GetNearbyVictim(Unit* exclude, float dist, bool IsInFront, bool IsNe
             else
             {
                 Nearby = (*itr);
-                Nearby->GetPosition(&pos);
+                pos = Nearby->GetPosition();
                 nearbydist = GetDistance(pos);
             }
         }
@@ -22312,6 +22311,15 @@ void Unit::Kill(Unit* victim, bool durabilityLoss, SpellInfo const* spellProto)
     victim->m_IsInKillingProcess = false;
 }
 
+float Unit::GetPositionZMinusOffset() const
+{
+    float offset = 0.0f;
+    if (HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
+        offset = GetFloatValue(UNIT_FIELD_HOVER_HEIGHT);
+
+    return GetPositionZ() - offset;
+}
+
 void Unit::SetControlled(bool apply, UnitState state)
 {
     if (apply)
@@ -24401,7 +24409,7 @@ void Unit::_ExitVehicle(Position const* exitPosition)
 
     Position pos;
     if (!exitPosition)                          // Exit position not specified
-        veh->GetPosition(&pos);                 // This should use passenger's current position, leaving it as it is now
+        pos = veh->GetPosition();               // This should use passenger's current position, leaving it as it is now
                                                 // because we calculate positions incorrect (sometimes under map)
     else
         pos = *exitPosition;
@@ -24476,16 +24484,18 @@ void Unit::_ExitVehicle(Position const* exitPosition)
         player->ZoneTeleport(m_zoneId);
 }
 
-void Unit::NearTeleportTo(float x, float y, float z, float orientation, bool casting /*= false*/, bool stopMove /*= true*/)
+void Unit::NearTeleportTo(Position const& pos, bool casting /*= false*/, bool stopMove /*= true*/)
 {
     DisableSpline(stopMove);
     if (IsPlayer())
-        ToPlayer()->TeleportTo(GetMapId(), x, y, z, orientation, TELE_TO_NOT_LEAVE_TRANSPORT | TELE_TO_NOT_LEAVE_COMBAT | TELE_TO_NOT_UNSUMMON_PET | (casting ? TELE_TO_SPELL : 0) | (stopMove ? 0 : TELE_TO_NOT_DISABLE_MOVE));
+    {
+        WorldLocation target(GetMapId(), pos);
+        ToPlayer()->TeleportTo(target, TELE_TO_NOT_LEAVE_TRANSPORT | TELE_TO_NOT_LEAVE_COMBAT | TELE_TO_NOT_UNSUMMON_PET | (casting ? TELE_TO_SPELL : 0) | (stopMove ? 0 : TELE_TO_NOT_DISABLE_MOVE));
+    }
     else
     {
-        Position pos = {x, y, z, orientation};
         SendTeleportPacket(pos);
-        UpdatePosition(x, y, z, orientation, true);
+        UpdatePosition(pos, true);
         UpdateObjectVisibility();
     }
 }
@@ -24573,7 +24583,7 @@ void Unit::UpdateOrientation(float orientation)
 //! Only server-side height update, does not broadcast to client
 void Unit::UpdateHeight(float newZ)
 {
-    SetPositionH(newZ);
+    Relocate(GetPositionX(), GetPositionY(), newZ);
     if (IsVehicle())
         GetVehicleKit()->RelocatePassengers();
 }
@@ -24860,7 +24870,7 @@ void Unit::SetFacingTo(float ori)
     SetOrientation(ori); //Update for server
 
     Movement::MoveSplineInit init(*this);
-    init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZ());
+    init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZMinusOffset());
     if (GetTransport())
         init.DisableTransportPathTransformations(); // It makes no sense to target global orientation
     init.SetFacing(ori);
@@ -24872,7 +24882,7 @@ void Unit::SetFacingTo(Unit const* target)
     SetInFront(target); //Update for server
 
     Movement::MoveSplineInit init(*this);
-    init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZ());
+    init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZMinusOffset());
     init.SetFacing(target);
     init.Launch();
 }
@@ -25108,6 +25118,8 @@ bool Unit::SetHover(bool enable)
     if (enable == HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
         return false;
 
+    float hoverHeight = GetFloatValue(UNIT_FIELD_HOVER_HEIGHT);
+
     //! Unconfirmed for players:
     if (!IsPlayer())
     {
@@ -25116,14 +25128,20 @@ bool Unit::SetHover(bool enable)
             if (!IsLevitating())
                 m_updateFlag |= UPDATEFLAG_PLAY_HOVER_ANIM;
             // SetMiscStandFlags(UNIT_BYTE1_FLAG_HOVER);
-            SetPositionH(GetFloatValue(UNIT_FIELD_HOVER_HEIGHT));
+            if (hoverHeight)
+                UpdateHeight(GetPositionZ() + hoverHeight);
         }
         else
         {
             if (!IsLevitating())
                 m_updateFlag &= ~UPDATEFLAG_PLAY_HOVER_ANIM;
             // RemoveMiscStandFlags(UNIT_BYTE1_FLAG_HOVER);
-            SetPositionH(0.0f);
+            if (hoverHeight)
+            {
+                float newZ = GetPositionZ() - hoverHeight;
+                UpdateAllowedPositionZ(GetPositionX(), GetPositionY(), newZ);
+                UpdateHeight(newZ);
+            }
         }
 
         if (!IsLevitating())
@@ -25140,16 +25158,26 @@ bool Unit::SetHover(bool enable)
         //! No need to check height on ascent
         if (!IsPlayer())
             AddUnitMovementFlag(MOVEMENTFLAG_HOVER);
-        UpdateHeight(GetFloatValue(UNIT_FIELD_HOVER_HEIGHT));
+        if (hoverHeight)
+            UpdateHeight(GetPositionZ() + hoverHeight);
     }
     else
     {
         if (!IsPlayer())
             RemoveUnitMovementFlag(MOVEMENTFLAG_HOVER);
-        UpdateHeight(0.0f);
+        if (hoverHeight)
+        {
+            float newZ = GetPositionZ() - hoverHeight;
+            UpdateAllowedPositionZ(GetPositionX(), GetPositionY(), newZ);
+            UpdateHeight(newZ);
+        }
     }
 
-    static OpcodeServer const hoverOpcodeTable[2][2] = {{SMSG_MOVE_SPLINE_UNSET_HOVER, SMSG_MOVE_UNSET_HOVERING}, {SMSG_MOVE_SPLINE_SET_HOVER, SMSG_MOVE_SET_HOVERING}};
+    static OpcodeServer const hoverOpcodeTable[2][2] =
+    {
+        { SMSG_MOVE_SPLINE_UNSET_HOVER, SMSG_MOVE_UNSET_HOVERING },
+        { SMSG_MOVE_SPLINE_SET_HOVER, SMSG_MOVE_SET_HOVERING }
+    };
 
     if (Player* playerMover = GetPlayerMover())
     {
@@ -25157,6 +25185,10 @@ bool Unit::SetHover(bool enable)
         packet.MoverGUID = GetGUID();
         packet.SequenceIndex = m_sequenceIndex++;
         playerMover->SendDirectMessage(packet.Write());
+
+        WorldPackets::Movement::MoveUpdate moveUpdate;
+        moveUpdate.movementInfo = &m_movementInfo;
+        SendMessageToSet(moveUpdate.Write(), playerMover);
     }
     else
     {
@@ -25573,7 +25605,7 @@ bool Unit::SetCanTurnWhileFalling(bool enable)
     return true;
 }
 
-void Unit::SendTeleportPacket(Position &destPos)
+void Unit::SendTeleportPacket(Position const& destPos)
 {
     WorldPackets::Movement::MoveUpdateTeleport packet;
     packet.movementInfo = &m_movementInfo;

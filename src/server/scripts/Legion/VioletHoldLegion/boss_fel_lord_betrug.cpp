@@ -365,9 +365,8 @@ public:
                 GetHitUnit()->GetMotionMaster()->MoveJump(jumpPos[bPos].GetPositionX(), jumpPos[bPos].GetPositionY(), jumpPos[bPos].GetPositionZ(), 30, 15);
                 if (Creature* trigger = GetCaster()->FindNearestCreature(92879, 50.0f))
                 {
-                    Position posLeft, posRight;
-                    trigger->GetNearPosition(posLeft, 7.0f, -0.7f);
-                    trigger->GetNearPosition(posRight, 7.0f, 0.7f);
+                    Position posLeft = trigger->GetNearPosition(7.0f, -0.7f);
+                    Position posRight = trigger->GetNearPosition(7.0f, 0.7f);
                     GetHitUnit()->CastSpell(posLeft.GetPositionX(), posLeft.GetPositionY(), posLeft.GetPositionZ(), SPELL_STASIS_CRYSTAL_SUM, true);
                     GetHitUnit()->CastSpell(posRight.GetPositionX(), posRight.GetPositionY(), posRight.GetPositionZ(), SPELL_STASIS_CRYSTAL_SUM, true);
                     GetHitUnit()->CastSpell(GetHitUnit(), SPELL_EXECUTION_ROOT_PLR, true);
@@ -408,7 +407,7 @@ class spell_betrug_seed_of_destruction : public SpellScriptLoader
                 float angle = 0.0f;
                 for (uint8 i = 0; i < 4; i++)
                 {
-                    GetTarget()->GetNearPosition(pos, 5.0f, angle);
+                    pos = GetTarget()->GetNearPosition(5.0f, angle);
                     GetTarget()->CastSpell(pos, SPELL_WAKE_OF_DESTRUCTION_AT, true, 0, 0, GetCaster()->GetGUID());
                     angle += 1.57f;
                 }

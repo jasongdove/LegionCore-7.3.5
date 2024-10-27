@@ -490,7 +490,7 @@ struct boss_elerethe_renferal : public BossAI
                     float angle = -1.0f;
                     for (uint8 i = 0; i < 8; ++i)
                     {
-                        me->GetNearPosition(pos, 15.0f, angle);
+                        pos = me->GetNearPosition(15.0f, angle);
                         me->CastSpell(pos.GetPosition(), SPELL_SHIMMERING_FEATHER_TRIG, true);
                         angle += 0.25f;
                     }
@@ -690,7 +690,7 @@ struct npc_elerethe_surging_egg_sac : public ScriptedAI
             for (uint8 i = 0; i < 4; ++i)
             {
                 Position pos;
-                me->GetRandomNearPosition(pos, 3.0f);
+                pos = me->GetRandomNearPosition(3.0f);
                 me->CastSpell(pos, SPELL_SUM_SKITTERING_SPIDERLING, true);
             }
             me->DespawnOrUnsummon(3000);

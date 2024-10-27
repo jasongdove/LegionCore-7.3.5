@@ -41,10 +41,7 @@ class spell_voidtalon_backup : public AuraScript
         if (!player)
             return;
 
-        pos.m_positionX = player->GetPositionX();
-        pos.m_positionY = player->GetPositionY();
-        pos.m_positionZ = player->GetPositionZ();
-        pos.m_orientation = player->GetOrientation();
+        pos = player->GetPosition();
         mapid = player->GetMapId();
     }
 

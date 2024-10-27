@@ -1373,8 +1373,7 @@ class spell_helya_turbulent_waters : public SpellScript
         if (!GetCaster())
             return;
 
-        Position pos;
-        GetCaster()->GetRandomNearPosition(pos, 30.0f);
+        Position pos = GetCaster()->GetRandomNearPosition(30.0f);
         WorldLocation* dest = const_cast<WorldLocation*>(GetExplTargetDest());
         dest->Relocate(pos);
     }
@@ -1484,7 +1483,7 @@ class spell_whirpool_of_souls : public AuraScript
         PreventDefaultAction();
         for (uint8 itr = 0; itr < 3; ++itr)
         {
-            GetCaster()->GetNearPosition(pos, 2.0f, frand(0.0f, 360.0f));
+            pos = GetCaster()->GetNearPosition(2.0f, frand(0.0f, 360.0f));
             GetCaster()->CastSpell(pos, 199516, true);
         }
     }

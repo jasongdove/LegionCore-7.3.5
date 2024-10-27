@@ -411,8 +411,8 @@ public:
             cell.GridX(), cell.GridY(), cell.CellX(), cell.CellY(), object->GetInstanceId(),
             zoneX, zoneY, groundZ, floorZ, haveMap, haveVMap);
 
-        handler->PSendSysMessage("Difficulty %i spawnmask %i vmapZ %f GetPositionH %f GetPositionZH %f TileX %i TileY %i thread %zu",
-        map->GetDifficultyID(), map->GetSpawnMode(), vmapZ, object->GetPositionH(), object->GetPositionZH(), TileX, TileY, std::hash<std::thread::id>()(std::this_thread::get_id()));
+        handler->PSendSysMessage("Difficulty %i spawnmask %i vmapZ %f GetPositionZ %f TileX %i TileY %i thread %zu",
+        map->GetDifficultyID(), map->GetSpawnMode(), vmapZ, object->GetPositionZ(), TileX, TileY, std::hash<std::thread::id>()(std::this_thread::get_id()));
 
         if (object->m_movementInfo.transport.Guid)
             handler->PSendSysMessage("Transport position: %s Guid: %s", object->m_movementInfo.transport.Pos.ToString().c_str(), object->m_movementInfo.transport.Guid.ToString().c_str());
@@ -4153,8 +4153,7 @@ public:
         handler->PSendSysMessage("SendSpellScene %u", SceneId);
 
         Player* player = handler->GetSession()->GetPlayer();
-        Position pos;
-        player->GetPosition(&pos);
+        Position pos = player->GetPosition();
         player->SendSpellScene(SceneId, nullptr, true, &pos);
         return true;
     }

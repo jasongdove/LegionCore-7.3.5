@@ -643,8 +643,7 @@ class npc_collapsing_star : public CreatureScript
                     damage = 0;
                     DoCast(me, SPELL_BLACK_HOLE_SPAWN_VISUAL, true);
                     DoCastAOE(SPELL_BLACK_HOLE_EXPLOSION);
-                    Position pos;
-                    me->GetPosition(&pos);
+                    Position pos = me->GetPosition();
                     if (Unit * Algalon = me->ToTempSummon()->GetSummoner())
                         Algalon->SummonCreature(32953, pos, TEMPSUMMON_CORPSE_DESPAWN);
                     me->DespawnOrUnsummon(1000);
@@ -701,8 +700,7 @@ class npc_black_hole : public CreatureScript
                 {
                     if (SummonMatter <= diff)
                     {
-                        Position pos;
-                        me->GetPosition(&pos);
+                        Position pos = me->GetPosition();
                         if (Unit * Algalon = me->ToTempSummon()->GetSummoner()) 
                         {
                             if (Creature * matter = Algalon->SummonCreature(33089, pos, TEMPSUMMON_CORPSE_DESPAWN))

@@ -354,12 +354,12 @@ Creature* ScriptedAI::DoSpawnCreature(uint32 entry, float offsetX, float offsetY
     return me->SummonCreature(entry, me->GetPositionX() + offsetX, me->GetPositionY() + offsetY, me->GetPositionZ() + offsetZ, angle, TempSummonType(type), despawntime);
 }
 
-void ScriptedAI::SummonCreatureDelay(uint32 delayTimer, uint32 entry, float x, float y, float z, float orient, TempSummonType spawnType, uint32 despawnTime)
+void ScriptedAI::SummonCreatureDelay(uint32 delayTimer, uint32 entry, const Position &pos, TempSummonType spawnType, uint32 despawnTime)
 {
-    me->AddDelayedCombat(delayTimer, [this, entry, x, y, z, orient, spawnType, despawnTime]() -> void
+    me->AddDelayedCombat(delayTimer, [this, entry, pos, spawnType, despawnTime]() -> void
     {
         if (me)
-            me->SummonCreature(entry, x, y, z, orient, spawnType, despawnTime);
+            me->SummonCreature(entry, pos, spawnType, despawnTime);
     });
 }
 

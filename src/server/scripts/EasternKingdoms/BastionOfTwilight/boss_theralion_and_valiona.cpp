@@ -1412,8 +1412,7 @@ class spell_valiona_devouring_flames_dmg : public SpellScriptLoader
                 if (!GetCaster() || !GetHitUnit())
                     return;
 
-                Position pos;
-                GetHitUnit()->GetPosition(&pos);
+                Position pos = GetHitUnit()->GetPosition();
                 if (!GetCaster()->HasInArc(M_PI, &pos))
                     PreventHitDefaultEffect(EFFECT_0);
             }

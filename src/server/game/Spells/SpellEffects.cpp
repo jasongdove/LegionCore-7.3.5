@@ -1877,7 +1877,7 @@ void Spell::EffectJump(SpellEffIndex effIndex)
     if (canHitTargetInLOS && unitTarget->ToCreature() && contact < 200.0f)
         unitTarget->GetNearPoint2D(pos, contact, unitTarget->GetAngle(m_caster));
     else
-        unitTarget->GetFirstCollisionPosition(pos, contact, unitTarget->GetAngle(m_caster));
+        pos = unitTarget->GetFirstCollisionPosition(contact, unitTarget->GetAngle(m_caster));
     //float x, y, z;
     //unitTarget->GetContactPoint(m_caster, x, y, z, CONTACT_DISTANCE);
 
@@ -2107,8 +2107,7 @@ void Spell::EffectTeleportUnits(SpellEffIndex effIndex)
         if (SpellTargetPosition const* st = sSpellMgr->GetSpellTargetPosition(m_spellInfo->Id))
             if (m_spellInfo->HasEffect(SPELL_EFFECT_TELEPORT_L) || m_spellInfo->HasEffect(SPELL_EFFECT_TELEPORT))
             {
-                destTarget->Relocate(st->target_X, st->target_Y, st->target_Z, st->target_Orientation);
-                destTarget->SetMapId(st->target_mapId);
+                destTarget->WorldRelocate(st->target_mapId, st->target_X, st->target_Y, st->target_Z, st->target_Orientation);
                 checkDest = false;
             }
 
@@ -3816,7 +3815,7 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
                 destTarget->m_positionZ += 10.0f;
             break;
         case 3236: // Dire Beast
-            m_caster->GetNearPosition(*destTarget, m_caster->GetObjectSize(), m_caster->GetAngle(destTarget->m_positionX, destTarget->m_positionY));
+            destTarget->Relocate(m_caster->GetNearPosition(m_caster->GetObjectSize(), m_caster->GetAngle(destTarget->m_positionX, destTarget->m_positionY)));
             break;
         case 3655:
             targetGUID = m_caster->GetGuidValue(UNIT_FIELD_TARGET);
@@ -4281,8 +4280,7 @@ void Spell::EffectTeleUnitsFaceCaster(SpellEffIndex effIndex)
 
     //float fx, fy, fz;
     //m_caster->GetClosePoint(fx, fy, fz, unitTarget->GetObjectSize(), m_spellInfo->GetEffect(effIndex, m_diffMode)->CalcRadius(m_caster));
-    Position pos;
-    m_caster->GetNearPosition(pos, m_caster->GetObjectSize(), m_caster->GetAngle(unitTarget));
+    Position pos = m_caster->GetNearPosition(m_caster->GetObjectSize(), m_caster->GetAngle(unitTarget));
 
     // Earthen Vortex, Morchok, Dragon Soul
     // Prevent dropping into textures
@@ -4712,7 +4710,7 @@ void Spell::EffectSummonPet(SpellEffIndex effIndex)
     if (canHitTargetInLOS && owner->ToCreature())
         owner->GetNearPoint2D(pos, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
     else
-        owner->GetFirstCollisionPosition(pos, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+        pos = owner->GetFirstCollisionPosition(PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
 
     bool isNew = false;
     Pet* pet = owner->SummonPet(petentry, petSlot, pos.m_positionX, pos.m_positionY, pos.m_positionZ, owner->GetOrientation(), 0, &isNew);
@@ -6854,8 +6852,7 @@ void Spell::EffectCharge(SpellEffIndex effIndex)
         // Spell is not using explicit target - no generated path
         if (m_preGeneratedPath->GetPathType() == PATHFIND_BLANK)
         {
-            Position pos;
-            unitTarget->GetFirstCollisionPosition(pos, unitTarget->GetObjectSize(), unitTarget->GetRelativeAngle(m_caster));
+            Position pos = unitTarget->GetFirstCollisionPosition(unitTarget->GetObjectSize(), unitTarget->GetRelativeAngle(m_caster));
             m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ, speed, EVENT_CHARGE, false, unitTarget, std::to_address(spellEffectExtraData));
         }
         else
@@ -6883,12 +6880,12 @@ void Spell::EffectChargeDest(SpellEffIndex effIndex)
         Position pos   = destTarget->GetPosition();
         float    angle = m_caster->GetRelativeAngle(pos.GetPositionX(), pos.GetPositionY());
         float    dist  = m_caster->GetDistance(pos);
-        m_caster->GetFirstCollisionPosition(pos, dist, angle);
+        pos = m_caster->GetFirstCollisionPosition(dist, angle);
 
         if (canHitTargetInLOS && m_caster->ToCreature() && dist < 200.0f)
             m_caster->GetNearPoint2D(pos, dist, angle);
         else
-            m_caster->GetFirstCollisionPosition(pos, dist, angle);
+            pos = m_caster->GetFirstCollisionPosition(dist, angle);
 
 //        // Racer Slam Hit Destination
 //        if (m_spellInfo->Id == 49302)
@@ -8200,7 +8197,7 @@ void Spell::EffectBind(SpellEffIndex effIndex)
     }
     else
     {
-        player->GetPosition(&loc);
+        loc.Relocate(player->GetPosition());
         loc.m_mapId = player->GetMapId();
         area_id = player->GetCurrentAreaID();
     }
@@ -8270,15 +8267,14 @@ void Spell::EffectCreateAreaTrigger(SpellEffIndex effIndex)
 
     Position pos;
     if (!m_targets.HasDst())
-        caster->GetPosition(&pos);
+        pos = caster->GetPosition();
     else
-        destTarget->GetPosition(&pos);
+        pos = destTarget->GetPosition();
 
     if (Unit* unitTarget = m_targets.GetUnitTarget())
         destAtTarget = static_cast<WorldLocation>(*unitTarget);
 
-    Position posMove;
-    destAtTarget.GetPosition(&posMove);
+    Position posMove = destAtTarget.GetPosition();
 
     // trigger entry/miscvalue relation is currently unknown, for now use MiscValue as trigger entry
     uint32 triggerEntry = GetSpellInfo()->GetEffect(effIndex, caster->GetSpawnMode())->MiscValue;
@@ -8623,7 +8619,7 @@ void Spell::SendScene(SpellEffIndex effIndex)
     if (m_targets.HasDst())
         pos = static_cast<Position>(*m_targets.GetDstPos());
     else
-        m_caster->GetPosition(&pos);
+        pos = m_caster->GetPosition();
 
     m_caster->ToPlayer()->SendSpellScene(m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue, m_spellInfo, true, &pos);
 }
@@ -8849,9 +8845,9 @@ void Spell::EffectSummonConversation(SpellEffIndex effIndex)
 
     Position pos;
     if (!m_targets.HasDst())
-        GetCaster()->GetPosition(&pos);
+        pos = GetCaster()->GetPosition();
     else
-        destTarget->GetPosition(&pos);
+        pos = destTarget->GetPosition();
 
     // trigger entry/miscvalue relation is currently unknown, for now use MiscValue as trigger entry
     uint32 triggerEntry = GetSpellInfo()->Effects[effIndex]->MiscValue;

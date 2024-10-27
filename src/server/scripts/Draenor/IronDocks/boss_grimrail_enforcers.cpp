@@ -160,7 +160,7 @@ public:
                     {
                         Talk(SAY_MAKOGG_F_SLASH);
                         Position pos;
-                        me->GetNearPosition(pos, 20.0f, 0.0f);
+                        pos = me->GetNearPosition(20.0f, 0.0f);
                         me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_FLAMING_SLASH, false);
                         events.RescheduleEvent(EVENT_FLAMING_SLASH, 28000);
                         break;

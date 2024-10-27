@@ -1844,12 +1844,17 @@ void Battleground::RemovePlayerFromResurrectQueue(ObjectGuid playerGUID)
     }
 }
 
-bool Battleground::AddObject(uint32 type, uint32 entry, Position pos, Position rotation /*= { }*/, uint32 respawnTime /*= 0*/, GOState goState)
+bool Battleground::AddObject(uint32 type, uint32 entry, float x, float y, float z, float o, float rotation0, float rotation1, float rotation2, float rotation3, uint32 respawnTime, GOState goState)
 {
-    return AddObject(type, entry, pos.m_positionX, pos.m_positionY, pos.m_positionZ, pos.m_orientation, rotation.m_positionX, rotation.m_positionY, rotation.m_positionZ, rotation.m_orientation, respawnTime, goState);
+    return AddObject(type, entry, Position(x, y, z, o), G3D::Quat(rotation0, rotation1, rotation2, rotation3), respawnTime, goState);
 }
 
-bool Battleground::AddObject(uint32 type, uint32 entry, float x, float y, float z, float o, float rotation0, float rotation1, float rotation2, float rotation3, uint32 /*respawnTime*/, GOState goState)
+bool Battleground::AddObject(uint32 type, uint32 entry, Position const& pos, Position const& rotation, uint32 respawnTime /*= 0*/, GOState goState)
+{
+    return AddObject(type, entry, pos, G3D::Quat(rotation.GetPositionX(), rotation.GetPositionY(), rotation.GetPositionZ(), rotation.GetOrientation()), respawnTime, goState);
+}
+
+bool Battleground::AddObject(uint32 type, uint32 entry, Position const& pos, G3D::Quat const& rotation, uint32 respawnTime /*= 0*/, GOState goState)
 {
     ASSERT(type < BgObjects.size());
 
@@ -1858,7 +1863,7 @@ bool Battleground::AddObject(uint32 type, uint32 entry, float x, float y, float 
         return false;
 
     GameObject* go = sObjectMgr->IsStaticTransport(entry) ? new StaticTransport : new GameObject;
-    if (!go->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, GetBgMap(), PHASEMASK_NORMAL, Position(x, y, z, o), G3D::Quat(rotation0, rotation1, rotation2, rotation3), 255, goState))
+    if (!go->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, GetBgMap(), PHASEMASK_NORMAL, pos, rotation, 255, goState))
     {
         TC_LOG_ERROR("bg.battleground", "Battleground::AddObject: cannot create gameobject (entry: %u) for BG (map: %u, instance id: %u)!", entry, m_MapId, m_InstanceID);
         delete go;
@@ -1943,12 +1948,12 @@ void Battleground::SpawnBGObject(uint32 type, uint32 respawntime)
         }
 }
 
-Creature* Battleground::AddCreature(uint32 entry, uint32 type, uint32 teamval, Position pos, uint32 respawntime /*= 0*/, Transport* transport)
+Creature* Battleground::AddCreature(uint32 entry, uint32 type, uint32 teamval, float x, float y, float z, float o, uint32 respawntime, Transport* transport)
 {
-    return AddCreature(entry, type, teamval, pos.m_positionX, pos.m_positionY, pos.m_positionZ, pos.m_orientation, respawntime, transport);
+    return AddCreature(entry, type, teamval, Position(x, y, z, o), respawntime, transport);
 }
 
-Creature* Battleground::AddCreature(uint32 entry, uint32 type, uint32 teamval, float x, float y, float z, float o, uint32 respawntime, Transport* transport)
+Creature* Battleground::AddCreature(uint32 entry, uint32 type, uint32 teamval, Position const& pos, uint32 respawntime /*= 0*/, Transport* transport)
 {
     ASSERT(type < BgCreatures.size());
 
@@ -1958,7 +1963,7 @@ Creature* Battleground::AddCreature(uint32 entry, uint32 type, uint32 teamval, f
 
     if (transport)
     {
-        if (Creature* creature = transport->SummonPassenger(entry, { x, y, z, o }, TEMPSUMMON_MANUAL_DESPAWN))
+        if (Creature* creature = transport->SummonPassenger(entry, pos, TEMPSUMMON_MANUAL_DESPAWN))
         {
             BgCreatures[type] = creature->GetGUID();
             return creature;
@@ -1968,14 +1973,14 @@ Creature* Battleground::AddCreature(uint32 entry, uint32 type, uint32 teamval, f
     }
 
     auto creature = new Creature;
-    if (!creature->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, PHASEMASK_NORMAL, entry, 0, teamval, x, y, z, o))
+    if (!creature->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, PHASEMASK_NORMAL, entry, 0, teamval, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation()))
     {
         TC_LOG_ERROR("bg.battleground", "Battleground::AddCreature: cannot create creature (entry: %u) for BG (map: %u, instance id: %u)!", entry, m_MapId, m_InstanceID);
         delete creature;
         return nullptr;
     }
 
-    creature->SetHomePosition(x, y, z, o);
+    creature->SetHomePosition(pos);
 
     CreatureTemplate const* cinfo = sObjectMgr->GetCreatureTemplate(entry);
     if (!cinfo)
@@ -2040,19 +2045,19 @@ bool Battleground::DelObject(uint32 type)
 
 bool Battleground::AddSpiritGuide(uint32 type, DBCPosition4D loc, TeamId team)
 {
-    return AddSpiritGuide(type, loc.X, loc.Y, loc.Z, loc.O, MS::Battlegrounds::GetTeamByTeamId(team));
+    return AddSpiritGuide(type, Position(loc.X, loc.Y, loc.Z, loc.O), MS::Battlegrounds::GetTeamByTeamId(team));
 }
 
-bool Battleground::AddSpiritGuide(uint32 type, Position pos, TeamId team)
+bool Battleground::AddSpiritGuide(uint32 type, float x, float y, float z, float o, TeamId team)
 {
-    return AddSpiritGuide(type, pos.m_positionX, pos.m_positionY, pos.m_positionZ, pos.m_orientation, MS::Battlegrounds::GetTeamByTeamId(team));
+    return AddSpiritGuide(type, Position(x, y, z, o), MS::Battlegrounds::GetTeamByTeamId(team));
 }
 
-bool Battleground::AddSpiritGuide(uint32 type, float x, float y, float z, float o, uint32 team)
+bool Battleground::AddSpiritGuide(uint32 type, Position const& pos, uint32 team)
 {
     uint32 entry = team == ALLIANCE ? BG_CREATURE_ENTRY_A_SPIRITGUIDE : BG_CREATURE_ENTRY_H_SPIRITGUIDE;
 
-    if (Creature* creature = AddCreature(entry, type, team, x, y, z, o))
+    if (Creature* creature = AddCreature(entry, type, team, pos))
     {
         creature->setDeathState(DEAD);
         creature->AddChannelObject(creature->GetGUID());

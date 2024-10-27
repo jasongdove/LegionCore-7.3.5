@@ -312,7 +312,7 @@ bool BattlegroundWarsongGulch::SetupBattleground()
         uint8 i = BG_WS_BRAWL_A_FLAG_2;
         for (auto& pair : brawlObjects)
         {
-            if (!AddObject(i, pair.first, pair.second, {}, BG_WS_FLAG_RESPAWN_TIME / 1000))
+            if (!AddObject(i, pair.first, pair.second, Position { }, BG_WS_FLAG_RESPAWN_TIME / 1000))
             {
                 TC_LOG_ERROR("sql.sql", "BatteGroundWS: Failed to spawn some object Battleground not created!");
                 return false;

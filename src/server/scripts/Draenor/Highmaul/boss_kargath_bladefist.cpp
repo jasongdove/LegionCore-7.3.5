@@ -609,8 +609,7 @@ struct boss_kargath_bladefist : public BossAI
             }
             case SpellBladeDanceHit:
             {
-                Position pos;
-                target->GetPosition(&pos);
+                Position pos = target->GetPosition();
 
                 if (Creature* trigger = me->SummonCreature(KargathBladefist, pos, TEMPSUMMON_TIMED_DESPAWN, 5000))
                     me->CastSpell(trigger, SpellBladeDanceCharge, true);
@@ -661,8 +660,7 @@ struct boss_kargath_bladefist : public BossAI
                 me->SetFacingTo(0.90f);
                 me->SetOrientation(0.90f);
 
-                Position pos;
-                me->GetPosition(&pos);
+                Position pos = me->GetPosition();
                 me->SetHomePosition(pos);
                 break;
             }
@@ -759,8 +757,7 @@ struct boss_kargath_bladefist : public BossAI
                 m_Events.RescheduleEvent(EventChainHurl, 106000);
                 m_CosmeticEvents.RescheduleEvent(EventEndOfArenasStands, 45000);
 
-                Position pos;
-                me->GetPosition(&pos);
+                Position pos = me->GetPosition();
 
                 if (Creature* chainHurl = me->SummonCreature(ChainHurlVehicle, pos, TEMPSUMMON_TIMED_DESPAWN, 18000))
                 {
@@ -881,8 +878,7 @@ struct boss_kargath_bladefist : public BossAI
 
         for (Creature* spawner : spawnerList)
         {
-            Position pos;
-            spawner->GetPosition(&pos);
+            Position pos = spawner->GetPosition();
             me->SummonCreature(IronBomber, pos);
         }
     }
@@ -1252,7 +1248,7 @@ struct npc_highmaul_bladespire_sorcerer : public ScriptedAI
                 me->SetReactState(REACT_AGGRESSIVE);
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
                 me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_STATE_READY2H);
-                me->GetPosition(&m_Position);
+                m_Position = me->GetPosition();
                 break;
             }
             default:
@@ -2246,7 +2242,7 @@ struct npc_highmaul_highmaul_sweeper : public MS::AI::CosmeticAI
             /// End of move
             m_ComeBack = false;
             me->RemoveAura(ArenaSweeper);
-            AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void { me->SetFacingTo(me->GetHomePosition().m_orientation); });
+            AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void { me->SetFacingTo(me->GetHomePosition().GetOrientation()); });
 
             /// Just needed once
             if (m_SweeperType)

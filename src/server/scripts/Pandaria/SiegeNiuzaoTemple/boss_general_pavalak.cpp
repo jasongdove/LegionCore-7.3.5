@@ -403,8 +403,7 @@ struct npc_pavalak_amber_sapper : public ScriptedAI
     void IsSummonedBy(Unit* summoner) override
     {
         DoCast(me, SPELL_CARRYING_EXPLOSIVES, true);
-        Position pos;
-        summoner->GetRandomNearPosition(pos, 40.0f);
+        Position pos = summoner->GetRandomNearPosition(40.0f);
         pos.m_positionZ = 123.49f;
 
         me->GetMotionMaster()->MovePoint(POINT_TARGET, pos);

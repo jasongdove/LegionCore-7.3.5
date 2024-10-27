@@ -101,7 +101,7 @@ public:
 
                 for (uint8 i = 0; i < 26; i++)
                 {
-                    caster->GetRandomNearPosition(pos, urand(1, 50));
+                    pos = caster->GetRandomNearPosition(urand(1, 50));
                     caster->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_RELENTLESS_STORM_TRIG, true);
                 }
             }

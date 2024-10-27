@@ -242,7 +242,7 @@ struct boss_high_priestess_azil : public BossAI
             case EVENT_SEISMIC_SHARD:
                 if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
                 {
-                    target->GetPosition(&shardPos);
+                    shardPos = target->GetPosition();
                     DoCast(me, SPELL_SEISMIC_SHARD_PULL, true);
                     me->CastSpell(shardPos, SPELL_SEISMIC_SHARD_TAR, true);
                     DoCast(me, SPELL_SEISMIC_SHARD_THROW, false);

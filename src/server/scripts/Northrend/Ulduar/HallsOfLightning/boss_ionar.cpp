@@ -164,8 +164,7 @@ public:
             if (lSparkList.empty())
                 return;
 
-            Position pos;
-            me->GetPosition(&pos);
+            Position pos = me->GetPosition();
 
             for (GuidList::const_iterator itr = lSparkList.begin(); itr != lSparkList.end(); ++itr)
             {
@@ -354,8 +353,7 @@ public:
                     {
                         if (me->GetDistance(pIonar) > DATA_MAX_SPARK_DISTANCE)
                         {
-                            Position pos;
-                            pIonar->GetPosition(&pos);
+                            Position pos = pIonar->GetPosition();
 
                             me->SetSpeed(MOVE_RUN, 2.0f);
                             me->GetMotionMaster()->Clear();

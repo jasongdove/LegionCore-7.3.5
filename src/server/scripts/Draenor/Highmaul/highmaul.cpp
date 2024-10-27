@@ -308,7 +308,7 @@ struct npc_highmaul_imperator_margok : public MS::AI::CosmeticAI
 
                 AddDelayedEvent(20 * IN_MILLISECONDS, [this]() -> void
                 {
-                    me->SetFacingTo(margokTeleport.m_orientation);
+                    me->SetFacingTo(margokTeleport.GetOrientation());
                     me->RemoveAura(TeleportIntoArena);
                 });
 
@@ -1706,7 +1706,7 @@ struct npc_highmaul_highmaul_conscript : public MS::AI::CosmeticAI
                     Position l_Pos;
 
                     me->GetContactPoint(target, l_Pos.m_positionX, l_Pos.m_positionY, l_Pos.m_positionZ);
-                    target->GetFirstCollisionPosition(l_Pos, target->GetObjectSize(), o);
+                    l_Pos = target->GetFirstCollisionPosition(target->GetObjectSize(), o);
                     me->ClearUnitState(UNIT_STATE_ROOT);
                     me->GetMotionMaster()->MoveCharge(l_Pos.m_positionX, l_Pos.m_positionY, l_Pos.m_positionZ + target->GetObjectSize());
 

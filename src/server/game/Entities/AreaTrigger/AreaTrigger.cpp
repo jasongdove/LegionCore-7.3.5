@@ -214,8 +214,7 @@ bool AreaTrigger::CreateAreaTrigger(ObjectGuid::LowType guidlow, uint32 triggerE
 
         if (atInfo.RandomRadiusOfSpawn) // it's needed for spawn in random point near original position
         {
-            Position mypos = pos;
-            GetNearPosition(mypos, frand(0, atInfo.RandomRadiusOfSpawn), frand(0, 6.28f));
+            Position mypos = GetNearPosition(frand(0, atInfo.RandomRadiusOfSpawn), frand(0, 6.28f));
             Relocate(mypos);
         }
 
@@ -998,7 +997,7 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
                     m_CastItem = nullptr;
 
                 if (action.action->targetFlags & AT_TARGET_FLAG_CAST_AT_SRC)
-                    caster->CastSpell(GetPositionX(), GetPositionY(), GetPositionZH(), action.action->spellId, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER), m_CastItem);
+                    caster->CastSpell(GetPositionX(), GetPositionY(), GetPositionZ(), action.action->spellId, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER), m_CastItem);
                 else
                     caster->CastSpell(unit, action.action->spellId, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER), m_CastItem);
 
@@ -1042,7 +1041,7 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
                 {
                     SpellCastTargets targets;
                     targets.SetCaster(caster);
-                    targets.SetDst(GetPositionX(), GetPositionY(), GetPositionZH(), GetOrientation());
+                    targets.SetDst(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
 
                     CustomSpellValues values;
                     if (bp0)
@@ -1173,7 +1172,7 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
                     m_CastItem = nullptr;
 
                 if (action.action->targetFlags & AT_TARGET_FLAG_CAST_AT_SRC)
-                    caster->CastSpell(GetPositionX(), GetPositionY(), GetPositionZH(), action.action->spellId, TriggerCastFlags(TRIGGERED_CASTED_BY_AREATRIGGER), m_CastItem);
+                    caster->CastSpell(GetPositionX(), GetPositionY(), GetPositionZ(), action.action->spellId, TriggerCastFlags(TRIGGERED_CASTED_BY_AREATRIGGER), m_CastItem);
                 else
                     caster->CastSpell(unit, action.action->spellId, TriggerCastFlags(TRIGGERED_CASTED_BY_AREATRIGGER), m_CastItem);
 
@@ -1218,7 +1217,7 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
                     return;
 
                 if (action.action->targetFlags & AT_TARGET_FLAG_CAST_AT_SRC)
-                    caster->CastSpell(GetPositionX(), GetPositionY(), GetPositionZH(), action.action->spellId, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER), m_CastItem, nullptr, owner->GetGUID());
+                    caster->CastSpell(GetPositionX(), GetPositionY(), GetPositionZ(), action.action->spellId, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER), m_CastItem, nullptr, owner->GetGUID());
                 else
                     caster->CastSpell(unit, action.action->spellId, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER), m_CastItem, nullptr, owner->GetGUID());
 
@@ -1789,7 +1788,7 @@ bool AreaTrigger::IsInHeight(Unit* unit)
     if (!_height)
         return true;
 
-    return unit->GetPositionZH() - GetPositionZH() <= atInfo.Polygon.Height;
+    return unit->GetPositionZ() - GetPositionZ() <= atInfo.Polygon.Height;
 }
 
 bool AreaTrigger::IsInBox(Unit* unit)
@@ -1944,7 +1943,7 @@ bool AreaTrigger::UpdatePosition(ObjectGuid targetGuid)
 
             if (relocated)
             {
-                GetMap()->AreaTriggerRelocation(this, caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZH(), caster->GetOrientation());
+                GetMap()->AreaTriggerRelocation(this, caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), caster->GetOrientation());
                 #ifdef WIN32
                 DebugVisualizePolygon();
                 #endif
@@ -1974,7 +1973,7 @@ bool AreaTrigger::UpdatePosition(ObjectGuid targetGuid)
             bool relocated = GetPositionX() != target->GetPositionX() || GetPositionY() != target->GetPositionY();
 
             if (relocated)
-                GetMap()->AreaTriggerRelocation(this, target->GetPositionX(), target->GetPositionY(), target->GetPositionZH(), target->GetOrientation());
+                GetMap()->AreaTriggerRelocation(this, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
             else if (turn)
                 SetOrientation(target->GetOrientation());
 
@@ -2803,11 +2802,9 @@ void AreaTrigger::ReCalculateSplinePosition(bool setReach /*= false*/)
             _spline.ElapsedTimeForMovement = _liveTime;
             InitSplines();
 
-            #ifdef WIN32
-            TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::UpdateMovement AT_MOVE_TYPE_RE_PATH_LOS size %i _timeToTarget %i _dest (%f %f %f) %f",
-                _spline.VerticesPoints.size(), _spline.TimeToTarget, _dest.GetPositionX(), _dest.GetPositionY(), _dest.GetPositionZH(), m_moveAngleLos);
+            TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::UpdateMovement AT_MOVE_TYPE_RE_PATH_LOS size %zu _timeToTarget %i _dest (%f %f %f) %f",
+                _spline.VerticesPoints.size(), _spline.TimeToTarget, _dest.GetPositionX(), _dest.GetPositionY(), _dest.GetPositionZ(), m_moveAngleLos);
                 DebugVisualizePosition();
-            #endif
             break;
         }
         default:

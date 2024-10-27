@@ -535,8 +535,7 @@ class npc_stillpine_capitive : public CreatureScript
                     DoScriptText(RAND(CAPITIVE_SAY_1, CAPITIVE_SAY_2, CAPITIVE_SAY_3), me, owner);
                     _player = owner;
                 }
-                Position pos;
-                me->GetNearPosition(pos, 3.0f, 0.0f);
+                Position pos = me->GetNearPosition(3.0f, 0.0f);
                 me->GetMotionMaster()->MovePoint(POINT_INIT, pos);
             }
 

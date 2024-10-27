@@ -612,7 +612,7 @@ class spell_tos_goroth_fel_periodic_trigger : public AuraScript
         {
             Position pos;
             float angle = caster->GetRelativeAngle(centrPos.GetPositionX(), centrPos.GetPositionY()) + frand(-1.0f, 1.0f);
-            caster->GetNearPosition(pos, frand(35.0f, 45.0f), angle);
+            pos = caster->GetNearPosition(frand(35.0f, 45.0f), angle);
             caster->CastSpell(pos, SPELL_FEL_ERUPTION_MISSILE, true);
         }
     }

@@ -273,8 +273,8 @@ public:
 
             for (uint8 l_I = 0; l_I < 20; ++l_I)
             {
-                float l_X = me->m_positionX + (l_I + 1) * cos(me->m_orientation);
-                float l_Y = me->m_positionY + (l_I + 1) * sin(me->m_orientation);
+                float l_X = me->m_positionX + (l_I + 1) * cos(me->GetOrientation());
+                float l_Y = me->m_positionY + (l_I + 1) * sin(me->GetOrientation());
 
                 /// 326528
                 if (Creature* l_FelSparkNullAITrigger = me->SummonCreature(CreatureFelSparkNullAITrigger, l_X, l_Y, me->GetPositionZ(), me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 7 * IN_MILLISECONDS))

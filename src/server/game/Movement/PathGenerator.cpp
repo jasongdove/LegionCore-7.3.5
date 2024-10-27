@@ -1084,7 +1084,7 @@ void PathGenerator::ShortenPathUntilDist(G3D::Vector3 const& target, float dist)
 
         // check if the shortened path is still in LoS with the target
         _source->GetHitSpherePointFor({ _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight }, x, y, z);
-        if (!_source->GetMap()->isInLineOfSight(x, y, z, _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight, _source->GetPhases()))
+        if (!_source->GetMap()->isInLineOfSight(x, y, z, _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight, _source->GetPhases(), VMAP::ModelIgnoreFlags::Nothing))
         {
             // whenver we find a point that is not in LoS anymore, simply use last valid path
             _pathPoints.resize(i + 1);

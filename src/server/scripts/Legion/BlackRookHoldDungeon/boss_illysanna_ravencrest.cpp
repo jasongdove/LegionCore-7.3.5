@@ -758,9 +758,8 @@ class spell_illysanna_dark_rush : public SpellScript
             return;
         }
 
-        Position pos;
-        GetCaster()->GetPosition(&pos);
-        pos.m_orientation = GetCaster()->GetAngle(savePos.GetPositionX(), savePos.GetPositionY()) - M_PI;
+        Position pos = GetCaster()->GetPosition();
+        pos.SetOrientation(GetCaster()->GetAngle(savePos.GetPositionX(), savePos.GetPositionY()) - M_PI);
         GetHitDest()->Relocate(pos);
 
         GetCaster()->GetMotionMaster()->MoveCharge(savePos.GetPositionX(), savePos.GetPositionY(), savePos.GetPositionZ(), 50.0f, GetId());

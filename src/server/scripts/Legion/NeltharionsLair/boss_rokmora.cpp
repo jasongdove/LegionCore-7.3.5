@@ -114,7 +114,7 @@ struct boss_rokmora : public BossAI
                 Position pos;
                 for (uint8 i = 0; i < 20; ++i)
                 {
-                    me->GetNearPosition(pos, frand(15.0f, 30.0f), frand(-1.5f, 1.5f));
+                    pos = me->GetNearPosition(frand(15.0f, 30.0f), frand(-1.5f, 1.5f));
                     me->CastSpell(pos, SPELL_RAZOR_SHARDS_VISUAL_1, true);
                 }
                 for (uint8 i = 0; i < 7; ++i)
@@ -155,7 +155,7 @@ struct boss_rokmora : public BossAI
                     if (auto target = SelectTarget(SELECT_TARGET_TOPAGGRO))
                     {
                         Position pos;
-                        me->GetNearPosition(pos, 60.0f, me->GetRelativeAngle(target));
+                        pos = me->GetNearPosition(60.0f, me->GetRelativeAngle(target));
                         if (auto summon = me->SummonCreature(NPC_RAZOR_SHARDS_STALKER, pos, TEMPSUMMON_TIMED_DESPAWN, 10000))
                         {
                             summon->StopAttack();
@@ -303,7 +303,7 @@ struct npc_nl_vileshard_hulk : public ScriptedAI
             Position pos;
             for (uint8 i = 0; i < 20; ++i)
             {
-                me->GetNearPosition(pos, frand(5.0f, 30.0f), frand(-0.5f, 0.5f));
+                pos = me->GetNearPosition(frand(5.0f, 30.0f), frand(-0.5f, 0.5f));
                 me->CastSpell(pos, 226305, true);
             }
         }

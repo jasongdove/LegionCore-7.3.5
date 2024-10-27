@@ -613,7 +613,7 @@ public:
                         {
                             Position pos;
                             me->MonsterTextEmote("Tsulong casts |cffff0000[Sunbeam]|cfffaeb00!", me->GetGUID(), true);
-                            me->GetRandomNearPosition(pos, 10.0f);
+                            pos = me->GetRandomNearPosition(10.0f);
                             me->SummonCreature(SUNBEAM_DUMMY_ENTRY, pos);
                             break;
                         }
@@ -747,8 +747,7 @@ public:
                                 // summon fright spawns
                                 for (int i = 0; i < 5; i++)
                                 {
-                                    Position pos;
-                                    _s->GetRandomNearPosition(pos, 4.0f);
+                                    Position pos = _s->GetRandomNearPosition(4.0f);
 
                                     _s->SummonCreature(NPC_FRIGHT_SPAWN, pos);
                                 }
@@ -796,7 +795,7 @@ public:
                     case EVENT_EMBODIED_TERROR:
                     {
                         Position pos;
-                        me->GetRandomNearPosition(pos, urand(15.0f, 25.0f));
+                        pos = me->GetRandomNearPosition(urand(15.0f, 25.0f));
                         me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_SUMMON_EMBODIED_TERROR, true);
                         events.ScheduleEvent(EVENT_EMBODIED_TERROR, 40 * IN_MILLISECONDS, 0, PHASE_DAY);
                         break;
@@ -1039,7 +1038,7 @@ public:
             for (int i = 0; i < 5; i++)
             {
                 Position pos;
-                me->GetRandomNearPosition(pos, 4.0f);
+                pos = me->GetRandomNearPosition(4.0f);
 
                 me->SummonCreature(NPC_FRIGHT_SPAWN, pos);
             }

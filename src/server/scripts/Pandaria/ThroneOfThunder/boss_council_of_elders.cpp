@@ -457,8 +457,7 @@ public:
                 case EVENT_SAND_TRAP:
                     if (Unit* target = SelectTarget(SELECT_TARGET_FARTHEST, 0, 80.0f, true))
                     {
-                        Position pos;
-                        target->GetPosition(&pos);
+                        Position pos = target->GetPosition();
                         me->SummonCreature(NPC_LIVING_SAND, pos.GetPositionX(), pos.GetPositionY(), me->GetPositionZ());
                     }
                     events.RescheduleEvent(EVENT_SAND_TRAP, 40000);
@@ -472,7 +471,7 @@ public:
                     if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 80.0f, true))
                     {
                         me->SetFacingToObject(target);
-                        target->GetPosition(&chargepos);
+                        chargepos = target->GetPosition();
                         target->CastSpell(target, SPELL_R_CHARGE_POINT_T);
                         DoCast(me, SPELL_R_CHARGE_VISUAL);
                     }

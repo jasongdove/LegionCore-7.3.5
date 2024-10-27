@@ -323,7 +323,7 @@ struct boss_ilgynoth : public BossAI
                     for (uint8 i = 0; i < 6; ++i)
                     {
                         angle += 1.0f;
-                        me->GetNearPosition(pos, 20.0f, angle);
+                        pos = me->GetNearPosition(20.0f, angle);
                         me->CastSpell(pos, SPELL_SUM_SHRIVELED_EYESTALK, true);
                     }
                     events.RescheduleEvent(EVENT_SUM_SHRIVELED_EYESTALK, 20000);

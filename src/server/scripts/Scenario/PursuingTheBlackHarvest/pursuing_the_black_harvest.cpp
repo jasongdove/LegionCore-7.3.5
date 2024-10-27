@@ -1643,9 +1643,8 @@ public:
             if (!caster)
                 return;
 
-            Position offset;
-            caster->GetNearPosition(offset, step, 0);
-            caster->GetPosition(&pos);
+            Position offset = caster->GetNearPosition(step, 0);
+            pos = caster->GetPosition();
             vel = G3D::Vector2(offset.m_positionX - pos.m_positionX, offset.m_positionY - pos.m_positionY).direction();
         }
 

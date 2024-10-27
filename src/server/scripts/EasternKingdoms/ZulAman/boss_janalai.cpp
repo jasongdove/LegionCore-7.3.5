@@ -529,8 +529,7 @@ class spell_janalai_flame_breath : public SpellScriptLoader
                     return;
 
                 count++;
-                Position pos;
-                GetCaster()->GetNearPosition(pos, 4.0f * count, 0.0f);
+                Position pos = GetCaster()->GetNearPosition(4.0f * count, 0.0f);
                 GetCaster()->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_FLAME_BREATH_1, true);
             }
 

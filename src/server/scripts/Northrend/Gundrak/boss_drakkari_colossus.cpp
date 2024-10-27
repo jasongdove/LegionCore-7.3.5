@@ -447,11 +447,9 @@ public:
             // we do this checks to see if the creature is one of the creatures that sorround the boss
             if (Creature* colossus = Unit::GetCreature(*me, instance ? instance->GetGuidData(DATA_DRAKKARI_COLOSSUS) : ObjectGuid::Empty))
             {
-                Position homePosition;
-                me->GetHomePosition().GetPosition(&homePosition);
+                Position homePosition = me->GetHomePosition().GetPosition();
 
-                Position colossusHomePosition;
-                colossus->GetHomePosition().GetPosition(&colossusHomePosition);
+                Position colossusHomePosition = colossus->GetHomePosition().GetPosition();
 
                 float distance = homePosition.GetExactDist(colossusHomePosition.GetPositionX(), colossusHomePosition.GetPositionY(), colossusHomePosition.GetPositionZ());
 

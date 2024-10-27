@@ -101,8 +101,7 @@ struct boss_commander_rimok : public BossAI
             events.RescheduleEvent(EVENT_FRENZIED_ASSAULT, urand(10000, 15000));
             break;
         case EVENT_VISCOUS_FLUID:
-            Position pos;
-            me->GetPosition(&pos);
+            Position pos = me->GetPosition();
             me->SummonCreature(56883, pos, TEMPSUMMON_TIMED_DESPAWN, 30000);
             events.RescheduleEvent(EVENT_VISCOUS_FLUID, urand(5000, 10000));
             break;

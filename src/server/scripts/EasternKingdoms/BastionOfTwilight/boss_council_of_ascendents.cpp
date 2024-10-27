@@ -729,7 +729,7 @@ class boss_ignacious : public CreatureScript
                         if (pTarget)
                         {
                             me->SetReactState(REACT_PASSIVE);
-                            pTarget->GetPosition(&jumppos);
+                            jumppos = pTarget->GetPosition();
                             DoCast(pTarget, SPELL_INFERNO_JUMP);
                         }
                         events.RescheduleEvent(EVENT_INFERNO_JUMP, urand(20000, 30000));

@@ -359,7 +359,7 @@ void PetBattleSystem::Update(uint32 diff)
                             auto const& l_Second = location.Positions[PETBATTLE_TEAM_2];
 
                             float angle = atan2(l_Second.GetPositionY() - l_One.GetPositionY(), l_Second.GetPositionX() - l_One.GetPositionX());
-                            battle->PvPMatchMakingRequest.PetBattleCenterPosition.m_orientation = (angle >= 0) ? angle : 2 * M_PI + angle;
+                            battle->PvPMatchMakingRequest.PetBattleCenterPosition.SetOrientation((angle >= 0) ? angle : 2 * M_PI + angle);
 
                             for (size_t i = 0; i < MAX_PETBATTLE_SLOTS; ++i)
                             {

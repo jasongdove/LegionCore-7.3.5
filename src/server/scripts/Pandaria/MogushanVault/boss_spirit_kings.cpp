@@ -289,8 +289,8 @@ class boss_spirit_kings_controler : public CreatureScript
                     float angleAltMinus = angle + 3.14f;
 
                     Position posRand, posRandMinus, posRandAlt, posRandAltMinus;
-                    me->GetNearPosition(posRand, 30.0f, angle);
-                    me->GetNearPosition(posRandAlt, 30.0f, angleAlt);
+                    posRand = me->GetNearPosition(30.0f, angle);
+                    posRandAlt = me->GetNearPosition(30.0f, angleAlt);
                     float orient = posRand.GetAngle(me);
                     float orientAlt = posRandAlt.GetAngle(me);
 
@@ -301,16 +301,16 @@ class boss_spirit_kings_controler : public CreatureScript
                     {
                         angle += 0.15f;
                         angleMinus -= 0.15f;
-                        me->GetNearPosition(posRand, 30.0f, angle);
-                        me->GetNearPosition(posRandMinus, 30.0f, angleMinus);
+                        posRand = me->GetNearPosition(30.0f, angle);
+                        posRandMinus = me->GetNearPosition(30.0f, angleMinus);
                         me->SummonCreature(NPC_FLANKING_MOGU, posRand.GetPositionX(), posRand.GetPositionY(), posRand.GetPositionZ(), orient);
                         me->SummonCreature(NPC_FLANKING_MOGU, posRandMinus.GetPositionX(), posRandMinus.GetPositionY(), posRandMinus.GetPositionZ(), orient);
                         if (IsHeroic())
                         {
                             angleAlt += 0.15f;
                             angleAltMinus -= 0.15f;
-                            me->GetNearPosition(posRandAlt, 30.0f, angleAlt);
-                            me->GetNearPosition(posRandAltMinus, 30.0f, angleAltMinus);
+                            posRandAlt = me->GetNearPosition(30.0f, angleAlt);
+                            posRandAltMinus = me->GetNearPosition(30.0f, angleAltMinus);
                             me->SummonCreature(NPC_FLANKING_MOGU, posRandAlt.GetPositionX(), posRandAlt.GetPositionY(), posRandAlt.GetPositionZ(), orientAlt);
                             me->SummonCreature(NPC_FLANKING_MOGU, posRandAltMinus.GetPositionX(), posRandAltMinus.GetPositionY(), posRandAltMinus.GetPositionZ(), orientAlt);
                         }
@@ -808,7 +808,7 @@ class npc_flanking_mogu : public CreatureScript
                 if (spell->Id == SPELL_TRIGGER_ATTACK)
                 {
                     Position pos;
-                    me->GetNearPosition(pos, 60.0f, me->GetAngle(me));
+                    pos = me->GetNearPosition(60.0f, me->GetAngle(me));
                     me->GetMotionMaster()->MovePoint(1, pos);
                 }
             }

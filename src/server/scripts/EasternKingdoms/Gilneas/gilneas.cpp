@@ -2325,13 +2325,7 @@ public:
             player->CastSpell(player, 68632, true);
             player->CastSpell(player, 68634, true);
 
-            WorldLocation loc;
-            loc.m_mapId       = 654;
-            loc.m_positionX   = -1818.4f;
-            loc.m_positionY   = 2294.25f;
-            loc.m_positionZ   = 42.2135f;
-            loc.m_orientation = 3.14f;
-
+            WorldLocation loc(654, -1818.4f, 2294.25f, 42.2135f, 3.14f);
             player->SetHomebind(loc, 4786);
         }
         return true;

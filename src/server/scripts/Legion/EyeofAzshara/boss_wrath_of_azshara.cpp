@@ -218,8 +218,7 @@ public:
                 case SPELL_TIDAL_WAVE_SELECT_POINT_1:
                 case SPELL_TIDAL_WAVE_SELECT_POINT_2:
                 {
-                    Position pos;
-                    me->GetPosition(&pos);
+                    Position pos = me->GetPosition();
                     pos.m_positionZ += 7.0f;
                     uint8 maxCount = spell->Id == SPELL_TIDAL_WAVE_SELECT_POINT_1 ? 1 : 2;
                     uint32 delay = 0;

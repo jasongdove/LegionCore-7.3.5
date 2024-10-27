@@ -459,7 +459,7 @@ class npc_zorlok_sonic_ring : public CreatureScript
                 if (me->GetMap()->IsHeroic())
                     DoCast(me, SPELL_SONIC_RING_VISUAL_H, true);
                 Position pos;
-                me->GetRandomNearPosition(pos, 40);
+                pos = me->GetRandomNearPosition(40);
                 me->GetMotionMaster()->MovePoint(1, pos);
             }
             

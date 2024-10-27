@@ -117,8 +117,7 @@ public:
 
         WorldLocation* GetClosestGraveYard(float x, float y, float z) override
         {
-            loc_res_pla.Relocate(x, y, z);
-            loc_res_pla.SetMapId(1458);
+            loc_res_pla.WorldRelocate(1458, x, y, z);
 
             uint32 graveyardId = 5355;
 
@@ -133,8 +132,7 @@ public:
             {
                 if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
                 {
-                    loc_res_pla.Relocate(gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-                    loc_res_pla.SetMapId(gy->MapID);
+                    loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
                 }
             }
             return &loc_res_pla;

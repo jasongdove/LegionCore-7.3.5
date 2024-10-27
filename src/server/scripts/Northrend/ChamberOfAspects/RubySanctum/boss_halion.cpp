@@ -410,7 +410,7 @@ class boss_halion : public CreatureScript
                     {
                         if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 0.0f, true, -SPELL_TWILIGHT_REALM))
                         {
-                            target->GetPosition(&_meteorStrikePos);
+                            _meteorStrikePos = target->GetPosition();
                             me->CastSpell(_meteorStrikePos.GetPositionX(), _meteorStrikePos.GetPositionY(), _meteorStrikePos.GetPositionZ(), SPELL_METEOR_STRIKE, true, NULL, NULL, me->GetGUID());
                             Talk(SAY_METEOR_STRIKE);
                         }
@@ -1018,7 +1018,7 @@ class npc_meteor_strike_initial : public CreatureScript
                     {
                         angle[i] = Position::NormalizeOrientation(angle[i]);
                         me->SetOrientation(angle[i]);
-                        me->GetNearPosition(newPos, 10.0f, 0.0f); // Exact distance
+                        newPos = me->GetNearPosition(10.0f, 0.0f); // Exact distance
                         if (Creature* meteor = me->SummonCreature(NPC_METEOR_STRIKE_NORTH + i, newPos, TEMPSUMMON_TIMED_DESPAWN, 30000))
                             _meteorList.push_back(meteor->GetGUID());
                     }
@@ -1080,8 +1080,7 @@ class npc_meteor_strike : public CreatureScript
 
                 if (_events.ExecuteEvent() == EVENT_SPAWN_METEOR_FLAME)
                 {
-                    Position pos;
-                    me->GetNearPosition(pos, _range, 0.0f);
+                    Position pos = me->GetNearPosition(_range, 0.0f);
 
                     if (Creature* flame = me->SummonCreature(NPC_METEOR_STRIKE_FLAME, pos, TEMPSUMMON_TIMED_DESPAWN, 25000))
                     {
@@ -1496,8 +1495,7 @@ class spell_halion_damage_aoe_summon : public SpellScriptLoader
                 SummonPropertiesEntry const* properties = sSummonPropertiesStore.LookupEntry(uint32(GetSpellInfo()->Effects[effIndex]->MiscValueB));
                 uint32 duration = uint32(GetSpellInfo()->GetDuration());
 
-                Position pos;
-                caster->GetPosition(&pos);
+                Position pos = caster->GetPosition();
                 if (Creature* summon = caster->GetMap()->SummonCreature(entry, pos, properties, duration, caster, ObjectGuid::Empty, GetSpellInfo()->Id))
                     if (summon->IsAIEnabled)
                         summon->AI()->SetData(DATA_STACKS_DISPELLED, GetSpellValue()->EffectBasePoints[EFFECT_1]);

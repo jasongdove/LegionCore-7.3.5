@@ -289,7 +289,7 @@ public:
                     
                 for (uint8 i = 0; i < count; ++i)
                 {
-                    me->GetNearPosition(pos, 25.0f, frand(0.0f, 6.28f));
+                    pos = me->GetNearPosition(25.0f, frand(0.0f, 6.28f));
                     me->CastSpell(pos, SPELL_SUCCULENT_FEAST_SUM, true);
                 }
             }

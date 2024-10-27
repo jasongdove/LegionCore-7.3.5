@@ -1993,9 +1993,8 @@ class spell_svalna_revive_champion : public SpellScriptLoader
                 if (!caster)
                     return;
 
-                Position pos;
-                caster->GetPosition(&pos);
-                caster->GetNearPosition(pos, 5.0f, 0.0f);
+                Position pos = caster->GetPosition();
+                pos = caster->GetNearPosition(5.0f, 0.0f);
                 //pos.m_positionZ = caster->GetBaseMap()->GetHeight(caster->GetPhases(), pos.GetPositionX(), pos.GetPositionY(), caster->GetPositionZ(), true, 50.0f);
                 //pos.m_positionZ += 0.05f;
                 caster->SetHomePosition(pos);

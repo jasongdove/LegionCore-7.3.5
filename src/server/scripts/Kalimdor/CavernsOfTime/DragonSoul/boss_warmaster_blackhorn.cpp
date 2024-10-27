@@ -1033,13 +1033,13 @@ class npc_warmaster_blackhorn_twilight_elite_dreadblade_slayer: public CreatureS
                     {
                         case EVENT_BLADE_RUSH:
                         {
-                            me->GetPosition(&startPos);
+                            startPos = me->GetPosition();
                             Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, NonTankTargetSelector(me));
                             if (!pTarget)
                                 pTarget = me->getVictim();
                             if (pTarget)
                             {
-                                pTarget->GetPosition(&endPos);
+                                endPos = pTarget->GetPosition();
                                 endPos.SetOrientation(0);
                                 if (Unit* rushTarget = me->SummonCreature(NPC_BLADE_RUSH_TARGET, endPos, TEMPSUMMON_TIMED_DESPAWN, 3000))
                                 {
@@ -1940,8 +1940,7 @@ class spell_warmaster_blackhorn_shockwave_aoe : public SpellScriptLoader
 
                 GetCaster()->SetTarget(ObjectGuid::Empty);
                 GetCaster()->GetAI()->SetGUID(GetHitUnit()->GetGUID());
-                Position pos;
-                GetCaster()->GetNearPosition(pos, 1, GetCaster()->GetRelativeAngle(GetHitUnit()));
+                Position pos = GetCaster()->GetNearPosition(1, GetCaster()->GetRelativeAngle(GetHitUnit()));
                 GetCaster()->GetMotionMaster()->MovePoint(POINT_SHOCKWAVE, pos);
             }
 

@@ -596,8 +596,7 @@ public:
                 case EVENT_FALLING_ASH:
                     if (Unit* target = me->getVictim())
                     {
-                        Position pos;
-                        target->GetPosition(&pos);
+                        Position pos = target->GetPosition();
                         me->SummonCreature(NPC_FALLING_ASH_GROUND_STALKER, pos, TEMPSUMMON_TIMED_DESPAWN, 17000);
                     }
                     events.RescheduleEvent(EVENT_FALLING_ASH, 30000);

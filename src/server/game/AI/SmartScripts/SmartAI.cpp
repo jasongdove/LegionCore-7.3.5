@@ -54,7 +54,7 @@ SmartAI::SmartAI(Creature* c) : CreatureAI(c), mFollowArrivedTimer(0)
 
     mEvadeDisabled = false;
 
-    me->GetPosition(&mLastOOCPos);
+    mLastOOCPos = me->GetPosition();
 
     mCanAutoAttack = true;
     mCanCombatMove = true;
@@ -173,7 +173,7 @@ void SmartAI::StartPath(bool run, uint32 path, bool repeat, Unit* /*invoker*/)
 
     if (WayPoint* wp = GetNextWayPoint())
     {
-        me->GetPosition(&mLastOOCPos);
+        mLastOOCPos = me->GetPosition();
         me->GetMotionMaster()->MovePoint(wp->id, wp->x, wp->y, wp->z);
         GetScript()->ProcessEventsFor(SMART_EVENT_WAYPOINT_START, nullptr, wp->id, GetScript()->GetPathId());
     }
@@ -209,7 +209,7 @@ void SmartAI::PausePath(uint32 delay, bool forced)
         return;
     }
     mForcedPaused = forced;
-    me->GetPosition(&mLastOOCPos);
+    mLastOOCPos = me->GetPosition();
     AddEscortState(SMART_ESCORT_PAUSED);
     mWPPauseTimer = delay;
     if (forced)
@@ -231,7 +231,7 @@ void SmartAI::StopPath(uint32 DespawnTime, uint32 quest, bool fail)
     SetDespawnTime(DespawnTime);
     //mDespawnTime = DespawnTime;
 
-    me->GetPosition(&mLastOOCPos);
+    mLastOOCPos = me->GetPosition();
     me->StopMoving();//force stop
     me->GetMotionMaster()->MovementExpired(false);
     me->GetMotionMaster()->MoveIdle();
@@ -678,7 +678,7 @@ void SmartAI::EnterCombat(Unit* enemy)
 {
     me->InterruptNonMeleeSpells(false); // must be before ProcessEvents
     GetScript()->ProcessEventsFor(SMART_EVENT_AGGRO, enemy);
-    me->GetPosition(&mLastOOCPos);
+    mLastOOCPos = me->GetPosition();
     if (instance && _bossId)
     {
         // bosses do not respawn, check only on enter combat
@@ -740,7 +740,7 @@ void SmartAI::AttackStart(Unit* who)
             me->GetMotionMaster()->MoveChase(who);
         }
 
-        me->GetPosition(&mLastOOCPos);
+        mLastOOCPos = me->GetPosition();
     }
 }
 

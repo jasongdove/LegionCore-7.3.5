@@ -7329,7 +7329,7 @@ void AuraEffect::HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster, 
                         for (uint8 i = 0; i < 2; ++i)
                         {
                             Position pos;
-                            caster->GetNearPosition(pos, 40.0f, frand(0.0f, 2 * M_PI));
+                            pos = caster->GetNearPosition(40.0f, frand(0.0f, 2 * M_PI));
                             if (caster->GetDistance(pos) >= 20.0f)
                                 caster->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), 103177, true);
                         }
@@ -9002,8 +9002,7 @@ void AuraEffect::HandleCreateAreaTrigger(AuraApplication const* aurApp, uint8 mo
     // when removing flag aura, handle flag drop
     if (apply)
     {
-        Position pos;
-        target->GetPosition(&pos);
+        Position pos = target->GetPosition();
 
         auto areaTrigger = new AreaTrigger;
         if (!areaTrigger->CreateAreaTrigger(sObjectMgr->GetGenerator<HighGuid::AreaTrigger>()->Generate(), triggerEntry, GetCaster(), GetSpellInfo(), pos, pos, nullptr, target->GetGUID()))
@@ -9036,8 +9035,7 @@ void AuraEffect::HandleAuraActivateScene(AuraApplication const* aurApp, uint8 mo
     if (!target || !target->IsPlayer())
         return;
 
-    Position pos;
-    target->GetPosition(&pos);
+    Position pos = target->GetPosition();
 
     target->ToPlayer()->SendSpellScene(GetMiscValue(), m_spellInfo, apply, &pos);
 

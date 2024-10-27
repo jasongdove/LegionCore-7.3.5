@@ -320,8 +320,7 @@ class spell_zanzil_fire : public SpellScriptLoader
                     return;
                 }
 
-                Position pos;
-                GetCaster()->GetNearPosition(pos, 4.0f * count, 0.0f);
+                Position pos = GetCaster()->GetNearPosition(4.0f * count, 0.0f);
                 GetCaster()->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_ZANZIL_FIRE1, true);
             }
 

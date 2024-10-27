@@ -855,12 +855,12 @@ void BfGraveyard::RelocateDeadPlayers()
 // ********************** Misc ***************************
 // *******************************************************
 
-Creature* Battlefield::SpawnCreature(uint32 entry, Position pos, TeamId team)
+Creature* Battlefield::SpawnCreature(uint32 entry, float x, float y, float z, float o, TeamId team)
 {
-    return SpawnCreature(entry, pos.m_positionX, pos.m_positionY, pos.m_positionZ, pos.m_orientation, team);
+    return SpawnCreature(entry, Position(x, y, z, o), team);
 }
 
-Creature* Battlefield::SpawnCreature(uint32 entry, float x, float y, float z, float o, TeamId team)
+Creature* Battlefield::SpawnCreature(uint32 entry, Position const& pos, TeamId team)
 {
     //Get map object
     Map* map = const_cast <Map*>(sMapMgr->CreateBaseMap(m_MapId));
@@ -871,14 +871,14 @@ Creature* Battlefield::SpawnCreature(uint32 entry, float x, float y, float z, fl
     }
 
     Creature* creature = new Creature;
-    if (!creature->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, PHASEMASK_NORMAL, entry, 0, team, x, y, z, o))
+    if (!creature->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, PHASEMASK_NORMAL, entry, 0, team, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation()))
     {
         TC_LOG_ERROR("bg.battlefield", "Battlefield::SpawnCreature: Can't create creature entry: %u", entry);
         delete creature;
         return nullptr;
     }
 
-    creature->SetHomePosition(x, y, z, o);
+    creature->SetHomePosition(pos);
 
     CreatureTemplate const* cinfo = sObjectMgr->GetCreatureTemplate(entry);
     if (!cinfo)
@@ -898,12 +898,12 @@ Creature* Battlefield::SpawnCreature(uint32 entry, float x, float y, float z, fl
     return creature;
 }
 
-GameObject* Battlefield::SpawnGameObject(uint32 entry, Position const pos)
+GameObject* Battlefield::SpawnGameObject(uint32 entry, float x, float y, float z, float o)
 {
-    return SpawnGameObject(entry, pos.m_positionX, pos.m_positionY, pos.m_positionZ, pos.m_orientation);
+    return SpawnGameObject(entry, Position(x, y, z, o));
 }
 
-GameObject* Battlefield::SpawnGameObject(uint32 entry, float x, float y, float z, float o)
+GameObject* Battlefield::SpawnGameObject(uint32 entry, Position const& pos)
 {
     // Get map object
     Map* map = const_cast<Map*>(sMapMgr->CreateBaseMap(m_MapId)); // *vomits*
@@ -912,7 +912,7 @@ GameObject* Battlefield::SpawnGameObject(uint32 entry, float x, float y, float z
 
     // Create gameobject
     GameObject* go = sObjectMgr->IsStaticTransport(entry) ? new StaticTransport : new GameObject;
-    if (!go->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, map, PHASEMASK_NORMAL, Position(x, y, z, o), G3D::Quat(), 100, GO_STATE_READY))
+    if (!go->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, map, PHASEMASK_NORMAL, pos, G3D::Quat(), 100, GO_STATE_READY))
     {
         TC_LOG_ERROR("bg.battlefield", "Battlefield::SpawnGameObject: Gameobject template %u not found in database! Battlefield not created!", entry);
         TC_LOG_ERROR("bg.battlefield", "Battlefield::SpawnGameObject: Cannot create gameobject template %u! Battlefield not created!", entry);

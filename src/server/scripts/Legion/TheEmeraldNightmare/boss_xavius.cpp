@@ -708,7 +708,7 @@ struct npc_xavius_nightmare_blades : public ScriptedAI
                             Position pos;
                             float angle = target->GetRelativeAngle(me);
                             float dist = me->GetDistance(target) + 20.0f;
-                            target->GetNearPosition(pos, dist, angle);
+                            pos = target->GetNearPosition(dist, angle);
 
                             float angle2 = pos.GetRelativeAngle(target);
                             float dist2 = 8.0f;
@@ -768,7 +768,7 @@ struct npc_xavius_inconceivable_horror : public ScriptedAI
                         if (me->GetDistance(owner) > 10.0f)
                         {
                             Position pos;
-                            me->GetNearPosition(pos, me->GetDistance(owner) / 2, me->GetRelativeAngle(owner));
+                            pos = me->GetNearPosition(me->GetDistance(owner) / 2, me->GetRelativeAngle(owner));
                             me->GetMotionMaster()->MovePoint(1, pos);
                             events.RescheduleEvent(EVENT_1, 1000);
                         }
@@ -1179,8 +1179,7 @@ class spell_xavius_unfathomable_reality : public AuraScript
         if (!GetCaster())
             return;
 
-        Position pos;
-        GetCaster()->GetRandomNearPosition(pos, 60.0f);
+        Position pos = GetCaster()->GetRandomNearPosition(60.0f);
         GetCaster()->CastSpell(pos, 206878, true);
     }
 
@@ -1342,7 +1341,7 @@ class spell_xavius_writhing_deep : public SpellScript
         if (auto caster = GetCaster())
         {
             Position pos;
-            caster->GetNearPosition(pos, frand(15.0f, 25.0f), float(urand(0, 6)));
+            pos = caster->GetNearPosition(frand(15.0f, 25.0f), float(urand(0, 6)));
             uint32 spellId = GetSpellInfo()->Effects[effIndex]->TriggerSpell;
             uint32 delay = GetSpellInfo()->Effects[effIndex]->MiscValue;
             caster->CastSpellDelay(pos, spellId, true, delay);

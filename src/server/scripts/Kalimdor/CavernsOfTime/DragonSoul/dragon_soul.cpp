@@ -1909,7 +1909,7 @@ class npc_dragon_soul_twilight_assaulter : public CreatureScript
                 {
                     events.CancelEvent(EVENT_ASSAULTER_VISUAL);
 
-                    const Position* posPtr;
+                    Optional<Position> posPtr;
                     float angle = customPos[5].GetAngle(me);
                     if (angle <= M_PI/4 || angle > M_PI*2 - M_PI/4)
                         posPtr = accessor->GetRandomTwilightAssaulterAssaultPosition(horizontal = false, false, lane, stalkerGUID); // North
@@ -1923,7 +1923,6 @@ class npc_dragon_soul_twilight_assaulter : public CreatureScript
                     if (!posPtr)
                         return;
                     assaultPos = Position(*posPtr);
-                    delete posPtr;
 
                     wasActivated = true;
                     wasAssaulting = true;

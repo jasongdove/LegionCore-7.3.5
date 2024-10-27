@@ -231,8 +231,7 @@ struct boss_skorpyron : BossAI
 
         if (spell->Id == SPELL_FRAGMENTS_FILTER)
         {
-            Position pos;
-            target->GetRandomNearPosition(pos, 6.0f);
+            Position pos = target->GetRandomNearPosition(6.0f);
             if (colorMod == RED_MODE)
                 me->CastSpell(pos, SPELL_VOLATILE_FRAGMENTS, true);
             else if (colorMod == GREEN_MODE)
@@ -256,7 +255,7 @@ struct boss_skorpyron : BossAI
 
             for (uint8 i = 1; i <= countLine; i++)
             {
-                me->GetNearPosition(firstPos, i * 2.5f, 0.0f);
+                firstPos = me->GetNearPosition(i * 2.5f, 0.0f);
                 SendVisual(firstPos.GetPositionX(), firstPos.GetPositionY(), firstPos.GetPositionZ(), i);
 
                 for (uint8 j = 1; j <= countPointInLine; j++)

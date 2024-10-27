@@ -380,8 +380,7 @@ class npc_tempest_slash : public CreatureScript
                 if (summoner->ToCreature())
                     if (Unit* target = summoner->ToCreature()->AI()->SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true))
                     {
-                        Position pos;
-                        target->GetPosition(&pos);
+                        Position pos = target->GetPosition();
                         me->GetMotionMaster()->MoveCharge(pos.GetPositionX(), pos.GetPositionY(), me->GetPositionZ(), 20.0f);
                     }
                     else if (!target)
@@ -413,8 +412,7 @@ class npc_tempest_slash : public CreatureScript
                     {
                         case EVENT_1:
                         {
-                            Position pos;
-                            me->GetPosition(&pos);
+                            Position pos = me->GetPosition();
                             me->SetSpeed(MOVE_RUN, 4.0f, true);
                             Movement::MoveSplineInit init(*me);
                             FillCirclePath(pos, 5.0f, me->GetPositionZ(), init.Path());

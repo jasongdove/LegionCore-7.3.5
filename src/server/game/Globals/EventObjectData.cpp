@@ -107,10 +107,11 @@ void EventObjectDataStoreMgr::LoadEventObjects()
         data.mapid = fields[index++].GetUInt16();
         data.zoneId = fields[index++].GetUInt16();
         data.areaId = fields[index++].GetUInt16();
-        data.Pos.m_positionX = fields[index++].GetFloat();
-        data.Pos.m_positionY = fields[index++].GetFloat();
-        data.Pos.m_positionZ = fields[index++].GetFloat();
-        data.Pos.m_orientation = fields[index++].GetFloat();
+        auto x = fields[index++].GetFloat();
+        auto y = fields[index++].GetFloat();
+        auto z = fields[index++].GetFloat();
+        auto o = fields[index++].GetFloat();
+        data.Pos.Relocate(x, y, z, o);
         data.spawnMask = fields[index++].GetUInt64();
         data.phaseMask = fields[index++].GetUInt32();
 

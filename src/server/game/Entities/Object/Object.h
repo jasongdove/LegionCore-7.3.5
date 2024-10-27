@@ -20,12 +20,13 @@
 #define _OBJECT_H
 
 #include "Common.h"
-#include "UpdateFields.h"
-#include "UpdateData.h"
-#include "ObjectDefines.h"
 #include "GridDefines.h"
 #include "Map.h"
+#include "ModelIgnoreFlags.h"
 #include "MovementInfo.h"
+#include "ObjectDefines.h"
+#include "UpdateData.h"
+#include "UpdateFields.h"
 
 enum TempSummonType : uint8
 {
@@ -450,14 +451,6 @@ class WorldObject : public Object, public WorldLocation
 
         void Clear() override;
 
-        void Relocate(float x, float y, float z, float orientation) override;
-        void Relocate(float x, float y, float z) override;
-        void Relocate(float x, float y) override;
-        void Relocate(const Position &pos) override;
-        void Relocate(const Position* pos) override;
-
-        void SetOrientation(float orientation);
-
         virtual void RemoveFromWorld() override;
 
         void GetNearPoint2D(float &x, float &y, float distance, float absAngle, bool allowObjectSize = true) const;
@@ -465,13 +458,12 @@ class WorldObject : public Object, public WorldLocation
         void GetNearPoint(WorldObject const* searcher, float &x, float &y, float &z, float searcher_size, float distance2d, float absAngle) const;
         void GetClosePoint(float& x, float& y, float& z, float size, float distance2d = 0, float angle = 0) const;
         void MovePosition(Position &pos, float dist, float angle);
-        void GetNearPosition(Position& pos, float dist, float angle);
+        Position GetNearPosition(float dist, float angle);
         void MovePositionToFirstCollision(Position &pos, float dist, float angle);
         void MovePositionToTransportCollision(Position &pos, float dist, float angle);
-        void GetFirstCollisionPosition(Position& pos, float dist, float angle);
+        Position GetFirstCollisionPosition(float dist, float angle);
         void MovePositionToCollisionBetween(Position &pos, float distMin, float distMax, float angle);
-        void GetCollisionPositionBetween(Position& pos, float distMin, float distMax, float angle);
-        void GetRandomNearPosition(Position& pos, float radius);
+        Position GetRandomNearPosition(float radius);
         void GetContactPoint(const WorldObject* obj, float& x, float& y, float& z, float distance2d = CONTACT_DISTANCE) const;
         void GenerateCollisionNonDuplicatePoints(std::list<Position>& randPosList, uint8 maxPoint, float randMin, float randMax, float minDist);
 
@@ -544,8 +536,8 @@ class WorldObject : public Object, public WorldLocation
         bool IsWithinDist2d(const Position* pos, float dist) const;
         bool IsWithinDist(WorldObject const* obj, float dist2compare, bool is3D = true, bool ignoreObjectSize = false) const; // use only if you will sure about placing both object at same map
         bool IsWithinDistInMap(WorldObject const* obj, float dist2compare, bool is3D = true, bool ignoreObjectSize = false) const;
-        bool IsWithinLOS(float x, float y, float z) const;
-        bool IsWithinLOSInMap(const WorldObject* obj) const;
+        bool IsWithinLOS(float x, float y, float z, VMAP::ModelIgnoreFlags ignoreFlags = VMAP::ModelIgnoreFlags::Nothing) const;
+        bool IsWithinLOSInMap(WorldObject const* obj, VMAP::ModelIgnoreFlags ignoreFlags = VMAP::ModelIgnoreFlags::Nothing) const;
         Position GetHitSpherePointFor(Position const& dest) const;
         void GetHitSpherePointFor(Position const& dest, float& x, float& y, float& z) const;
         bool GetDistanceOrder(WorldObject const* obj1, WorldObject const* obj2, bool is3D = true) const;
@@ -666,12 +658,6 @@ class WorldObject : public Object, public WorldLocation
         void setActive(bool isActiveObject);
         void SetWorldObject(bool apply);
         void SetTratsport(Transport* transport, Unit* owner = nullptr);
-
-        Position GetPosition() const override;
-        void GetPosition(float& x, float& y, Transport* transport = nullptr) const override;
-        void GetPosition(float& x, float& y, float& z, Transport* transport = nullptr) const override;
-        void GetPosition(float& x, float& y, float& z, float& o, Transport* transport = nullptr) const override;
-        void GetPosition(Position* pos, Transport* transport = nullptr) const override;
 
         bool IsPermanentWorldObject() const { return m_isWorldObject; }
         bool IsWorldObject() const;

@@ -507,7 +507,7 @@ public:
                         Position pos;
                         if (!targetGUID.IsEmpty())
                             if (Unit* target = Unit::GetUnit(*me, targetGUID))
-                                me->GetNearPosition(pos, 50.0f, me->GetAngle(target->GetPositionX(), target->GetPositionY()));
+                                pos = me->GetNearPosition(50.0f, me->GetAngle(target->GetPositionX(), target->GetPositionY()));
                         me->GetMotionMaster()->MovePoint(1, pos);
                         break;
                 }

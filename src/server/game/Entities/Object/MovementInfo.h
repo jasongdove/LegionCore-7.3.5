@@ -107,7 +107,6 @@ struct MovementInfo
     void RemoveExtraMovementFlag(uint32 flag) { MoveFlags[1] &= ~flag; }
     bool HasExtraMovementFlag(uint32 flag) const { return (MoveFlags[1] & flag) != 0; }
 
-    void ChangeOrientation(float o) { Pos.m_orientation = o; }
     void ChangePosition(float x, float y, float z, float o) { Pos.Relocate(x, y, z, o); }
     void UpdateTime(uint32 _time) { MoveTime = _time; }
 

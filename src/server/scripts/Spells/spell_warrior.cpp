@@ -615,8 +615,7 @@ class spell_warr_charge_check_cast : public SpellScriptLoader
                     return SPELL_CAST_OK;
 
                 float angle = target->GetRelativeAngle(caster);
-                Position pos;
-                target->GetFirstCollisionPosition(pos, target->GetObjectSize(), angle);
+                Position pos = target->GetFirstCollisionPosition(target->GetObjectSize(), angle);
                 float limit = GetSpellInfo()->GetMaxRange(true, caster) + 1.0f;
                 PathGenerator* m_path = new PathGenerator(caster);
                 bool result = m_path->CalculatePath(pos.m_positionX, pos.m_positionY, pos.m_positionZ, false);

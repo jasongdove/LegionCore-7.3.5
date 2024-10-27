@@ -193,8 +193,7 @@ public:
                     player->SetInCombatWith(razor);
                     razor->SetInCombatWithZone();
                     razor->GetMotionMaster()->Clear();
-                    Position pos;
-                    razor->GetPosition(&pos);
+                    Position pos = razor->GetPosition();
                     razor->GetMotionMaster()->MovePoint(1, pos);
                 }
         return true;

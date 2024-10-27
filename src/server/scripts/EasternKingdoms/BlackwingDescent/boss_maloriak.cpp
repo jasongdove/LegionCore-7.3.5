@@ -688,9 +688,8 @@ public:
             if (!owner->ToCreature())
                 return;
             creOwner = owner->ToCreature();
-            Position pos;
             me->SetOrientation(creOwner->GetOrientation());
-            owner->GetNearPosition(pos, owner->GetObjectSize()/2.0f, 0.0f);
+            Position pos = owner->GetNearPosition(owner->GetObjectSize()/2.0f, 0.0f);
             me->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), me->GetPositionZ(), me->GetOrientation());
             events.RescheduleEvent(EVENT_MAGMA_JETS_T, 200);
         }
@@ -701,8 +700,7 @@ public:
 
             if (events.ExecuteEvent() == EVENT_MAGMA_JETS_T)
             {
-                Position newPos;
-                me->GetNearPosition(newPos, 5.5f, 0.0f);
+                Position newPos = me->GetNearPosition(5.5f, 0.0f);
                 me->NearTeleportTo(newPos.GetPositionX(), newPos.GetPositionY(), me->GetPositionZ(), me->GetOrientation());
                 if (creOwner->GetDistance(me) >= 50.0f)
                     me->DespawnOrUnsummon();
@@ -899,8 +897,7 @@ public:
 
         void OnApply(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
         {
-            Position pos;
-            aurEff->GetBase()->GetOwner()->GetPosition(&pos);
+            Position pos = aurEff->GetBase()->GetOwner()->GetPosition();
             if (!GetCaster())
                 return;
             if (TempSummon* summon = GetCaster()->SummonCreature(NPC_FLASH_FREEZE, pos))

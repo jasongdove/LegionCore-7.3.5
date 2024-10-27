@@ -138,13 +138,13 @@ public:
                         DoCast(SPELL_RESONANT_SLASH);
                         float angle = 0.0f;
                         Position pos;
-                        me->GetNearPosition(pos, 4.0f, angle);
+                        pos = me->GetNearPosition(4.0f, angle);
                         if (Creature* frontTrig = me->SummonCreature(NPC_GERDO_TRIG_FRONT, pos))
                         {
                             angle += 3.14f;
                             frontTrig->CastSpell(frontTrig, SPELL_RESONANT_SLASH_FRONT);
                         }
-                        me->GetNearPosition(pos, 4.0f, angle);
+                        pos = me->GetNearPosition(4.0f, angle);
                         if (Creature* backTrig = me->SummonCreature(NPC_GERDO_TRIG_BACK, pos))
                             backTrig->CastSpell(backTrig, SPELL_RESONANT_SLASH_BACK);
                         events.RescheduleEvent(EVENT_RESONANT_SLASH, 12000);

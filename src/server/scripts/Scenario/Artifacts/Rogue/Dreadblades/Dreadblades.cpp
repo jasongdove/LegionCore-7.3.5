@@ -503,7 +503,7 @@ public:
                         if (Creature* trigger = me->FindNearestCreature(95464, 150.0f))
                         {
                             Position pos;
-                            me->GetNearPosition(pos, 40.0f, 0);
+                            pos = me->GetNearPosition(40.0f, 0);
                             trigger->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), 201871, true);
                             trigger->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), 201856, true);
                         }

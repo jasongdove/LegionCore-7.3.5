@@ -1388,7 +1388,7 @@ struct npc_tov_spear_of_light : ScriptedAI
         {
             Position pos;
             float angle = 6.28f / (IsLfrRaid() ? 3 : 5) * i;
-            me->GetNearPosition(pos, 3.0f, angle);
+            pos = me->GetNearPosition(3.0f, angle);
 
             if (auto odyn = instance->instance->GetCreature(instance->GetGuidData(Data::Creatures::Odyn)))
             {

@@ -349,7 +349,7 @@ public:
                         }
                         else if (playerListGUID.size() > 1)
                         {
-                            me->GetRandomNearPosition(pos, 5.0f);
+                            pos = me->GetRandomNearPosition(5.0f);
                             if (Creature* image = me->SummonCreature(NPC_SPELLBLADE_ALURIEL_IMAG, pos))
                             {
                                 image->CastSpell(player, SPELL_SEARING_BRAND_MARK, true);

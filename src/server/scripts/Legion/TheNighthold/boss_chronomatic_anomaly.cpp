@@ -630,7 +630,7 @@ public:
                         float angle = 1.57f;
                         for (uint8 i = 0; i < 4; i++)
                         {
-                            me->GetNearPosition(pos, 6.0f, angle);
+                            pos = me->GetNearPosition(6.0f, angle);
                             owner->SummonCreature(NPC_FRAGMENTED_TIME, pos);
                             angle += 1.57f;
                         }
@@ -1244,10 +1244,10 @@ class spell_anomaly_temporal_orb : public SpellScriptLoader
                     float angle = 3.14f;
                     for (uint8 i = 0; i < 36; i++)
                     {
-                        GetTarget()->GetNearPosition(pos, 20.0f, angle);
+                        pos = GetTarget()->GetNearPosition(20.0f, angle);
                         caster->CastSpell(pos, SPELL_TEMPORAL_ORB_AT, true);
 
-                        GetTarget()->GetNearPosition(pos, 20.0f, angle + 0.08525f);
+                        pos = GetTarget()->GetNearPosition(20.0f, angle + 0.08525f);
 
                         uint32 spellID = SPELL_TEMPORAL_ORB_AT_2;
                         caster->AddDelayedEvent(2000, [caster, pos, spellID]() -> void

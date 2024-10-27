@@ -878,7 +878,7 @@ bool PlayerCheatData::InterpolateMovement(MovementInfo const& mi, uint32 diffMs,
     x = mi.Pos.m_positionX;
     y = mi.Pos.m_positionY;
     z = mi.Pos.m_positionZ;
-    outOrientation = mi.Pos.m_orientation;
+    outOrientation = mi.Pos.GetOrientation();
     float o = outOrientation;
     // Not allowed to move
     if (mi.MoveFlags[0] & MOVEMENTFLAG_ROOT)
@@ -974,7 +974,7 @@ bool PlayerCheatData::InterpolateMovement(MovementInfo const& mi, uint32 diffMs,
 
     if (!(mi.MoveFlags[0] & (MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR | MOVEMENTFLAG_SWIMMING)))
         z = me->GetMap()->GetHeight(x, y, z);
-    return me->GetMap()->isInLineOfSight(mi.Pos.m_positionX, mi.Pos.m_positionY, mi.Pos.m_positionZ + 0.5f, x, y, z + 0.5f, me->GetPhases());
+    return me->GetMap()->isInLineOfSight(mi.Pos.m_positionX, mi.Pos.m_positionY, mi.Pos.m_positionZ + 0.5f, x, y, z + 0.5f, me->GetPhases(), VMAP::ModelIgnoreFlags::Nothing);
 }
 
 bool PlayerCheatData::GetMaxAllowedDist(MovementInfo const& mi, uint32 diffMs, float &dxy, float &dz, float &speed)
@@ -1094,7 +1094,7 @@ bool PlayerCheatData::HandleCustomAnticheatTests(uint32 opcode, MovementInfo& mo
             }
 
             // save prevoius point
-            Player::SavePositionInDB(mover->GetMapId(), mover->m_movementInfo.Pos.m_positionX, mover->m_movementInfo.Pos.m_positionY, mover->m_movementInfo.Pos.m_positionZ, mover->m_movementInfo.Pos.m_orientation, mover->GetZoneId(), mover->GetGUID());
+            Player::SavePositionInDB(mover->GetMapId(), mover->m_movementInfo.Pos.m_positionX, mover->m_movementInfo.Pos.m_positionY, mover->m_movementInfo.Pos.m_positionZ, mover->m_movementInfo.Pos.GetOrientation(), mover->GetZoneId(), mover->GetGUID());
             me->GetSession()->KickPlayer();
             return false;
         }

@@ -482,8 +482,7 @@ class boss_sara : public CreatureScript
 
             for (uint8 n = 0; n < 9; n++)
             {
-                Position pos;
-                me->GetRandomNearPosition(pos, 50);
+                Position pos = me->GetRandomNearPosition(50);
                 if (Creature* OminousCloud = me->SummonCreature(NPC_OMINOUS_CLOUD, pos, TEMPSUMMON_CORPSE_DESPAWN))
                     ominous_list.push_back(OminousCloud->GetGUID());
             }
@@ -893,8 +892,7 @@ class boss_yoggsaron : public CreatureScript
                             break;
                         case EVENT_IMMORTAL_GUARDIAN:
                         {
-                            Position pos;
-                            me->GetRandomNearPosition(pos, 25);
+                            Position pos = me->GetRandomNearPosition(25);
                             me->SummonCreature(NPC_IMMORTAL_GUARDIAN, pos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
                             events.ScheduleEvent(EVENT_IMMORTAL_GUARDIAN, urand(25000, 30000), 0, PHASE_3);
                             break;
@@ -993,8 +991,7 @@ class boss_yoggsaron : public CreatureScript
                     me->SummonCreature(NPC_CORRUPTOR_TENTACLE, TentaclesPos[rand()%22]);
                     if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 60, true))
                     {
-                        Position pos;
-                        pTarget->GetRandomNearPosition(pos, 5);
+                        Position pos = pTarget->GetRandomNearPosition(5);
                         if (Creature* Constrict = me->SummonCreature(NPC_CONSTRICTOR_TENTACLE, pos))
                             Constrict->AddAura(RAID_MODE(SPELL_SQUEEZE_10, SPELL_SQUEEZE_25), pTarget);
                     }
@@ -1003,8 +1000,7 @@ class boss_yoggsaron : public CreatureScript
                     me->SummonCreature(NPC_CORRUPTOR_TENTACLE, TentaclesPos[rand()%22]);
                     if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 60, true))
                     {
-                        Position pos;
-                        pTarget->GetRandomNearPosition(pos, 5);
+                        Position pos = pTarget->GetRandomNearPosition(5);
                         if (Creature* Constrict = me->SummonCreature(NPC_CONSTRICTOR_TENTACLE, pos))
                             Constrict->AddAura(RAID_MODE(SPELL_SQUEEZE_10, SPELL_SQUEEZE_25), pTarget);
                     }
@@ -1013,8 +1009,7 @@ class boss_yoggsaron : public CreatureScript
                     me->SummonCreature(NPC_CORRUPTOR_TENTACLE, TentaclesPos[rand()%22]);
                     if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 60, true))
                     {
-                        Position pos;
-                        pTarget->GetRandomNearPosition(pos, 5);
+                        Position pos = pTarget->GetRandomNearPosition(5);
                         if (Creature* Constrict = me->SummonCreature(NPC_CONSTRICTOR_TENTACLE, pos))
                             Constrict->AddAura(RAID_MODE(SPELL_SQUEEZE_10, SPELL_SQUEEZE_25), pTarget);
                     }

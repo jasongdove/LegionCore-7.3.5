@@ -1320,7 +1320,7 @@ public:
         player->RemoveAurasByType(SPELL_AURA_MOUNTED);
         player->CastSpell(player, 305180, true);
         player->CastSpell(player, 305181, true);
-        player->TeleportTo(mapStromgard, stromgardPlayersPos[p].m_positionX, stromgardPlayersPos[p].m_positionY, stromgardPlayersPos[p].m_positionZ, stromgardPlayersPos[p].m_orientation);
+        player->TeleportTo(mapStromgard, &stromgardPlayersPos[p]);
         return true;
     }
 };
@@ -1334,7 +1334,7 @@ public:
     bool OnGossipHello(Player* player, Creature* creature)  override
     {
         player->RemoveAura(305180);
-        player->TeleportTo(1220, DalaranPos.m_positionX, DalaranPos.m_positionY, DalaranPos.m_positionZ, DalaranPos.m_orientation);
+        player->TeleportTo(1220, &DalaranPos);
         return true;
     }
 };
@@ -2683,7 +2683,7 @@ struct boss_new_year_2019_atray : public ScriptedAI
         if (spell->Id == SPELL_ATRAY_KHADGAR_TS)
         {
             Position pos = target->GetPosition();
-            pos.Relocate(pos.m_positionX - frand(2, 3), pos.m_positionY + frand(-2, 2), pos.m_positionZ, pos.m_orientation);
+            pos.Relocate(pos.GetPositionX() - frand(2, 3), pos.GetPositionY() + frand(-2, 2), pos.GetPositionZ(), pos.GetOrientation());
             if (auto khadgar = me->SummonCreature(npc_atray_khadgar, pos, TEMPSUMMON_TIMED_DESPAWN, 34000))
             {
                 khadgar->SetReactState(REACT_PASSIVE);
@@ -3478,7 +3478,7 @@ struct npc_new_year_2019_evala_portal : public ScriptedAI
             {
                 Position pos = me->GetPosition();
                 uint32 add[2] = { npc_evala_frostmage, npc_evala_frostwarr };
-                if (auto adds = me->SummonCreature(add[urand(0, 1)], pos.m_positionX + frand(1, 2), pos.m_positionY + frand(0, 2), pos.m_positionZ, pos.m_orientation))
+                if (auto adds = me->SummonCreature(add[urand(0, 1)], pos.GetPositionX() + frand(1, 2), pos.GetPositionY() + frand(0, 2), pos.GetPositionZ(), pos.GetOrientation()))
                     if (auto target = adds->SelectNearestPlayerNotGM(37.f))
                         adds->GetMotionMaster()->MovePoint(1, target->GetPosition());
 
@@ -5305,7 +5305,7 @@ public:
         if (castAtFirst)
             player->CastSpell(player, castAtFirst, true);
 
-        player->TeleportTo(1220, DalaranPos.m_positionX, DalaranPos.m_positionY, DalaranPos.m_positionZ, DalaranPos.m_orientation);
+        player->TeleportTo(1220, &DalaranPos);
     }
 
     void OnUpdate(Player* player, uint32 diff) override

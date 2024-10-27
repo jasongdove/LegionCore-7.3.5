@@ -270,7 +270,7 @@ class areatrigger_at_ring_of_peace : public AreaTriggerScript
         {
             if (Unit* caster = at->GetCaster())
             {
-                caster->CastSpell(at->GetPositionX(), at->GetPositionY(), at->GetPositionZH(), RingOfPeaceLongKnockBack, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER));
+                caster->CastSpell(at->GetPositionX(), at->GetPositionY(), at->GetPositionZ(), RingOfPeaceLongKnockBack, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER));
             }
         }
 
@@ -289,7 +289,7 @@ class areatrigger_at_ring_of_peace : public AreaTriggerScript
                         {
                             if (!plr->GetKnockBackTime())
                             {
-                                caster->CastSpell(at->GetPositionX(), at->GetPositionY(), at->GetPositionZH(), RingOfPeaceShortKnockBack, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER));
+                                caster->CastSpell(at->GetPositionX(), at->GetPositionY(), at->GetPositionZ(), RingOfPeaceShortKnockBack, TriggerCastFlags(TRIGGERED_FULL_MASK | TRIGGERED_CASTED_BY_AREATRIGGER));
                                 return;
                             }
                         }
@@ -1310,10 +1310,8 @@ class spell_monk_chi_wave_filter : public SpellScriptLoader
                     if (!unitb)
                         return false;
 
-                    Position posA;
-                    Position posB;
-                    unita->GetPosition(&posA);
-                    unitb->GetPosition(&posB);
+                    Position posA = unita->GetPosition();
+                    Position posB = unitb->GetPosition();
                     float distA = _caster->GetDistance(posA);
                     float distB = _caster->GetDistance(posB);
 

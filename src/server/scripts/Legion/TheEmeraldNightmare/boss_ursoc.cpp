@@ -140,8 +140,7 @@ struct boss_ursoc : public BossAI
                 if (IsHeroicPlusRaid())
                 {
                     DoActionSummon(NPC_NIGHTMARE_IMAGE, ACTION_1);
-                    Position pos;
-                    me->GetFirstCollisionPosition(pos, 0.0f, 0.0f);
+                    Position pos = me->GetFirstCollisionPosition(0.0f, 0.0f);
                     me->CastSpell(pos, SPELL_ROARING_CACOPHONY_SUM, true);
                 }
                 break;

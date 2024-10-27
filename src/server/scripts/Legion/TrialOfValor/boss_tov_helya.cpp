@@ -539,8 +539,7 @@ struct boss_helya_tov : BossAI
 
                 playerGuid.Clear();
                 playerGuid = player->GetGUID();
-                Position pos;
-                player->GetPosition(&pos);
+                Position pos = player->GetPosition();
                 pos.m_positionX -= 6.0f;
                 pos.m_positionY -= 6.0f;
                 me->AddDelayedEvent(2000, [=]() -> void { me->SummonCreature(Data::Creatures::OrbOfCorruption, pos, playerGuid, TEMPSUMMON_TIMED_DESPAWN, 9000); });
@@ -568,8 +567,7 @@ struct boss_helya_tov : BossAI
 
                 DoCast(player, SpellOrbOfCorrosionVisual, true);
 
-                Position pos;
-                player->GetPosition(&pos);
+                Position pos = player->GetPosition();
                 pos.m_positionX -= 6.0f;
                 pos.m_positionY -= 6.0f;
                 me->AddDelayedEvent(2000, [=]() -> void { me->SummonCreature(Data::Creatures::OrbOfCorrosion, pos, playerGuid, TEMPSUMMON_TIMED_DESPAWN, 9000); });
@@ -597,7 +595,7 @@ struct boss_helya_tov : BossAI
             for (uint8 i = 0; i < count; ++i)
             {
                 dist += 11.0f;
-                me->GetFirstCollisionPosition(pos, dist, angle);
+                pos = me->GetFirstCollisionPosition(dist, angle);
                 me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SpellBilewaterBreathNpc, true);
             }
             break;
@@ -620,7 +618,7 @@ struct boss_helya_tov : BossAI
             for (uint8 i = 0; i < countTarget; ++i)
             {
                 dist += 13.0f;
-                me->GetNearPosition(pos, dist, angle);
+                pos = me->GetNearPosition(dist, angle);
                 me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SpellCorruptedAxion, true);
             }
             break;

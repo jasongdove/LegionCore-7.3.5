@@ -479,8 +479,7 @@ class spell_eye_of_azshara_roiling_storm : public AuraScript
             {
                 if (auto player = Player::GetPlayer(*caster, ref->getUnitGuid()))
                 {
-                    Position pos;
-                    player->GetRandomNearPosition(pos, 5.0f);
+                    Position pos = player->GetRandomNearPosition(5.0f);
                     caster->CastSpell(pos, 196292, true);
                 }
             }

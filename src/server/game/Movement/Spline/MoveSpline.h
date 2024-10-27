@@ -42,7 +42,6 @@ namespace Movement
         Location(float x, float y, float z, float o) : G3D::Vector3(x, y, z), orientation(o) { }
         Location(G3D::Vector3 const& v) : G3D::Vector3(v), orientation(0.0f) { }
         Location(G3D::Vector3 const& v, float o) : G3D::Vector3(v), orientation(o) { }
-        Location(Position pos) : G3D::Vector3(pos.m_positionX, pos.m_positionY, pos.m_positionZ), orientation(pos.m_orientation) { }
 
         float orientation;
     };

@@ -494,7 +494,7 @@ struct boss_antoran_high_command : BossAI
                         Position pos;
                         for (auto entry : {NPC_FANATICAL_PYROMANCER, NPC_FELBLADE_SHOCKTROOPER, NPC_FELBLADE_SHOCKTROOPER})
                         {
-                            curCommand->GetRandomNearPosition(pos, 10.0f);
+                            pos = curCommand->GetRandomNearPosition(10.0f);
                             me->SummonCreature(entry, pos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 3000);
                         }
                     }

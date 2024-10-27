@@ -510,8 +510,7 @@ public:
                 case BOSS_MAEXXNA:
                     if (Creature* pMaexxna = instance->GetCreature(uiMaexxna))
                     {
-                        Position pos;
-                        pMaexxna->GetPosition(&pos);
+                        Position pos = pMaexxna->GetPosition();
                         if (Creature *pTrigger = pMaexxna->SummonCreature(TRIGGER_NPC_KELTHUZAD, pos, TEMPSUMMON_TIMED_DESPAWN, 5*IN_MILLISECONDS))
                         {
                             pTrigger->SetName("Kel'Thuzad");
@@ -528,8 +527,7 @@ public:
                 case BOSS_HORSEMEN:
                     if (Creature* pSir = instance->GetCreature(uiSir))
                     {
-                        Position pos;
-                        pSir->GetPosition(&pos);
+                        Position pos = pSir->GetPosition();
                         if (Creature *pTrigger = pSir->SummonCreature(TRIGGER_NPC_KELTHUZAD, pos, TEMPSUMMON_TIMED_DESPAWN, 5*IN_MILLISECONDS))
                         {
                             pTrigger->SetName("Kel'Thuzad");
@@ -558,8 +556,7 @@ public:
                     }*/
                     if (Creature* pThaddius = instance->GetCreature(uiThaddius))
                     {
-                        Position pos;
-                        pThaddius->GetPosition(&pos);
+                        Position pos = pThaddius->GetPosition();
                         if (Creature *pTrigger = pThaddius->SummonCreature(TRIGGER_NPC_KELTHUZAD, pos, TEMPSUMMON_TIMED_DESPAWN, 5*IN_MILLISECONDS))
                         {
                             pTrigger->SetName("Kel'Thuzad");
@@ -576,8 +573,7 @@ public:
                 case BOSS_LOATHEB:
                     if (Creature* pLoatheb = instance->GetCreature(uiLoatheb))
                     {
-                        Position pos;
-                        pLoatheb->GetPosition(&pos);
+                        Position pos = pLoatheb->GetPosition();
                         if (Creature *pTrigger = pLoatheb->SummonCreature(TRIGGER_NPC_KELTHUZAD, pos, TEMPSUMMON_TIMED_DESPAWN, 5*IN_MILLISECONDS))
                         {
                             pTrigger->SetName("Kel'Thuzad");

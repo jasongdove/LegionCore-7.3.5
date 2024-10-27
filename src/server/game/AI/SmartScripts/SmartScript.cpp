@@ -1357,7 +1357,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                     center.SimplePosXYRelocationByAngle(pos, dist, angle);
                 }
                 else
-                    me->GetFirstCollisionPosition(pos, dist, angle);
+                    pos = me->GetFirstCollisionPosition(dist, angle);
                 GetBaseObject()->SummonCreature(e.action.summonCreature.creature, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), angle, static_cast<TempSummonType>(e.action.summonCreature.type), e.action.summonCreature.duration);
             }
 
@@ -1416,7 +1416,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                     center.SimplePosXYRelocationByAngle(pos, dist, angle);
                 }
                 else
-                    me->GetFirstCollisionPosition(pos, dist, angle);
+                    pos = me->GetFirstCollisionPosition(dist, angle);
                 GetBaseObject()->SummonGameObject(e.action.summonGO.entry, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), angle, 0, 0, 0, 0, e.action.summonGO.despawnTime);
             }
 
@@ -2427,8 +2427,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
                     if (Player* player = (*itr)->ToPlayer())
                     {
-                        Position pos;
-                        player->GetPosition(&pos);
+                        Position pos = player->GetPosition();
 
                         auto conversation = new Conversation;
                         if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), e.action.conversation.id, player, nullptr, pos))
@@ -2529,8 +2528,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
                     if (Player* player = (*itr)->ToPlayer())
                     {
-                        Position pos;
-                        player->GetPosition(&pos);
+                        Position pos = player->GetPosition();
 
                         auto areaTrigger = new AreaTrigger;
                         if (!areaTrigger->CreateAreaTrigger(sObjectMgr->GetGenerator<HighGuid::AreaTrigger>()->Generate(), 0, GetBaseObject()->ToUnit(), nullptr, pos, pos, nullptr, ObjectGuid::Empty, e.action.areatrigger.id))
@@ -2557,8 +2555,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
                 if (Player* player = (*itr)->ToPlayer())
                 {
-                    Position pos;
-                    player->GetPosition(&pos);
+                    Position pos = player->GetPosition();
                     uint32 sceneId = e.action.scene.id;
 
                     player->SendSpellScene(sceneId, nullptr, true, &pos);

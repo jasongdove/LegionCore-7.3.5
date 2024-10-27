@@ -709,7 +709,7 @@ public:
                         Position pos;
                         for (uint8 i = 0; i < 3; i++)
                         {
-                            me->GetRandomNearPosition(pos, frand(5.0f, 10.0f));
+                            pos = me->GetRandomNearPosition(frand(5.0f, 10.0f));
 
                             if (Creature* assistants = me->SummonCreature(NPC_WINGED_ASSISTANT, pos))
                             {

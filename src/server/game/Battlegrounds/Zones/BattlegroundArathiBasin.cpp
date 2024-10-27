@@ -373,9 +373,9 @@ bool BattlegroundArathiBasin::SetupBattleground()
     for (int8 i = 0; i < BG_AB_DYNAMIC_NODES_COUNT; ++i)
     {
         if (!AddObject(BG_AB_OBJECT_BANNER + i, BgABNodes[i], BgABNodePositions[i][0], BgABNodePositions[i][1], BgABNodePositions[i][2], BgABNodePositions[i][3], BgABNodePositions[i][4], BgABNodePositions[i][5], BgABNodePositions[i][6], BgABNodePositions[i][7], RESPAWN_ONE_DAY) ||
-            !AddObject(BG_AB_OBJECT_SPEEDBUFF_STABLES + 3 * i, BGBuffsIDs[0], BgAbBuffPositions[i], { }, RESPAWN_ONE_DAY) ||
-            !AddObject(BG_AB_OBJECT_SPEEDBUFF_STABLES + 3 * i + 1, BGBuffsIDs[1], BgAbBuffPositions[i], { }, RESPAWN_ONE_DAY) ||
-            !AddObject(BG_AB_OBJECT_SPEEDBUFF_STABLES + 3 * i + 2, BGBuffsIDs[2], BgAbBuffPositions[i], { }, RESPAWN_ONE_DAY))
+            !AddObject(BG_AB_OBJECT_SPEEDBUFF_STABLES + 3 * i, BGBuffsIDs[0], BgAbBuffPositions[i], Position { }, RESPAWN_ONE_DAY) ||
+            !AddObject(BG_AB_OBJECT_SPEEDBUFF_STABLES + 3 * i + 1, BGBuffsIDs[1], BgAbBuffPositions[i], Position { }, RESPAWN_ONE_DAY) ||
+            !AddObject(BG_AB_OBJECT_SPEEDBUFF_STABLES + 3 * i + 2, BGBuffsIDs[2], BgAbBuffPositions[i], Position { }, RESPAWN_ONE_DAY))
             return false;
     }
 
@@ -384,7 +384,7 @@ bool BattlegroundArathiBasin::SetupBattleground()
         return false;
 
     for (uint8 i = BG_AB_SPIRIT_ALIANCE; i <= BG_AB_SPIRIT_HORDE; ++i)
-        if (!AddSpiritGuide(i, BgABSpiritGuidePos[i].GetPositionX(), BgABSpiritGuidePos[i].GetPositionY(), BgABSpiritGuidePos[i].GetPositionZ(), BgABSpiritGuidePos[i].GetOrientation(), i == BG_AB_SPIRIT_ALIANCE ? Team::ALLIANCE : Team::HORDE))
+        if (!AddSpiritGuide(i, BgABSpiritGuidePos[i], i == BG_AB_SPIRIT_ALIANCE ? Team::ALLIANCE : Team::HORDE))
             return false;
 
     return true;

@@ -212,8 +212,7 @@ struct boss_ymiron_the_fallen_king : public BossAI
                             if (!at)
                                 return;
 
-                            Position targetPos;
-                            player->GetRandomNearPosition(targetPos, 5.0f);
+                            Position targetPos = player->GetRandomNearPosition(5.0f);
                             me->PlayOrphanSpellVisual(at->GetPosition(), 0.0f, targetPos, 50259, 1.7f, ObjectGuid::Empty, true);
                             me->CastSpellDelay(targetPos, SPELL_ARISE_FALLEN_SUM, true, 2000);
                             at->Despawn();
@@ -590,7 +589,7 @@ struct npc_ymiron_seacursed_slaver : public ScriptedAI
             Position pos;
             for (uint8 itr = 0; itr < 25; ++itr)
             {
-                me->GetNearPosition(pos, itr, 0.0f);
+                pos = me->GetNearPosition(itr, 0.0f);
                 me->CastSpellDelay(pos, 198891, true, itr * 50);
             }
         }
@@ -752,8 +751,7 @@ struct npc_mos_runecarver_slave : public ScriptedAI
     {
         if (spell->Id == 202408)
         {
-            Position pos;
-            target->GetRandomNearPosition(pos, 5.0f);
+            Position pos = target->GetRandomNearPosition(5.0f);
             for (uint8 itr = 0; itr < 8; ++itr)
                 me->CastSpell(pos, 199087, true);
         }
@@ -845,13 +843,13 @@ class spell_ymiron_bane : public AuraScript
         {
             for (int8 i = 0; i < 4; ++i)
             {
-                GetCaster()->GetNearPosition(pos, frand(20.0f, 40.0f), frand(0.0f, 6.28f));
+                pos = GetCaster()->GetNearPosition(frand(20.0f, 40.0f), frand(0.0f, 6.28f));
                 GetCaster()->CastSpell(pos, GetSpellInfo()->Effects[EFFECT_0]->TriggerSpell, true);
             }
         }
         else
         {
-            GetCaster()->GetNearPosition(pos, frand(20.0f, 40.0f), frand(0.0f, 6.28f));
+            pos = GetCaster()->GetNearPosition(frand(20.0f, 40.0f), frand(0.0f, 6.28f));
             GetCaster()->CastSpell(pos, GetSpellInfo()->Effects[EFFECT_0]->TriggerSpell, true);
         }
     }

@@ -392,14 +392,13 @@ public:
                     case EVENT_2:
                         float radius = 5.0f; // растояние от кастера
                         float coneAngle = 0.0f; // угол куда поставится моб с АТ
-                        Position position;
-                        me->GetNearPosition(position, radius, coneAngle);
+                        Position position = me->GetNearPosition(radius, coneAngle);
                         me->CastSpell(position.GetPositionX(), position.GetPositionY(), position.GetPositionZ(), 210157, true);
                         coneAngle = 2.0f; // угол куда поставится моб с АТ
-                        me->GetNearPosition(position, radius, coneAngle);
+                        position = me->GetNearPosition(radius, coneAngle);
                         me->CastSpell(position.GetPositionX(), position.GetPositionY(), position.GetPositionZ(), 210157, true);
                         coneAngle = 4.0f; // угол куда поставится моб с АТ
-                        me->GetNearPosition(position, radius, coneAngle);
+                        position = me->GetNearPosition(radius, coneAngle);
                         me->CastSpell(position.GetPositionX(), position.GetPositionY(), position.GetPositionZ(), 210157, true);
                         events.RescheduleEvent(EVENT_2, 11000);
                         break;

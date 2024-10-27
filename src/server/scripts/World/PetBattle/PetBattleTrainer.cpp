@@ -79,17 +79,17 @@ public:
 
             static float distance = 10.0f;
 
-            float l_X = creature->m_positionX + (std::cos(creature->m_orientation) * distance);
-            float l_Y = creature->m_positionY + (std::sin(creature->m_orientation) * distance);
+            float l_X = creature->m_positionX + (std::cos(creature->GetOrientation()) * distance);
+            float l_Y = creature->m_positionY + (std::sin(creature->GetOrientation()) * distance);
             float l_Z = player->GetMap()->GetHeight(l_X, l_Y, MAX_HEIGHT);
 
             Position playerPosition = Position(l_X, l_Y, l_Z);
-            playerPosition.m_orientation = atan2(creature->m_positionY - l_Y, creature->m_positionX - l_X);
-            playerPosition.m_orientation = (playerPosition.m_orientation >= 0.0f) ? playerPosition.m_orientation : 2 * M_PI + playerPosition.m_orientation;
+            playerPosition.SetOrientation(atan2(creature->m_positionY - l_Y, creature->m_positionX - l_X));
+            playerPosition.SetOrientation((playerPosition.GetOrientation() >= 0.0f) ? playerPosition.GetOrientation() : 2 * M_PI + playerPosition.GetOrientation());
 
-            Position trainerPosition = Position(creature->m_positionX, creature->m_positionY, creature->m_positionZ, creature->m_orientation);
+            Position trainerPosition = creature->GetPosition();
 
-            Position battleCenterPosition = Position((playerPosition.m_positionX + trainerPosition.m_positionX) / 2, (playerPosition.m_positionY + trainerPosition.m_positionY) / 2, 0.0f, trainerPosition.m_orientation + M_PI);
+            Position battleCenterPosition = Position((playerPosition.m_positionX + trainerPosition.m_positionX) / 2, (playerPosition.m_positionY + trainerPosition.m_positionY) / 2, 0.0f, trainerPosition.GetOrientation() + M_PI);
             battleCenterPosition.m_positionZ = player->GetMap()->GetHeight(battleCenterPosition.m_positionX, battleCenterPosition.m_positionY, MAX_HEIGHT);
 
             PetBattleRequest* battleRequest = sPetBattleSystem->CreateRequest(player->GetGUID());
@@ -216,7 +216,7 @@ public:
                     wildBattlePets[i] = nullptr;
             }
 
-            player->GetMotionMaster()->MovePointWithRot(PETBATTLE_ENTER_MOVE_SPLINE_ID, playerPosition.m_positionX, playerPosition.m_positionY, playerPosition.m_positionZ, playerPosition.m_orientation);
+            player->GetMotionMaster()->MovePointWithRot(PETBATTLE_ENTER_MOVE_SPLINE_ID, playerPosition.GetPositionX(), playerPosition.GetPositionY(), playerPosition.GetPositionZ(), playerPosition.GetOrientation());
         }
         else
             player->CLOSE_GOSSIP_MENU();

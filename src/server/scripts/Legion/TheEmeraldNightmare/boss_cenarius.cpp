@@ -775,7 +775,7 @@ struct npc_cenarius_allies_of_nature : public ScriptedAI
                         if (me->GetDistance(owner) > 20.0f)
                         {
                             Position pos;
-                            me->GetNearPosition(pos, me->GetDistance(owner) / 2, me->GetRelativeAngle(owner));
+                            pos = me->GetNearPosition(me->GetDistance(owner) / 2, me->GetRelativeAngle(owner));
                             me->GetMotionMaster()->MovePoint(1, pos);
                         }
                         else
@@ -953,7 +953,7 @@ struct npc_cenarius_malfurion_stormrage : public ScriptedAI
                         if (me->GetDistance(owner) > 20.0f)
                         {
                             Position pos;
-                            me->GetNearPosition(pos, me->GetDistance(owner) / 2, me->GetRelativeAngle(owner));
+                            pos = me->GetNearPosition(me->GetDistance(owner) / 2, me->GetRelativeAngle(owner));
                             me->GetMotionMaster()->MovePoint(1, pos);
                         }
                         else
@@ -1152,7 +1152,7 @@ struct npc_cenarius_beast_of_nightmare : public ScriptedAI
         if (spell->Id == SPELL_GRIPPING_FOG_AT)
         {
             Position pos;
-            me->GetNearPosition(pos, 100.0f, 0.0f);
+            pos = me->GetNearPosition(100.0f, 0.0f);
             me->GetMotionMaster()->MovePoint(1, pos, false);
         }
     }

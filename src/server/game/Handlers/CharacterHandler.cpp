@@ -847,8 +847,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
 
                 if (ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(player->getClass()))
                 {
-                    Position pos;
-                    player->GetPosition(&pos);
+                    Position pos = player->GetPosition();
                     if (player->getRace() == RACE_NIGHTBORNE)
                         player->SendSpellScene(1900, nullptr, true, &pos);
                     else if (player->getRace() == RACE_HIGHMOUNTAIN_TAUREN)

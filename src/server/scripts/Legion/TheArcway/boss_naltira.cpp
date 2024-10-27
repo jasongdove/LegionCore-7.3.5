@@ -239,7 +239,7 @@ public:
                         break;
                     case EVENT_SUM_MANAFANG:
                         Position pos;
-                        me->GetRandomNearPosition(pos, 30.0f);
+                        pos = me->GetRandomNearPosition(30.0f);
                         me->SummonCreature(NPC_VICIOUS_MANAFANG, pos);
                         events.RescheduleEvent(EVENT_SUM_MANAFANG, 22000);
                         break;

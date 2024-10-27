@@ -281,7 +281,7 @@ public:
                     Check = false;
                     Position pos;
                     if (Creature* SonOfBeast = me->GetCreature(*me, SonOfBeastGUID))
-                        SonOfBeast->GetPosition(&pos);
+                        pos = SonOfBeast->GetPosition();
                     pos.m_positionX -= 3.0f;
                     pos.m_positionY -= 3.0f;
                     me->GetMotionMaster()->MovePoint(4, pos);

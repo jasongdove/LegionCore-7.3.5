@@ -1892,34 +1892,6 @@ void Player::OnDisconnected()
     CleanupChannels();
 }
 
-void Player::RelocateToLastClientPosition()
-{
-    if (m_movementInfo.ClientMoveTime > 0)
-    {
-        float x = m_movementInfo.Pos.m_positionX;
-        float y = m_movementInfo.Pos.m_positionY;
-        float z = m_movementInfo.Pos.m_positionZ;
-        float o = m_movementInfo.Pos.m_orientation;
-        GetMap()->PlayerRelocation(this, x, y, z, o);
-        m_positionX = x;
-        m_positionY = y;
-        m_positionZ = z;
-        m_orientation = o;
-    }
-}
-
-void Player::GetSafePosition(float &x, float &y, float &z, Transport* onTransport) const
-{
-    if (!onTransport && m_movementInfo.ClientMoveTime >  0)
-    {
-        x = m_movementInfo.Pos.m_positionX;
-        y = m_movementInfo.Pos.m_positionY;
-        z = m_movementInfo.Pos.m_positionZ;
-    }
-    else
-        GetPosition(x, y, z, onTransport);
-}
-
 void Player::SaveNoUndermapPosition(float x, float y, float z)
 {
     _lastSafeX = x;
@@ -8539,15 +8511,6 @@ bool Player::UpdatePosition(float x, float y, float z, float orientation, bool t
     CheckAreaExploreAndOutdoor();
 
     return true;
-}
-
-void Player::SaveRecallPosition()
-{
-    m_recallLoc.m_mapId = GetMapId();
-    m_recallLoc.m_positionX = GetPositionX();
-    m_recallLoc.m_positionY = GetPositionY();
-    m_recallLoc.m_positionZ = GetPositionZ();
-    m_recallLoc.m_orientation = GetOrientation();
 }
 
 //! WARN! We shouldn't send at login range based packet.
@@ -35147,7 +35110,11 @@ void Player::ValidateMovementInfo(MovementInfo* mi)
     REMOVE_VIOLATING_FLAGS(mi->HasMovementFlag(MOVEMENTFLAG_FORWARD) && mi->HasMovementFlag(MOVEMENTFLAG_BACKWARD),
         MOVEMENTFLAG_FORWARD | MOVEMENTFLAG_BACKWARD);
 
-    //REMOVE_VIOLATING_FLAGS(mi->HasMovementFlag(MOVEMENTFLAG_SPLINE_ELEVATION) && G3D::fuzzyEq(mi->splineElevation, 0.0f), MOVEMENTFLAG_SPLINE_ELEVATION);
+    REMOVE_VIOLATING_FLAGS(mi->HasMovementFlag(MOVEMENTFLAG_SPLINE_ELEVATION) && G3D::fuzzyEq(mi->splineElevation, 0.0f), MOVEMENTFLAG_SPLINE_ELEVATION);
+
+    // Client first checks if spline elevation != 0, then verifies flag presence
+    if (G3D::fuzzyNe(mi->splineElevation, 0.0f))
+        mi->AddMovementFlag(MOVEMENTFLAG_SPLINE_ELEVATION);
 
 #undef REMOVE_VIOLATING_FLAGS
 }

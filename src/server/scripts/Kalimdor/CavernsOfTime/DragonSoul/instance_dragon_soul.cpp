@@ -881,7 +881,7 @@ class instance_dragon_soul : public InstanceMapScript
                 }
                 return NULL;
             }
-            Position const* GetRandomTwilightAssaulterAssaultPosition(bool horizonal, bool fromEnd, uint8& lane, ObjectGuid& targetGUID) override
+            Optional<Position> GetRandomTwilightAssaulterAssaultPosition(bool horizonal, bool fromEnd, uint8& lane, ObjectGuid& targetGUID) override
             {
                 if (horizonal)
                 {
@@ -910,9 +910,10 @@ class instance_dragon_soul : public InstanceMapScript
                     if (fromEnd)
                         while (twilightAssaultStalkerGuidsH[row][col + 1]) { ++col; } // Find the last one
 
-                    Position* assaultPos = new Position();
+                    Optional<Position> assaultPos;
+                    assaultPos.emplace();
                     if (Creature* stalker = instance->GetCreature(targetGUID = twilightAssaultStalkerGuidsH[row][col]))
-                        stalker->GetPosition(assaultPos);
+                        assaultPos = stalker->GetPosition();
 
                     if (fromEnd)
                     {
@@ -957,9 +958,10 @@ class instance_dragon_soul : public InstanceMapScript
                     if (fromEnd)
                         while (twilightAssaultStalkerGuidsV[col][row + 1]) { ++row; } // Find the last one
 
-                    Position* assaultPos = new Position();
+                    Optional<Position> assaultPos;
+                    assaultPos.emplace();
                     if (Creature* stalker = instance->GetCreature(targetGUID = twilightAssaultStalkerGuidsV[col][row]))
-                        stalker->GetPosition(assaultPos);
+                        assaultPos = stalker->GetPosition();
 
                     if (fromEnd)
                     {

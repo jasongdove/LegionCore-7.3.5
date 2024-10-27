@@ -123,7 +123,7 @@ struct boss_dargrul_the_underking : public BossAI
             for (uint8 i = 0; i < 100; ++i)
             {
                 angle = frand(-0.17f, 0.17f);
-                me->GetNearPosition(pos, i, angle);
+                pos = me->GetNearPosition(i, angle);
                 me->CastSpell(pos, SPELL_LANDSLIDE_MISSILE, true);
             }
         }

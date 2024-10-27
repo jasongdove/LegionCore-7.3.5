@@ -262,7 +262,7 @@ struct boss_worldbreaker : BossAI
 
             events.Reset();
             me->StopAttack(true, true);
-            me->SetFacingTo(me->GetHomePosition().m_orientation);
+            me->SetFacingTo(me->GetHomePosition().GetOrientation());
             Talk(SAY_WARN_APOCALYPSE_DRIVE);
             Talk(SAY_APOCALYPSE_DRIVE);
             me->CastSpell(me, SPELL_APOCALYPSE_DRIVE_AURA, true);
@@ -702,7 +702,7 @@ struct npc_worldbreaker_surging_fel_trigger : public ScriptedAI
             DoCast(me, SPELL_SURGING_FEL_VISUAL, true);
 
             Position pos;
-            me->GetNearPosition(pos, 90.0f, 0.0f);
+            pos = me->GetNearPosition(90.0f, 0.0f);
             me->GetMotionMaster()->MovePoint(1, pos, false);
         }
     }

@@ -514,8 +514,7 @@ struct boss_hasabel : BossAI
                 {
                     if (urand(0, 1))
                         Talk(SAY_TRANSPORT_PORTAL);
-                    Position pos;
-                    me->GetFirstCollisionPosition(pos, frand(10.0f, 20.0f), frand(0.0f, 6.28f));
+                    Position pos = me->GetFirstCollisionPosition(frand(10.0f, 20.0f), frand(0.0f, 6.28f));
                     me->CastSpell(pos, SPELL_TRANSPORT_PORTAL, false);
                     events.RecalcEventTimer(EVENT_FELSTORM_BARRAGE, 10000);
                     events.RescheduleEvent(EVENT_TRANSPORT_PORTAL, 40000);

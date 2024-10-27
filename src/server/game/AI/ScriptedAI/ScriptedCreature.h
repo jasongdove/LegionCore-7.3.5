@@ -224,11 +224,11 @@ struct ScriptedAI : public CreatureAI
     // Spawns a creature relative to me
     Creature* DoSpawnCreature(uint32 entry, float offsetX, float offsetY, float offsetZ, float angle, uint32 type, uint32 despawntime);
 
-    void SummonCreatureDelay(uint32 delayTimer, uint32 entry, const Position &pos, TempSummonType spawnType = TEMPSUMMON_MANUAL_DESPAWN, uint32 despawnTime = 0)
+    void SummonCreatureDelay(uint32 delayTimer, uint32 entry, const Position &pos, TempSummonType spawnType = TEMPSUMMON_MANUAL_DESPAWN, uint32 despawnTime = 0);
+    void SummonCreatureDelay(uint32 delayTimer, uint32 entry, float x, float y, float z, float orient = 0.0f, TempSummonType spawnType = TEMPSUMMON_MANUAL_DESPAWN, uint32 despawnTime = 0)
     {
-        SummonCreatureDelay(delayTimer, entry, pos.m_positionX, pos.m_positionY, pos.m_positionZ, pos.m_orientation, spawnType, despawnTime);
+        SummonCreatureDelay(delayTimer, entry, Position(x, y, z, orient), spawnType, despawnTime);
     }
-    void SummonCreatureDelay(uint32 delayTimer, uint32 entry, float x, float y, float z, float orient = 0.0f, TempSummonType spawnType = TEMPSUMMON_MANUAL_DESPAWN, uint32 despawnTime = 0);
 
     bool HealthBelowPct(uint32 pct) const;
     bool HealthAbovePct(uint32 pct) const;

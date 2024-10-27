@@ -107,7 +107,7 @@ public:
                                 if (trash->getFaction() == 1665)
                                 {
                                     Position pos;
-                                    trash->GetNearPosition(pos, 20.0f, 0.0f);
+                                    pos = trash->GetNearPosition(20.0f, 0.0f);
                                     trash->SetHomePosition(pos);
                                 }
                             }

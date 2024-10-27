@@ -119,7 +119,7 @@ void WildBattlePetMgr::ReplaceCreature(Creature* creature, WildPetPoolTemplate* 
     auto replacementCreature = new Creature();
     replacementCreature->m_isTempWorldObject = true;
 
-    if (!replacementCreature->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), creature->GetMap(), creature->GetPhaseMask(), speciesInfo->CreatureID, 0, 0, creature->m_positionX, creature->m_positionY, creature->m_positionZ, creature->m_orientation))
+    if (!replacementCreature->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), creature->GetMap(), creature->GetPhaseMask(), speciesInfo->CreatureID, 0, 0, creature->GetPositionX(), creature->GetPositionY(), creature->GetPositionZ(), creature->GetOrientation()))
     {
         delete replacementCreature;
         return;

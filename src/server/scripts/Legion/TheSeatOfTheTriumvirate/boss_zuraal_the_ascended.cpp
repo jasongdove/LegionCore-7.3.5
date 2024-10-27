@@ -223,7 +223,7 @@ public:
                 for (uint8 i = 0; i < 12; ++i)
                 {
                     _range += 2;
-                    me->GetNearPosition(pos, _range, angle + frand(-0.7f, 0.7f));
+                    pos = me->GetNearPosition(_range, angle + frand(-0.7f, 0.7f));
                     me->AddDelayedEvent(i * 100, [this, pos]() -> void
                     {
                         me->CastSpell(pos, 246135, true);

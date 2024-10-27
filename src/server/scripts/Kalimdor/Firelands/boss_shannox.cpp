@@ -363,7 +363,7 @@ class boss_shannox : public CreatureScript
                             Position pos;
                             for (uint8 i = 0; i < 60; ++i)
                             {
-                                me->GetNearPosition(pos, 15.0f + i * 0.75f, (M_PI * i) / 10);
+                                pos = me->GetNearPosition(15.0f + i * 0.75f, (M_PI * i) / 10);
                                 pos.m_positionZ = me->GetMap()->GetHeight(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), true, MAX_HEIGHT);
                                 me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_MAGMA_RUPTURE_MISSILE, true);
                             }
@@ -791,7 +791,7 @@ class npc_shannox_spear_of_shannox : public CreatureScript
                             Position pos;
                             for (uint8 i = 0; i < 60; ++i)
                             {
-                                me->GetNearPosition(pos, 15.0f + i * 0.75f, (M_PI * i) / 10);
+                                pos = me->GetNearPosition(15.0f + i * 0.75f, (M_PI * i) / 10);
                                 pos.m_positionZ = me->GetMap()->GetHeight(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), true, MAX_HEIGHT);
                                 pShannox->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_MAGMA_RUPTURE_MISSILE, true);
                             }
@@ -1068,8 +1068,7 @@ class spell_shannox_crystal_prison_trap : public SpellScriptLoader
                 if (!GetCaster() || !GetTarget())
                     return;
 
-                Position pos;
-                GetTarget()->GetPosition(&pos);
+                Position pos = GetTarget()->GetPosition();
                 if (Creature* pCrystalPrison = GetCaster()->SummonCreature(NPC_CRYSTAL_PRISON, pos))
                     pCrystalPrison->AI()->SetGUID(GetTarget()->GetGUID(), (GetTarget()->GetTypeId() == TYPEID_PLAYER)? DATA_TRAPPED_PLAYER: DATA_TRAPPED_DOG);   
             }

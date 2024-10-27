@@ -466,8 +466,7 @@ public:
                     case EVENT_BRIGHTLEAF:
                         for (int8 n = 0; n < 3; n++)
                         {
-                            Position pos;
-                            me->GetRandomNearPosition(pos, 30);
+                            Position pos = me->GetRandomNearPosition(30);
                             me->SummonCreature(NPC_SUN_BEAM, pos, TEMPSUMMON_TIMED_DESPAWN, 10000);
                         }
                         events.ScheduleEvent(EVENT_BRIGHTLEAF, urand(35000, 45000));
@@ -1207,8 +1206,7 @@ public:
             {
                 for (uint32 i = 0; i < 2; ++i)
                 {
-                    Position pos;
-                    me->GetRandomNearPosition(pos, 25);
+                    Position pos = me->GetRandomNearPosition(25);
                     me->SummonCreature(NPC_HEALTHY_SPORE, pos, TEMPSUMMON_TIMED_DESPAWN, 20000);
                 }
                 healthySporesSpawned += 2;

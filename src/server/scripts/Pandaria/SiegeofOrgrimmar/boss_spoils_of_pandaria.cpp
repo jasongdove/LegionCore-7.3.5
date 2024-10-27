@@ -1647,8 +1647,7 @@ public:
     bool OnGossipHello(Player* player, GameObject* go)
     {
         go->SetFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE);
-        Position pos;
-        go->GetPosition(&pos);
+        Position pos = go->GetPosition();
         if (InstanceScript* instance = go->GetInstanceScript())
         {
             if (Creature* summoner = instance->instance->GetCreature(instance->GetGuidData(go->GetEntry())))
@@ -2142,7 +2141,7 @@ class spell_boss_gusting_bomb : public SpellScriptLoader
 
                     uint32 count = uint32(caster->GetDistance(target) / 2);
                     float angle = caster->GetAngle(target);
-                    target->GetPosition(&GetSpell()->visualPos);
+                    GetSpell()->visualPos = target->GetPosition();
 
                     caster->CastSpell(target, SPELL_GUSTING_BOMB_AOE_DMG, true);
                     if(count > 0)

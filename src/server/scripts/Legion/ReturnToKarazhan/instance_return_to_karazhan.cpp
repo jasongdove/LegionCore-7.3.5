@@ -239,7 +239,7 @@ public:
                                         if (decor->GetEntry() == NPC_CAGED_ASSISTANT)
                                         {
                                             Position pos;
-                                            decor->GetNearPosition(pos, 5.0f, 0.0f);
+                                            pos = decor->GetNearPosition(5.0f, 0.0f);
 
                                             AddDelayedEvent(2000, [this, decor, pos]() -> void
                                             {
@@ -533,8 +533,7 @@ public:
         WorldLocation* GetClosestGraveYard(float x, float y, float z) override
         {
             // Init data
-            loc_res_pla.Relocate(x, y, z);
-            loc_res_pla.SetMapId(1651);
+            loc_res_pla.WorldRelocate(1651, x, y, z);
 
             uint32 graveyardId = dungeonId == 1474 ? 5906 : 5905;
 
@@ -575,8 +574,7 @@ public:
             {
                 if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
                 {
-                    loc_res_pla.Relocate(gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-                    loc_res_pla.SetMapId(gy->MapID);
+                    loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
                 }
             }
             return &loc_res_pla;

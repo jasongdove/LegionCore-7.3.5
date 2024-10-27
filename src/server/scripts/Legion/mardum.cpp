@@ -718,14 +718,13 @@ public:
                         {
                             float radius = 5.0f; // растояние от кастера
                             float coneAngle = 0.0f; // угол куда поставится моб с АТ
-                            Position position;
-                            me->GetNearPosition(position, radius, coneAngle);
+                            Position position = me->GetNearPosition(radius, coneAngle);
                             me->CastSpell(position.GetPositionX(), position.GetPositionY(), position.GetPositionZ(), 195061, true);
                             coneAngle = 2.0f; // угол куда поставится моб с АТ
-                            me->GetNearPosition(position, radius, coneAngle);
+                            position = me->GetNearPosition(radius, coneAngle);
                             me->CastSpell(position.GetPositionX(), position.GetPositionY(), position.GetPositionZ(), 195061, true);
                             coneAngle = 4.0f; // угол куда поставится моб с АТ
-                            me->GetNearPosition(position, radius, coneAngle);
+                            position = me->GetNearPosition(radius, coneAngle);
                             me->CastSpell(position.GetPositionX(), position.GetPositionY(), position.GetPositionZ(), 195061, true);
                         }
                         break;

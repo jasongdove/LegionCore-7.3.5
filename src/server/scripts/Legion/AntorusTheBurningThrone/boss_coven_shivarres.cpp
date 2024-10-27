@@ -626,7 +626,7 @@ struct boss_coven_shivarres_generic : ScriptedAI
 
             for (uint8 i = 0; i < 3; ++i)
             {
-                me->GetNearPosition(pos, 0.1f, angle);
+                pos = me->GetNearPosition(0.1f, angle);
                 me->CastSpell(pos, SPELL_SHADOW_BLADES_SUMMON, true, nullptr, nullptr, owner->GetGUID());
                 angle += 0.15f;
             }
@@ -1010,7 +1010,7 @@ struct npc_coven_cosmic_glare : ScriptedAI
 
             for (uint8 i = 0; i < 12; ++i)
             {
-                me->GetNearPosition(pos, dist, angle);
+                pos = me->GetNearPosition(dist, angle);
                 me->CastSpellDelay(pos, SPELL_COSMIC_GLARE_DMG, true, i * 80);
                 dist += 5.5f;
             }

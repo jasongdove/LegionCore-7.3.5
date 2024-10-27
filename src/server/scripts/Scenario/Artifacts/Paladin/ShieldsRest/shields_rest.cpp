@@ -178,7 +178,7 @@ public:
             if (GameObject* go = me->FindNearestGameObject(entry, 30.0f))
             {
                 Position pos;
-                me->GetNearPosition(pos, me->GetDistance(go) - 3.0f, me->GetRelativeAngle(go));
+                pos = me->GetNearPosition(me->GetDistance(go) - 3.0f, me->GetRelativeAngle(go));
                 me->GetMotionMaster()->Clear(false);
                 me->GetMotionMaster()->MovePoint(1, pos);
             }
@@ -953,7 +953,7 @@ public:
                     float dist = 5.0f;
                     for (uint8 i = 0; i < 17; i++)
                     {
-                        target->GetNearPosition(pos, dist + frand(2.0, 8.0f), frand(0, 6.0f));
+                        pos = target->GetNearPosition(dist + frand(2.0, 8.0f), frand(0, 6.0f));
 
                         if (Unit* owner = me->GetAnyOwner())
                             if (Creature* summon = owner->SummonCreature(NPC_RAZOR_ICE, pos, TEMPSUMMON_TIMED_DESPAWN, 30000))

@@ -413,8 +413,7 @@ public:
 
                 if (m_Instance->instance->IsHeroic())
                 {
-                    Position l_Position;
-                    me->GetRandomNearPosition(l_Position, 10.0f);
+                    Position l_Position = me->GetRandomNearPosition(10.0f);
                     me->SummonCreature(TriggerSummonAbyssal, l_Position, TEMPSUMMON_MANUAL_DESPAWN);
                 }
             }

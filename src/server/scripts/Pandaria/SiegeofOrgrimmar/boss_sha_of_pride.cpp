@@ -926,6 +926,18 @@ class go_sha_of_pride_corupted_prison_button : public GameObjectScript
                     go->EnableOrDisableGo(true, true);
             }
 
+            float GetDegreesAngle(Position const& pos, float x, float y, bool relative) const
+            {
+                float angel = relative ? pos.GetRelativeAngle(x, y) : pos.GetAngle(x, y);
+                return pos.NormalizeOrientation(angel) * M_RAD;
+            }
+
+            bool IsInDegreesRange(Position const& pos, float x, float y, float degresA, float degresB, bool relative/* = false*/) const
+            {
+                float angel = GetDegreesAngle(pos, x, y, relative);
+                return angel >= degresA && angel <= degresB;
+            }
+
             void UpdateAI(uint32 diff) 
             {
                 events.Update(diff);
@@ -942,7 +954,7 @@ class go_sha_of_pride_corupted_prison_button : public GameObjectScript
                     for(std::list<Player*>::iterator itr = playerList.begin(); itr != playerList.end(); ++itr)
                     {
                         if (go->GetDistance(*itr) > 5.5f && go->GetDistance(*itr) < 7.5f 
-                            && go->IsInDegreesRange((*itr)->GetPositionX(), (*itr)->GetPositionY(), 170.0f, 250.0f, true))
+                            && IsInDegreesRange(go->GetPosition(), (*itr)->GetPositionX(), (*itr)->GetPositionY(), 170.0f, 250.0f, true))
                             find = true;
                     }
 
@@ -1262,8 +1274,7 @@ public:
                     {
                         if (Player* plr = GetCaster()->GetPlayer(*GetCaster(), *_itr))
                         {
-                            Position pos;
-                            plr->GetPosition(&pos);
+                            Position pos = plr->GetPosition();
                             GetCaster()->SummonCreature(NPC_REFLECTION, pos, TEMPSUMMON_DEAD_DESPAWN);
                         }
                     }

@@ -200,7 +200,7 @@ struct boss_twin_ogron_pol : public BossAI
                 AddDelayedEvent(15 * IN_MILLISECONDS, [this]() -> void
                 {
                     Position pos;
-                    me->GetRandomNearPosition(pos, 30.0f);
+                    pos = me->GetRandomNearPosition(30.0f);
                     me->CastSpell(pos, PulverizeThirdAoEDmg, true);
 
                     me->ClearUnitState(UNIT_STATE_ROOT);
@@ -301,7 +301,7 @@ struct boss_twin_ogron_pol : public BossAI
                 break;
             case MoveThird:
                 me->SetHomePosition(*me);
-                AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void { me->SetFacingTo(polMovePos[2].m_orientation); });
+                AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void { me->SetFacingTo(polMovePos[2].GetOrientation()); });
                 break;
             case MoveJump:
                 me->SetHomePosition(*me);
@@ -590,7 +590,7 @@ struct boss_twin_ogron_phemos : public BossAI
                 float o = frand(0, 2 * M_PI);
                 Position pos = {(centerPos.m_positionX + (circleToCenterDist * cos(o))), (centerPos.m_positionY + (circleToCenterDist * sin(o))), centerPos.m_positionZ, 0.0f};
 
-                pos.m_orientation = pos.GetAngle(&centerPos);
+                pos.SetOrientation(pos.GetAngle(&centerPos));
                 m_FirstBlazePos = pos;
 
                 /// Total: 4 waves
@@ -606,7 +606,7 @@ struct boss_twin_ogron_phemos : public BossAI
                 o += M_PI;
                 pos = {(centerPos.m_positionX + (circleToCenterDist * cos(o))), (centerPos.m_positionY + (circleToCenterDist * sin(o))), centerPos.m_positionZ, 0.0f};
 
-                pos.m_orientation = pos.GetAngle(&centerPos);
+                pos.SetOrientation(pos.GetAngle(&centerPos));
 
                 m_SecondBlazePos = pos;
                 m_CosmeticEvents.RescheduleEvent(EventSpawnSecondBlaze, 1500);
@@ -731,7 +731,7 @@ struct boss_twin_ogron_phemos : public BossAI
 
                 AddDelayedEvent(1 * IN_MILLISECONDS, [this]() -> void
                 {
-                    me->SetFacingTo(phemosMovePos[2].m_orientation);
+                    me->SetFacingTo(phemosMovePos[2].GetOrientation());
                 });
 
                 if (m_TrashsMobs.empty())
@@ -914,7 +914,7 @@ struct boss_twin_ogron_phemos : public BossAI
     {
         if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(BlazeFirstSpawn))
         {
-            float oStep = (pos.m_orientation - (M_PI / 2.0f)) + frand(0.0f, (M_PI / 3.0f));
+            float oStep = (pos.GetOrientation() - (M_PI / 2.0f)) + frand(0.0f, (M_PI / 3.0f));
 
             for (uint8 i = 0; i < BlazeFirstSpawnCounter; ++i)
             {

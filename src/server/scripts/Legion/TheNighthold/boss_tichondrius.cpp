@@ -199,7 +199,7 @@ struct boss_tichonrius : BossAI
                 {
                     if (Creature* blood = me->SummonCreature(NPC_TAINTED_BLOOD, target->GetPosition()))
                     {
-                        blood->GetNearPosition(pos, 5.0f, angle);
+                        pos = blood->GetNearPosition(5.0f, angle);
                         blood->CastSpell(pos, SPELL_FEAST_OF_BLOOD_JUMP, true);
                         blood->CastSpell(target, SPELL_FEAST_OF_BLOOD_FIXATE, true);
                         angle += 2.0f;
@@ -617,7 +617,7 @@ struct npc_tichonrius_combat_stalker : ScriptedAI
 
                     for (uint8 i = 0; i < count; ++i)
                     {
-                        me->GetRandomNearPosition(pos, 40.0f);
+                        pos = me->GetRandomNearPosition(40.0f);
                         owner->SummonCreature(NPC_PHANTASMAL_BLOODFANG, pos);
                     }
                 }

@@ -145,7 +145,7 @@ struct boss_ularogg_cragshaper : public BossAI
             case SPELL_STANCE_MOUNTAIN_FILTER:
             {
                 Position pos;
-                me->GetRandomNearPosition(pos, 30.0f);
+                pos = me->GetRandomNearPosition(30.0f);
                 target->CastSpell(pos, SPELL_STANCE_MOUNTAIN_MOVE, true);
                 break;
             }
@@ -155,7 +155,7 @@ struct boss_ularogg_cragshaper : public BossAI
                 float angle = M_PI;
                 for (uint8 i = 0; i < 4; ++i)
                 {
-                    target->GetNearPosition(pos, 5.0f, angle);
+                    pos = target->GetNearPosition(5.0f, angle);
                     target->CastSpell(pos, SPELL_STRIKE_MOUNTAIN_AT, true);
                     angle += M_PI / 2.0f;
                 }

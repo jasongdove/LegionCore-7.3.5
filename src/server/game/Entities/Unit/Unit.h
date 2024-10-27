@@ -1524,15 +1524,14 @@ class Unit : public WorldObject
         void SendSpellDamageResist(Unit* target, uint32 spellId);
         void SendSpellDamageImmune(Unit* target, uint32 spellId, bool isPeriodic);
 
-        void NearTeleportTo(const Position &pos)
-        { NearTeleportTo(pos.m_positionX, pos.m_positionY, pos.m_positionZ, pos.m_orientation); }
-        void NearTeleportTo(float x, float y, float z, float orientation, bool casting = false, bool stopMove = true);
+        void NearTeleportTo(Position const& pos, bool casting = false, bool stopMove = true);
+        void NearTeleportTo(float x, float y, float z, float orientation, bool casting = false, bool stopMove = true) { NearTeleportTo(Position(x, y, z, orientation), casting, stopMove); }
         virtual bool UpdatePosition(float x, float y, float z, float ang, bool teleport = false, bool stop = false);
         // returns true if unit's position really changed
         virtual bool UpdatePosition(const Position &pos, bool teleport = false) { return UpdatePosition(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation(), teleport); }
         void UpdateOrientation(float orientation);
         void UpdateHeight(float newZ);
-        void SendTeleportPacket(Position &oldPos);
+        void SendTeleportPacket(Position const& oldPos);
 
         void SendMoveKnockBack(Player* player, float speedXY, float speedZ, float vcos, float vsin);
         void KnockbackFrom(float x, float y, float speedXY, float speedZ, Movement::SpellEffectExtraData const* spellEffectExtraData = nullptr);
@@ -2214,6 +2213,8 @@ class Unit : public WorldObject
         void SetExtraUnitMovementFlags(uint32 f) { m_movementInfo.SetExtraMovementFlags(f); }
         bool IsSplineEnabled() const;
         bool IsSplineFinished() const;
+
+        float GetPositionZMinusOffset() const;
 
         bool SetCanTransitionBetweenSwimAndFly(bool enable);
         bool SetCanTurnWhileFalling(bool enable);

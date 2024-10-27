@@ -26,9 +26,8 @@ public:
         // OnPlayerDeath
         {            
             // Init data
-            loc_res_pla.Relocate(x, y, z);
-            loc_res_pla.SetMapId(1600);
-            
+            loc_res_pla.WorldRelocate(1600, x, y, z);
+
             return &loc_res_pla;
         }
 

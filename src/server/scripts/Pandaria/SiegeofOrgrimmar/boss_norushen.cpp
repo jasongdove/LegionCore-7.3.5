@@ -1443,7 +1443,7 @@ public:
             if (action == ACTION_ESCAPE_FROM_VOID_ZONE)
             {
                 Position pos;
-                me->GetNearPosition(pos, 5.0f, 5.3f);
+                pos = me->GetNearPosition(5.0f, 5.3f);
                 me->GetMotionMaster()->MoveCharge(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), 3.0f);
             }
         }
@@ -1510,7 +1510,7 @@ public:
             if (action == ACTION_ESCAPE_FROM_VOID_ZONE)
             {
                 Position pos;
-                me->GetNearPosition(pos, 5.0f, 6.0f);
+                pos = me->GetNearPosition(5.0f, 6.0f);
                 me->GetMotionMaster()->MoveCharge(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), 3.0f);
             }
         }
@@ -1608,7 +1608,7 @@ public:
             if (action == ACTION_ESCAPE_FROM_VOID_ZONE)
             {
                 Position pos;
-                me->GetNearPosition(pos, 5.0f, 5.3f);
+                pos = me->GetNearPosition(5.0f, 5.3f);
                 me->GetMotionMaster()->MoveCharge(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), 3.0f);
             }
         }

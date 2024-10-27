@@ -975,8 +975,7 @@ class spell_199760 : public SpellScriptLoader
                 if (!GetCaster())
                     return;
 
-                Position pos;
-                GetCaster()->GetRandomNearPosition(pos, 20.0f);
+                Position pos = GetCaster()->GetRandomNearPosition(20.0f);
                 WorldLocation* dest = const_cast<WorldLocation*>(GetExplTargetDest());
                 dest->Relocate(pos);
             }
@@ -1105,8 +1104,7 @@ public:
             if (urand(0, 1))
                 directionY *= -1.0f;
 
-            Position pos;
-            GetCaster()->GetRandomNearPosition(pos, 25.0f);
+            Position pos = GetCaster()->GetRandomNearPosition(25.0f);
             for (int i = 0; i < missiles; i++)
             {
                 GetCaster()->CastSpellDelay(pos, 196504, true, i * 1000);

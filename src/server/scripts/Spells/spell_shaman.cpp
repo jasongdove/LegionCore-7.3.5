@@ -1055,22 +1055,21 @@ class spell_sha_sundering : public SpellScriptLoader
                 Unit* target = GetHitUnit();
                 if (caster && target)
                 {
-                    Position pos;
                     float angle = caster->GetOrientation() - target->GetOrientation(); // Back from caster
-                    caster->GetFirstCollisionPosition(pos, 15.0f, 0.0f); // Dist need research
+                    Position pos = caster->GetFirstCollisionPosition(15.0f, 0.0f); // Dist need research
                     if (target->IsInBetweenShift(caster, &pos, 2.5f, 2.5f, 1.5f)) // Is right
                     {
-                        target->GetFirstCollisionPosition(pos, 10.0f, angle + 1.5f);
+                        pos = target->GetFirstCollisionPosition(10.0f, angle + 1.5f);
                         TC_LOG_DEBUG("spells", "spell_sha_sundering IsInBetweenShift 2.5f");
                     }
                     else if (target->IsInBetweenShift(caster, &pos, 2.5f, -2.5f, -1.5f)) // Is left
                     {
-                        target->GetFirstCollisionPosition(pos, 10.0f, angle - 1.5f);
+                        pos = target->GetFirstCollisionPosition(10.0f, angle - 1.5f);
                         TC_LOG_DEBUG("spells", "spell_sha_sundering IsInBetweenShift -2.5f");
                     }
                     else
                     {
-                        target->GetFirstCollisionPosition(pos, 10.0f, angle);
+                        pos = target->GetFirstCollisionPosition(10.0f, angle);
                         TC_LOG_DEBUG("spells", "spell_sha_sundering not IsInBetweenShift");
                     }
 

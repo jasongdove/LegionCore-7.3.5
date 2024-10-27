@@ -27,17 +27,15 @@ public:
         // OnPlayerDeath
         {            
             // Init data
-            loc_res_pla.Relocate(x, y, z);
-            loc_res_pla.SetMapId(1707);
-            
+            loc_res_pla.WorldRelocate(1707, x, y, z);
+
             uint32 graveyardId = 5913;
             if (getScenarionStep() >= 2)
                 graveyardId = 5911;
 
             if (WorldSafeLocsEntry const* gy = sWorldSafeLocsStore.LookupEntry(graveyardId))
             {
-                loc_res_pla.Relocate(gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
-                loc_res_pla.SetMapId(gy->MapID);
+                loc_res_pla.WorldRelocate(gy->MapID, gy->Loc.X, gy->Loc.Y, gy->Loc.Z);
             }
             
             return &loc_res_pla;

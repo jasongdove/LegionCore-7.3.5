@@ -1674,8 +1674,7 @@ public:
                         {
                             if (dist != 14.0f)
                             {
-                                Position pos;
-                                lturret->GetPosition(&pos);
+                                Position pos = lturret->GetPosition();
                                 if (Creature* blackfuse = me->GetCreature(*me, instance->GetGuidData(NPC_BLACKFUSE_MAUNT)))
                                 {
                                     if (Creature* _lturret = blackfuse->SummonCreature(NPC_ACTIVATED_LASER_TURRET, pos))
@@ -1740,8 +1739,7 @@ public:
             { 
                 if (GetHitUnit()->ToPlayer())
                 {
-                    Position pos;
-                    GetCaster()->GetNearPosition(pos, 7.0f, 5.5f);
+                    Position pos = GetCaster()->GetNearPosition(7.0f, 5.5f);
                     if (Creature* sawblade = GetCaster()->SummonCreature(NPC_BLACKFUSE_SAWBLADE, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ() + 1.0f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN))
                     {
                         sawblade->AddAura(SPELL_LAUNCH_SAWBLADE_AT, sawblade);

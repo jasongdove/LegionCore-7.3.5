@@ -573,8 +573,7 @@ class boss_lady_deathwhisper : public CreatureScript
 
                 Talk(SAY_ANIMATE_DEAD);
                 
-                Position pos;
-                cultist->GetPosition(&pos);
+                Position pos = cultist->GetPosition();
                 if (cultist->GetEntry() == NPC_CULT_FANATIC)
                     me->SummonCreature(NPC_REANIMATED_FANATIC, pos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
                 else

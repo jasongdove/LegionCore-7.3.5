@@ -291,7 +291,7 @@ class boss_iron_juggernaut : public CreatureScript
                     {
                         DoCast(me, SPELL_BORER_DRILL_B_VISUAL, true);
                         Position pos;
-                        me->GetNearPosition(pos, 12.5f, 5.32f);
+                        pos = me->GetNearPosition(12.5f, 5.32f);
                         std::list<Player*> pllist;
                         pllist.clear();
                         GetPlayerListInGrid(pllist, me, 100.0f);

@@ -527,8 +527,7 @@ public:
         {
             if (Unit* caster = GetCaster())
             {
-                Position pos;
-                caster->GetPosition(&pos);
+                Position pos = caster->GetPosition();
                 caster->SummonCreature(NPC_NIGHT_TERROR_SUMMON, pos);
             }
         }

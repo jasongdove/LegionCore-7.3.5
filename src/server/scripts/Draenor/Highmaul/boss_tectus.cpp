@@ -1266,7 +1266,7 @@ struct npc_highmaul_night_twisted_berserker : public ScriptedAI
             return;
 
         Position pos = *victim;
-        me->GetFirstCollisionPosition(pos, me->GetDistance(pos), me->GetRelativeAngle(pos.GetPositionX(), pos.GetPositionY()));
+        pos = me->GetFirstCollisionPosition(me->GetDistance(pos), me->GetRelativeAngle(pos.GetPositionX(), pos.GetPositionY()));
         me->GetMotionMaster()->MoveCharge(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPEED_CHARGE, RavingAssault);
     }
 

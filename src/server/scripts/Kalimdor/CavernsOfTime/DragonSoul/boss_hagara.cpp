@@ -1872,8 +1872,7 @@ class spell_hagara_the_stormbinder_icy_tomb : public SpellScriptLoader
 
             void OnApply(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
-                Position pos;
-                aurEff->GetBase()->GetOwner()->GetPosition(&pos);
+                Position pos = aurEff->GetBase()->GetOwner()->GetPosition();
                 if (!GetCaster())
                     return;
                 if (TempSummon* summon = GetCaster()->SummonCreature(NPC_ICY_TOMB, pos))

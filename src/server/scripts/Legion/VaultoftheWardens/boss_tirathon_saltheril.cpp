@@ -159,8 +159,7 @@ public:
             {
                 case SPELL_FEL_MORTAR:
                 {
-                    Position pos;
-                    target->GetRandomNearPosition(pos, 5.0f);
+                    Position pos = target->GetRandomNearPosition(5.0f);
                     me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), 202920, true); //Fel Mortar
                     break;
                 }
@@ -294,7 +293,7 @@ public:
                     case EVENT_1:
                     {
                         Position pos;
-                        me->GetNearPosition(pos, 40.0f, frand(0, 6.28f));
+                        pos = me->GetNearPosition(40.0f, frand(0, 6.28f));
                         me->GetMotionMaster()->MovePoint(1, pos);
                         break;
                     }

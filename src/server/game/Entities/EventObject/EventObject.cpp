@@ -231,7 +231,7 @@ void EventObject::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
     stmt->setUInt16(index++, uint16(GetPhaseMask()));
     stmt->setFloat(index++,  GetPositionX());
     stmt->setFloat(index++,  GetPositionY());
-    stmt->setFloat(index++,  GetPositionZH());
+    stmt->setFloat(index++,  GetPositionZ());
     stmt->setFloat(index++,  GetOrientation());
     trans->Append(stmt);
 

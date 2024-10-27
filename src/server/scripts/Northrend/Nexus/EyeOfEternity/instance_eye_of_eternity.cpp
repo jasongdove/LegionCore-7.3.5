@@ -101,19 +101,19 @@ public:
                     if (instance->GetDifficultyID() == DIFFICULTY_10_N)
                     {
                         irisGUID = go->GetGUID();
-                        go->GetPosition(&focusingIrisPosition);
+                        focusingIrisPosition = go->GetPosition();
                     }
                     break;
                 case GO_FOCUSING_IRIS_25:
                     if (instance->GetDifficultyID() == DIFFICULTY_25_N)
                     {
                         irisGUID = go->GetGUID();
-                        go->GetPosition(&focusingIrisPosition);
+                        focusingIrisPosition = go->GetPosition();
                     }
                     break;
                 case GO_EXIT_PORTAL:
                     exitPortalGUID = go->GetGUID();
-                    go->GetPosition(&exitPortalPosition);
+                    exitPortalPosition = go->GetPosition();
                     break;
                 case GO_HEART_OF_MAGIC_10:
                     if (instance->GetDifficultyID() == DIFFICULTY_10_N)

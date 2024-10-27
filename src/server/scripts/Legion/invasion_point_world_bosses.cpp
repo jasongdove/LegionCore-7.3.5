@@ -284,7 +284,7 @@ struct boss_occularus : public ScriptedAI
             for (uint8 i = 0; i < 4; ++i)
             {
                 dist += 2.0f;
-                target->GetNearPosition(pos, dist, 0.0f);
+                pos = target->GetNearPosition(dist, 0.0f);
                 me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_PHANTASM_TRIGGER, true);
             }
         }
@@ -391,7 +391,7 @@ struct boss_inquisitor_meto : public ScriptedAI
                 for (uint8 i = 0; i < 9; i++)
                 {
                     angle += 0.1f;
-                    me->GetNearPosition(pos, 35.0f, angle);
+                    pos = me->GetNearPosition(35.0f, angle);
                     me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_DEATH_FIELD_VISUAL, true);
                 }
                 DoCast(SPELL_DEATH_FIELD);
@@ -404,7 +404,7 @@ struct boss_inquisitor_meto : public ScriptedAI
                 {
                     Position pos;
                     float angle = 6.28f / 3 * i;
-                    me->GetNearPosition(pos, 10.0f, angle);
+                    pos = me->GetNearPosition(10.0f, angle);
                     me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SPELL_SEEDS_OF_CHAOS, true);
                 }
                 events.RescheduleEvent(EVENT_SEEDS_OF_CHAOS, 30000);
@@ -462,7 +462,7 @@ struct boss_sotanathor : public ScriptedAI
                 float angle = 0.0f;
                 for (uint8 i = 0; i < 4; i++)
                 {
-                    target->GetNearPosition(pos, 5.0f, angle);
+                    pos = target->GetNearPosition(5.0f, angle);
                     target->CastSpell(pos, SPELL_WAKE_OF_DESTRUCTION, true, 0, 0, me->GetGUID());
                     angle += 1.57f;
                 }
@@ -820,9 +820,9 @@ class spell_argus_seed_of_destruction : public AuraScript
         float angle = 0.5f;
         for (uint8 i = 0; i < 4; ++i)
         {
-            GetTarget()->GetNearPosition(pos, 5.0f, angle);
+            pos = GetTarget()->GetNearPosition(5.0f, angle);
             GetTarget()->CastSpell(pos, SPELL_WAKE_OF_DESTRUCTION, true);
-            GetTarget()->GetNearPosition(pos, 5.0f, -angle);
+            pos = GetTarget()->GetNearPosition(5.0f, -angle);
             GetTarget()->CastSpell(pos, SPELL_WAKE_OF_DESTRUCTION, true);
             angle += 1.0f;
         }

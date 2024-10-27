@@ -216,8 +216,7 @@ struct npc_smashspite_fel_bat : public ScriptedAI
             if (!owner || !owner->isInCombat())
                 return;
 
-            Position pos;
-            target->GetNearPosition(pos, abs(35.0f - target->GetExactDist2d(me)), target->GetRelativeAngle(me));
+            Position pos = target->GetNearPosition(abs(35.0f - target->GetExactDist2d(me)), target->GetRelativeAngle(me));
             float angle = pos.GetRelativeAngle(target);
             uint32 delay = 0;
 

@@ -1203,8 +1203,7 @@ public:
                         case EVENT_ROCKET_STRIKE:
                             if (Unit *pTarget = SelectTarget(SELECT_TARGET_FARTHEST, 1, 100, true))
                             {
-                                Position Pos;
-                                pTarget->GetPosition(&Pos);
+                                Position Pos = pTarget->GetPosition();
                                 if (Creature * Strike = me->SummonCreature(34047, Pos, TEMPSUMMON_TIMED_DESPAWN, 10000))
                                     me->CastSpell(Strike, SPELL_ROCKET_STRIKE, true);
                             }

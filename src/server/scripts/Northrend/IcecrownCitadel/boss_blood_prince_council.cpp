@@ -440,8 +440,7 @@ class boss_prince_keleseth_icc : public CreatureScript
             void JustSummoned(Creature* summon) override
             {
                 summons.Summon(summon);
-                Position pos;
-                me->GetPosition(&pos);
+                Position pos = me->GetPosition();
                 float maxRange = me->GetDistance2d(summon);
                 float angle = me->GetAngle(summon);
                 me->MovePositionToFirstCollision(pos, maxRange, angle);
