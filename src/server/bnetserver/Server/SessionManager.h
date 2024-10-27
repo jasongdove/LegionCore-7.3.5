@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -30,13 +30,13 @@ namespace Battlenet
     public:
         static SessionManager& Instance();
 
-        bool StartNetwork(boost::asio::io_service& service, std::string const& bindIp, uint16 port, int threadCount = 1) override;
+        bool StartNetwork(Trinity::Asio::IoContext& ioContext, std::string const& bindIp, uint16 port, int threadCount = 1) override;
 
     protected:
         NetworkThread<Session>* CreateThreads() const override;
 
     private:
-        static void OnSocketAccept(tcp::socket&& sock, uint32 threadIndex);
+        static void OnSocketAccept(boost::asio::ip::tcp::socket&& sock, uint32 threadIndex);
     };
 }
 

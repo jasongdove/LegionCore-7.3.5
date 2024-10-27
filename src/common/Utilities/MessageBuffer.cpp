@@ -120,7 +120,7 @@ std::vector<uint8>&& MessageBuffer::Move()
     return std::move(_storage);
 }
 
-MessageBuffer& MessageBuffer::operator=(MessageBuffer& right)
+MessageBuffer& MessageBuffer::operator=(MessageBuffer const& right)
 {
     if (this != &right)
     {

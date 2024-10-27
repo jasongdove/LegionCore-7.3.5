@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -16,13 +16,14 @@
  */
 
 #include "SessionManager.h"
+#include "DatabaseEnv.h"
+#include "Util.h"
 
-bool Battlenet::SessionManager::StartNetwork(boost::asio::io_service& service, std::string const& bindIp, uint16 port, int threadCount)
+bool Battlenet::SessionManager::StartNetwork(Trinity::Asio::IoContext& ioContext, std::string const& bindIp, uint16 port, int threadCount)
 {
-    if (!BaseSocketMgr::StartNetwork(service, bindIp, port, threadCount))
+    if (!BaseSocketMgr::StartNetwork(ioContext, bindIp, port, threadCount))
         return false;
 
-    _acceptor->SetSocketFactory(std::bind(&BaseSocketMgr::GetSocketForAccept, this));
     _acceptor->AsyncAcceptWithCallback<&OnSocketAccept>();
     return true;
 }
@@ -32,9 +33,9 @@ NetworkThread<Battlenet::Session>* Battlenet::SessionManager::CreateThreads() co
     return new NetworkThread<Session>[GetNetworkThreadCount()];
 }
 
-void Battlenet::SessionManager::OnSocketAccept(tcp::socket&& sock, uint32 threadIndex)
+void Battlenet::SessionManager::OnSocketAccept(boost::asio::ip::tcp::socket&& sock, uint32 threadIndex)
 {
-    sSessionMgr.OnSocketOpen(std::forward<tcp::socket>(sock), threadIndex);
+    sSessionMgr.OnSocketOpen(std::forward<boost::asio::ip::tcp::socket>(sock), threadIndex);
 }
 
 Battlenet::SessionManager& Battlenet::SessionManager::Instance()

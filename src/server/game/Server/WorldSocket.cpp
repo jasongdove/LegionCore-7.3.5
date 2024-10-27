@@ -142,7 +142,7 @@ void WorldSocket::CheckIpCallback(PreparedQueryResult result)
     QueuePacket(std::move(initializer));
 }
 
-void WorldSocket::InitializeHandler(boost::system::error_code error, std::size_t transferedBytes)
+void WorldSocket::InitializeHandler(boost::system::error_code const& error, std::size_t transferedBytes)
 {
     TC_LOG_TRACE("network", "WorldSocket::InitializeHandler: called");
 
@@ -222,49 +222,34 @@ void WorldSocket::InitializeHandler(boost::system::error_code error, std::size_t
 
 bool WorldSocket::Update()
 {
-    uint32 _s = getMSTime();
-    uint32 bufferSize = 0;
-    std::queue<EncryptablePacket> _aBufferQueue;
-    if (!_bufferQueue.empty())
+    EncryptablePacket* queued;
+    MessageBuffer buffer(_sendBufferSize);
+    while (_bufferQueue.Dequeue(queued))
     {
-        _bufferQueueLock.lock();
-        bufferSize = _bufferQueue.size();
-        std::swap(_aBufferQueue, _bufferQueue);
-        _bufferQueueLock.unlock();
-    }
-
-    MessageBuffer buffer;
-    while (!_aBufferQueue.empty())
-    {
-        auto queued = std::move(_aBufferQueue.front());
-        _aBufferQueue.pop();
-
-        uint32 packetSize = queued.size();
-        if (packetSize > MinSizeForCompression && queued.NeedsEncryption())
+        uint32 packetSize = queued->size();
+        if (packetSize > MinSizeForCompression && queued->NeedsEncryption())
             packetSize = compressBound(packetSize) + sizeof(CompressedWorldPacket);
 
         if (buffer.GetRemainingSpace() < packetSize + SizeOfHeader)
         {
             QueuePacket(std::move(buffer));
-            buffer.Resize(4096);  // NOLINT
+            buffer.Resize(_sendBufferSize);  // NOLINT
         }
 
         if (buffer.GetRemainingSpace() >= packetSize + SizeOfHeader)
-            WritePacketToBuffer(queued, buffer);
+            WritePacketToBuffer(*queued, buffer);
         else    // single packet larger than 4096 bytes
         {
             MessageBuffer packetBuffer(packetSize + SizeOfHeader);
-            WritePacketToBuffer(queued, packetBuffer);
+            WritePacketToBuffer(*queued, packetBuffer);
             QueuePacket(std::move(packetBuffer));
         }
+
+        delete queued;
     }
 
     if (buffer.GetActiveSize() > 0)
         QueuePacket(std::move(buffer));
-
-    uint32 _ms = GetMSTimeDiffToNow(_s);
-    if (_ms > 200)
-        sLog->outDiff("WorldSocket::Update Update time - %ums bufferSize %u", _ms, bufferSize);
 
     if (!BaseSocket::Update())
         return false;
@@ -556,9 +541,7 @@ void WorldSocket::SendPacket(WorldPacket const& packet)
     if (SMSG_ON_MONSTER_MOVE != static_cast<OpcodeServer>(packet.GetOpcode()))
         TC_LOG_TRACE("network.opcode", "S->C: %s Size %u %s connection %i, connectionType %i", GetOpcodeNameForLogging(static_cast<OpcodeServer>(packet.GetOpcode())).c_str(), packetSize, GetRemoteIpAddress().to_string().c_str(), packet.GetConnection(), GetConnectionType());
 
-    _bufferQueueLock.lock();
-    _bufferQueue.emplace(EncryptablePacket(packet, _authCrypt.IsInitialized()));
-    _bufferQueueLock.unlock();
+    _bufferQueue.Enqueue(new EncryptablePacket(packet, _authCrypt.IsInitialized()));
 }
 
 void WorldSocket::WritePacketToBuffer(EncryptablePacket const& packet, MessageBuffer& buffer)

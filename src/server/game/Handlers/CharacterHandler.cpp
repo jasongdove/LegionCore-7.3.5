@@ -700,7 +700,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
 
     WorldPackets::ClientConfig::AccountDataTimes accountDataTimes;
     accountDataTimes.PlayerGuid = playerGuid;
-    accountDataTimes.ServerTime = uint32(GameTime::GetGameTime());
+    accountDataTimes.ServerTime = GameTime::GetGameTimeSystemPoint();
     for (uint32 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
         accountDataTimes.AccountTimes[i] = uint32(GetAccountData(AccountDataType(i))->Time);
 

@@ -55,7 +55,7 @@ public:
 
     std::vector<uint8>&& Move();
 
-    MessageBuffer& operator=(MessageBuffer& right);
+    MessageBuffer& operator=(MessageBuffer const& right);
     MessageBuffer& operator=(MessageBuffer&& right) noexcept;
 
 private:

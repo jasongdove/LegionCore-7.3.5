@@ -278,6 +278,7 @@ extern int main(int argc, char **argv)
     }
 
     uint16 worldPort = uint16(sWorld->getIntConfig(CONFIG_PORT_WORLD));
+    uint16 instancePort = uint16(sWorld->getIntConfig(CONFIG_PORT_INSTANCE));
     std::string worldListener = sConfigMgr->GetStringDefault("BindIP", "0.0.0.0");
 
     int networkThreads = sConfigMgr->GetIntDefault("Network.Threads", 1);
@@ -287,7 +288,7 @@ extern int main(int argc, char **argv)
         return 1;
     }
 
-    if (!sWorldSocketMgr.StartNetwork(*ioContext, worldListener, worldPort, networkThreads))
+    if (!sWorldSocketMgr.StartWorldNetwork(*ioContext, worldListener, worldPort, instancePort, networkThreads))
     {
         TC_LOG_ERROR("server.worldserver", "Failed to initialize network");
         return 1;

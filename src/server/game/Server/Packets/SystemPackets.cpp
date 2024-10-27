@@ -139,10 +139,10 @@ WorldPacket const* WorldPackets::System::FeatureSystemStatusGlueScreen::Write()
     _worldPacket << int32(TokenRedeemIndex);
     _worldPacket << int64(TokenBalanceAmount);
     _worldPacket << uint32(BpayStoreProductDeliveryDelay);
-    _worldPacket << uint32(UnkInt1);
-    _worldPacket << uint32(UnkInt2);
-    _worldPacket << uint32(UnkInt3);
-    _worldPacket << uint32(UnkInt4);
+//    _worldPacket << uint32(UnkInt1);
+//    _worldPacket << uint32(UnkInt2);
+//    _worldPacket << uint32(UnkInt3);
+//    _worldPacket << uint32(UnkInt4);
 
     return &_worldPacket;
 }
@@ -156,6 +156,7 @@ WorldPacket const* WorldPackets::System::MOTD::Write()
     for (std::string const& line : *Text)
     {
         _worldPacket.WriteBits(line.length(), 7);
+        _worldPacket.FlushBits();
         _worldPacket.WriteString(line);
     }
 
@@ -166,6 +167,8 @@ WorldPacket const* WorldPackets::System::SetTimeZoneInformation::Write()
 {
     _worldPacket.WriteBits(ServerTimeTZ.length(), 7);
     _worldPacket.WriteBits(GameTimeTZ.length(), 7);
+    _worldPacket.FlushBits();
+
     _worldPacket.WriteString(ServerTimeTZ);
     _worldPacket.WriteString(GameTimeTZ);
 

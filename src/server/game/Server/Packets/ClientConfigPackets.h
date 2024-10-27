@@ -19,6 +19,7 @@
 #define ClientConfigPackets_h__
 
 #include "Packet.h"
+#include "PacketUtilities.h"
 #include "WorldSession.h"
 
 namespace WorldPackets
@@ -33,7 +34,7 @@ namespace WorldPackets
             WorldPacket const* Write() override;
 
             ObjectGuid PlayerGuid;
-            uint32 ServerTime = 0;
+            Timestamp<> ServerTime = 0;
             uint32 AccountTimes[NUM_ACCOUNT_DATA_TYPES] = { };
         };
 
