@@ -18485,34 +18485,27 @@ void Player::SendPreparedQuest(ObjectGuid guid)
         // Auto open -- maybe also should verify there is no greeting
         if (Quest const* quest = sQuestDataStore->GetQuestTemplate(questId))
         {
+            Object* object = ObjectAccessor::GetObjectByTypeMask(*this, guid, TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT | TYPEMASK_ITEM);
             if (qmi0.QuestIcon == 4)
-            {
                 PlayerTalkClass->SendQuestGiverRequestItems(quest, guid, CanRewardQuest(quest, false), true);
-                return;
-            }
             // Send completable on repeatable and autoCompletable quest if player don't have quest
-            // TODO: verify if check for !quest->IsDaily() is really correct (possibly not)
+            /// @todo verify if check for !quest->IsDaily() is really correct (possibly not)
+            else if (!object->hasQuest(questId) && !object->hasInvolvedQuest(questId))
+                PlayerTalkClass->SendCloseGossip();
             else
             {
-                Object* source = ObjectAccessor::GetObjectByTypeMask(*this, guid, TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT | TYPEMASK_ITEM);
-                if (!source->hasQuest(questId) && !source->hasInvolvedQuest(questId))
-                {
-                    PlayerTalkClass->SendCloseGossip();
-                    return;
-                }
+                if (quest->IsAutoAccept() && CanAddQuest(quest, true) && CanTakeQuest(quest, true))
+                    AddQuestAndCheckCompletion(quest, object);
 
-                if (source->GetTypeId() != TYPEID_UNIT  || source->GetUInt64Value(UNIT_FIELD_NPC_FLAGS) & UNIT_NPC_FLAG_GOSSIP)
-                {
-                    if (quest->IsAutoAccept() && CanAddQuest(quest, true) && CanTakeQuest(quest, true))
-                        AddQuestAndCheckCompletion(quest, source);
-
-                    if ((quest->IsAutoComplete() && quest->IsRepeatable() && !quest->IsDailyOrWeekly())/* || quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE)*/)
-                        PlayerTalkClass->SendQuestGiverRequestItems(quest, guid, CanCompleteRepeatableQuest(quest), true);
-                    else
-                        PlayerTalkClass->SendQuestGiverQuestDetails(quest, guid, true, false);
-                    return;
-                }
+                if (quest->IsAutoComplete() && quest->IsRepeatable() && !quest->IsDailyOrWeekly() && !quest->IsMonthly())
+                    PlayerTalkClass->SendQuestGiverRequestItems(quest, object->GetGUID(), CanCompleteRepeatableQuest(quest), true);
+                else if (quest->IsAutoComplete() && !quest->IsDailyOrWeekly() && !quest->IsMonthly())
+                    PlayerTalkClass->SendQuestGiverRequestItems(quest, object->GetGUID(), CanRewardQuest(quest, false), true);
+                else
+                    PlayerTalkClass->SendQuestGiverQuestDetails(quest, object->GetGUID(), true, false);
             }
+
+            return;
         }
     }
 
