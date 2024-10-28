@@ -119,11 +119,11 @@ void DB2StorageBase::WriteRecord(uint32 id, uint32 locale, ByteBuffer& buffer) c
                 break;
             case FT_STRING:
             {
-                auto locStr = *reinterpret_cast<LocalizedString const*>(entry);
-                if (locStr.Str[locale][0] == '\0')
-                    buffer << locStr.Str[0];
+                auto locStr = *reinterpret_cast<LocalizedString* const*>(entry);
+                if (locStr->Str[locale][0] == '\0')
+                    buffer << locStr->Str[0];
                 else
-                    buffer << locStr.Str[locale];
+                    buffer << locStr->Str[locale];
 
                 entry += sizeof(LocalizedString*);
                 break;
