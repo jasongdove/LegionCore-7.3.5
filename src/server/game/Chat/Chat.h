@@ -62,7 +62,6 @@ class ChatHandler
         virtual void SendSysMessage(const char *str);
 
         void SendSysMessage(int32 entry);
-        std::string PGetParseString(int32 entry, ...) const;
 
         template<typename... Args>
         void PSendSysMessage(const char* fmt, Args&&... args)
@@ -74,6 +73,12 @@ class ChatHandler
         void PSendSysMessage(uint32 entry, Args&&... args)
         {
             SendSysMessage(PGetParseString(entry, std::forward<Args>(args)...).c_str());
+        }
+
+        template<typename... Args>
+        std::string PGetParseString(int32 entry, Args&&... args) const
+        {
+            return fmt::sprintf(GetTrinityString(entry), std::forward<Args>(args)...);
         }
 
         int ParseCommands(const char* text);
