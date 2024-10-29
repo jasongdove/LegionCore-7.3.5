@@ -293,7 +293,7 @@ Map::~Map()
         delete threadPool;
     }
 
-    // MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(GetId(), i_InstanceId);
+    MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(GetId(), GetInstanceId());
 
     b_isMapStop = true;
 }
@@ -607,7 +607,7 @@ m_activeNonPlayersIter(m_activeNonPlayers.end()), i_grids(), GridMaps()
 
     _weatherUpdateTimer.SetInterval(time_t(1 * IN_MILLISECONDS));
 
-    MMAP::MMapFactory::createOrGetMMapManager()->loadMapInstance(sWorld->GetDataPath(), GetId(), GetThreadID());
+    MMAP::MMapFactory::createOrGetMMapManager()->loadMapInstance(sWorld->GetDataPath(), GetId(), GetInstanceId());
 
     sScriptMgr->OnCreateMap(this);
 
