@@ -36,13 +36,13 @@
 
 enum SolocraftTrinityStrings
 {
-    SOLOCRAFT_TRINITYSTRING_ACTIVE                       = 30000,    // |cff4CFF00SoloCraft system|r active.
-    SOLOCRAFT_TRINITYSTRING_STATUS                       = 30001,    // |cffFF0000[SoloCraft]|r |cffFF8000 %s entered %s - Difficulty Offset: %0.2f. Spellpower Bonus: %i. Class Balance Weight: %i. XP Gain: |cffFF0000%s XP Balancing:%s |cff4CFF00%s
-    SOLOCRAFT_TRINITYSTRING_ERR_LEVEL_TOO_HIGH           = 30002,    // |cff4CFF00[SoloCraft]|r |cffFF0000 %s entered %s - |cffFF0000You have not been buffed.|r |cffFF8000Your level is higher than the max level (%i) threshold for this dungeon.
-    SOLOCRAFT_TRINITYSTRING_ERR_GROUP_ALREADY_BUFFED     = 30003,    // |cffFF0000[SoloCraft]|r |cffFF8000 %s entered %s - |cffFF0000BE ADVISED - You have been debuffed by offset: %0.2f with a Class Balance Weight: %i. |cffFF8000A group member already inside has the dungeon's full buff offset. No Spellpower buff will be applied to spell casters. ALL group members must exit the dungeon and re-enter to receive a balanced offset.
-    SOLOCRAFT_TRINITYSTRING_CLEAR_BUFFS                  = 30004,    // |cffFF0000[SoloCraft]|r |cffFF8000 %s exited to %s - Reverting Difficulty Offset: %0.2f. Spellpower Bonus Removed: %i
-    SOLOCRAFT_TRINITYSTRING_ENABLED                      = 30005,    // Enabled
-    SOLOCRAFT_TRINITYSTRING_DISABLED                     = 30006,    // Disabled
+    SOLOCRAFT_TRINITYSTRING_ACTIVE                       = 40000,    // |cff4CFF00SoloCraft system|r active.
+    SOLOCRAFT_TRINITYSTRING_STATUS                       = 40001,    // |cffFF0000[SoloCraft]|r |cffFF8000 %s entered %s - Difficulty Offset: %0.2f. Spellpower Bonus: %i. Class Balance Weight: %i. XP Gain: |cffFF0000%s XP Balancing:%s |cff4CFF00%s
+    SOLOCRAFT_TRINITYSTRING_ERR_LEVEL_TOO_HIGH           = 40002,    // |cff4CFF00[SoloCraft]|r |cffFF0000 %s entered %s - |cffFF0000You have not been buffed.|r |cffFF8000Your level is higher than the max level (%i) threshold for this dungeon.
+    SOLOCRAFT_TRINITYSTRING_ERR_GROUP_ALREADY_BUFFED     = 40003,    // |cffFF0000[SoloCraft]|r |cffFF8000 %s entered %s - |cffFF0000BE ADVISED - You have been debuffed by offset: %0.2f with a Class Balance Weight: %i. |cffFF8000A group member already inside has the dungeon's full buff offset. No Spellpower buff will be applied to spell casters. ALL group members must exit the dungeon and re-enter to receive a balanced offset.
+    SOLOCRAFT_TRINITYSTRING_CLEAR_BUFFS                  = 40004,    // |cffFF0000[SoloCraft]|r |cffFF8000 %s exited to %s - Reverting Difficulty Offset: %0.2f. Spellpower Bonus Removed: %i
+    SOLOCRAFT_TRINITYSTRING_ENABLED                      = 40005,    // Enabled
+    SOLOCRAFT_TRINITYSTRING_DISABLED                     = 40006,    // Disabled
 };
 
 class SolocraftConfig
@@ -80,6 +80,7 @@ class SolocraftConfig
                 {9, sConfigMgr->GetIntDefault("SoloCraft.Warlock", 100) },
                 {10, sConfigMgr->GetIntDefault("SoloCraft.Monk", 100) },
                 {11, sConfigMgr->GetIntDefault("SoloCraft.Druid", 100) },
+                {12, sConfigMgr->GetIntDefault("SoloCraft.Demon.Hunter", 100) },
             };
 
             SolocraftXPEnabled = sConfigMgr->GetBoolDefault("Solocraft.XP.Enabled", 1);
@@ -198,6 +199,31 @@ class SolocraftConfig
                 {1011, sConfigMgr->GetFloatDefault("Solocraft.SiegeOfNiuzaoTemple", 5.0) }, // Осада храма Нюцзао
                 {960, sConfigMgr->GetFloatDefault("Solocraft.TempleOfTheJadeSerpent", 5.0) }, // Храм Нефритовой Змеи
                 {961, sConfigMgr->GetFloatDefault("Solocraft.StormstoutBrewery", 5.0) }, // Хмелеварня Буйных Портеров
+                /// WARLORDS OF DRAENOR
+                { 821, sConfigMgr->GetFloatDefault("Solocraft.IronDocks", 5.0) }, // WoD
+                { 820, sConfigMgr->GetFloatDefault("Solocraft.Auchindoun", 5.0) }, // WoD
+                { 779, sConfigMgr->GetFloatDefault("Solocraft.Skyreach", 5.0) }, // WoD
+                { 987, sConfigMgr->GetFloatDefault("Solocraft.HellfireCitadel", 25.0) }, // WoD
+                { 895, sConfigMgr->GetFloatDefault("Solocraft.Highmaul", 25.0) }, // WoD
+                { 822, sConfigMgr->GetFloatDefault("Solocraft.GrimrailDepot", 5.0) }, // WoD
+                { 898, sConfigMgr->GetFloatDefault("Solocraft.BlackrockFoundry", 25.0) }, // WoD
+                { 783, sConfigMgr->GetFloatDefault("Solocraft.ShadowmoonBurialGrounds", 5.0) }, // WoD
+                { 824, sConfigMgr->GetFloatDefault("Solocraft.TheEverbloom", 5.0) }, // 
+                ///LEGION
+                { 1201, sConfigMgr->GetFloatDefault("Solocraft.DarkheartThicket", 5.0) }, // 
+                { 1206, sConfigMgr->GetFloatDefault("Solocraft.Neltharion'sLair", 5.0) }, // 
+                { 1208, sConfigMgr->GetFloatDefault("Solocraft.VioletHoldLegion", 5.0) }, // 
+                { 1174, sConfigMgr->GetFloatDefault("Solocraft.EyeofAzshara", 5.0) }, // 
+                { 330, sConfigMgr->GetFloatDefault("Solocraft.UpperBlackrockSpire", 5.0) }, // 
+                { 1640, sConfigMgr->GetFloatDefault("Solocraft.AntorustheBurningThrone", 25.0) }, // 
+                { 1525, sConfigMgr->GetFloatDefault("Solocraft.TombOfSargeras", 25.0) }, // 
+                { 1437, sConfigMgr->GetFloatDefault("Solocraft.TrialOfValor", 25.0) }, // 
+                { 1351, sConfigMgr->GetFloatDefault("Solocraft.TheNighthold", 25.0) }, // 
+                { 1348, sConfigMgr->GetFloatDefault("Solocraft.TheEmeraldNightmare", 25.0) }, // 
+                { 1204, sConfigMgr->GetFloatDefault("Solocraft.BlackRookHold", 5.0) }, // 
+                { 1043, sConfigMgr->GetFloatDefault("Solocraft.VaultOftheWardens", 5.0) }, // 
+                { 1191, sConfigMgr->GetFloatDefault("Solocraft.MawOfSouls", 5.0) }, // 
+                { 1193, sConfigMgr->GetFloatDefault("Solocraft.HallsOfValor", 5.0) }, //
             };
             // diff_Multiplier_Heroics
             diff_Multiplier_Heroics =
@@ -279,6 +305,31 @@ class SolocraftConfig
                 {1011, sConfigMgr->GetFloatDefault("Solocraft.SiegeOfNiuzaoTempleH", 5.0) },
                 {960, sConfigMgr->GetFloatDefault("Solocraft.TempleOfTheJadeSerpentH", 5.0) },
                 {961, sConfigMgr->GetFloatDefault("Solocraft.StormstoutBreweryH", 5.0) },
+                /// WARLORDS OF DRAENOR
+                { 821, sConfigMgr->GetFloatDefault("Solocraft.IronDocksH", 5.0) }, // WoD
+                { 820, sConfigMgr->GetFloatDefault("Solocraft.AuchindounH", 5.0) }, // WoD
+                { 779, sConfigMgr->GetFloatDefault("Solocraft.SkyreachH", 5.0) }, // WoD
+                { 987, sConfigMgr->GetFloatDefault("Solocraft.HellfireCitadelH", 25.0) }, // WoD
+                { 895, sConfigMgr->GetFloatDefault("Solocraft.HighmaulH", 25.0) }, // WoD
+                { 822, sConfigMgr->GetFloatDefault("Solocraft.GrimrailDepotH", 5.0) }, // WoD
+                { 898, sConfigMgr->GetFloatDefault("Solocraft.BlackrockFoundryH", 25.0) }, // WoD
+                { 783, sConfigMgr->GetFloatDefault("Solocraft.ShadowmoonBurialGroundsH", 5.0) }, // WoD
+                { 824, sConfigMgr->GetFloatDefault("Solocraft.TheEverbloomH", 5.0) }, // 
+                ///LEGION
+                { 1201, sConfigMgr->GetFloatDefault("Solocraft.DarkheartThicketH", 5.0) }, // 
+                { 1206, sConfigMgr->GetFloatDefault("Solocraft.Neltharion'sLairH", 5.0) }, // 
+                { 1174, sConfigMgr->GetFloatDefault("Solocraft.EyeofAzsharaH", 5.0) }, // 
+                { 330, sConfigMgr->GetFloatDefault("Solocraft.UpperBlackrockSpireH", 5.0) }, // 
+                { 1208, sConfigMgr->GetFloatDefault("Solocraft.VioletHoldLegionH", 5.0) }, // 
+                { 1640, sConfigMgr->GetFloatDefault("Solocraft.AntorustheBurningThroneH", 25.0) }, // 
+                { 1525, sConfigMgr->GetFloatDefault("Solocraft.TombOfSargerasH", 25.0) }, // 
+                { 1437, sConfigMgr->GetFloatDefault("Solocraft.TrialOfValorH", 25.0) }, // 
+                { 1351, sConfigMgr->GetFloatDefault("Solocraft.TheNightholdH", 25.0) }, // 
+                { 1348, sConfigMgr->GetFloatDefault("Solocraft.TheEmeraldNightmareH", 25.0) }, // 
+                { 1204, sConfigMgr->GetFloatDefault("Solocraft.BlackRookHoldH", 5.0) }, // 
+                { 1043, sConfigMgr->GetFloatDefault("Solocraft.VaultOftheWardensH", 5.0) }, // 
+                { 1191, sConfigMgr->GetFloatDefault("Solocraft.MawOfSoulsH", 5.0) }, // 
+                { 1193, sConfigMgr->GetFloatDefault("Solocraft.HallsOfValorH", 5.0) }, //                
             };
 
             D649H10 = sConfigMgr->GetFloatDefault("Solocraft.ArgentTournamentRaidH10", 10.0);  // Trial of the Crusader 10 Heroic
