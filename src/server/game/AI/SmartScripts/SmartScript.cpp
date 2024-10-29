@@ -3244,7 +3244,7 @@ void SmartScript::ProcessEvent(SmartScriptHolder& e, Unit* unit, uint32 var0, ui
             RecalcTimer(e, e.event.minMaxRepeat.repeatMin, e.event.minMaxRepeat.repeatMax);
             ProcessAction(e);
             break;
-        case SMART_EVENT_HEALT_PCT:
+        case SMART_EVENT_HEALTH_PCT:
         {
             if (!me || (!me->isInCombat() && !(e.event.event_flags & SMART_EVENT_FLAG_ALLOW_EVENT_IN_COMBAT)) || !me->GetMaxHealth())
                 return;
@@ -3300,7 +3300,7 @@ void SmartScript::ProcessEvent(SmartScriptHolder& e, Unit* unit, uint32 var0, ui
             }
             break;
         }
-        case SMART_EVENT_TARGET_CASTING:
+        case SMART_EVENT_VICTIM_CASTING:
         {
             if (!me || !me->isInCombat() || !me->getVictim() || !me->getVictim()->IsNonMeleeSpellCast(false, false, true))
                 return;
@@ -3385,7 +3385,7 @@ void SmartScript::ProcessEvent(SmartScriptHolder& e, Unit* unit, uint32 var0, ui
         case SMART_EVENT_AI_INIT:
         case SMART_EVENT_TRANSPORT_ADDPLAYER:
         case SMART_EVENT_TRANSPORT_REMOVE_PLAYER:
-        case SMART_EVENT_QUEST_OBJ_COPLETETION:
+        case SMART_EVENT_QUEST_OBJ_COMPLETION:
         case SMART_EVENT_QUEST_COMPLETION:
         case SMART_EVENT_QUEST_FAIL:
         case SMART_EVENT_JUST_SUMMONED:
@@ -3807,12 +3807,12 @@ void SmartScript::UpdateTimer(SmartScriptHolder& e, uint32 const diff)
             case SMART_EVENT_UPDATE:
             case SMART_EVENT_UPDATE_OOC:
             case SMART_EVENT_UPDATE_IC:
-            case SMART_EVENT_HEALT_PCT:
+            case SMART_EVENT_HEALTH_PCT:
             case SMART_EVENT_TARGET_HEALTH_PCT:
             case SMART_EVENT_MANA_PCT:
             case SMART_EVENT_TARGET_MANA_PCT:
             case SMART_EVENT_RANGE:
-            case SMART_EVENT_TARGET_CASTING:
+            case SMART_EVENT_VICTIM_CASTING:
             case SMART_EVENT_FRIENDLY_HEALTH:
             case SMART_EVENT_FRIENDLY_IS_CC:
             case SMART_EVENT_FRIENDLY_MISSING_BUFF:
