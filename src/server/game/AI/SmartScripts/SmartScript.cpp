@@ -57,6 +57,7 @@ SmartScript::SmartScript()
     mTalkerEntry = 0;
     mTemplate = SMARTAI_TEMPLATE_BASIC;
     mScriptType = SMART_SCRIPT_TYPE_CREATURE;
+    isProcessingTimedActionList = false;
 }
 
 SmartScript::~SmartScript()
@@ -1831,20 +1832,19 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 break;
             }
 
-            ObjectList* targets = GetTargets(e, unit);
-            if (targets)
+            if (ObjectList* targets = GetTargets(e, unit))
             {
                 for (auto& itr : *targets)
                 {
                     if (Creature* target = itr->ToCreature())
                     {
                         if (IsSmart(target))
-                            CAST_AI(SmartAI, target->AI())->SetScript9(e, e.action.timedActionList.id, GetLastInvoker());
+                            ENSURE_AI(SmartAI, target->AI())->SetScript9(e, e.action.timedActionList.id, GetLastInvoker());
                     }
                     else if (GameObject* goTarget = itr->ToGameObject())
                     {
                         if (IsSmartGO(goTarget))
-                            CAST_AI(SmartGameObjectAI, goTarget->AI())->SetScript9(e, e.action.timedActionList.id, GetLastInvoker());
+                            ENSURE_AI(SmartGameObjectAI, goTarget->AI())->SetScript9(e, e.action.timedActionList.id, GetLastInvoker());
                     }
                 }
 
@@ -3312,11 +3312,11 @@ void SmartScript::ProcessEvent(SmartScriptHolder& e, Unit* unit, uint32 var0, ui
             if (!me || !me->isInCombat())
                 return;
 
-            Unit* target = DoSelectLowestHpFriendly(static_cast<float>(e.event.friendlyHealt.radius), e.event.friendlyHealt.hpDeficit);
-            if (!target)
+            Unit* target = DoSelectLowestHpFriendly(static_cast<float>(e.event.friendlyHealth.radius), e.event.friendlyHealth.hpDeficit);
+            if (!target || !target->isInCombat())
                 return;
             ProcessAction(e, target);
-            RecalcTimer(e, e.event.friendlyHealt.repeatMin, e.event.friendlyHealt.repeatMax);
+            RecalcTimer(e, e.event.friendlyHealth.repeatMin, e.event.friendlyHealth.repeatMax);
             break;
         }
         case SMART_EVENT_FRIENDLY_IS_CC:
@@ -3651,6 +3651,55 @@ void SmartScript::ProcessEvent(SmartScriptHolder& e, Unit* unit, uint32 var0, ui
             ProcessAction(e, unit, var0);
             break;
         }
+        case SMART_EVENT_FRIENDLY_HEALTH_PCT:
+        {
+            if (!me || !me->isInCombat())
+                return;
+
+            Unit* unitTarget = nullptr;
+            switch (e.GetTargetType())
+            {
+                case SMART_TARGET_CREATURE_RANGE:
+                case SMART_TARGET_CREATURE_GUID:
+                case SMART_TARGET_CREATURE_DISTANCE:
+                case SMART_TARGET_CLOSEST_CREATURE:
+                case SMART_TARGET_CLOSEST_PLAYER:
+                case SMART_TARGET_PLAYER_RANGE:
+                case SMART_TARGET_PLAYER_DISTANCE:
+                {
+                    ObjectList* _targets = GetTargets(e, unit);
+                    if (!_targets)
+                        return;
+
+                    for (auto target : *_targets)
+                    {
+                        if (IsUnit(target) && me->IsFriendlyTo(target->ToUnit()) && target->ToUnit()->IsAlive() && target->ToUnit()->isInCombat())
+                        {
+                            auto healthPct = uint32(target->ToUnit()->GetHealthPct());
+
+                            if (healthPct > e.event.friendlyHealthPct.maxHpPct || healthPct < e.event.friendlyHealthPct.minHpPct)
+                                continue;
+
+                            unitTarget = target->ToUnit();
+                            break;
+                        }
+                    }
+
+                    delete _targets;
+                    break;
+                }
+                case SMART_TARGET_ACTION_INVOKER:
+                    unitTarget = DoSelectLowestHpPercentFriendly((float)e.event.friendlyHealthPct.radius, e.event.friendlyHealthPct.minHpPct, e.event.friendlyHealthPct.maxHpPct);
+                default:
+                    return;
+            }
+
+            if (!unitTarget)
+                return;
+
+            ProcessTimedAction(e, e.event.friendlyHealthPct.repeatMin, e.event.friendlyHealthPct.repeatMax, unitTarget);
+            break;
+        }
         case SMART_EVENT_CHECK_DIST_TO_HOME:
         {
             if (!me || !me->isInCombat() || !me->getVictim())
@@ -3821,6 +3870,7 @@ void SmartScript::UpdateTimer(SmartScriptHolder& e, uint32 const diff)
             case SMART_EVENT_IS_BEHIND_TARGET:
             case SMART_EVENT_CHECK_DIST_TO_HOME:
             case SMART_EVENT_DISTANCE_CREATURE:
+            case SMART_EVENT_FRIENDLY_HEALTH_PCT:
             {
                 ProcessEvent(e);
                 if (e.GetScriptType() == SMART_SCRIPT_TYPE_TIMED_ACTIONLIST)
@@ -3905,6 +3955,7 @@ void SmartScript::OnUpdate(uint32 const diff)
     bool needCleanup = true;
     if (!mTimedActionList.empty())
     {
+        isProcessingTimedActionList = true;
         for (auto& i : mTimedActionList)
         {
             if (i.enableTimed)
@@ -3913,6 +3964,8 @@ void SmartScript::OnUpdate(uint32 const diff)
                 needCleanup = false;
             }
         }
+
+        isProcessingTimedActionList = false;
     }
     if (needCleanup)
         mTimedActionList.clear();
@@ -4134,6 +4187,22 @@ Unit* SmartScript::DoSelectLowestHpFriendly(float range, uint32 MinHPDiff)
     return unit;
 }
 
+Unit* SmartScript::DoSelectLowestHpPercentFriendly(float range, uint32 minHpPct, uint32 maxHpPct) const
+{
+    if (!me)
+        return nullptr;
+
+    CellCoord p(Trinity::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    Cell cell(p);
+    cell.SetNoCreate();
+
+    Unit* unit = nullptr;
+    Trinity::MostHPPercentMissingInRange u_check(me, range, minHpPct, maxHpPct);
+    Trinity::UnitLastSearcher<Trinity::MostHPPercentMissingInRange> searcher(me, unit, u_check);
+    cell.Visit(p, Trinity::makeGridVisitor(searcher), *me->GetMap(), *me, range);
+    return unit;
+}
+
 void SmartScript::DoFindFriendlyCC(std::list<Creature*>& _list, float range)
 {
     if (!me)
@@ -4246,21 +4315,30 @@ Creature* SmartScript::FindCreatureNear(WorldObject* searchObject, ObjectGuid::L
 
 void SmartScript::SetScript9(SmartScriptHolder& e, uint32 entry)
 {
-    SmartAIEventList val = sSmartScriptMgr->GetScript(entry, SMART_SCRIPT_TYPE_TIMED_ACTIONLIST);
-    if (val.empty())
-        return;
-
-    for (auto i = val.begin(); i != val.end(); ++i)
+    //do NOT clear mTimedActionList if it's being iterated because it will invalidate the iterator and delete
+    // any SmartScriptHolder contained like the "e" parameter passed to this function
+    if (isProcessingTimedActionList)
     {
-        i->enableTimed = i == val.begin();
+        TC_LOG_ERROR("scripts.ai", "Entry " SI64FMTD " SourceType %u Event %u Action %u is trying to overwrite timed action list from a timed action, this is not allowed!.", e.entryOrGuid, e.GetScriptType(), e.GetEventType(), e.GetActionType());
+        return;
+    }
 
-        if (e.action.timedActionList.timerType == 1)
+    mTimedActionList.clear();
+    mTimedActionList = sSmartScriptMgr->GetScript(entry, SMART_SCRIPT_TYPE_TIMED_ACTIONLIST);
+    if (mTimedActionList.empty())
+        return;
+    for (auto i = mTimedActionList.begin(); i != mTimedActionList.end(); ++i)
+    {
+        i->enableTimed = i == mTimedActionList.begin(); //enable processing only for the first action
+
+        if (e.action.timedActionList.timerType == 0)
+            i->event.type = SMART_EVENT_UPDATE_OOC;
+        else if (e.action.timedActionList.timerType == 1)
             i->event.type = SMART_EVENT_UPDATE_IC;
         else if (e.action.timedActionList.timerType > 1)
             i->event.type = SMART_EVENT_UPDATE;
+
         InitTimer((*i));
-        
-        mTimedActionList.push_back(*i);
     }
 }
 

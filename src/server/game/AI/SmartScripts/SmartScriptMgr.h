@@ -245,7 +245,7 @@ struct SmartEvent
             uint32 radius;
             uint32 repeatMin;
             uint32 repeatMax;
-        } friendlyHealt;
+        } friendlyHealth;
 
         struct
         {
@@ -399,6 +399,15 @@ struct SmartEvent
         {
             uint32 eventId;
         } doAction;
+
+        struct
+        {
+            uint32 minHpPct;
+            uint32 maxHpPct;
+            uint32 repeatMin;
+            uint32 repeatMax;
+            uint32 radius;
+        } friendlyHealthPct;
 
         struct
         {
@@ -1515,6 +1524,7 @@ const uint32 SmartAIEventMask[SMART_EVENT_END][2] =
     {SMART_EVENT_GO_EVENT_INFORM,           SMART_SCRIPT_TYPE_MASK_GAMEOBJECT },
     {SMART_EVENT_ACTION_DONE,               SMART_SCRIPT_TYPE_MASK_CREATURE },
     {SMART_EVENT_ON_SPELLCLICK,             SMART_SCRIPT_TYPE_MASK_CREATURE },
+    {SMART_EVENT_FRIENDLY_HEALTH_PCT,       SMART_SCRIPT_TYPE_MASK_CREATURE },
     {SMART_EVENT_CHECK_DIST_TO_HOME,        SMART_SCRIPT_TYPE_MASK_CREATURE },
     {SMART_EVENT_EVENTOBJECT_ONTRIGGER,     SMART_SCRIPT_TYPE_MASK_EVENTOBJECT },
     {SMART_EVENT_ON_TAXIPATHTO,             SMART_SCRIPT_TYPE_MASK_CREATURE },
