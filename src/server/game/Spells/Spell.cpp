@@ -3757,7 +3757,7 @@ void Spell::preparePetCast(SpellCastTargets const* targets, Unit* target, Unit* 
     }
 }
 
-void Spell::prepare(SpellCastTargets const* targets)
+SpellCastResult Spell::prepare(SpellCastTargets const* targets)
 {
     if (m_CastItem)
     {
@@ -3809,7 +3809,7 @@ void Spell::prepare(SpellCastTargets const* targets)
         {
             SendCastResult(SPELL_FAILED_ERROR);
             finish(false);
-            return;
+            return SPELL_FAILED_ERROR;
         }
     }
 
@@ -3818,14 +3818,14 @@ void Spell::prepare(SpellCastTargets const* targets)
     {
         SendCastResult(SPELL_FAILED_SPELL_IN_PROGRESS);
         finish(false);
-        return;
+        return SPELL_FAILED_SPELL_IN_PROGRESS;
     }
 
     if (DisableMgr::IsDisabledFor(DISABLE_TYPE_SPELL, m_spellInfo->Id, m_caster))
     {
         SendCastResult(SPELL_FAILED_SPELL_UNAVAILABLE);
         finish(false);
-        return;
+        return SPELL_FAILED_SPELL_UNAVAILABLE;
     }
 
     LoadScripts();
@@ -3889,7 +3889,7 @@ void Spell::prepare(SpellCastTargets const* targets)
         SendCastResult(result);
 
         finish(false);
-        return;
+        return result;
     }
 
     // Prepare data for triggers
@@ -3925,7 +3925,7 @@ void Spell::prepare(SpellCastTargets const* targets)
         //TC_LOG_DEBUG("spells", "Spell::prepare::checkcast fail. spell id %u res %u source %u customCastFlags %u mask %u, InterruptFlags %i", m_spellInfo->Id, SPELL_FAILED_MOVING, m_caster->GetEntry(), _triggeredCastFlags, m_targets.GetTargetMask(), m_spellInfo->InterruptFlags);
         SendCastResult(SPELL_FAILED_MOVING);
         finish(false);
-        return;
+        return SPELL_FAILED_MOVING;
     }
 
     // set timer base at cast time
@@ -3992,12 +3992,16 @@ void Spell::prepare(SpellCastTargets const* targets)
         if (!m_casttime && m_spellInfo->HasAttribute(SPELL_ATTR0_CU_CAST_DIRECTLY))
         {
             cast(true);
-            return;
         }
-        //item: first cast may destroy item and second cast causes crash
-        if (!m_casttime && !m_spellInfo->Cooldowns.StartRecoveryTime && !m_castItemGUID && GetCurrentContainer() == CURRENT_GENERIC_SPELL)
-            cast(true);
+        else
+        {
+            // item: first cast may destroy item and second cast causes crash
+            if (!m_casttime && !m_spellInfo->Cooldowns.StartRecoveryTime && !m_castItemGUID && GetCurrentContainer() == CURRENT_GENERIC_SPELL)
+                cast(true);
+        }
     }
+
+    return SPELL_CAST_OK;
 }
 
 void Spell::cancel()

@@ -230,7 +230,7 @@ class GameObject : public WorldObject, public GridObject<GameObject>, public Map
 
         GameObject* LookupFishingHoleAround(float range);
 
-        void CastSpell(Unit* target, uint32 spell);
+        SpellCastResult CastSpell(Unit* target, uint32 spell);
         void SendCustomAnim(uint32 animID, bool playAsDespawn = false);
         void SendGOPlaySpellVisual(uint32 spellVisualID, ObjectGuid activatorGuid = ObjectGuid::Empty);
         void SetAnimKitId(uint16 animKitID, bool maintain = false);

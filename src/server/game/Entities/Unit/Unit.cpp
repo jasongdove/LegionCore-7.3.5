@@ -1675,15 +1675,15 @@ void Unit::CastSpellTime(float x, float y, float z, uint32 spellId, bool trigger
     CastSpell(targets, spellInfo, nullptr, triggerData);
 }
 
-void Unit::CastSpell(SpellCastTargets const& targets, SpellInfo const* spellInfo, CustomSpellValues const* value, TriggerCastData& triggerData)
+SpellCastResult Unit::CastSpell(SpellCastTargets const& targets, SpellInfo const* spellInfo, CustomSpellValues const* value, TriggerCastData& triggerData)
 {
     if(m_cleanupDone)
-        return;
+        return SPELL_FAILED_ERROR;
 
     if (!spellInfo)
     {
         TC_LOG_ERROR("entities.unit", "CastSpell: unknown spell by caster: %s %u)", (IsPlayer() ? "player (GUID:" : "creature (Entry:"), (IsPlayer() ? GetGUIDLow() : GetEntry()));
-        return;
+        return SPELL_FAILED_ERROR;
     }
 
     // TODO: this is a workaround - not needed anymore, but required for some scripts :(
@@ -1697,18 +1697,18 @@ void Unit::CastSpell(SpellCastTargets const& targets, SpellInfo const* spellInfo
         for (CustomSpellValues::const_iterator itr = value->begin(); itr != value->end(); ++itr)
             spell->SetSpellValue(itr->first, itr->second, itr->second);
 
-    spell->prepare(&targets);
+    return spell->prepare(&targets);
 }
 
-void Unit::CastSpell(SpellCastTargets const& targets, SpellInfo const* spellInfo, CustomSpellValues const* value, TriggerCastFlags triggerFlags, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
+SpellCastResult Unit::CastSpell(SpellCastTargets const& targets, SpellInfo const* spellInfo, CustomSpellValues const* value, TriggerCastFlags triggerFlags, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
 {
     if(m_cleanupDone)
-        return;
+        return SPELL_FAILED_ERROR;
 
     if (!spellInfo)
     {
         TC_LOG_ERROR("entities.unit", "CastSpell: unknown spell by caster: %s %u)", (IsPlayer() ? "player (GUID:" : "creature (Entry:"), (IsPlayer() ? GetGUIDLow() : GetEntry()));
-        return;
+        return SPELL_FAILED_ERROR;
     }
 
     // TODO: this is a workaround - not needed anymore, but required for some scripts :(
@@ -1732,52 +1732,52 @@ void Unit::CastSpell(SpellCastTargets const& targets, SpellInfo const* spellInfo
             spell->SetSpellValue(itr->first, itr->second, itr->second);
 
     // uint32 _ms = getMSTimeDiff(_s, getMSTime());
-    spell->prepare(&targets);
+    return spell->prepare(&targets);
     // _ms = getMSTimeDiff(_s, getMSTime());
     // if (_ms > 50)
         // sLog->outDiff("CastSpell 2 Entry %u: Diff - %ums Id %u XYZ(%f %f %f) mapId %u", GetEntry(), _ms, spellInfo->Id, GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
 }
 
-void Unit::CastSpell(Unit* victim, uint32 spellId, bool triggered, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
+SpellCastResult Unit::CastSpell(Unit* victim, uint32 spellId, bool triggered, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
 {
     if (m_cleanupDone || !victim || victim->m_cleanupDone)
-        return;
+        return SPELL_FAILED_ERROR;
 
-    CastSpell(victim, spellId, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE, castItem, triggeredByAura, originalCaster);
+    return CastSpell(victim, spellId, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE, castItem, triggeredByAura, originalCaster);
 }
 
-void Unit::CastSpell(Unit* victim, uint32 spellId, TriggerCastFlags triggerFlags /*= TRIGGER_NONE*/, Item* castItem /*= NULL*/, AuraEffect const* triggeredByAura /*= NULL*/, ObjectGuid originalCaster /*= 0*/)
+SpellCastResult Unit::CastSpell(Unit* victim, uint32 spellId, TriggerCastFlags triggerFlags /*= TRIGGER_NONE*/, Item* castItem /*= NULL*/, AuraEffect const* triggeredByAura /*= NULL*/, ObjectGuid originalCaster /*= 0*/)
 {
     if (m_cleanupDone || !victim || victim->m_cleanupDone)
-        return;
+        return SPELL_FAILED_ERROR;
 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
     if (!spellInfo)
     {
         TC_LOG_ERROR("entities.unit", "CastSpell: unknown spell id %u by caster: %s %u)", spellId, (IsPlayer() ? "player (GUID:" : "creature (Entry:"), (IsPlayer() ? GetGUIDLow() : GetEntry()));
-        return;
+        return SPELL_FAILED_ERROR;
     }
 
-    CastSpell(victim, spellInfo, triggerFlags, castItem, triggeredByAura, originalCaster);
+    return CastSpell(victim, spellInfo, triggerFlags, castItem, triggeredByAura, originalCaster);
 }
 
-void Unit::CastSpell(Unit* victim, SpellInfo const* spellInfo, bool triggered, Item* castItem/*= NULL*/, AuraEffect const* triggeredByAura /*= NULL*/, ObjectGuid originalCaster /*= 0*/)
+SpellCastResult Unit::CastSpell(Unit* victim, SpellInfo const* spellInfo, bool triggered, Item* castItem/*= NULL*/, AuraEffect const* triggeredByAura /*= NULL*/, ObjectGuid originalCaster /*= 0*/)
 {
     if (m_cleanupDone || !victim || victim->m_cleanupDone)
-        return;
+        return SPELL_FAILED_ERROR;
 
-    CastSpell(victim, spellInfo, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE, castItem, triggeredByAura, originalCaster);
+    return CastSpell(victim, spellInfo, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE, castItem, triggeredByAura, originalCaster);
 }
 
-void Unit::CastSpell(Unit* victim, SpellInfo const* spellInfo, TriggerCastFlags triggerFlags, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
+SpellCastResult Unit::CastSpell(Unit* victim, SpellInfo const* spellInfo, TriggerCastFlags triggerFlags, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
 {
     if (m_cleanupDone || !victim || victim->m_cleanupDone)
-        return;
+        return SPELL_FAILED_ERROR;
 
     SpellCastTargets targets;
     targets.SetCaster(this);
     targets.SetUnitTarget(victim);
-    CastSpell(targets, spellInfo, nullptr, triggerFlags, castItem, triggeredByAura, originalCaster);
+    return CastSpell(targets, spellInfo, nullptr, triggerFlags, castItem, triggeredByAura, originalCaster);
 }
 
 void Unit::CastCustomSpell(Unit* target, uint32 spellId, float const* bp0, float const* bp1, float const* bp2, bool triggered, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
@@ -1898,86 +1898,86 @@ void Unit::CastCustomSpell(uint32 spellId, CustomSpellValues const& value, Unit*
     CastSpell(targets, spellInfo, &value, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE, castItem, triggeredByAura, originalCaster);
 }
 
-void Unit::CastSpell(float x, float y, float z, uint32 spellId, bool triggered, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
+SpellCastResult Unit::CastSpell(float x, float y, float z, uint32 spellId, bool triggered, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
 {
     if(m_cleanupDone)
-        return;
+        return SPELL_FAILED_ERROR;
 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
     if (!spellInfo)
     {
         TC_LOG_ERROR("entities.unit", "CastSpell: unknown spell id %u by caster: %s %u)", spellId, (IsPlayer() ? "player (GUID:" : "creature (Entry:"), (IsPlayer() ? GetGUIDLow() : GetEntry()));
-        return;
+        return SPELL_FAILED_ERROR;
     }
     SpellCastTargets targets;
     targets.SetCaster(this);
     targets.SetDst(x, y, z, GetOrientation());
 
-    CastSpell(targets, spellInfo, nullptr, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE, castItem, triggeredByAura, originalCaster);
+    return CastSpell(targets, spellInfo, nullptr, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE, castItem, triggeredByAura, originalCaster);
 }
 
-void Unit::CastSpell(WorldLocation const* loc, uint32 spellId, bool triggered, Item* castItem /*= nullptr*/, AuraEffect const* triggeredByAura /*= nullptr*/, ObjectGuid originalCaster /*= ObjectGuid::Empty*/)
+SpellCastResult Unit::CastSpell(WorldLocation const* loc, uint32 spellId, bool triggered, Item* castItem /*= nullptr*/, AuraEffect const* triggeredByAura /*= nullptr*/, ObjectGuid originalCaster /*= ObjectGuid::Empty*/)
 {
-    CastSpell(loc->GetPositionX(), loc->GetPositionY(), loc->GetPositionZ(), spellId, triggered, castItem, triggeredByAura, originalCaster);
+    return CastSpell(loc->GetPositionX(), loc->GetPositionY(), loc->GetPositionZ(), spellId, triggered, castItem, triggeredByAura, originalCaster);
 }
 
-void Unit::CastSpell(G3D::Vector3 pos, uint32 spellId, bool triggered, Item* castItem /*= nullptr*/, AuraEffect const* triggeredByAura /*= nullptr*/, ObjectGuid originalCaster /*= ObjectGuid::Empty*/)
+SpellCastResult Unit::CastSpell(G3D::Vector3 pos, uint32 spellId, bool triggered, Item* castItem /*= nullptr*/, AuraEffect const* triggeredByAura /*= nullptr*/, ObjectGuid originalCaster /*= ObjectGuid::Empty*/)
 {
-    CastSpell(pos.x, pos.y, pos.z, spellId, triggered, castItem, triggeredByAura, originalCaster);
+    return CastSpell(pos.x, pos.y, pos.z, spellId, triggered, castItem, triggeredByAura, originalCaster);
 }
 
-void Unit::CastSpell(Position pos, uint32 spellId, bool triggered, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
+SpellCastResult Unit::CastSpell(Position pos, uint32 spellId, bool triggered, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
 {
     if(m_cleanupDone)
-        return;
+        return SPELL_FAILED_ERROR;
 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
     if (!spellInfo)
     {
         TC_LOG_ERROR("entities.unit", "CastSpell: unknown spell id %u by caster: %s %u)", spellId, (IsPlayer() ? "player (GUID:" : "creature (Entry:"), (IsPlayer() ? GetGUIDLow() : GetEntry()));
-        return;
+        return SPELL_FAILED_ERROR;
     }
 
     SpellCastTargets targets;
     targets.SetCaster(this);
     targets.SetDst(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation());
-    CastSpell(targets, spellInfo, nullptr, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE, castItem, triggeredByAura, originalCaster);
+    return CastSpell(targets, spellInfo, nullptr, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE, castItem, triggeredByAura, originalCaster);
 }
 
-void Unit::CastSpell(float x, float y, float z, uint32 spellId, TriggerCastFlags triggeredCastFlags, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
+SpellCastResult Unit::CastSpell(float x, float y, float z, uint32 spellId, TriggerCastFlags triggeredCastFlags, Item* castItem, AuraEffect const* triggeredByAura, ObjectGuid originalCaster)
 {
     if(m_cleanupDone)
-        return;
+        return SPELL_FAILED_ERROR;
 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
     if (!spellInfo)
     {
         TC_LOG_ERROR("entities.unit", "CastSpell: unknown spell id %u by caster: %s %u)", spellId, (IsPlayer() ? "player (GUID:" : "creature (Entry:"), (IsPlayer() ? GetGUIDLow() : GetEntry()));
-        return;
+        return SPELL_FAILED_ERROR;
     }
     SpellCastTargets targets;
     targets.SetCaster(this);
     targets.SetDst(x, y, z, GetOrientation());
 
-    CastSpell(targets, spellInfo, nullptr, triggeredCastFlags, castItem, triggeredByAura, originalCaster);
+    return CastSpell(targets, spellInfo, nullptr, triggeredCastFlags, castItem, triggeredByAura, originalCaster);
 }
 
-void Unit::CastSpell(GameObject* go, uint32 spellId, bool triggered, Item* castItem, AuraEffect* triggeredByAura, ObjectGuid originalCaster)
+SpellCastResult Unit::CastSpell(GameObject* go, uint32 spellId, bool triggered, Item* castItem, AuraEffect* triggeredByAura, ObjectGuid originalCaster)
 {
     if(m_cleanupDone)
-        return;
+        return SPELL_FAILED_ERROR;
 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
     if (!spellInfo)
     {
         TC_LOG_ERROR("entities.unit", "CastSpell: unknown spell id %u by caster: %s %u)", spellId, (IsPlayer() ? "player (GUID:" : "creature (Entry:"), (IsPlayer() ? GetGUIDLow() : GetEntry()));
-        return;
+        return SPELL_FAILED_ERROR;
     }
     SpellCastTargets targets;
     targets.SetCaster(this);
     targets.SetGOTarget(go);
 
-    CastSpell(targets, spellInfo, nullptr, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE, castItem, triggeredByAura, originalCaster);
+    return CastSpell(targets, spellInfo, nullptr, triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE, castItem, triggeredByAura, originalCaster);
 }
 
 void Unit::CastSpellOnAttackablTarget(uint32 spellId, float dist, Unit* exclude, uint32 targetCount) // not used

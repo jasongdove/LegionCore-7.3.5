@@ -587,12 +587,6 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             break;
         case SMART_ACTION_CAST:
         {
-            if(go)
-                go->CastSpell(unit, e.action.cast.spell);
-
-            if (!me)
-                break;
-
             if (e.GetTargetType() == SMART_TARGET_POSITION)
             {
                 if (e.target.x == 0.0f && e.target.y == 0.0f && e.target.z != 0.0f)
@@ -613,28 +607,57 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             if (!targets)
                 break;
 
-            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+            bool failedSpellCast = false, successfulSpellCast = false;
+
+            for (auto target : *targets)
             {
-                if (IsUnit(*itr))
+                if (!IsUnit(target))
+                    continue;
+
+                if (e.action.cast.flags & SMARTCAST_AURA_NOT_PRESENT && (!target->IsUnit() || target->ToUnit()->HasAura(e.action.cast.spell)))
+                {
+                    TC_LOG_DEBUG("scripts.ai", "Spell %u not cast because it has flag SMARTCAST_AURA_NOT_PRESENT and the target (%s) already has the aura", e.action.cast.spell, target->GetGUID().ToString().c_str());
+                    continue;
+                }
+
+                SpellCastResult result = SPELL_FAILED_BAD_TARGETS;
+                if (me)
                 {
                     if (e.action.cast.flags & SMARTCAST_INTERRUPT_PREVIOUS)
                         me->InterruptNonMeleeSpells(false);
 
-                    if (!(e.action.cast.flags & SMARTCAST_AURA_NOT_PRESENT) || !(*itr)->ToUnit()->HasAura(e.action.cast.spell))
-                    {
-                        if (e.action.cast.flags & CAST_FORCE_TARGET_SELF)
-                            (*itr)->ToUnit()->CastSpell((*itr)->ToUnit(), e.action.cast.spell, (e.action.cast.flags & SMARTCAST_TRIGGERED) != 0);
-                        else
-                            me->CastSpell((*itr)->ToUnit(), e.action.cast.spell, (e.action.cast.flags & SMARTCAST_TRIGGERED) ? true : false);
-                    }
+                    if (e.action.cast.flags & CAST_FORCE_TARGET_SELF)
+                        result = target->ToUnit()->CastSpell(target->ToUnit(), e.action.cast.spell, (e.action.cast.flags & SMARTCAST_TRIGGERED) != 0);
                     else
-                        TC_LOG_DEBUG("scripts.ai", "Spell %u not casted because it has flag SMARTCAST_AURA_NOT_PRESENT and the target (Guid: %s Entry: %u Type: %u) already has the aura", e.action.cast.spell, (*itr)->GetGUID().ToString().c_str(), (*itr)->GetEntry(), uint32((*itr)->GetTypeId()));
-                    TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_CAST:: Creature %u casts spell %u on target %u with castflags %u",
-                        me->GetGUIDLow(), e.action.cast.spell, (*itr)->GetGUIDLow(), e.action.cast.flags);
+                        result = me->CastSpell(target->ToUnit(), e.action.cast.spell, (e.action.cast.flags & SMARTCAST_TRIGGERED) != 0);
                 }
+                else if (go)
+                    result = go->CastSpell(unit, e.action.cast.spell);
+
+                bool spellCastFailed = result != SPELL_CAST_OK && result != SPELL_FAILED_SPELL_IN_PROGRESS;
+                if (me && e.action.cast.flags & SMARTCAST_COMBAT_MOVE)
+                {
+                    ENSURE_AI(SmartAI, me->AI())->SetCombatMove(spellCastFailed);
+                }
+
+                if (spellCastFailed)
+                    failedSpellCast = true;
+                else
+                    successfulSpellCast = true;
+
+                TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_CAST:: %s casts spell %u on target %s with castflags %u",
+                    me ? me->GetGUID().ToString().c_str() : go->GetGUID().ToString().c_str(), e.action.cast.spell, target->GetGUID().ToString().c_str(), e.action.cast.flags);
             }
 
             delete targets;
+
+            // If there is at least 1 failed cast and no successful casts at all, retry again on next loop
+            if (failedSpellCast && !successfulSpellCast)
+            {
+                RecalcTimer(e, 500, 500);
+                return;
+            }
+
             break;
         }
         case SMART_ACTION_CAST_CUSTOM:

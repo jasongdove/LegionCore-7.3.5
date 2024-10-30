@@ -2313,16 +2313,16 @@ void GameObject::Use(Unit* user)
         CastSpell(user, spellId);
 }
 
-void GameObject::CastSpell(Unit* target, uint32 spellId)
+SpellCastResult GameObject::CastSpell(Unit* target, uint32 spellId)
 {
     if (target)
         if (Player* tmpPlayer = target->ToPlayer())
             if (tmpPlayer->IsSpectator())
-                return;
+                return SPELL_FAILED_ERROR;
 
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
     if (!spellInfo)
-        return;
+        return SPELL_FAILED_ERROR;
 
     bool self = false;
 
@@ -2360,8 +2360,9 @@ void GameObject::CastSpell(Unit* target, uint32 spellId)
     if (self)
     {
         if (target)
-            target->CastSpell(target, spellInfo, true);
-        return;
+            return target->CastSpell(target, spellInfo, true);
+
+        return SPELL_FAILED_ERROR;
     }
 
     if (goInfo->type == GAMEOBJECT_TYPE_TRAP && target && target->IsPlayer())
@@ -2372,14 +2373,14 @@ void GameObject::CastSpell(Unit* target, uint32 spellId)
     //summon world trigger
     Creature* trigger = SummonTrigger(GetPositionX(), GetPositionY(), GetPositionZ(), 0, spellInfo->CalcCastTime() + 100);
     if (!trigger)
-        return;
+        return SPELL_FAILED_ERROR;
 
     if (Unit* owner = GetOwner())
     {
         trigger->setFaction(owner->getFaction());
         // needed for GO casts for proper target validation checks
         trigger->SetGuidValue(UNIT_FIELD_SUMMONED_BY, owner->GetGUID());
-        trigger->CastSpell(target ? target : trigger, spellInfo, true, nullptr, nullptr, owner->GetGUID());
+        return trigger->CastSpell(target ? target : trigger, spellInfo, true, nullptr, nullptr, owner->GetGUID());
     }
     else
     {
@@ -2388,7 +2389,7 @@ void GameObject::CastSpell(Unit* target, uint32 spellId)
         trigger->setFaction(14);
         // Set owner guid for target if no owner available - needed by trigger auras
         // - trigger gets despawned and there's no caster avalible (see AuraEffect::TriggerSpell())
-        trigger->CastSpell(target ? target : trigger, spellInfo, true, nullptr, nullptr, target ? target->GetGUID() : ObjectGuid::Empty);
+        return trigger->CastSpell(target ? target : trigger, spellInfo, true, nullptr, nullptr, target ? target->GetGUID() : ObjectGuid::Empty);
     }
 }
 

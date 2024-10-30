@@ -390,7 +390,7 @@ class Spell
         void SearchChainTargets(std::list<WorldObject*>& targets, uint32 chainTargets, WorldObject* target, SpellTargetObjectTypes objectType, SpellTargetCheckTypes selectType, ConditionList* condList, bool isChainHeal);
 
         void preparePetCast(SpellCastTargets const* targets, Unit* target, Unit* pet, ObjectGuid petGuid, Player* player);
-        void prepare(SpellCastTargets const* targets);
+        SpellCastResult prepare(SpellCastTargets const* targets);
         void cancel();
         void update(uint32 difftime);
         void cast(bool skipCheck = false);
