@@ -7675,10 +7675,14 @@ void Spell::EffectQuestStart(SpellEffIndex effIndex)
         if (qInfo->IsAutoAccept() && player->CanAddQuest(qInfo, false))
         {
             player->AddQuestAndCheckCompletion(qInfo, player);
+            player->SetPopupQuestId(0);
             player->PlayerTalkClass->SendQuestGiverQuestDetails(qInfo, player->GetGUID(), true, true);
         }
         else
+        {
+            player->SetPopupQuestId(qInfo->GetQuestId());
             player->PlayerTalkClass->SendQuestGiverQuestDetails(qInfo, player->GetGUID(), true, false);
+        }
     }
 }
 

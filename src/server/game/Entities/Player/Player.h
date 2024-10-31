@@ -1923,6 +1923,7 @@ class Player : public Unit, public GridObject<Player>
         void PrepareAreaQuest(uint32 area);
         void PrepareQuestMenu(ObjectGuid guid);
         void SendPreparedQuest(ObjectGuid guid);
+        bool IsActiveQuest(uint32 quest_id) const;
         Quest const* GetNextQuest(ObjectGuid guid, Quest const* quest);
         bool CanSeeStartQuest(Quest const* quest);
         bool CanTakeQuest(Quest const* quest, bool msg);
@@ -2038,6 +2039,10 @@ class Player : public Unit, public GridObject<Player>
         ObjectGuid GetPlayerSharingQuest() const { return m_playerSharingQuest; }
         void SetQuestSharingInfo(ObjectGuid guid, uint32 id) { m_playerSharingQuest = guid; m_sharedQuestId = id; }
         void ClearQuestSharingInfo() { m_playerSharingQuest = ObjectGuid::Empty; m_sharedQuestId = 0; }
+
+        // Returns the ID of the next available quest in chain of the most recently rewarded quest that has been rewarded via UI popup
+        uint32 GetPopupQuestId() const { return m_popupQuestId; }
+        void SetPopupQuestId(uint32 questId) { m_popupQuestId = questId; }
 
         uint32 GetInGameTime() { return m_ingametime; }
         void SetInGameTime(uint32 time) { m_ingametime = time; }
@@ -3301,6 +3306,7 @@ class Player : public Unit, public GridObject<Player>
 
         ObjectGuid m_playerSharingQuest;
         uint32 m_sharedQuestId;
+        uint32 m_popupQuestId;
         uint32 m_ingametime;
 
         /*********************************************************/

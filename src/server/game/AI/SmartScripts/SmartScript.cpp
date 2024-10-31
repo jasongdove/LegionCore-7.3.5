@@ -349,35 +349,41 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             delete targets;
             break;
         }
-        case SMART_ACTION_ADD_QUEST:
+        case SMART_ACTION_OFFER_QUEST:
         {
             ObjectList* targets = GetTargets(e, unit);
             if (!targets)
                 break;
 
-            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+            for (WorldObject* target : *targets)
             {
-                if (Player* player = (*itr)->ToPlayer())
+                if (Player* player = target->ToPlayer())
                 {
-                    if (Quest const* q = sQuestDataStore->GetQuestTemplate(e.action.quest.quest))
+                    if (Quest const* q = sQuestDataStore->GetQuestTemplate(e.action.questOffer.questID))
                     {
-                        uint32 questid = q->GetQuestId();
-                        if(e.action.quest.check)
+                        if (e.action.questOffer.directAdd == 0)
                         {
-                            if (player->GetQuestStatus(e.action.quest.quest) == e.action.quest.queststate && player->GetQuestStatus(e.action.quest.prequest) == e.action.quest.prequeststate)
+                            if (player->CanTakeQuest(q, false))
                             {
-                                player->AddQuest(q, nullptr);
-                                if (player->CanCompleteQuest(questid))
-                                    player->CompleteQuest(questid);
+                                if (WorldSession* session = player->GetSession())
+                                {
+                                    if (me)
+                                        player->SetPopupQuestId(0);
+                                    else
+                                        // allow accepting popup quest from self (e.g. area trigger)
+                                        player->SetPopupQuestId(q->GetQuestId());
+
+                                    PlayerMenu menu(session);
+                                    menu.SendQuestGiverQuestDetails(q, me ? me->GetGUID() : player->GetGUID(), true, false);
+                                    TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_OFFER_QUEST: Player %s - offering quest %u", player->GetGUID().ToString().c_str(), e.action.questOffer.questID);
+                                }
                             }
-                            TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_ADD_QUEST: Player guidLow %u add quest %u, queststate %u, prequeststate %u",
-                                (*itr)->GetGUIDLow(), e.action.quest.quest, player->GetQuestStatus(e.action.quest.quest), player->GetQuestStatus(e.action.quest.prequest));
                         }
                         else
                         {
                             player->AddQuestAndCheckCompletion(q, nullptr);
-                            TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_ADD_QUEST: Player guidLow %u add quest %u",
-                                (*itr)->GetGUIDLow(), e.action.quest.quest);
+                            TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_OFFER_QUEST: Player %s - quest %u added",
+                                player->GetGUID().ToString().c_str(), e.action.questOffer.questID);
                         }
                     }
                 }

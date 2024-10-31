@@ -121,12 +121,31 @@ void WorldSession::HandleQuestGiverAcceptQuest(WorldPackets::Quest::QuestGiverAc
 
     if (Player* playerQuestObject = object->ToPlayer())
     {
-        if ((_player->GetPlayerSharingQuest().IsEmpty() && _player->GetPlayerSharingQuest() != packet.QuestGiverGUID) ||  !playerQuestObject->CanShareQuest(packet.QuestID))
+        // Various checks for player quest givers
+        if ((!_player->GetPlayerSharingQuest().IsEmpty() && _player->GetPlayerSharingQuest() != packet.QuestGiverGUID) // Player tries to accept a shared quest from a different questiver
+            || (_player != playerQuestObject) && !playerQuestObject->CanShareQuest(packet.QuestID))                    // Player tries to accept a quest that cannot be shared
         {
             CLOSE_GOSSIP_CLEAR_SHARING_INFO();
             return;
         }
+
+        // Player tries to accept a quest from a player questgiver that he is not in a party/raid with
         if (!_player->IsInSameRaidWith(playerQuestObject))
+        {
+            CLOSE_GOSSIP_CLEAR_SHARING_INFO();
+            return;
+        }
+
+        // Player tries to accept a quest from himself that cannot be taken. Such quests must be provided by a quest with QUEST_FLAGS_AUTOCOMPLETE prior to that
+        if (_player->GetPopupQuestId())
+        {
+            if (_player->GetPopupQuestId() != packet.QuestID || _player->GetGUID() != packet.QuestGiverGUID)
+            {
+                CLOSE_GOSSIP_CLEAR_SHARING_INFO();
+                return;
+            }
+        }
+        else if (_player->GetGUID() == packet.QuestGiverGUID) // Covering all remaining possible cheat scenarios when trying to exploit quest sharing
         {
             CLOSE_GOSSIP_CLEAR_SHARING_INFO();
             return;
@@ -200,6 +219,10 @@ void WorldSession::HandleQuestGiverAcceptQuest(WorldPackets::Quest::QuestGiverAc
             if (quest->SourceSpellID)
                 _player->CastSpell(_player, quest->SourceSpellID, true);
 
+            // A quest has been accepted, reset popup follow quest ID because the quest has either been taken or another took its place
+            // so the player has to take the follow quest at its corresponding creature questgiver instead.
+            _player->SetPopupQuestId(0);
+
             return;
         }
     }
@@ -233,7 +256,10 @@ void WorldSession::HandleQuestGiverQueryQuest(WorldPackets::Quest::QuestGiverQue
         if (quest->IsAutoComplete())
             _player->PlayerTalkClass->SendQuestGiverRequestItems(quest, object->GetGUID(), _player->CanCompleteQuest(quest->GetQuestId()), true);
         else
+        {
+            _player->SetPopupQuestId(0);
             _player->PlayerTalkClass->SendQuestGiverQuestDetails(quest, object->GetGUID(), true, false);
+        }
     }
 }
 
@@ -446,6 +472,12 @@ void WorldSession::HandleQuestGiverChooseReward(WorldPackets::Quest::QuestGiverC
                             _player->AddQuestAndCheckCompletion(nextQuest, object);
                         }
 
+                        // Previous quest has been rewarded via popup. The player may now accept the follow quest from himself.
+                        if (object->IsPlayer() && quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE) && !nextQuest->IsAutoAccept())
+                            _player->SetPopupQuestId(nextQuest->GetQuestId());
+                        else
+                            _player->SetPopupQuestId(0);
+
                         _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextQuest, packet.QuestGiverGUID, true, false);
                     }
 
@@ -465,6 +497,7 @@ void WorldSession::HandleQuestGiverChooseReward(WorldPackets::Quest::QuestGiverC
                         if (nextQuest->IsAutoAccept() && _player->CanAddQuest(nextQuest, true))
                             _player->AddQuestAndCheckCompletion(nextQuest, object);
 
+                        _player->SetPopupQuestId(0);
                         _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextQuest, packet.QuestGiverGUID, true, false);
                     }
                 }
@@ -558,34 +591,34 @@ void WorldSession::HandleQuestLogRemoveQuest(WorldPackets::Quest::QuestLogRemove
 
 void WorldSession::HandleQuestConfirmAccept(WorldPackets::Quest::QuestConfirmAccept& packet)
 {
-    if (Quest const* quest = sQuestDataStore->GetQuestTemplate(packet.QuestID))
-    {
-        if (!quest->HasFlag(QUEST_FLAGS_PARTY_ACCEPT))
-            return;
+    if (_player->GetSharedQuestID() != uint32(packet.QuestID))
+        return;
 
-        Player* originalPlayer = ObjectAccessor::FindPlayer(_player->GetPlayerSharingQuest());
-        if (!originalPlayer)
-            return;
+    _player->ClearQuestSharingInfo();
+    Quest const* quest = sQuestDataStore->GetQuestTemplate(packet.QuestID);
+    if (!quest)
+      return;
 
-        if (!_player->IsInSameRaidWith(originalPlayer))
-            return;
+    Player* originalPlayer = ObjectAccessor::FindPlayer(_player->GetPlayerSharingQuest());
+    if (!originalPlayer)
+        return;
 
-//        if (!originalPlayer->IsActiveQuest(packet.QuestID))
-//            return;
+    if (!_player->IsInSameRaidWith(originalPlayer))
+        return;
 
-        if (!_player->CanTakeQuest(quest, true))
-            return;
+    if (!originalPlayer->IsActiveQuest(packet.QuestID))
+        return;
 
-        if (_player->CanAddQuest(quest, true))
-        {
-            _player->AddQuestAndCheckCompletion(quest, NULL); // NULL, this prevent DB script from duplicate running
+    if (!_player->CanTakeQuest(quest, true))
+        return;
 
-            if (quest->SourceSpellID)
-                _player->CastSpell(_player, quest->SourceSpellID, true);
-        }
+    if (!_player->CanAddQuest(quest, true))
+        return;
 
-        _player->ClearQuestSharingInfo();
-    }
+    _player->AddQuestAndCheckCompletion(quest, nullptr); // NULL, this prevent DB script from duplicate running
+
+    if (quest->SourceSpellID)
+        _player->CastSpell(_player, quest->SourceSpellID, true);
 }
 
 void WorldSession::HandleQuestgiverCompleteQuest(WorldPackets::Quest::QuestGiverCompleteQuest& packet)
@@ -713,6 +746,7 @@ void WorldSession::HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty&
             player->PlayerTalkClass->SendQuestGiverRequestItems(quest, _player->GetGUID(), player->CanCompleteRepeatableQuest(quest), true);
         else
         {
+            player->SetPopupQuestId(0);
             player->SetQuestSharingInfo(_player->GetGUID(), quest->GetQuestId());
             player->PlayerTalkClass->SendQuestGiverQuestDetails(quest, player->GetGUID(), true, false);
         }

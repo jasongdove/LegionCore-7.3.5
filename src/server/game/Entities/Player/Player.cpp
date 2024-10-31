@@ -190,6 +190,9 @@ m_achievementMgr(sf::safe_ptr<AchievementMgr<Player>>(this))
 
     m_session = session;
 
+    m_sharedQuestId = 0;
+    m_popupQuestId = 0;
+
     m_ExtraFlags = 0;
 
     m_spellModTakingSpell = NULL;
@@ -18502,7 +18505,10 @@ void Player::SendPreparedQuest(ObjectGuid guid)
                 else if (quest->IsAutoComplete() && !quest->IsDailyOrWeekly() && !quest->IsMonthly())
                     PlayerTalkClass->SendQuestGiverRequestItems(quest, object->GetGUID(), CanRewardQuest(quest, false), true);
                 else
+                {
+                    SetPopupQuestId(0);
                     PlayerTalkClass->SendQuestGiverQuestDetails(quest, object->GetGUID(), true, false);
+                }
             }
 
             return;
@@ -18523,6 +18529,11 @@ void Player::SendPreparedQuest(ObjectGuid guid)
     }
 
     PlayerTalkClass->SendQuestGiverQuestList(BroadcastTextID, guid);
+}
+
+bool Player::IsActiveQuest(uint32 quest_id) const
+{
+    return m_QuestStatus.find(quest_id) != m_QuestStatus.end();
 }
 
 Quest const* Player::GetNextQuest(ObjectGuid guid, Quest const* quest)
