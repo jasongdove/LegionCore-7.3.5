@@ -464,7 +464,7 @@ class spell_coen_blinding_glare : public SpellScriptLoader
                     if (object == nullptr)
                         return true;
 
-                    if (!object->isInFront(caster, M_PI))
+                    if (!object->isInFront(caster, float(M_PI)))
                         return true;
 
                     return false;

@@ -327,7 +327,7 @@ struct boss_tichonrius : BossAI
                     for (uint8 i = 0; i < 4; ++i)
                     {
                         centrPos.SimplePosXYRelocationByAngle(pos, 20.0f, angle);
-                        angle += M_PI / 2;
+                        angle += float(M_PI / 2);
 
                         AddDelayedEvent(500 * i, [this, pos]() -> void
                         {

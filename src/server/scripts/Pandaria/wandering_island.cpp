@@ -1231,12 +1231,12 @@ class at_going_to_east : public AreaTriggerScript
             if (Creature *cai = player->SummonCreature(NPC_EAST_CHILDREN_CAI, 934.0156f, 3513.154f, 188.1347f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN))
             {
                 cai->AI()->SetGUID(player->GetGUID(), 0);
-                cai->GetMotionMaster()->MoveFollow(player, 2.0f, M_PI / 4);
+                cai->GetMotionMaster()->MoveFollow(player, 2.0f, float(M_PI / 4));
             }
             if (Creature *cai = player->SummonCreature(NPC_EAST_CHILDREN_DEN, 949.37f, 3510.0f, 187.7983f, 0.0f, TEMPSUMMON_MANUAL_DESPAWN))
             {
                 cai->AI()->SetGUID(player->GetGUID(), 0);
-                cai->GetMotionMaster()->MoveFollow(player, 2.0f, M_PI / 2);
+                cai->GetMotionMaster()->MoveFollow(player, 2.0f, float(M_PI / 2));
             }
             return true;
         }
@@ -1710,7 +1710,7 @@ public:
                 case EVENT_SUMMON_WATER_SPOUT:
                 {
                     float x = 0.0f, y = 0.0f;
-                    GetPositionWithDistInOrientation(me, 5.0f, me->GetOrientation() + frand(-M_PI, M_PI), x, y);
+                    GetPositionWithDistInOrientation(me, 5.0f, me->GetOrientation() + frand(float(- M_PI), float(M_PI)), x, y);
                     waterSpoutGUID.Clear();
 
                     if (Creature* waterSpout = me->SummonCreature(60488, x, y, 92.189629f))
@@ -5233,7 +5233,7 @@ public:
             if (Player* target = sObjectAccessor->FindPlayer(playerGuid))
                 if (Creature* czi = me->FindNearestCreature(NPC_CZI, 200.0f, true))
                 {
-                    czi->GetMotionMaster()->MoveFollow(target, 2.0f, M_PI / 4);
+                    czi->GetMotionMaster()->MoveFollow(target, 2.0f, float(M_PI / 4));
                     CziGUID = czi->GetGUID();
                 }
         }

@@ -4082,7 +4082,7 @@ void SpellMgr::LoadSpellCustomAttr()
     // Fists of Fury, Fury of the Eagle
     ApplySpellFix({117418, 120086, 203413}, [](SpellInfo* spellInfo)
     {
-        spellInfo->TargetRestrictions.ConeAngle = M_PI;
+        spellInfo->TargetRestrictions.ConeAngle = float(M_PI);
     });
 
     // Lay of Hands, Greater Blessing of Kings, Greater Blessing of Wisdom, Death from Above, Soul Rip, Stormlash, Stormlash (Honor Talent), Mark of Shifting

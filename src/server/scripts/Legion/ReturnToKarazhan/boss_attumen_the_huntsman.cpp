@@ -175,14 +175,14 @@ public:
 
                 for (uint8 i = 0; i < 11; i++)
                 {
-                    pos1 = me->GetNearPosition(dist, angle + frand(-M_PI/2, M_PI/2));
+                    pos1 = me->GetNearPosition(dist, angle + frand(float(- M_PI / 2), float(M_PI / 2)));
                     me->CastSpell(pos1, SPELL_SPECTRAL_CHARGE_AT, true);
                     dist += 4;
                 }
 
                 for (uint8 i = 0; i < 6; i++)
                 {
-                    pos2 = me->GetNearPosition(dist, angle2 + frand(-M_PI/2, M_PI/2));
+                    pos2 = me->GetNearPosition(dist, angle2 + frand(float(- M_PI / 2), float(M_PI / 2)));
                     me->CastSpell(pos2, SPELL_SPECTRAL_CHARGE_AT, true);
                     dist2 += 4;
                 }

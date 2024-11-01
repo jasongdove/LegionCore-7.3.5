@@ -152,12 +152,12 @@ struct boss_ularogg_cragshaper : public BossAI
             case SPELL_STRIKE_MOUNTAIN_2:
             {
                 Position pos;
-                float angle = M_PI;
+                float angle = float(M_PI);
                 for (uint8 i = 0; i < 4; ++i)
                 {
                     pos = target->GetNearPosition(5.0f, angle);
                     target->CastSpell(pos, SPELL_STRIKE_MOUNTAIN_AT, true);
-                    angle += M_PI / 2.0f;
+                    angle += float(M_PI / 2.0f);
                 }
                 break;
             }

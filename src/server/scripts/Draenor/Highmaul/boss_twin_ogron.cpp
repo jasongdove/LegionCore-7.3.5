@@ -587,7 +587,7 @@ struct boss_twin_ogron_phemos : public BossAI
                 m_EnfeeblingRoarScheduled = false;
                 m_WhirlwindScheduled = false;
 
-                float o = frand(0, 2 * M_PI);
+                float o = frand(0, float(2 * M_PI));
                 Position pos = {(centerPos.m_positionX + (circleToCenterDist * cos(o))), (centerPos.m_positionY + (circleToCenterDist * sin(o))), centerPos.m_positionZ, 0.0f};
 
                 pos.SetOrientation(pos.GetAngle(&centerPos));
@@ -603,7 +603,7 @@ struct boss_twin_ogron_phemos : public BossAI
                 me->CastSpell(pos, BlazeWeaponVisual, true);
                 me->SendPlaySpellVisualKit(QuakeVisualID, 0, 0);
 
-                o += M_PI;
+                o += float(M_PI);
                 pos = {(centerPos.m_positionX + (circleToCenterDist * cos(o))), (centerPos.m_positionY + (circleToCenterDist * sin(o))), centerPos.m_positionZ, 0.0f};
 
                 pos.SetOrientation(pos.GetAngle(&centerPos));
@@ -914,7 +914,7 @@ struct boss_twin_ogron_phemos : public BossAI
     {
         if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(BlazeFirstSpawn))
         {
-            float oStep = (pos.GetOrientation() - (M_PI / 2.0f)) + frand(0.0f, (M_PI / 3.0f));
+            float oStep = (pos.GetOrientation() - (M_PI / 2.0f)) + frand(0.0f, float(M_PI / 3.0f));
 
             for (uint8 i = 0; i < BlazeFirstSpawnCounter; ++i)
             {
@@ -952,7 +952,7 @@ struct boss_twin_ogron_phemos : public BossAI
                     timer += 500;
                 }
 
-                oStep += M_PI / 3.0f;
+                oStep += float(M_PI / 3.0f);
             }
         }
     }

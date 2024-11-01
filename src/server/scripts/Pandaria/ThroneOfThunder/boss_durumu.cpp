@@ -1306,7 +1306,7 @@ public:
                     {
                         for (std::list<Player*>::const_iterator itr = pllist.begin(); itr != pllist.end(); itr++)
                         {
-                            if (me->isInFront(*itr, M_PI / 6))
+                            if (me->isInFront(*itr, float(M_PI / 6)))
                             {
                                 if (!(*itr)->HasAura(lightaura))
                                     (*itr)->CastSpell(*itr, lightaura, true);
@@ -1327,7 +1327,7 @@ public:
                         {
                             for (std::list<Creature*>::const_iterator Itr = foglist.begin(); Itr != foglist.end(); Itr++)
                             {
-                                if (me->isInFront(*Itr, M_PI / 6))
+                                if (me->isInFront(*Itr, float(M_PI / 6)))
                                 {
                                     if (!(*Itr)->HasAura(_lightaura))
                                         (*Itr)->CastSpell(*Itr, _lightaura, true);
@@ -2116,7 +2116,7 @@ public:
 
     bool operator()(WorldObject* unit)
     {
-        if (_caster->isInFront(unit, M_PI / 6))
+        if (_caster->isInFront(unit, float(M_PI / 6)))
             return false;
         return true;
     }

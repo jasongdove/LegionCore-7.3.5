@@ -757,7 +757,7 @@ struct boss_tectus : public BossAI
 
         for (uint8 i = 0; i < ShardSpawnCount; ++i)
         {
-            float o = frand(0, 2 * M_PI);
+            float o = frand(0, float(2 * M_PI));
             float x = originX + (range * cos(o));
             float y = originY + (range * sin(o));
 
@@ -775,7 +775,7 @@ struct boss_tectus : public BossAI
 
         for (uint8 i = 0; i < MotesSpawnCount; ++i)
         {
-            float o = frand(0, 2 * M_PI);
+            float o = frand(0, float(2 * M_PI));
             float x = originX + (range * cos(o));
             float y = originY + (range * sin(o));
 
@@ -794,7 +794,7 @@ struct boss_tectus : public BossAI
 
         if (target != nullptr)
         {
-            float o = frand(0, 2 * M_PI);
+            float o = frand(0, float(2 * M_PI));
             float range = 5.0f;
             float x = target->GetPositionX() + (range * cos(o));
             float y = target->GetPositionY() + (range * sin(o));

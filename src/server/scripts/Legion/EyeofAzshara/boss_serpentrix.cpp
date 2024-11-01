@@ -301,7 +301,7 @@ struct npc_eye_of_azshara_stormwake_hydra : public ScriptedAI
                     {
                         if (auto player = Player::GetPlayer(*me, ref->getUnitGuid()))
                         {
-                            if (player->GetDistance(me) < 5.0f && me->isInBack(player, M_PI / 2))
+                            if (player->GetDistance(me) < 5.0f && me->isInBack(player, float(M_PI / 2)))
                             {
                                 DoCast(196287);
                                 events.RescheduleEvent(EVENT_3, 24000);
@@ -513,7 +513,7 @@ class spell_eye_of_azshara_roiling_storm_script : public SpellScript
         if (GetId() == 196299)
         {
             maxCount = 3;
-            angle += -M_PI / 6;
+            angle += float(- M_PI / 6);
         }
 
         for (uint8 i = 0; i < maxCount; ++i)
@@ -533,7 +533,7 @@ class spell_eye_of_azshara_roiling_storm_script : public SpellScript
                 }
             });
 
-            angle += M_PI / 6;
+            angle += float(M_PI / 6);
         }
     }
 

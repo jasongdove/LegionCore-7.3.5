@@ -302,7 +302,7 @@ void PetAI::UpdateAI(uint32 diff)
             targets.SetCaster(target);
             targets.SetUnitTarget(target);
 
-            if (!me->HasInArc(M_PI, target))
+            if (!me->HasInArc(float(M_PI), target))
             {
                 me->SetInFront(target);
                 if (target && target->IsPlayer())

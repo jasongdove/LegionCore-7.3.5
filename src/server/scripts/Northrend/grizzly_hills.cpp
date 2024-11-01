@@ -96,7 +96,7 @@ public:
                     break;
                 case 11:
                     if (Creature* Mrfloppy = Unit::GetCreature(*me, MrfloppyGUID))
-                        Mrfloppy->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+                        Mrfloppy->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE));
                     break;
                 case 17:
                     if (Creature* Mrfloppy = Unit::GetCreature(*me, MrfloppyGUID))
@@ -152,7 +152,7 @@ public:
                                 RWORG->DisappearAndDie();
                             me->GetMotionMaster()->MovePoint(0, Mrfloppy->GetPositionX(), Mrfloppy->GetPositionY(), Mrfloppy->GetPositionZ());
                             Mrfloppy->setDeathState(ALIVE);
-                            Mrfloppy->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+                            Mrfloppy->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE));
                             DoScriptText(SAY_VICTORY3, me);
                         }
                     }
@@ -209,7 +209,7 @@ public:
         {
             DoScriptText(SAY_QUEST_ACCEPT, creature);
             if (Creature* Mrfloppy = GetClosestCreatureWithEntry(creature, NPC_MRFLOPPY, 180.0f))
-                Mrfloppy->GetMotionMaster()->MoveFollow(creature, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+                Mrfloppy->GetMotionMaster()->MoveFollow(creature, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE));
 
             if (npc_escortAI* pEscortAI = CAST_AI(npc_emily::npc_emilyAI, (creature->AI())))
                 pEscortAI->Start(true, false, player->GetGUID());

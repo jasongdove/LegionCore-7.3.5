@@ -389,7 +389,7 @@ class npc_tempest_slash : public CreatureScript
 
             void FillCirclePath(Position const& centerPos, float radius, float z, Movement::PointsArray& path)
             {
-                float stepbyangle = 2*M_PI / 8;
+                float stepbyangle = float(2 * M_PI / 8);
 
                 for (uint8 i = 0; i < 8; ++i)
                 {

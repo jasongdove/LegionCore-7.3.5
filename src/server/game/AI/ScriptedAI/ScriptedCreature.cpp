@@ -1165,7 +1165,7 @@ void GetPosInRadiusWithRandomOrientation(Unit* unit, float dist, float &x, float
 
 void GetRandPosFromCenterInDist(float centerX, float centerY, float dist, float& x, float& y)
 {
-    float randOrientation = frand(0, 2 * M_PI);
+    float randOrientation = frand(0, float(2 * M_PI));
 
     x = centerX + (dist * cos(randOrientation));
     y = centerY + (dist * sin(randOrientation));

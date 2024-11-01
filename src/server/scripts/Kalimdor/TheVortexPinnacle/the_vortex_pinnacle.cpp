@@ -1226,7 +1226,7 @@ class spell_lurk_search_dummy : public SpellScript
         if (!caster || !target)
             return;
 
-        if (target->isInFront(caster, M_PI / 2))
+        if (target->isInFront(caster, float(M_PI / 2)))
             caster->CastSpell(caster, SPELL_FEIGN_DEATH, false);
         else
         {

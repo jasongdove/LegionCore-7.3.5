@@ -296,8 +296,8 @@ struct boss_cenarius : public BossAI
 
                         for (uint8 i = 0; i < 3; ++i)
                         {
-                            beastsPos[*itr].SimplePosXYRelocationByAngle(posLeft, dist, M_PI/3); //Left
-                            beastsPos[*itr].SimplePosXYRelocationByAngle(posRight, dist, -M_PI/3); //Right
+                            beastsPos[*itr].SimplePosXYRelocationByAngle(posLeft, dist, float(M_PI/3)); //Left
+                            beastsPos[*itr].SimplePosXYRelocationByAngle(posRight, dist, float(- M_PI / 3)); //Right
                             me->SummonCreature(NPC_BEAST_OF_NIGHTMARE, posLeft.GetPositionX(), posLeft.GetPositionY(), posLeft.GetPositionZ(), beastsPos[*itr].GetOrientation());
                             me->SummonCreature(NPC_BEAST_OF_NIGHTMARE, posRight.GetPositionX(), posRight.GetPositionY(), posRight.GetPositionZ(), beastsPos[*itr].GetOrientation());
                             dist += 4;
@@ -310,8 +310,8 @@ struct boss_cenarius : public BossAI
 
                         for (uint8 i = 0; i < 3; ++i)
                         {
-                            beastsPos[*itr].SimplePosXYRelocationByAngle(posLeft, dist, M_PI/2); //Left
-                            beastsPos[*itr].SimplePosXYRelocationByAngle(posRight, dist, -M_PI/2); //Right
+                            beastsPos[*itr].SimplePosXYRelocationByAngle(posLeft, dist, float(M_PI/2)); //Left
+                            beastsPos[*itr].SimplePosXYRelocationByAngle(posRight, dist, float(- M_PI / 2)); //Right
                             me->SummonCreature(NPC_BEAST_OF_NIGHTMARE, posLeft);
                             me->SummonCreature(NPC_BEAST_OF_NIGHTMARE, posRight);
                             dist += 4;

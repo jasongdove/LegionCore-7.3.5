@@ -4708,9 +4708,9 @@ void Spell::EffectSummonPet(SpellEffIndex effIndex)
 
     Position pos;
     if (canHitTargetInLOS && owner->ToCreature())
-        owner->GetNearPoint2D(pos, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+        owner->GetNearPoint2D(pos, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE));
     else
-        pos = owner->GetFirstCollisionPosition(PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+        pos = owner->GetFirstCollisionPosition(PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE));
 
     bool isNew = false;
     Pet* pet = owner->SummonPet(petentry, petSlot, pos.m_positionX, pos.m_positionY, pos.m_positionZ, owner->GetOrientation(), 0, &isNew);
@@ -6992,14 +6992,14 @@ void Spell::EffectLeapBack(SpellEffIndex effIndex)
     switch (m_spellInfo->GetMisc()->MiscData.IconFileDataID)
     {
         case 236163: // Wild Charge (Talent)
-            angle = M_PI;
+            angle = float(M_PI);
             break;
         case 132572: // Disengage
         {
             if (Unit* victim = unitTarget->getVictim())
                 angle = victim->GetAngle(unitTarget);
             else
-                angle = M_PI;
+                angle = float(M_PI);
             break;
         }
         case 134065: // Trampoline Bounce

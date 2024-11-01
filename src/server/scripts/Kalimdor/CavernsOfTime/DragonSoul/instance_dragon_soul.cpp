@@ -919,13 +919,13 @@ class instance_dragon_soul : public InstanceMapScript
                     {
                         Position offset = { 0.0f, -10.0f, 10.0f };
                         assaultPos->RelocateOffset(offset);
-                        assaultPos->SetOrientation(M_PI/2);
+                        assaultPos->SetOrientation(float(M_PI /2 ));
                     }
                     else
                     {
                         Position offset = { 0.0f, 10.0f, 10.0f };
                         assaultPos->RelocateOffset(offset);
-                        assaultPos->SetOrientation(M_PI*2 - M_PI/2);
+                        assaultPos->SetOrientation(float(M_PI * 2 - M_PI / 2));
                     }
 
                     twilightAssaultLanesUsedH[row] = fromEnd ? 2 : 1;
@@ -973,7 +973,7 @@ class instance_dragon_soul : public InstanceMapScript
                     {
                         Position offset = { 10.0f, 0.0f, 10.0f };
                         assaultPos->RelocateOffset(offset);
-                        assaultPos->SetOrientation(M_PI);
+                        assaultPos->SetOrientation(float(M_PI));
                     }
 
                     twilightAssaultLanesUsedV[col] = fromEnd ? 2 : 1;

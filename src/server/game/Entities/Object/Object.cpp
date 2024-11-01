@@ -2600,7 +2600,7 @@ bool WorldObject::CanDetectStealthOf(WorldObject const* obj) const
 //         if(player->HaveAtClient(obj) && distance < (ATTACK_DISTANCE * 2))
 //             return true;
 
-    if (!HasInArc(M_PI, obj))
+    if (!HasInArc(float(M_PI), obj))
         return false;
 
     GameObject const* go = ToGameObject();

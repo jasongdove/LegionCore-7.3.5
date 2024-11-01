@@ -7329,7 +7329,7 @@ void AuraEffect::HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster, 
                         for (uint8 i = 0; i < 2; ++i)
                         {
                             Position pos;
-                            pos = caster->GetNearPosition(40.0f, frand(0.0f, 2 * M_PI));
+                            pos = caster->GetNearPosition(40.0f, frand(0.0f, float(2 * M_PI)));
                             if (caster->GetDistance(pos) >= 20.0f)
                                 caster->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), 103177, true);
                         }

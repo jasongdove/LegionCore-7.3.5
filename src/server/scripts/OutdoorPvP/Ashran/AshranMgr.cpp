@@ -19,7 +19,7 @@ OPvPCapturePoint_Middle::OPvPCapturePoint_Middle(OutdoorPvP* outdoor, eBattleTyp
     : OPvPCapturePoint(outdoor), m_BattleType(type), m_BattleFaction(p_Faction)
 {
     SetCapturePointData(g_CapturePoint[type]);
-    AddCreature(AshranGenericMobTypeID + type, SLGGenericMoPLargeAoI, TEAM_NONE, AshranMapID, g_CapturePoint[type].x, g_CapturePoint[type].y, g_CapturePoint[type].z, M_PI);
+    AddCreature(AshranGenericMobTypeID + type, SLGGenericMoPLargeAoI, TEAM_NONE, AshranMapID, g_CapturePoint[type].x, g_CapturePoint[type].y, g_CapturePoint[type].z, float(M_PI));
     static_cast<OutdoorPvPAshran*>(m_PvP)->AddGenericMoPGuid(type, m_Creatures[AshranGenericMobTypeID + type]);
 
     if (type == EmberfallTower)
@@ -1715,12 +1715,12 @@ void OutdoorPvPAshran::OnCreatureCreate(Creature* creature)
             break;
         case HighWarlordVolrath:
             m_HighWarlordVolrath = creature->GetGUID();
-            AddCreature(SLGGenericMoPLargeAoI + TEAM_HORDE, SLGGenericMoPLargeAoI, TEAM_OTHER, AshranMapID, creature->m_positionX, creature->m_positionY, creature->m_positionZ, M_PI);
+            AddCreature(SLGGenericMoPLargeAoI + TEAM_HORDE, SLGGenericMoPLargeAoI, TEAM_OTHER, AshranMapID, creature->m_positionX, creature->m_positionY, creature->m_positionZ, float(M_PI));
             m_FactionGenericMoP[TEAM_HORDE] = m_Creatures[SLGGenericMoPLargeAoI + TEAM_HORDE];
             break;
         case GrandMarshalTremblade:
             m_GrandMasrhalTremblade = creature->GetGUID();
-            AddCreature(SLGGenericMoPLargeAoI + TEAM_ALLIANCE, SLGGenericMoPLargeAoI, TEAM_OTHER, AshranMapID, creature->m_positionX, creature->m_positionY, creature->m_positionZ, M_PI);
+            AddCreature(SLGGenericMoPLargeAoI + TEAM_ALLIANCE, SLGGenericMoPLargeAoI, TEAM_OTHER, AshranMapID, creature->m_positionX, creature->m_positionY, creature->m_positionZ, float(M_PI));
             m_FactionGenericMoP[TEAM_ALLIANCE] = m_Creatures[SLGGenericMoPLargeAoI + TEAM_ALLIANCE];
             break;
         case AllianceSpiritGuide:

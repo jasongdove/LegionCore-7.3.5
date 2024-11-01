@@ -812,7 +812,7 @@ void AnyPetAI::UpdateAI(uint32 diff)
             targets.SetCaster(targetSpell);
             targets.SetUnitTarget(targetSpell);
 
-            if (!me->HasInArc(M_PI, targetSpell))
+            if (!me->HasInArc(float(M_PI), targetSpell))
             {
                 me->SetInFront(targetSpell);
                 if (targetSpell && targetSpell->IsPlayer())

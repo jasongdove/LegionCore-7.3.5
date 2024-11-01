@@ -493,7 +493,7 @@ struct boss_the_butcher : public BossAI
 
                 for (uint8 i = 0; i < count; ++i)
                 {
-                    float o = frand(0, 2 * M_PI);
+                    float o = frand(0, float(2 * M_PI));
                     float x = posX + (radius * cos(o));
                     float y = posY + (radius * sin(o));
 

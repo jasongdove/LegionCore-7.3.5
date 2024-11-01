@@ -267,7 +267,7 @@ public:
                         {
                             Position pos = player->GetPosition();
 
-                            if ((player->GetDistance(roomCenter) < 20.00f && roomCenter.HasInArc(M_PI, &pos)) || (!roomCenter.HasInArc(M_PI, &pos) && player->GetDistance(roomCenter) < 14.00f))
+                            if ((player->GetDistance(roomCenter) < 20.00f && roomCenter.HasInArc(float(M_PI), &pos)) || (!roomCenter.HasInArc(float(M_PI), &pos) && player->GetDistance(roomCenter) < 14.00f))
                                 if (player->GetPositionZ() > 174.05f && player->GetPositionZ() < 174.23f)
                                     player->CastSpell(player, SPELL_CORRUPTED_WATERS, true);
 

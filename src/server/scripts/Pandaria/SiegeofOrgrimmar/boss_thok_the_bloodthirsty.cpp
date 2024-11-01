@@ -429,7 +429,7 @@ class boss_thok_the_bloodthirsty : public CreatureScript
                         GetPlayerListInGrid(plist, me, 20.0f);
                         if (!plist.empty())
                             for (std::list<Player*>::const_iterator itr = plist.begin(); itr != plist.end(); itr++)
-                                if (me->isInFront(*itr, M_PI/6) && me->GetDistance(*itr) <= 8.0f)
+                                if (me->isInFront(*itr, float(M_PI/6)) && me->GetDistance(*itr) <= 8.0f)
                                     me->Kill(*itr, true);
                         findtargets = 750;
                     }

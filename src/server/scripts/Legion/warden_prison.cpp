@@ -1018,12 +1018,12 @@ public:
                 return;
 
             Start(false, true, summoner->GetGUID());
-            if (TempSummon* add = me->SummonCreature(96656, 4445.42, -679.495, 117.316, 5.73285, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 28500))
+            if (TempSummon* add = me->SummonCreature(96656, 4445.42f, -679.495f, 117.316f, 5.73285f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 28500))
             {
                 add->AddPlayerInPersonnalVisibilityList(summoner->GetGUID());
                 leftAdd = add->GetGUID();
             }
-            if (TempSummon* add = me->SummonCreature(96656, 4453.46, -680.844, 117.284, 4.0283, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 28500))
+            if (TempSummon* add = me->SummonCreature(96656, 4453.46f, -680.844f, 117.284f, 4.0283f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 28500))
             {
                 add->AddPlayerInPersonnalVisibilityList(summoner->GetGUID());
                 rightAdd = add->GetGUID();

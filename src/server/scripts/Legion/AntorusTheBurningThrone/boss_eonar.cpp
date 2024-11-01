@@ -1849,7 +1849,7 @@ class spell_eonar_jump_pad : public SpellScript
             if ((pad->GetPositionZ() - caster->GetPositionZ()) > -10.0f && (pad->GetPositionZ() - caster->GetPositionZ()) < 10.0f)
                 return true;
 
-            if (!owner->isInFront(pad, M_PI/4))
+            if (!owner->isInFront(pad, float(M_PI / 4)))
                 return true;
 
             return false;

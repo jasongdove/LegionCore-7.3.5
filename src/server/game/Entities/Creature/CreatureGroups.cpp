@@ -152,7 +152,7 @@ FormationInfo* FormationMgr::CreateCustomFormation(Creature* c)
     group_member->leaderGUID            = c->GetGUIDLow();
     group_member->groupAI               = 2;
     group_member->follow_dist           = 1.0f;
-    group_member->follow_angle          = 45 * M_PI / 180;
+    group_member->follow_angle          = float(45 * M_PI / 180);
     sFormationMgr->AddCreatureToGroup(c->GetGUIDLow(), c);
     if (CreatureGroup* f = c->GetFormation())
         f->AddMember(c, group_member);

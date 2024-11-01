@@ -446,9 +446,12 @@ public:
                                     addsGUID[0][i] = add->GetGUID();
                                     switch(i)
                                     {
-                                        case 0: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI); break;
-                                        case 1: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI / 2); break;
-                                        case 2: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI / 2 + M_PI); break;
+                                        case 0: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI));
+                                            break;
+                                        case 1: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI / 2));
+                                            break;
+                                        case 2: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI / 2 + M_PI));
+                                            break;
                                     }
                                 }
                             }
@@ -475,9 +478,12 @@ public:
                                     {
                                         switch(j)
                                         {
-                                            case 0: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI); break;
-                                            case 1: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI / 2); break;
-                                            case 2: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI / 2 + M_PI); break;
+                                            case 0: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI));
+                                                break;
+                                            case 1: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI / 2));
+                                                break;
+                                            case 2: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI / 2 + M_PI));
+                                                break;
                                         }
                                     }
                                 }
@@ -501,9 +507,12 @@ public:
                                     addsGUID[1][i] = add->GetGUID();
                                     switch(i)
                                     {
-                                        case 0: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI); break;
-                                        case 1: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI / 2); break;
-                                        case 2: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI / 2 + M_PI); break;
+                                        case 0: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI));
+                                            break;
+                                        case 1: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI / 2));
+                                            break;
+                                        case 2: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI / 2 + M_PI));
+                                            break;
                                     }
                                 }
                             }
@@ -534,9 +543,12 @@ public:
                                     {
                                         switch(j)
                                         {
-                                            case 0: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI); break;
-                                            case 1: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI / 2); break;
-                                            case 2: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI / 2 + M_PI); break;
+                                            case 0: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI));
+                                                break;
+                                            case 1: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI / 2));
+                                                break;
+                                            case 2: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI / 2 + M_PI));
+                                                break;
                                         }
                                     }
                                 }
@@ -560,9 +572,12 @@ public:
                                     addsGUID[2][i] = add->GetGUID();
                                     switch(i)
                                     {
-                                        case 0: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI); break;
-                                        case 1: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI / 2); break;
-                                        case 2: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI / 2 + M_PI); break;
+                                        case 0: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI));
+                                            break;
+                                        case 1: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI / 2));
+                                            break;
+                                        case 2: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI / 2 + M_PI));
+                                            break;
                                     }
                                 }
                             }
@@ -597,9 +612,12 @@ public:
                                     {
                                         switch(j)
                                         {
-                                            case 0: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI); break;
-                                            case 1: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI / 2); break;
-                                            case 2: add->GetMotionMaster()->MoveFollow(boss, 2.0f, M_PI / 2 + M_PI); break;
+                                            case 0: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI));
+                                                break;
+                                            case 1: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI / 2));
+                                                break;
+                                            case 2: add->GetMotionMaster()->MoveFollow(boss, 2.0f, float(M_PI / 2 + M_PI));
+                                                break;
                                         }
                                     }
                                 }
@@ -844,8 +862,10 @@ public:
                                 // Set positions
                                 switch(i)
                                 {
-                                    case 1: boss->GetMotionMaster()->MoveFollow(me->GetCreature(*me, bossGUID[0]), 5.0f, (M_PI / 2) + 0.5f); break;
-                                    case 2: boss->GetMotionMaster()->MoveFollow(me->GetCreature(*me, bossGUID[0]), 5.0f, (M_PI / 2 + M_PI) - 0.5f); break;
+                                    case 1: boss->GetMotionMaster()->MoveFollow(me->GetCreature(*me, bossGUID[0]), 5.0f, float(M_PI / 2) + 0.5f);
+                                        break;
+                                    case 2: boss->GetMotionMaster()->MoveFollow(me->GetCreature(*me, bossGUID[0]), 5.0f, float(M_PI / 2 + M_PI) - 0.5f);
+                                        break;
                                 }
                             }
                         }
@@ -934,8 +954,10 @@ public:
                                     addsGUID[0][i+1] = add->GetGUID();
                                     switch(i)
                                     {
-                                        case 0: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2) + 0.5f); break;
-                                        case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2 + M_PI) - 0.5f); break;
+                                        case 0: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, float(M_PI / 2) + 0.5f);
+                                            break;
+                                        case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, float(M_PI / 2 + M_PI) - 0.5f);
+                                            break;
                                     }
                                 }
                             }
@@ -962,8 +984,10 @@ public:
                                     {
                                         switch(j)
                                         {
-                                            case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2) + 0.5f); break;
-                                            case 2: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2 + M_PI) - 0.5f); break;
+                                            case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, float(M_PI / 2) + 0.5f);
+                                                break;
+                                            case 2: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, float(M_PI / 2 + M_PI) - 0.5f);
+                                                break;
                                         }
                                     }
                                 }
@@ -993,8 +1017,10 @@ public:
                                     addsGUID[1][i+1] = add->GetGUID();
                                     switch(i)
                                     {
-                                        case 0: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2) + 0.5f); break;
-                                        case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2 + M_PI) - 0.5f); break;
+                                        case 0: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, float(M_PI / 2) + 0.5f);
+                                            break;
+                                        case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, float(M_PI / 2 + M_PI) - 0.5f);
+                                            break;
                                     }
                                 }
                             }
@@ -1025,8 +1051,10 @@ public:
                                     {
                                         switch(j)
                                         {
-                                            case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2) + 0.5f); break;
-                                            case 2: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2 + M_PI) - 0.5f); break;
+                                            case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, float(M_PI / 2) + 0.5f);
+                                                break;
+                                            case 2: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, float(M_PI / 2 + M_PI) - 0.5f);
+                                                break;
                                         }
                                     }
                                 }
@@ -1056,8 +1084,10 @@ public:
                                     addsGUID[2][i+1] = add->GetGUID();
                                     switch(i)
                                     {
-                                        case 0: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2) + 0.5f); break;
-                                        case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2 + M_PI) - 0.5f); break;
+                                        case 0: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, float(M_PI / 2) + 0.5f);
+                                            break;
+                                        case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, float(M_PI / 2 + M_PI) - 0.5f);
+                                            break;
                                     }
                                 }
                             }
@@ -1088,8 +1118,10 @@ public:
                                     {
                                         switch(j)
                                         {
-                                            case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2) + 0.5f); break;
-                                            case 2: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2 + M_PI) - 0.5f); break;
+                                            case 1: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, (M_PI / 2) + 0.5f);
+                                                break;
+                                            case 2: add->GetMotionMaster()->MoveFollow(mainAdd, 1.0f, float(M_PI / 2 + M_PI) - 0.5f);
+                                                break;
                                         }
                                     }
                                 }

@@ -2655,7 +2655,7 @@ class npc_madness_of_deathwing_jump_pad : public CreatureScript
                         if (!_obj->IsWithinDistInMap(u, 32.0f, false))
                             return false;
 
-                        if (!_obj->HasInArc(M_PI, u))
+                        if (!_obj->HasInArc(float(M_PI), u))
                             return false;
 
                         if (u->HasAura(_spellEx1) || u->HasAura(_spellEx2))

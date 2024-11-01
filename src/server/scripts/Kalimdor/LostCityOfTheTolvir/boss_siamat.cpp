@@ -186,7 +186,7 @@ struct boss_siamat : public ScriptedAI
             case EVENT_STATIC_SHOCK:
             {
                 uint8 dist = urand(5, 30);
-                float angle = frand(0, M_PI);
+                float angle = frand(0, float(M_PI));
                 float x, y;
                 me->GetNearPoint2D(x, y, (float)dist, angle);
                 me->CastSpell(x, y, FLOR_COORD_Z, StaticShock[uiStaticShockId], false);
@@ -202,7 +202,7 @@ struct boss_siamat : public ScriptedAI
             case EVENT_CALL_OF_SKY:
             {
                 uint8 dist = urand(5, 30);
-                float angle = frand(0, M_PI);
+                float angle = frand(0, float(M_PI));
                 float x, y;
                 me->GetNearPoint2D(x, y, (float)dist, angle);
                 me->CastSpell(x, y, FLOR_COORD_Z, SPELL_CALL_OF_SKY, false);
@@ -475,7 +475,7 @@ class spell_wailing_winds : public SpellScript
             return;
 
         uint8 roll = urand(0, 1);
-        float angle = frand(0, M_PI);
+        float angle = frand(0, float(M_PI));
         float SpeedXY = frand(10.0f, 30.0f);
         float SpeedZ = frand(10.0f, 15.0f);
         float x, y;

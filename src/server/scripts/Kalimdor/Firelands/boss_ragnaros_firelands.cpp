@@ -1103,12 +1103,12 @@ class npc_ragnaros_firelands_sulfuras_smash : public CreatureScript
                 {
                     Position startPos[3];
                     Position endPos[3];
-                    startPos[0] = me->GetNearPosition(1.0f, -(M_PI / 2.0f));
-                    startPos[1] = me->GetNearPosition(1.0f, -(M_PI / 2.0f));
+                    startPos[0] = me->GetNearPosition(1.0f, float(-M_PI / 2.0f)); // logic?
+                    startPos[1] = me->GetNearPosition(1.0f, float(-M_PI / 2.0f)); // logic?
                     startPos[2] = me->GetNearPosition(1.0f, 0.0f);
-                    endPos[0] = me->GetNearPosition(100.0f, -(M_PI / 2.0f));
+                    endPos[0] = me->GetNearPosition(100.0f, float(-M_PI / 2.0f)); // logic?
                     endPos[1] = me->GetNearPosition(100.0f, 0.0f);
-                    endPos[2] = me->GetNearPosition(100.0f, (M_PI / 2.0f));
+                    endPos[2] = me->GetNearPosition(100.0f, float(M_PI / 2.0f));
 
                     for (uint8 i = 0; i < 3; ++i)
                         SendLavaWave(startPos[i], endPos[i]);

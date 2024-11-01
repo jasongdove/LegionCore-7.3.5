@@ -343,7 +343,7 @@ class npc_vanessa_vancleef_vanessa_sitting : public CreatureScript
                             events.RescheduleEvent(EVENT_INTRO_6, 5000);
                             break;
                         case EVENT_INTRO_6:
-                            me->GetMotionMaster()->MoveJump(centershipPos.GetPositionX(), centershipPos.GetPositionY(), centershipPos.GetPositionZ(), 5.f, 10.f);
+                            me->GetMotionMaster()->MoveJump(centershipPos.GetPositionX(), centershipPos.GetPositionY(), centershipPos.GetPositionZ(), 5.0f, 10.0f);
                             events.RescheduleEvent(EVENT_INTRO_7, 5000);
                             break;
                         case EVENT_INTRO_7:

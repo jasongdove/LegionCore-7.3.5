@@ -230,7 +230,7 @@ class spell_pistol_barrage : public SpellScriptLoader
 
             void OnPeriodic(AuraEffect const* aurEff)
             {
-                float angle = frand(0, M_PI / 6);
+                float angle = frand(0, float(M_PI / 6));
                 Position pos1 = GetCaster()->GetNearPosition(45.0f, angle);
                 Position pos2 = GetCaster()->GetNearPosition(45.0f, -angle);
                 GetCaster()->CastSpell(pos1.GetPositionX(), pos1.GetPositionY(), pos1.GetPositionZ(), SPELL_PISTOL_BARRAGE_DUMMY_1, true);

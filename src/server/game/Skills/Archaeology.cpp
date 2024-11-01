@@ -124,14 +124,14 @@ bool Player::OnSurvey(uint32& entry, float& x, float& y, float& z, float &orient
     if (dist_now >= ARCHAEOLOGY_DIG_SITE_FAR_DIST)
     {
         entry = GO_FAR_SURVEYBOT;
-        orientation += frand(-M_PI / 6, M_PI / 6);
+        orientation += frand(float(- M_PI / 6), float(M_PI / 6));
         SendSurveyCast(site.count, MAX_DIGSITE_FINDS, rsite->second.branch_id, false);
         return false;
     }
     if (dist_now >= ARCHAEOLOGY_DIG_SITE_MED_DIST)
     {
         entry = GO_MEDIUM_SURVEYBOT;
-        orientation += frand(-M_PI / 18, M_PI / 18);
+        orientation += frand(float(- M_PI / 18), float(M_PI / 18));
         SendSurveyCast(site.count, MAX_DIGSITE_FINDS, rsite->second.branch_id, false);
         return false;
     }

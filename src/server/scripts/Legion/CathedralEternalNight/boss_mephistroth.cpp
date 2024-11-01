@@ -316,7 +316,7 @@ public:
                 {
                     events.RescheduleEvent(EVENT_1, 1000);
                     if (urand(1, 4) == 1)
-                        me->SetFacingTo(frand(0, 2*M_PI));
+                        me->SetFacingTo(frand(0, float(2 * M_PI)));
                 }
                 else
                 {
@@ -454,7 +454,7 @@ class areatrigger_mephistroth_shadow_blast : public AreaTriggerScript
 
                 if (target->HasAura(SPELL_EGIDA_BUFF) && target->IsPlayer())
                 {
-                    if (target->isInFront(at) && at->isInFront(target, 7*M_PI/6))
+                    if (target->isInFront(at) && at->isInFront(target, float(7 * M_PI /6 )))
                     {
                         caster->CastSpell(target, SPELL_SHADOW_HIT_EGIDA);
                         at->Despawn();
@@ -477,7 +477,7 @@ class areatrigger_mephistroth_shadow_blast : public AreaTriggerScript
                     target->SetPower(POWER_ALTERNATE, 0);
                     can_delete = true;
                 }
-                else if (target->HasAura(SPELL_EGIDA_BUFF) && target->IsPlayer() && target->isInFront(at) && at->isInFront(target, 7*M_PI/6))
+                else if (target->HasAura(SPELL_EGIDA_BUFF) && target->IsPlayer() && target->isInFront(at) && at->isInFront(target, float(7 * M_PI /6 )))
                 {
                     caster->CastSpell(target, SPELL_SHADOW_HIT_EGIDA);
                     can_delete = true;

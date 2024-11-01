@@ -1225,7 +1225,7 @@ struct npc_argent_captainAI : public ScriptedAI
     public:
         npc_argent_captainAI(Creature* creature) : ScriptedAI(creature), instance(creature->GetInstanceScript()), _firstDeath(true)
         {
-            FollowAngle = PET_FOLLOW_ANGLE;
+            FollowAngle = float(PET_FOLLOW_ANGLE);
             FollowDist = PET_FOLLOW_DIST;
             IsUndead = false;
         }

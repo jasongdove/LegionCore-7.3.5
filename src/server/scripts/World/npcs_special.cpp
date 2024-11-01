@@ -4099,7 +4099,7 @@ class npc_spring_rabbit : public CreatureScript
                 bunnyTimer = urand(10000, 20000);
                 searchTimer = urand(5000, 10000);
                 if (Unit* owner = me->GetOwner())
-                    me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+                    me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE));
             }
 
             void EnterCombat(Unit * /*who*/) override { }

@@ -1316,7 +1316,7 @@ public:
             if (BackwardLungeTimer <= diff)
             {
                 Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100.0f, true);
-                if (target && !me->HasInArc(M_PI, target))
+                if (target && !me->HasInArc(float(M_PI), target))
                 {
                     DoCast(target, SPELL_BACKWARD_LUNGE, false);
                     BackwardLungeTimer = urand(15000, 30000);

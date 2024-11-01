@@ -329,10 +329,10 @@ struct boss_wase_mari : public BossAI
                     break;
 
                 float facing = me->GetOrientation();
-                facing += M_PI / 48;
+                facing += float(M_PI / 48);
 
                 if (facing > M_PI * 2)
-                    facing -= M_PI * 2;
+                    facing -= float(M_PI * 2);
 
                 me->SetOrientation(facing);
                 me->SetFacingTo(facing);
@@ -346,10 +346,10 @@ struct boss_wase_mari : public BossAI
                     break;
 
                 float facing = me->GetOrientation();
-                facing += M_PI / 48;
+                facing += float(M_PI / 48);
 
                 if (facing > M_PI * 2)
-                    facing -= M_PI * 2;
+                    facing -= float(M_PI * 2);
 
                 me->SetOrientation(facing);
                 me->SetFacingTo(facing);

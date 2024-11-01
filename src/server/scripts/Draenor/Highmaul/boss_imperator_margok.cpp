@@ -1765,7 +1765,7 @@ struct npc_highmaul_destructive_resonance : public MS::AI::CosmeticAI
 
                     for (uint8 i = 0; i < ReplicationDupliCount; ++i)
                     {
-                        float o = frand(0, 2 * M_PI);
+                        float o = frand(0, float(2 * M_PI));
                         float x = pos.m_positionX + (radius * cos(o));
                         float y = pos.m_positionY + (radius * sin(o));
 

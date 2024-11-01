@@ -549,13 +549,13 @@ class spell_material_of_creation : public SpellScriptLoader
                     {
                     case 0:
                         GetCaster()->GetNearPoint2D(x, y, 40.0f, 1.570796326795f); 
-                        GetCaster()->GetNearPoint2D(x2, y2, 40.0f, M_PI + 1.570796326795f);
+                        GetCaster()->GetNearPoint2D(x2, y2, 40.0f, float(M_PI + 1.570796326795f));
                         GetCaster()->SummonCreature(NPC_CORRUPTED_ANIMA, x, y, GetCaster()->GetPositionZ() + 2.0f);
                         GetCaster()->SummonCreature(NPC_CORRUPTED_VITA, x2, y2, GetCaster()->GetPositionZ() + 7.0f);
                         break;
                     case 1:
                         GetCaster()->GetNearPoint2D(x, y, 40.0f, 0.0f); 
-                        GetCaster()->GetNearPoint2D(x2, y2, 40.0f, M_PI);
+                        GetCaster()->GetNearPoint2D(x2, y2, 40.0f, float(M_PI));
                         GetCaster()->SummonCreature(NPC_CORRUPTED_ANIMA, x, y, GetCaster()->GetPositionZ() + 2.0f);
                         GetCaster()->SummonCreature(NPC_CORRUPTED_VITA, x2, y2, GetCaster()->GetPositionZ() + 7.0f);
                         break;

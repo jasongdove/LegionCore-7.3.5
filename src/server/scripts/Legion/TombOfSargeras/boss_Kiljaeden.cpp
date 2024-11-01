@@ -1190,7 +1190,7 @@ struct npc_tos_demonic_obelisk : public ScriptedAI
                 {
                     me->GetNearPoint2D(x, y, 1.0f, angle);
                     me->CastSpell(x, y, me->GetPositionZ(), SPELL_DEMONIC_OBELISK_DMG, true);
-                    angle += M_PI / 2;
+                    angle += float(M_PI / 2);
                 }
                 me->PlayOneShotAnimKit(OBELISK_ANIM_2);
                 me->DespawnOrUnsummon(500);

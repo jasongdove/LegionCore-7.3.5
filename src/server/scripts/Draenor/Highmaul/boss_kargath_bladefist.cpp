@@ -57,13 +57,13 @@ Position const sweeperJumpPos[HighmaulSweeperCount][2] =
 {
     /// Right of Mar'gok
     {
-        {3476.025f, 7551.327f, 55.2557f, M_PI},
-        {3498.104f, 7575.722f, 55.2557f, M_PI}
+        { 3476.025f, 7551.327f, 55.2557f, float(M_PI) },
+        { 3498.104f, 7575.722f, 55.2557f, float(M_PI) }
     },
     /// Left of Mar'gok
     {
-        {3436.589f, 7581.993f, 55.2557f, M_PI},
-        {3457.199f, 7607.632f, 55.2557f, M_PI}
+        { 3436.589f, 7581.993f, 55.2557f, float(M_PI) },
+        { 3457.199f, 7607.632f, 55.2557f, float(M_PI) }
     }
 };
 
@@ -2349,7 +2349,7 @@ struct npc_highmaul_chain_hurl_vehicle : public MS::AI::CosmeticAI
         if (!m_Rotate)
             return;
 
-        m_Angle += (2.0f * M_PI) / 10.0f;
+        m_Angle += float(2.0f * M_PI) / 10.0f;
 
         if (m_Angle > (2.0f * M_PI))
             m_Angle = 0.0f;

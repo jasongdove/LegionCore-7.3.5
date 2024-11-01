@@ -895,7 +895,7 @@ bool PlayerCheatData::InterpolateMovement(MovementInfo const& mi, uint32 diffMs,
     else if (mi.MoveFlags[0] & (MOVEMENTFLAG_PITCH_UP | MOVEMENTFLAG_PITCH_DOWN))
         speed = GetClientSpeed(MOVE_PITCH_RATE);
     if (mi.MoveFlags[0] & MOVEMENTFLAG_BACKWARD)
-        o += M_PI;
+        o += float(M_PI);
     else if (mi.MoveFlags[0] & MOVEMENTFLAG_STRAFE_LEFT)
     {
         if (mi.MoveFlags[0] & MOVEMENTFLAG_FORWARD)

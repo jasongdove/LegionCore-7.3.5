@@ -557,12 +557,12 @@ struct boss_brackenspore : public BossAI
         if (map == nullptr)
             return;
 
-        float o = frand(0.0f, 2 * M_PI);
+        float o = frand(0.0f, float(2 * M_PI));
 
         /// Use different spawn radius depending on orientation
         float radius = GetSpawnRangeByOrientation(o);
 
-        float oStep = 2 * M_PI / 30.0f;
+        float oStep = float(2 * M_PI / 30.0f);
         float x = beachCenter.x + (radius * cos(o));
         float y = beachCenter.y + (radius * sin(o));
         float z = map->GetHeight(x, y, MAX_HEIGHT);

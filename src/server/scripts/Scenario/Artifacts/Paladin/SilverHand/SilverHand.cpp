@@ -156,9 +156,9 @@ public:
                             pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50765);
                         firstwp = true;
                         if (Creature* efrin = me->FindNearestCreature(106371, 50.0f, true))
-                            efrin->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, -PET_FOLLOW_ANGLE, MOTION_SLOT_IDLE);
+                            efrin->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(- PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
                         if (Creature* duval = me->FindNearestCreature(106370, 50.0f, true))
-                            duval->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE, MOTION_SLOT_IDLE);
+                            duval->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
                         break;
                     case 2:
                     {
@@ -295,9 +295,9 @@ public:
     bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
     {
         if (Creature* efrin = creature->FindNearestCreature(106371, 30.0f, true))
-            efrin->GetMotionMaster()->MoveFollow(creature, PET_FOLLOW_DIST, -PET_FOLLOW_ANGLE, MOTION_SLOT_IDLE);
+            efrin->GetMotionMaster()->MoveFollow(creature, PET_FOLLOW_DIST, float(- PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
         if (Creature* duval = creature->FindNearestCreature(106370, 30.0f, true))
-            duval->GetMotionMaster()->MoveFollow(creature, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE, MOTION_SLOT_IDLE);
+            duval->GetMotionMaster()->MoveFollow(creature, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
 
         creature->GetMotionMaster()->MovePath(10993806, false);
         creature->AI()->Talk(0);
@@ -550,9 +550,9 @@ public:
                 {
                     Talk(0);
                     if (Creature* efrin = me->FindNearestCreature(106371, 30.0f, true))
-                        efrin->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, -PET_FOLLOW_ANGLE, MOTION_SLOT_IDLE);
+                        efrin->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(- PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
                     if (Creature* duval = me->FindNearestCreature(106370, 30.0f, true))
-                        duval->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE, MOTION_SLOT_IDLE);
+                        duval->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
                     me->GetMotionMaster()->MovePath(10993807, false);
                 });
             }

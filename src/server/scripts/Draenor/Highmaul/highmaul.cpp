@@ -1776,7 +1776,7 @@ struct npc_highmaul_ogron_earthshaker : public MS::AI::CosmeticAI
             me->SetFacingTo(m_Orientation);
             me->CastSpell(me, EarthdevastatingSlamDmg, false);
 
-            m_Orientation += M_PI / 3;
+            m_Orientation += float(M_PI / 3);
             ++m_SlamCount;
 
             if (m_SlamCount >= 6)

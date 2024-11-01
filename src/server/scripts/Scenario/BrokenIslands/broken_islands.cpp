@@ -690,7 +690,7 @@ public:
                     destTarget.m_positionZ = 0.09f;
                     m->LoadGrid(461.8785f, 2032.679f);
                 }
-                destTarget.SetOrientation(0.5030039);
+                destTarget.SetOrientation(0.5030039f);
 
                 m->LoadGrid(destTarget.m_positionX, destTarget.m_positionY);
 
@@ -1243,7 +1243,7 @@ struct scenarion_bi_heroesl_baseAI : ScriptedAI
                         newF->follow_angle = urand((180 - 60) / 4, (180 + 60) / 4) * 4 * M_PI / 180;
 
                         if (urand(1, 2) == 1)
-                            newF->follow_angle += M_PI;
+                            newF->follow_angle += float(M_PI);
 
                         newF->follow_dist = abs(float(urand(1, 2) * 3) / cos(newF->follow_angle));
 

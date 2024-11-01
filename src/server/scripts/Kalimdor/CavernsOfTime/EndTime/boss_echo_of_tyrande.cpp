@@ -448,12 +448,12 @@ struct npc_echo_of_tyrande_moonlance : public ScriptedAI
         {
             if (me->GetEntry() == NPC_MOONLANCE_1)
             {
-                Position pos1_1 = me->GetNearPosition(3.0f, -(M_PI / 4.0f));
-                Position pos1_2 = me->GetNearPosition(30.0f, -(M_PI / 4.0f));
+                Position pos1_1 = me->GetNearPosition(3.0f, float(-M_PI / 4.0f));
+                Position pos1_2 = me->GetNearPosition(30.0f, float(-M_PI / 4.0f));
                 Position pos2_1 = me->GetNearPosition(3.0f, 0.0f);
                 Position pos2_2 = me->GetNearPosition(30.0f, 0.0f);
-                Position pos3_1 = me->GetNearPosition(3.0f, (M_PI / 4.0f));
-                Position pos3_2 = me->GetNearPosition(30.0f, (M_PI / 4.0f));
+                Position pos3_1 = me->GetNearPosition(3.0f, float(M_PI / 4.0f));
+                Position pos3_2 = me->GetNearPosition(30.0f, float(M_PI / 4.0f));
 
                 if (auto lance1 = me->SummonCreature(NPC_MOONLANCE_2_1, pos1_1, TEMPSUMMON_TIMED_DESPAWN, 30000))
                     lance1->GetMotionMaster()->MovePoint(POINT_MOONLANCE, pos1_2);

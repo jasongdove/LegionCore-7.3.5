@@ -419,7 +419,7 @@ public:
                     if (!adds.empty())
                         for (std::list<Creature*>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
                         {
-                            (*itr)->GetMotionMaster()->MoveFollow(me, urand(1, 4), -PET_FOLLOW_ANGLE, MOTION_SLOT_IDLE);
+                            (*itr)->GetMotionMaster()->MoveFollow(me, urand(1, 4), float(- PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
                             (*itr)->AI()->Talk(0);
                         }
                 });
@@ -429,7 +429,7 @@ public:
                     if (Player* pl = me->FindNearestPlayer(100))
                         Talk(5, pl->GetGUID());
                     if (Creature* li = me->FindNearestCreature(98074, 50.0f, true))
-                        li->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE, MOTION_SLOT_IDLE);
+                        li->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
                     me->GetMotionMaster()->MovePath(9859005, false); // 2 5
                 });
             }

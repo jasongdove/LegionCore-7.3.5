@@ -692,7 +692,7 @@ class spell_beguiling_charm : public SpellScript
             if (!unit)
                 return true;
 
-            if (unit->isInFront(caster, M_PI / 2))
+            if (unit->isInFront(caster, float(M_PI / 2)))
                 return false;
 
             return true;
