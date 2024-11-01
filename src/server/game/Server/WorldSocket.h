@@ -25,7 +25,6 @@
 #include "Util.h"
 #include "WorldPacketCrypt.h"
 #include "WorldSession.h"
-#include <chrono>
 #include <safe_ptr.h>
 
 struct z_stream_s;
@@ -138,7 +137,7 @@ private:
     BigNumber _decryptSeed;
     BigNumber _sessionKey;
 
-    std::chrono::steady_clock::time_point _LastPingTime;
+    TimePoint _LastPingTime;
     uint32 _OverSpeedPings;
     uint32 _accountId;
 

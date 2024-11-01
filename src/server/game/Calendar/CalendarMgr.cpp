@@ -456,7 +456,7 @@ std::string CalendarEvent::BuildCalendarMailBody() const
     uint32 time;
     std::ostringstream strm;
 
-    data << MS::Utilities::WowTime::Encode(_date);
+    data.AppendPackedTime(_date);
     data >> time;
     strm << time;
     return strm.str();

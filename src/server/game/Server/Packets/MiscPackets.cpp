@@ -37,8 +37,8 @@ WorldPacket const* WorldPackets::Misc::InvalidatePlayer::Write()
 
 WorldPacket const* WorldPackets::Misc::LoginSetTimeSpeed::Write()
 {
-    _worldPacket << MS::Utilities::WowTime::Encode(ServerTime);
-    _worldPacket << MS::Utilities::WowTime::Encode(GameTime);
+    _worldPacket.AppendPackedTime(ServerTime);
+    _worldPacket.AppendPackedTime(GameTime);
     _worldPacket << float(NewSpeed);
     _worldPacket << uint32(ServerTimeHolidayOffset);
     _worldPacket << uint32(GameTimeHolidayOffset);

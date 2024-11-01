@@ -23,7 +23,7 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::ChallengeMode::ModeAttemp
     data << modeAttempt.InstanceRealmAddress;
     data << modeAttempt.AttemptID;
     data << modeAttempt.CompletionTime;
-    data << MS::Utilities::WowTime::Encode(modeAttempt.CompletionDate);
+    data.AppendPackedTime(modeAttempt.CompletionDate);
     data << modeAttempt.MedalEarned;
     data << static_cast<uint32>(modeAttempt.Members.size());
     for (auto const& map : modeAttempt.Members)
@@ -75,7 +75,7 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::ChallengeMode::ChallengeM
     data << challengeModeMap.BestCompletionMilliseconds;
     data << challengeModeMap.LastCompletionMilliseconds;
     data << challengeModeMap.CompletedChallengeLevel;
-    data << MS::Utilities::WowTime::Encode(challengeModeMap.BestMedalDate);
+    data.AppendPackedTime(challengeModeMap.BestMedalDate);
 
     data << static_cast<uint32>(challengeModeMap.BestSpecID.size());
 
@@ -100,8 +100,8 @@ WorldPacket const* WorldPackets::ChallengeMode::RequestLeadersResult::Write()
 {
     _worldPacket << MapID;
     _worldPacket << ChallengeID;
-    _worldPacket << MS::Utilities::WowTime::Encode(LastGuildUpdate);
-    _worldPacket << MS::Utilities::WowTime::Encode(LastRealmUpdate);
+    _worldPacket.AppendPackedTime(LastGuildUpdate);
+    _worldPacket.AppendPackedTime(LastRealmUpdate);
 
     _worldPacket << static_cast<uint32>(GuildLeaders.size());
     _worldPacket << static_cast<uint32>(RealmLeaders.size());

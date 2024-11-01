@@ -46,7 +46,6 @@ namespace MS
             WowTime();
 
             uint32 Encode();
-            static uint32 Encode(time_t p_Time);
             void Decode(uint32 p_EncodedTime);
             static WowTime FromEncodedTime(uint32 p_EncodedTime);
 

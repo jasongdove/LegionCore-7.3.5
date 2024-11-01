@@ -23,7 +23,7 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Calendar::CalendarSendCal
 {
     data << uint64(eventInfo.EventID);
     data << uint8(eventInfo.EventType);
-    data << MS::Utilities::WowTime::Encode(eventInfo.Date);
+    data.AppendPackedTime(eventInfo.Date);
     data << uint32(eventInfo.Flags);
     data << int32(eventInfo.TextureID);
     data << eventInfo.EventGuildID;
@@ -66,7 +66,7 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Calendar::CalendarEventIn
     data << uint8(inviteInfo.Moderator);
     data << uint8(inviteInfo.InviteType);
 
-    data << MS::Utilities::WowTime::Encode(inviteInfo.ResponseTime);
+    data.AppendPackedTime(inviteInfo.ResponseTime);
 
     data.WriteBits(inviteInfo.Notes.size(), 8);
     data.WriteString(inviteInfo.Notes);
@@ -218,7 +218,7 @@ WorldPacket const* WorldPackets::Calendar::SCalendarEventInvite::Write()
     _worldPacket << uint8(Level);
     _worldPacket << uint8(Status);
     _worldPacket << uint8(Type);
-    _worldPacket << MS::Utilities::WowTime::Encode(ResponseTime);
+    _worldPacket.AppendPackedTime(ResponseTime);
 
     _worldPacket.WriteBit(ClearPending);
     _worldPacket.FlushBits();
@@ -228,7 +228,7 @@ WorldPacket const* WorldPackets::Calendar::SCalendarEventInvite::Write()
 
 WorldPacket const* WorldPackets::Calendar::CalendarSendCalendar::Write()
 {
-    _worldPacket << MS::Utilities::WowTime::Encode(ServerTime);
+    _worldPacket.AppendPackedTime(ServerTime);
     _worldPacket << static_cast<uint32>(Invites.size());
     _worldPacket << static_cast<uint32>(Events.size());
     _worldPacket << static_cast<uint32>(RaidLockouts.size());
@@ -253,7 +253,7 @@ WorldPacket const* WorldPackets::Calendar::CalendarSendEvent::Write()
     _worldPacket << uint8(GetEventType);
     _worldPacket << int32(TextureID);
     _worldPacket << uint32(Flags);
-    _worldPacket << MS::Utilities::WowTime::Encode(Date);
+    _worldPacket.AppendPackedTime(Date);
     _worldPacket << uint32(LockDate);
     _worldPacket << EventGuildID;
 
@@ -274,7 +274,7 @@ WorldPacket const* WorldPackets::Calendar::CalendarSendEvent::Write()
 WorldPacket const* WorldPackets::Calendar::CalendarEventInviteAlert::Write()
 {
     _worldPacket << uint64(EventID);
-    _worldPacket << MS::Utilities::WowTime::Encode(Date);
+    _worldPacket.AppendPackedTime(Date);
     _worldPacket << uint32(Flags);
     _worldPacket << uint8(EventType);
     _worldPacket << int32(TextureID);
@@ -296,10 +296,10 @@ WorldPacket const* WorldPackets::Calendar::CalendarEventInviteStatus::Write()
 {
     _worldPacket << InviteGuid;
     _worldPacket << uint64(EventID);
-    _worldPacket << MS::Utilities::WowTime::Encode(Date);
+    _worldPacket.AppendPackedTime(Date);
     _worldPacket << uint32(Flags);
     _worldPacket << uint8(Status);
-    _worldPacket << MS::Utilities::WowTime::Encode(ResponseTime);
+    _worldPacket.AppendPackedTime(ResponseTime);
 
     _worldPacket.WriteBit(ClearPending);
     _worldPacket.FlushBits();
@@ -334,7 +334,7 @@ WorldPacket const* WorldPackets::Calendar::CalendarEventInviteModeratorStatus::W
 WorldPacket const* WorldPackets::Calendar::CalendarEventInviteRemovedAlert::Write()
 {
     _worldPacket << uint64(EventID);
-    _worldPacket << MS::Utilities::WowTime::Encode(Date);
+    _worldPacket.AppendPackedTime(Date);
     _worldPacket << uint32(Flags);
     _worldPacket << uint8(Status);
 
@@ -345,8 +345,8 @@ WorldPacket const* WorldPackets::Calendar::CalendarEventUpdatedAlert::Write()
 {
     _worldPacket << uint64(EventID);
 
-    _worldPacket << MS::Utilities::WowTime::Encode(OriginalDate);
-    _worldPacket << MS::Utilities::WowTime::Encode(Date);
+    _worldPacket.AppendPackedTime(OriginalDate);
+    _worldPacket.AppendPackedTime(Date);
     _worldPacket << uint32(LockDate);
     _worldPacket << uint32(Flags);
     _worldPacket << uint32(TextureID);
@@ -364,7 +364,7 @@ WorldPacket const* WorldPackets::Calendar::CalendarEventUpdatedAlert::Write()
 WorldPacket const* WorldPackets::Calendar::CalendarEventRemovedAlert::Write()
 {
     _worldPacket << uint64(EventID);
-    _worldPacket << MS::Utilities::WowTime::Encode(Date);
+    _worldPacket.AppendPackedTime(Date);
 
     _worldPacket.WriteBit(ClearPending);
     _worldPacket.FlushBits();
@@ -393,7 +393,7 @@ WorldPacket const* WorldPackets::Calendar::CalendarCommandResult::Write()
 WorldPacket const* WorldPackets::Calendar::CalendarRaidLockoutAdded::Write()
 {
     _worldPacket << uint64(InstanceID);
-    _worldPacket << MS::Utilities::WowTime::Encode(ServerTime);
+    _worldPacket.AppendPackedTime(ServerTime);
     _worldPacket << int32(MapID);
     _worldPacket << uint32(DifficultyID);
     _worldPacket << int32(TimeRemaining);
@@ -436,7 +436,7 @@ WorldPacket const* WorldPackets::Calendar::CalendarEventInitialInvites::Write()
 WorldPacket const* WorldPackets::Calendar::CalendarEventInviteStatusAlert::Write()
 {
     _worldPacket << uint64(EventID);
-    _worldPacket << MS::Utilities::WowTime::Encode(Date);
+    _worldPacket.AppendPackedTime(Date);
     _worldPacket << uint32(Flags);
     _worldPacket << uint8(Status);
 

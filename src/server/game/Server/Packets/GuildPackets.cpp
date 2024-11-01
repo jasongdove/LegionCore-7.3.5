@@ -83,7 +83,7 @@ WorldPacket const* WorldPackets::Guild::GuildCommandResult::Write()
 WorldPacket const* WorldPackets::Guild::GuildRoster::Write()
 {
     _worldPacket << NumAccounts;
-    _worldPacket << MS::Utilities::WowTime::Encode(CreateDate);
+    _worldPacket.AppendPackedTime(CreateDate);
     _worldPacket << GuildFlags;
     _worldPacket << uint32(MemberData.size());
     _worldPacket.WriteBits(WelcomeText.length(), 10);
@@ -842,7 +842,7 @@ void WorldPackets::Guild::GuildQueryNews::Read()
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Guild::GuildNewsEvent const& newsEvent)
 {
     data << newsEvent.Id;
-    data << MS::Utilities::WowTime::Encode(newsEvent.CompletedDate);
+    data.AppendPackedTime(newsEvent.CompletedDate);
     data << newsEvent.Type;
     data << newsEvent.Flags;
 

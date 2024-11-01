@@ -28,14 +28,6 @@ uint32 WowTime::Encode()
     return uint32((Minute & 63) | ((Hour & 31) << 6) | ((WeekDay & 7) << 11) | ((MonthDay & 63) << 14) | ((Month & 15) << 20) | ((Year & 31) << 24) | ((Unk1 & 3) << 29));
 }
 
-uint32 WowTime::Encode(time_t time)
-{
-    WowTime wTime;
-    wTime.SetUTCTimeFromPosixTime(time);
-
-    return wTime.Encode();
-}
-
 void WowTime::Decode(uint32 encodedTime)
 {
     int temp = encodedTime & 0x3F;

@@ -89,7 +89,7 @@ WorldPacket const* WorldPackets::BattlePet::QueryResponse::Write()
 {
     _worldPacket << BattlePetID;
     _worldPacket << CreatureID;
-    _worldPacket << MS::Utilities::WowTime::Encode(Timestamp);
+    _worldPacket.AppendPackedTime(Timestamp);
     if (!_worldPacket.WriteBit(Allow))
         return &_worldPacket;
 

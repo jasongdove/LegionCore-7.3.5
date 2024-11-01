@@ -29911,13 +29911,12 @@ void Player::SendInitialPacketsBeforeAddToMap(bool login)
     if (login) // Don`t send when teleported
     {
         SendEquipmentSetList();
-        uint32 speedtime = ((GameTime::GetGameTime() - GameTime::GetUptime()) + (GameTime::GetUptime()));
         m_achievementMgr->SendAllAchievementData(this);
 
         WorldPackets::Misc::LoginSetTimeSpeed loginSetTimeSpeed;
         loginSetTimeSpeed.NewSpeed = 0.01666667f;
-        loginSetTimeSpeed.GameTime = speedtime;
-        loginSetTimeSpeed.ServerTime = speedtime;
+        loginSetTimeSpeed.GameTime = GameTime::GetGameTime();
+        loginSetTimeSpeed.ServerTime = GameTime::GetGameTime();
         SendDirectMessage(loginSetTimeSpeed.Write());
     }
 

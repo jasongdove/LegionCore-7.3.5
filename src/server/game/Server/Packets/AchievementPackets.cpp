@@ -21,7 +21,7 @@
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Achievement::EarnedAchievement const& earned)
 {
     data << uint32(earned.Id);
-    data << MS::Utilities::WowTime::Encode(earned.Date);
+    data.AppendPackedTime(earned.Date);
     data << earned.Owner;
     data << uint32(earned.VirtualRealmAddress);
     data << uint32(earned.NativeRealmAddress);
@@ -34,7 +34,7 @@ ByteBuffer& operator<<(ByteBuffer& _worldPacket, WorldPackets::Achievement::Crit
     _worldPacket << uint32(progress.Id);
     _worldPacket << uint64(progress.Quantity);
     _worldPacket << progress.Player;
-    _worldPacket << MS::Utilities::WowTime::Encode(progress.Date);
+    _worldPacket.AppendPackedTime(progress.Date);
     _worldPacket << uint32(progress.TimeFromStart);
     _worldPacket << uint32(progress.TimeFromCreate);
     _worldPacket.WriteBits(progress.Flags, 4);
@@ -70,7 +70,7 @@ WorldPacket const* WorldPackets::Achievement::CriteriaUpdate::Write()
     _worldPacket << uint64(Quantity);
     _worldPacket << PlayerGUID;
     _worldPacket << uint32(Flags);
-    _worldPacket << MS::Utilities::WowTime::Encode(CurrentTime);
+    _worldPacket.AppendPackedTime(CurrentTime);
     _worldPacket << uint32(ElapsedTime);
     _worldPacket << uint32(CreationTime);
 
@@ -97,7 +97,7 @@ WorldPacket const* WorldPackets::Achievement::AchievementEarned::Write()
     _worldPacket << Sender;
     _worldPacket << Earner;
     _worldPacket << uint32(AchievementID);
-    _worldPacket << MS::Utilities::WowTime::Encode(Time);
+    _worldPacket.AppendPackedTime(Time);
     _worldPacket << uint32(EarnerNativeRealm);
     _worldPacket << uint32(EarnerVirtualRealm);
     _worldPacket.WriteBit(Initial);
@@ -126,7 +126,7 @@ WorldPacket const* WorldPackets::Achievement::GuildCriteriaUpdate::Write()
         _worldPacket << int32(progress.CriteriaID);
         _worldPacket << uint32(progress.DateCreated);
         _worldPacket << uint32(progress.DateStarted);
-        _worldPacket << MS::Utilities::WowTime::Encode(progress.DateUpdated);
+        _worldPacket.AppendPackedTime(progress.DateUpdated);
         _worldPacket << uint64(progress.Quantity);
         _worldPacket << progress.PlayerGUID;
         _worldPacket << int32(progress.Flags);
@@ -152,7 +152,7 @@ WorldPacket const* WorldPackets::Achievement::GuildAchievementDeleted::Write()
 {
     _worldPacket << GuildGUID;
     _worldPacket << uint32(AchievementID);
-    _worldPacket << MS::Utilities::WowTime::Encode(TimeDeleted);
+    _worldPacket.AppendPackedTime(TimeDeleted);
 
     return &_worldPacket;
 }
@@ -161,7 +161,7 @@ WorldPacket const* WorldPackets::Achievement::GuildAchievementEarned::Write()
 {
     _worldPacket << GuildGUID;
     _worldPacket << uint32(AchievementID);
-    _worldPacket << MS::Utilities::WowTime::Encode(TimeEarned);
+    _worldPacket.AppendPackedTime(TimeEarned);
 
     return &_worldPacket;
 }
