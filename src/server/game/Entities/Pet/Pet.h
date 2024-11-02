@@ -91,6 +91,15 @@ class Pet : public Guardian
         void setDeathState(DeathState s) override;                   // overwrite virtual Creature::setDeathState and Unit::setDeathState
         void Update(uint32 diff) override;                           // overwrite virtual Creature::Update and Unit::Update
 
+        uint8 GetPetAutoSpellSize() const override { return uint8(m_autospells.size()); }
+        uint32 GetPetAutoSpellOnPos(uint8 pos) const override
+        {
+            if (pos >= m_autospells.size())
+                return 0;
+            else
+                return m_autospells[pos];
+        }
+
         void GivePetLevel(uint8 level);
         void SynchronizeLevelWithOwner();
         bool HaveInDiet(ItemTemplate const* item) const;

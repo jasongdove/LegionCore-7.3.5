@@ -1898,6 +1898,7 @@ class Unit : public WorldObject
         Spell* FindCurrentSpellBySpellId(uint32 spell_id) const;
         int32 GetCurrentSpellCastTime(uint32 spell_id) const;
         bool IsMovementPreventedByCasting() const;
+        bool CanCastSpellWhileMoving(SpellInfo const* spellInfo) const;
         SpellInfo const* GetCastSpellInfo(SpellInfo const* spellInfo) const;
         void SendSpellCreateVisual(SpellInfo const* spellInfo, Position const* position = nullptr, Unit* target = nullptr, uint32 type = 0, uint32 visualId = 0);
         void CancelSpellVisualKit(int32 spellVisualKitID);
