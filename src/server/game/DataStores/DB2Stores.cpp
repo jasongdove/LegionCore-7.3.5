@@ -954,7 +954,7 @@ DB2Manager& DB2Manager::Instance()
     return instance;
 }
 
-void DB2Manager::LoadStores(std::string const& dataPath, uint32 defaultLocale)
+uint32 DB2Manager::LoadStores(std::string const& dataPath, uint32 defaultLocale)
 {
     uint32 oldMSTime = getMSTime();
 
@@ -1591,6 +1591,8 @@ void DB2Manager::LoadStores(std::string const& dataPath, uint32 defaultLocale)
     InitDB2CustomStores();
 
     TC_LOG_INFO("server.loading", ">> Initialized " SZFMTD " DB2 data stores in %u ms", _stores.size(), GetMSTimeDiffToNow(oldMSTime));
+
+    return availableDb2Locales;
 }
 
 void DB2Manager::InitDB2CustomStores()

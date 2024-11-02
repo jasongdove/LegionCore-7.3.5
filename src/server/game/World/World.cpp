@@ -161,6 +161,7 @@ rate_values{}, m_int_configs{}, m_bool_configs{}, m_float_configs{}, m_NextRando
     m_pvpMysticCount = 0;
 
     m_defaultDbcLocale = LOCALE_enUS;
+    m_availableDbcLocaleMask = 0;
 
     m_isClosed = false;
 
@@ -1616,7 +1617,7 @@ void World::SetInitialWorldSettings()
     CharacterDatabase.Execute(stmt);
 
     TC_LOG_INFO("server.loading", "Loading db2 info...");
-    sDB2Manager.LoadStores(m_dataPath, m_defaultDbcLocale);
+    m_availableDbcLocaleMask = sDB2Manager.LoadStores(m_dataPath, m_defaultDbcLocale);
 
     TC_LOG_INFO("server.loading", "Loading hotfix info...");
     sDB2Manager.LoadHotfixData();
