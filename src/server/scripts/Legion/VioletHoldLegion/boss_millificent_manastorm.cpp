@@ -492,7 +492,7 @@ public:
                 me->RemoveAurasDueToSpell(SPELL_OVERLOADED);
                 me->InterruptNonMeleeSpells(false);
                 //DoCast(me, SPELL_EJECT_ALL_PASSENGERS, true);
-                me->SendPlaySpellVisualKit(0, 63152);
+                me->SendPlaySpellVisualKit(63152, 0);
                 diedTimer = 2000;
                 disarmed = true;
             }

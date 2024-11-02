@@ -541,7 +541,7 @@ struct npc_tichonrius_carrion_nightmare : ScriptedAI
                     break;
                 }
                 case EVENT_2:
-                    me->SendPlaySpellVisualKit(0, 66613, 0);
+                    me->SendPlaySpellVisualKit(66613, 0, 0);
                     break;
                 case EVENT_3:
                     me->DespawnOrUnsummon();

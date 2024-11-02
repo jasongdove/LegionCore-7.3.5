@@ -258,7 +258,7 @@ class spell_pal_divine_storm : public SpellScriptLoader
             if (Unit* caster = GetCaster())
             {
                 if (!hasDivineTempest)
-                    caster->SendPlaySpellVisualKit(0, 73892);
+                    caster->SendPlaySpellVisualKit(73892, 0);
             }
         }
 

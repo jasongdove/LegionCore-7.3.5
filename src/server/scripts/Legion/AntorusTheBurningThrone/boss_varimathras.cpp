@@ -304,7 +304,7 @@ struct npc_shadow_of_varimathras : public ScriptedAI
             me->AddDelayedEvent(100, [this] () -> void
             {
                 me->PlayOneShotAnimKit(13242);
-                me->SendPlaySpellVisualKit(0, 83768);
+                me->SendPlaySpellVisualKit(83768, 0);
             });
         }
 

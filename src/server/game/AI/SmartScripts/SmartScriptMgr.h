@@ -1116,10 +1116,10 @@ struct SmartAction
 
         struct
         {
-            uint32 id;
+            uint32 spellVisualKitId;
+            uint32 kitType;
             uint32 duration;
-            uint32 KitRecID;
-        } visualKit;
+        } spellVisualKit;
 
         struct
         {

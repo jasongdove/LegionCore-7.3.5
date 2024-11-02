@@ -1026,9 +1026,9 @@ WorldPacket const* WorldPackets::Spells::PlaySpellVisual::Write()
 WorldPacket const* WorldPackets::Spells::PlaySpellVisualKit::Write()
 {
     _worldPacket << Unit;
+    _worldPacket << KitRecID;
     _worldPacket << KitType;
     _worldPacket << Duration;
-    _worldPacket << KitRecID;
 
     return &_worldPacket;
 }

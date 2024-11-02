@@ -753,7 +753,7 @@ struct npc_tos_desolate_host : ScriptedAI
                     me->SetVisible(true);
                     Talk(SAY_HOST_AGGRO);
                     DoCast(me, SPELL_SHARED_HEALTH, true);
-                    me->SendPlaySpellVisualKit(0, VISUAL_KIT_1);
+                    me->SendPlaySpellVisualKit(VISUAL_KIT_1, 0);
                     me->HandleEmoteCommand(EMOTE_ONESHOT_BATTLE_ROAR);
                     me->SetReactState(REACT_AGGRESSIVE, 2000);
                     DoZoneInCombat(me, 100.0f);
@@ -868,7 +868,7 @@ struct npc_tos_reanimated_templar : ScriptedAI
         if (!mirror)
         {
             if (instance->GetBossState(DATA_THE_DESOLATE_HOST) == IN_PROGRESS)
-                me->SendPlaySpellVisualKit(0, VISUAL_KIT_2);
+                me->SendPlaySpellVisualKit(VISUAL_KIT_2, 0);
             else
                 me->SetStandState(UNIT_STAND_STATE_KNEEL);
 
@@ -973,7 +973,7 @@ struct npc_tos_ghastly_bonewarden : ScriptedAI
         if (!mirror)
         {
             if (instance->GetBossState(DATA_THE_DESOLATE_HOST) == IN_PROGRESS)
-                me->SendPlaySpellVisualKit(0, VISUAL_KIT_2);
+                me->SendPlaySpellVisualKit(VISUAL_KIT_2, 0);
             else
                 DoCast(me, SPELL_SHADOW_CHANNELLING, true);
 
@@ -1086,7 +1086,7 @@ struct npc_tos_fallen_priestess : ScriptedAI
         if (!mirror)
         {
             if (instance->GetBossState(DATA_THE_DESOLATE_HOST) == IN_PROGRESS)
-                me->SendPlaySpellVisualKit(0, VISUAL_KIT_2);
+                me->SendPlaySpellVisualKit(VISUAL_KIT_2, 0);
             else
                 DoCast(me, SPELL_SOUL_REND, true);
 
@@ -1196,7 +1196,7 @@ struct npc_tos_soul_residue : ScriptedAI
         if (!mirror)
         {
             if (instance->GetBossState(DATA_THE_DESOLATE_HOST) == IN_PROGRESS)
-                me->SendPlaySpellVisualKit(0, VISUAL_KIT_2);
+                me->SendPlaySpellVisualKit(VISUAL_KIT_2, 0);
 
             if (IsMythicRaid())
                 DoCast(me, SPELL_BOUND_ESSENCE_AURA, true);

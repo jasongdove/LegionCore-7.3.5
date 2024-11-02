@@ -353,7 +353,7 @@ struct boss_helya : public BossAI
             introSpawn = true;
             eventDelay = true;
             me->RemoveStandStateFlags(UNIT_STAND_STATE_SUBMERGED);
-            me->SendPlaySpellVisualKit(0, VISUAL_KIT_1);
+            me->SendPlaySpellVisualKit(VISUAL_KIT_1, 0);
             AddDelayedEvent(5000, [=]() -> void { eventDelay = false; });
             return;
         }
@@ -362,7 +362,7 @@ struct boss_helya : public BossAI
         {
             introEvent = true;
             Talk(SAY_INTRO); //You ALL will regret trespassing in my realm.
-            me->SendPlaySpellVisualKit(0, VISUAL_KIT_2);
+            me->SendPlaySpellVisualKit(VISUAL_KIT_2, 0);
             events.RescheduleEvent(EVENT_INTRO, 5000);
         }
     }
@@ -655,7 +655,7 @@ struct boss_helya : public BossAI
             switch (eventId)
             {
                 case EVENT_INTRO:
-                    me->SendPlaySpellVisualKit(0, VISUAL_KIT_3);
+                    me->SendPlaySpellVisualKit(VISUAL_KIT_3, 0);
                     DoCast(me, SPELL_SOULLESS_SCREAM, true);
                     DoCast(me, SPELL_INTERFERE_TARGETTING, true);
                     SummonGrasping(true);

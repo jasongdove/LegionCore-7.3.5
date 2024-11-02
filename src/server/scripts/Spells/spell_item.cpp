@@ -2540,7 +2540,7 @@ class spell_autographed_hearthstone_card : public SpellScript
                 }
 
                 player->PlayDistanceSound(47498, NULL);
-                player->SendPlaySpellVisualKit(0, 52852, 0);
+                player->SendPlaySpellVisualKit(52852, 0, 0);
                 break;
             case 2:
                 if (auto entry = sBroadcastTextStore.LookupEntry(90711))
@@ -2550,7 +2550,7 @@ class spell_autographed_hearthstone_card : public SpellScript
                 }
 
                 player->PlayDistanceSound(47499, NULL);
-                player->SendPlaySpellVisualKit(0, 52855, 0);
+                player->SendPlaySpellVisualKit(52855, 0, 0);
                 break;
             case 3:
                 if (auto entry = sBroadcastTextStore.LookupEntry(90712))
@@ -2560,7 +2560,7 @@ class spell_autographed_hearthstone_card : public SpellScript
                 }
 
                 player->PlayDistanceSound(47500, NULL);
-                player->SendPlaySpellVisualKit(0, 52856, 0);
+                player->SendPlaySpellVisualKit(52856, 0, 0);
                 break;
             case 4:
                 if (auto entry = sBroadcastTextStore.LookupEntry(90715))
@@ -2570,7 +2570,7 @@ class spell_autographed_hearthstone_card : public SpellScript
                 }
 
                 player->PlayDistanceSound(47501, NULL);
-                player->SendPlaySpellVisualKit(0, 52857, 0);
+                player->SendPlaySpellVisualKit(52857, 0, 0);
                 break;
             }
         }

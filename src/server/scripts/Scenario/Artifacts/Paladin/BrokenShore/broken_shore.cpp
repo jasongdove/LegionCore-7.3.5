@@ -931,7 +931,7 @@ public:
                 summons.DespawnAll();
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
                 DoCast(me, 152821, true); //Morph
-                me->SendPlaySpellVisualKit(0, 61036); //SMSG_PLAY_SPELL_VISUAL_KIT
+                me->SendPlaySpellVisualKit(61036, 0); //SMSG_PLAY_SPELL_VISUAL_KIT
                 if (instance->getScenarionStep() == DATA_STAGE_6)
                     instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46149); //Step 7. Final
                 me->DespawnOrUnsummon(3000);

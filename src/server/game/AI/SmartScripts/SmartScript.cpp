@@ -587,10 +587,26 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             break;
         }
         case SMART_ACTION_PLAY_SPELL_VISUAL_KIT:
-            if (!me)
+        {
+            ObjectList* targets = GetTargets(e, unit);
+            if (!targets)
                 break;
-            me->SendPlaySpellVisualKit(e.action.visualKit.id, e.action.visualKit.duration);
+
+            for (auto target : *targets)
+            {
+                if (IsUnit(target))
+                {
+                    target->ToUnit()->SendPlaySpellVisualKit(e.action.spellVisualKit.spellVisualKitId, e.action.spellVisualKit.kitType,
+                        e.action.spellVisualKit.duration);
+
+                    TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_PLAY_SPELL_VISUAL_KIT: target: %s (%s), SpellVisualKit: %u",
+                        target->GetName(), target->GetGUID().ToString().c_str(), e.action.spellVisualKit.spellVisualKitId);
+                }
+            }
+
+            delete targets;
             break;
+        }
         case SMART_ACTION_CAST:
         {
             if (e.GetTargetType() == SMART_TARGET_POSITION)

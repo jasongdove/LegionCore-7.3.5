@@ -1073,7 +1073,7 @@ struct npc_cenarius_nightmare_brambles : public ScriptedAI
                     break;
                 }
                 case EVENT_3:
-                    me->SendPlaySpellVisualKit(0, BRAMBLES_KIT_1);
+                    me->SendPlaySpellVisualKit(BRAMBLES_KIT_1, 0);
                     if (auto player = Player::GetPlayer(*me, playerGUID))
                         me->GetMotionMaster()->MovePoint(1, player->GetPosition());
                     events.RescheduleEvent(EVENT_3, 1000);

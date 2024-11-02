@@ -245,7 +245,7 @@ struct boss_skorpyron : BossAI
     {
         if (spell->Id == SPELL_FOCUSED_BLAST_AT)
         {
-            me->SendPlaySpellVisualKit(0, VISUAL_KIT_BLAST);
+            me->SendPlaySpellVisualKit(VISUAL_KIT_BLAST, 0);
 
             float z = me->GetPositionZ();
             float lineDistance = 2.5f;
