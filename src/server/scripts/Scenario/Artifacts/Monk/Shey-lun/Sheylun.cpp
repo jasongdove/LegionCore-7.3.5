@@ -486,8 +486,11 @@ public:
     {
         go_sheylun_crateAI(GameObject* go) : GameObjectAI(go) {}
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             if (Creature* mob = go->FindNearestCreature(101882, 7.0f, true))
                 mob->AI()->DoAction(true);
             if (Creature* mob = go->FindNearestCreature(102063, 7.0f, true))

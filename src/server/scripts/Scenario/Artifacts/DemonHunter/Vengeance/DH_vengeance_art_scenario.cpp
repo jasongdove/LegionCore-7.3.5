@@ -131,8 +131,11 @@ public:
     {
         go_portal_fel_soulAI(GameObject* go) : GameObjectAI(go) {}
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             if (InstanceScript* instance = player->GetInstanceScript())
                 if (instance->getScenarionStep() == DATA_STAGE_2)
                 {

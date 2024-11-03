@@ -17,8 +17,11 @@ public:
     {
         go_mystic_bonfireAI(GameObject* go) : GameObjectAI(go) {}
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             if (InstanceScript* script = go->GetInstanceScript())
                 if (script->getScenarionStep() == 0)
                 {
@@ -58,8 +61,11 @@ public:
 
         bool check;
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             if (check)
                 return false;
 

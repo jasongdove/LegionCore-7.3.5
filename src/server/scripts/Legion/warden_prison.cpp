@@ -24,8 +24,11 @@ public:
             QUEST = 38690,
         };
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             for (int32 i = 0; i < sizeof(q38690); ++i)
             {
                 if (!player->GetReqKillOrCastCurrentCount(QUEST, q38690[i]))
@@ -707,8 +710,11 @@ public:
             CREDIT = 100166,
         };
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             if (player->GetQuestStatus(QUEST) == QUEST_STATUS_INCOMPLETE)
             {
                 player->CastSpell(player, 226867);

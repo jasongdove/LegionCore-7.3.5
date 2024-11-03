@@ -320,24 +320,14 @@ class go_acherus_soul_prison : public GameObjectScript
 public:
     go_acherus_soul_prison() : GameObjectScript("go_acherus_soul_prison") { }
 
-    bool OnGossipHello(Player* player, GameObject* go) override
-    {
-        if (Creature* anchor = go->FindNearestCreature(29521, 15))
-            if (ObjectGuid prisonerGUID = anchor->AI()->GetGUID())
-                if (Creature* prisoner = Creature::GetCreature(*player, prisonerGUID))
-                    CAST_AI(npc_unworthy_initiate::npc_unworthy_initiateAI, prisoner->AI())->EventStart(anchor, player);
-
-        return false;
-    }
-
     struct go_acherus_soul_prisonAI : public GameObjectAI
     {
         go_acherus_soul_prisonAI(GameObject* go) : GameObjectAI(go) { }
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
-            if (player->GetQuestStatus(12848) != QUEST_STATUS_INCOMPLETE || !player->HasItemCount(40732, 1))
-                return false;
+            if (!isUse)
+                return true;
 
             if (Creature* anchor = go->FindNearestCreature(29521, 15))
                 if (ObjectGuid prisonerGUID = anchor->AI()->GetGUID())

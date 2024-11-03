@@ -49,8 +49,11 @@ public:
             SCENE = 191677,
         };
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             /*
 
             ServerToClient: SMSG_PLAY_SCENE (0x2651) Length: 34 ConnIdx: 0 Time: 02/22/2016 12:57:13.116 Number: 11210
@@ -246,8 +249,11 @@ public:
             SCENE = 189261,
         };
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             /*
             ClientToServer: CMSG_GAME_OBJ_REPORT_USE (0x34DE) Length: 15 ConnIdx: 2 Time: 02/06/2016 22:39:25.012 Number: 16325
             GameObjectGUID: Full: 0x2C2090B920EEB5C00000100001364D15; HighType: GameObject; Low: 20335893; Map: 1481; Entry: 244439;
@@ -311,8 +317,11 @@ public:
                 return true;
             return false;
         }
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             if (player->GetReqKillOrCastCurrentCount(QUEST, go->GetEntry()))
                 return true;
 
@@ -767,8 +776,11 @@ public:
             QUEST = 38759,
         };
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             std::map<uint32, uint32> _data;
             _data[242989] = 94400;
             _data[244916] = 94377;
@@ -883,8 +895,11 @@ public:
             return false;
         }
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             if (player->GetReqKillOrCastCurrentCount(QUEST, CREDIT) || !player->GetReqKillOrCastCurrentCount(QUEST, CREDIT_REQUARE))
                 return true;
 
@@ -922,8 +937,11 @@ public:
             CREDIT = 100722,
         };
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             if (player->GetQuestStatus(QUEST) == QUEST_STATUS_INCOMPLETE)
             {
                 player->KilledMonsterCredit(CREDIT);
@@ -1071,8 +1089,11 @@ public:
             CREDIT = 94407,
         };
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             if (player->GetReqKillOrCastCurrentCount(QUEST, CREDIT))
                 return true;
 
@@ -1383,8 +1404,11 @@ public:
             CREDIT = 94407,
         };
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             uint32 credit1 = 0;
             uint32 credit2 = 0;
 
@@ -2052,8 +2076,11 @@ public:
             CREDIT = 100651,
         };
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             if (player->GetReqKillOrCastCurrentCount(QUEST, CREDIT))
                 return true;
 

@@ -45,7 +45,7 @@ class GameObjectAI
         static int Permissible(GameObject const* go);
 
         virtual bool GossipUse(Player* /*player*/) { return false; }
-        virtual bool GossipHello(Player* /*player*/) { return false; }
+        virtual bool GossipHello(Player* /*player*/, bool /*isUse*/) { return false; }
         virtual bool GossipSelect(Player* /*player*/, uint32 /*sender*/, uint32 /*action*/) { return false; }
         virtual bool GossipSelectCode(Player* /*player*/, uint32 /*sender*/, uint32 /*action*/, char const* /*code*/) { return false; }
         virtual bool QuestAccept(Player* /*player*/, Quest const* /*quest*/) { return false; }

@@ -189,7 +189,7 @@ void WorldSession::HandleGameobjectReportUse(WorldPackets::GameObject::GameObjRe
             go->Use(_player);
             break;
         default:
-            go->AI()->GossipHello(_player);
+            go->AI()->GossipHello(_player, false);
             break;
     }
     _player->UpdateAchievementCriteria(CRITERIA_TYPE_USE_GAMEOBJECT, go->GetEntry());

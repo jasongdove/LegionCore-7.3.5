@@ -427,8 +427,11 @@ public:
         go_bs_demoic_gatesAI(GameObject* go) : GameObjectAI(go){}
 
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             if (InstanceScript* instance = go->GetInstanceScript())
             {
                 if (instance->getScenarionStep() < 5)

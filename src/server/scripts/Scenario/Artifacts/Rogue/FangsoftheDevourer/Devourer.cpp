@@ -237,8 +237,11 @@ public:
     {
         go_devourer_miscAI(GameObject* go) : GameObjectAI(go) {}
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             if (player->HasItemCount(136802, 1))
             {
                 uint32 criteria = 0;

@@ -878,8 +878,11 @@ class go_celestial_planetarium_access : public GameObjectScript
             {
             }
 
-            bool GossipHello(Player* player) override
+            bool GossipHello(Player* player, bool isUse) override
             {
+                if (!isUse)
+                    return true;
+
                 // Start Algalon event
                 go->SetFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE);
                 /* _events.ScheduleEvent(EVENT_DESPAWN_CONSOLE, 5000);

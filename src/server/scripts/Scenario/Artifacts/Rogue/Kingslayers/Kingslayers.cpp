@@ -321,8 +321,11 @@ public:
     {
         go_kingslayers_doorAI(GameObject* go) : GameObjectAI(go) {}
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             //           if (InstanceScript *script = player->GetInstanceScript())
             {
                 //     if (script->getScenarionStep() == 5)

@@ -660,8 +660,11 @@ public:
     {
         go_tuure_crateAI(GameObject* go) : GameObjectAI(go) {}
 
-        bool GossipHello(Player* player) override
+        bool GossipHello(Player* player, bool isUse) override
         {
+            if (!isUse)
+                return true;
+
             player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50633);
             if (Creature* boja = player->FindNearestCreature(106253, 60.0f, true))
             {
