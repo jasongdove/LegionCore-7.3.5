@@ -310,6 +310,7 @@ enum OpcodeClient : uint16
     CMSG_GARRISON_START_MISSION                             = 0x3300,
     CMSG_GARRISON_SWAP_BUILDINGS                            = 0x32BD,
     CMSG_GENERATE_RANDOM_CHARACTER_NAME                     = 0x35E7,
+    CMSG_GET_ACCOUNT_CHARACTER_LIST                         = 0x36B6,
     CMSG_GET_CHALLENGE_MODE_REWARDS                         = 0x3683,
     CMSG_GET_GARRISON_INFO                                  = 0x32B2,
     CMSG_GET_ITEM_PURCHASE_DATA                             = 0x3533,
