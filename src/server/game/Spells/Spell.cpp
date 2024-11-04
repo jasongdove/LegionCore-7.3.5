@@ -2829,30 +2829,6 @@ void Spell::DoAllEffectOnTarget(TargetInfoPtr target)
     }
     CallScriptOnHitHandlers();
 
-    if (missInfo != SPELL_MISS_EVADE && m_caster->IsValidAttackTarget(unit) && (m_spellInfo->CanStartCombat() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
-    {
-        bool initCombat = !m_spellInfo->HasAttribute(SPELL_ATTR3_NO_INITIAL_AGGRO) && !m_spellInfo->HasAttribute(SPELL_ATTR1_NO_THREAT) && !(m_caster->IsCreature() && !m_caster->IsVisible());
-
-        m_caster->CombatStart(unit, initCombat);
-
-        if (initCombat && m_caster->isInCombat())
-        {
-            if (m_caster->IsPlayer() || m_caster->HasUnitTypeMask(UNIT_MASK_CREATED_BY_PLAYER))
-            {
-                if (!m_caster->getVictim())
-                    m_caster->UpdateVictim(unit);
-            }
-            else
-            {
-                m_caster->UpdateVictim(unit);
-            }
-        }
-
-        if (m_spellInfo->AttributesCu[0] & SPELL_ATTR0_CU_AURA_CC)
-            if (!unit->IsStandState())
-                unit->SetStandState(UNIT_STAND_STATE_STAND);
-    }
-
     if (m_count_dispeling)
         procEx |= PROC_EX_DISPEL;
 
@@ -3017,6 +2993,30 @@ void Spell::DoAllEffectOnTarget(TargetInfoPtr target)
         dmgInfoProc.SetCastTime(m_casttime);
         dmgInfoProc.SetMagnet(m_magnetGuid);
         caster->ProcDamageAndSpell(unit, PROC_FLAG_NONE, PROC_FLAG_TAKEN_SPELL_MAGIC_DMG_CLASS_NEG, PROC_EX_REFLECT, &dmgInfoProc, BASE_ATTACK, m_spellInfo, nullptr, nullptr, this);
+    }
+
+    if (missInfo != SPELL_MISS_EVADE && m_caster->IsValidAttackTarget(unit) && (m_spellInfo->CanStartCombat() || m_spellInfo->HasEffect(SPELL_EFFECT_DISPEL)))
+    {
+        bool initCombat = !m_spellInfo->HasAttribute(SPELL_ATTR3_NO_INITIAL_AGGRO) && !m_spellInfo->HasAttribute(SPELL_ATTR1_NO_THREAT) && !(m_caster->IsCreature() && !m_caster->IsVisible());
+
+        m_caster->CombatStart(unit, initCombat);
+
+        if (initCombat && m_caster->isInCombat())
+        {
+            if (m_caster->IsPlayer() || m_caster->HasUnitTypeMask(UNIT_MASK_CREATED_BY_PLAYER))
+            {
+                if (!m_caster->getVictim())
+                    m_caster->UpdateVictim(unit);
+            }
+            else
+            {
+                m_caster->UpdateVictim(unit);
+            }
+        }
+
+        if (m_spellInfo->AttributesCu[0] & SPELL_ATTR0_CU_AURA_CC)
+            if (!unit->IsStandState())
+                unit->SetStandState(UNIT_STAND_STATE_STAND);
     }
 
     if (missInfo == SPELL_MISS_NONE && m_spellInfo->HasAttribute(SPELL_ATTR7_INTERRUPT_ONLY_NONPLAYER) && !unit->IsPlayer())
