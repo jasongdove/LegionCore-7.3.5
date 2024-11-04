@@ -44,35 +44,51 @@ enum CreatureFlagsExtra
     CREATURE_FLAG_EXTRA_NO_PARRY                        = 0x00000004,       // creature can't parry
     CREATURE_FLAG_EXTRA_NO_PARRY_HASTEN                 = 0x00000008,       // creature can't counter-attack at parry
     CREATURE_FLAG_EXTRA_NO_BLOCK                        = 0x00000010,       // creature can't block
-    CREATURE_FLAG_EXTRA_NO_CRUSH                        = 0x00000020,       // creature can't do crush attacks
+    CREATURE_FLAG_EXTRA_NO_CRUSHING_BLOWS               = 0x00000020,       // creature can't do crush attacks
     CREATURE_FLAG_EXTRA_NO_XP_AT_KILL                   = 0x00000040,       // creature kill not provide XP
     CREATURE_FLAG_EXTRA_TRIGGER                         = 0x00000080,       // trigger creature
     CREATURE_FLAG_EXTRA_NO_TAUNT                        = 0x00000100,       // creature is immune to taunt auras and effect attack me
-    CREATURE_FLAG_EXTRA_PERSONAL_LOOT                   = 0x00000200,       // Personal loot mobs and increment healths by player
-    CREATURE_FLAG_EXTRA_AUTO_LOOT                       = 0x00000400,       // now not use
-    CREATURE_FLAG_EXTRA_EVENT_LOOT                      = 0x00000800,       // Generate special item level on kill creature
-    CREATURE_FLAG_EXTRA_EVENT_NPC                       = 0x00001000,       // Creature is increase HP by the number of attackers
-    CREATURE_FLAG_EXTRA_IMMUNITY_KNOCKBACK              = 0x00002000,       // Creature will immune all knockback effects
+    CREATURE_FLAG_EXTRA_GHOST_VISIBILITY                = 0x00000400,       // NYI: creature will only be visible to dead players
+    CREATURE_FLAG_EXTRA_USE_OFFHAND_ATTACK              = 0x00000800,       // NTI: creature will use offhand attacks
+    CREATURE_FLAG_EXTRA_NO_SELL_VENDOR                  = 0x00001000,       // NYI: players can't sell items to this vendor
+    CREATURE_FLAG_EXTRA_CANNOT_ENTER_COMBAT             = 0x00002000,       // NYI: creature is not allowed to enter combat
     CREATURE_FLAG_EXTRA_WORLDEVENT                      = 0x00004000,       // custom flag for world event creatures (left room for merging)
     CREATURE_FLAG_EXTRA_GUARD                           = 0x00008000,       // Creature is guard
     CREATURE_FLAG_EXTRA_NO_CRIT                         = 0x00020000,       // creature can't do critical strikes
-    CREATURE_FLAG_EXTRA_NO_SKILLGAIN                    = 0x00040000,       // creature won't increase weapon skills
-    CREATURE_FLAG_EXTRA_TAUNT_DIMINISH                  = 0x00080000,       // Taunt is a subject to diminishing returns on this creautre
+    CREATURE_FLAG_EXTRA_NO_SKILL_GAINS                  = 0x00040000,       // NYI: creature won't increase weapon skills
+    CREATURE_FLAG_EXTRA_OBEYS_TAUNT_DIMINISHING_RETURNS = 0x00080000,       // Taunt is a subject to diminishing returns on this creautre
     CREATURE_FLAG_EXTRA_ALL_DIMINISH                    = 0x00100000,       // Creature is subject to all diminishing returns as player are
+    CREATURE_FLAG_EXTRA_NO_PLAYER_DAMAGE_REQ            = 0x00200000,       // NYI: creature does not need to take player damage for kill credit
+    CREATURE_FLAG_EXTRA_UNUSED_27                       = 0x08000000,
     CREATURE_FLAG_EXTRA_DUNGEON_BOSS                    = 0x10000000,       // creature is a dungeon boss (SET DYNAMICALLY, DO NOT ADD IN DB)
-    CREATURE_FLAG_EXTRA_VEHICLE_ATTACKABLE_PASSENGERS   = 0x20000000,       // creature is vehicle, UNIT_STATE_ONVEHICLE will not add to passengers
-    CREATURE_FLAG_EXTRA_VEH_INSTANT_DESPAWN_PASSENGERS  = 0x40000000,       // Instant remove creature passengers
-    CREATURE_FLAG_EXTRA_HP_85_PERC                      = 0x80000000,       // No damage if HP < 85% for target mob
-};
+    CREATURE_FLAG_EXTRA_IGNORE_PATHFINDING              = 0x20000000,       // NYI: creature ignore pathfinding
+    CREATURE_FLAG_EXTRA_IMMUNITY_KNOCKBACK              = 0x40000000,       // creature is immune to knockback effects
+    CREATURE_FLAG_EXTRA_UNUSED_31                       = 0x80000000,
 
-constexpr auto CREATURE_FLAG_EXTRA_DB_ALLOWED (CREATURE_FLAG_EXTRA_INSTANCE_BIND | CREATURE_FLAG_EXTRA_CIVILIAN | \
-    CREATURE_FLAG_EXTRA_NO_PARRY | CREATURE_FLAG_EXTRA_NO_PARRY_HASTEN | CREATURE_FLAG_EXTRA_NO_BLOCK | \
-    CREATURE_FLAG_EXTRA_NO_CRUSH | CREATURE_FLAG_EXTRA_NO_XP_AT_KILL | CREATURE_FLAG_EXTRA_TRIGGER | \
-    CREATURE_FLAG_EXTRA_NO_TAUNT | CREATURE_FLAG_EXTRA_WORLDEVENT | CREATURE_FLAG_EXTRA_NO_CRIT | \
-    CREATURE_FLAG_EXTRA_NO_SKILLGAIN | CREATURE_FLAG_EXTRA_TAUNT_DIMINISH | CREATURE_FLAG_EXTRA_ALL_DIMINISH | \
-    CREATURE_FLAG_EXTRA_GUARD | CREATURE_FLAG_EXTRA_HP_85_PERC | CREATURE_FLAG_EXTRA_VEHICLE_ATTACKABLE_PASSENGERS | \
-    CREATURE_FLAG_EXTRA_VEH_INSTANT_DESPAWN_PASSENGERS | CREATURE_FLAG_EXTRA_PERSONAL_LOOT | CREATURE_FLAG_EXTRA_AUTO_LOOT | \
-    CREATURE_FLAG_EXTRA_EVENT_LOOT | CREATURE_FLAG_EXTRA_EVENT_NPC | CREATURE_FLAG_EXTRA_IMMUNITY_KNOCKBACK);
+
+    // deprecated? custom to legion core
+    // remapped to UNUSED flags in TC master
+
+    // TC CREATURE_FLAG_EXTRA_UNUSED_9
+    // TC CREATURE_FLAG_EXTRA_UNUSED_22
+    // TC CREATURE_FLAG_EXTRA_UNUSED_23
+    // TC CREATURE_FLAG_EXTRA_UNUSED_24
+    // TC CREATURE_FLAG_EXTRA_UNUSED_25
+    // TC CREATURE_FLAG_EXTRA_UNUSED_26
+
+    CREATURE_FLAG_EXTRA_PERSONAL_LOOT                   = 0x00000200,       // Personal loot mobs and increment healths by player
+    CREATURE_FLAG_EXTRA_EVENT_LOOT                      = 0x00400000,       // Generate special item level on kill creature
+    CREATURE_FLAG_EXTRA_EVENT_NPC                       = 0x00800000,       // Creature is increase HP by the number of attackers
+    CREATURE_FLAG_EXTRA_VEHICLE_ATTACKABLE_PASSENGERS   = 0x01000000,       // creature is vehicle, UNIT_STATE_ONVEHICLE will not add to passengers
+    CREATURE_FLAG_EXTRA_VEH_INSTANT_DESPAWN_PASSENGERS  = 0x02000000,       // Instant remove creature passengers
+    CREATURE_FLAG_EXTRA_HP_85_PERC                      = 0x04000000,       // No damage if HP < 85% for target mob
+
+
+    // Masks
+    CREATURE_FLAG_EXTRA_UNUSED                          = (CREATURE_FLAG_EXTRA_UNUSED_27 | CREATURE_FLAG_EXTRA_UNUSED_31), // SKIP
+
+    CREATURE_FLAG_EXTRA_DB_ALLOWED                      = (0xFFFFFFFF & ~(CREATURE_FLAG_EXTRA_UNUSED | CREATURE_FLAG_EXTRA_DUNGEON_BOSS)) // SKIP
+};
 
 #pragma pack(push, 1)
 
