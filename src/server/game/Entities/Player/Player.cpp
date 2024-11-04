@@ -351,8 +351,8 @@ m_achievementMgr(sf::safe_ptr<AchievementMgr<Player>>(this))
 
     m_killPoints = 0.0f;
 
-    m_mover = this;
-    m_movedPlayer = this;
+    m_unitMovedByMe = this;
+    m_playerMovingMe = this;
     m_seer = this;
 
     m_contestedPvPTimer = 0;
@@ -29455,7 +29455,7 @@ bool Player::IsNeverVisible(WorldObject const* /*seer*/) const
 bool Player::CanAlwaysSee(WorldObject const* obj) const
 {
     // Always can see self
-    if (m_mover == obj)
+    if (GetUnitBeingMoved() == obj)
         return true;
 
     ObjectGuid guid = GetGuidValue(PLAYER_FIELD_FARSIGHT_OBJECT);
@@ -29964,6 +29964,8 @@ void Player::SendInitialPacketsBeforeAddToMap(bool login)
 
         activeGlyphs.IsFullUpdate = true;
         SendDirectMessage(activeGlyphs.Write());
+
+        SetMovedUnit(this);
     }
 }
 
@@ -30079,8 +30081,6 @@ void Player::SendInitialPacketsAfterAddToMap(bool login)
     if (uint32 instanceId = inst && InInstance() ? inst->GetInstanceId() : 0)
         if (Scenario* progress = sScenarioMgr->GetScenario(instanceId))
             progress->SendStepUpdate(this, true);
-
-    SetMover(this);
 
     if (login)
     {
@@ -31416,13 +31416,31 @@ bool Player::IsAtRecruitAFriendDistance(WorldObject const* pOther) const
 
 void Player::SetClientControl(Unit* target, bool allowMove)
 {
+    // a player can never client control nothing
+    ASSERT(target);
+
+    // still affected by some aura that shouldn't allow control, only allow on last such aura to be removed
+    if (target->HasUnitState(UNIT_STATE_CONTROLLED))
+        allowMove = false;
+
+    // don't allow possession to be overridden
     WorldPackets::Movement::ControlUpdate update;
     update.Guid = target->GetGUID();
     update.On = allowMove;
     SendDirectMessage(update.Write());
 
-    if (target == this && allowMove)
-        SetMover(this);
+    WorldObject* viewpoint = GetViewpoint();
+    if (!viewpoint)
+        viewpoint = this;
+    if (target != viewpoint)
+    {
+        if (viewpoint != this)
+            SetViewpoint(viewpoint, false);
+        if (target != this)
+            SetViewpoint(target, true);
+    }
+
+    SetMovedUnit(target);
 }
 
 void Player::UpdateZoneDependentAuras(uint32 newZone)
@@ -35205,20 +35223,6 @@ void Player::SendMovementSetCollisionHeight(float height, uint8 Reason)
     SendDirectMessage(setCollisionHeight.Write());
 }
 
-void Player::SetMover(Unit* target)
-{
-    if (!target || (target != this && !target->IsInWorld()))
-        return;
-
-    m_mover->m_movedPlayer = nullptr;
-    m_mover = target;
-    m_mover->m_movedPlayer = this;
-
-    WorldPackets::Movement::MoveSetActiveMover packet;
-    packet.MoverGUID = target->GetGUID();
-    SendDirectMessage(packet.Write());
-}
-
 void Player::ShowNeutralPlayerFactionSelectUI()
 {
     SendDirectMessage(WorldPackets::Misc::NullSMsg(SMSG_SHOW_NEUTRAL_PLAYER_FACTION_SELECT_UI).Write());
@@ -36106,7 +36110,7 @@ void Player::SendRaidGroupOnlyMessage(RaidGroupReason reason, int32 delay) const
 
 void Player::CastSpellInQueue()
 {
-    Unit* mover = m_mover;
+    Unit* mover = GetUnitBeingMoved();
     if (mover != this && mover->IsPlayer())
     {
         TC_LOG_ERROR("network", "WORLD: mover != _player id %u", m_spellInQueue.CastData->SpellID);

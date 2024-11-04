@@ -322,6 +322,8 @@ class Object
         void ForceValuesUpdateAtIndex(uint32);
         
         bool IsPlayer() const { return GetTypeId() == TYPEID_PLAYER; }
+        static Player* ToPlayer(Object* o) { return o ? o->ToPlayer() : nullptr; }
+        static Player const* ToPlayer(Object const* o) { return o ? o->ToPlayer() : nullptr; }
         Player* ToPlayer() { if (IsPlayer()) return reinterpret_cast<Player*>(this); return nullptr; }
         Player const* ToPlayer() const { if (IsPlayer()) return reinterpret_cast<Player const*>(this); return nullptr; }
 

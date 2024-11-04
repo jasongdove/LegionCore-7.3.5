@@ -857,7 +857,7 @@ bool Creature::UpdateEntry(uint32 entry, uint32 team, const CreatureData* data)
 void Creature::UpdateMovementFlags()
 {
     // Do not update movement flags if creature is controlled by a player (charm/vehicle)
-    if (m_ControlledByPlayer)
+    if (m_playerMovingMe)
         return;
 
 //    // Creatures with CREATURE_FLAG_EXTRA_NO_MOVE_FLAGS_UPDATE should control MovementFlags in your own scripts

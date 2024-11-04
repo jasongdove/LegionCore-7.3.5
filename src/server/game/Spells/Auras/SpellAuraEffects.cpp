@@ -4222,10 +4222,10 @@ void AuraEffect::HandleAuraModIncreaseFlightSpeed(AuraApplication const* aurApp,
         if (mode & AURA_EFFECT_HANDLE_SEND_FOR_CLIENT_MASK && (apply || (!target->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED) && !target->HasAuraType(SPELL_AURA_FLY))))
         {
             target->SetCanTransitionBetweenSwimAndFly(apply);
-            target->SetCanFly(apply);
 
-            if (!apply && !target->IsLevitating() && target->IsCreature())
-                target->GetMotionMaster()->MoveFall();
+            if (target->SetCanFly(apply))
+                if (!apply && !target->IsLevitating() && target->IsCreature())
+                    target->GetMotionMaster()->MoveFall();
         }
 
         //! Someone should clean up these hacks and remove it from this function. It doesn't even belong here.

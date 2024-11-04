@@ -71,7 +71,7 @@ struct CharmInfo
     void InitPetActionBar();
     void InitEmptyActionBar(bool withAttack = true);
 
-    bool AddSpellToActionBar(SpellInfo const* spellInfo, ActiveStates newstate = ACT_DECIDE);
+    bool AddSpellToActionBar(SpellInfo const* spellInfo, ActiveStates newstate = ACT_DECIDE, uint8 preferredSlot = 0);
     bool RemoveSpellFromActionBar(uint32 spell_id);
     void LoadPetActionBar(std::string const& data);
     void SetSpellAutocast(SpellInfo const* spellInfo, bool state);

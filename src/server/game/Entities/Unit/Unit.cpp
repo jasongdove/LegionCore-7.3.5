@@ -217,7 +217,7 @@ SpellNonMeleeDamage::SpellNonMeleeDamage(Unit* _attacker, Unit* _target, uint32 
 #ifdef _MSC_VER
 #pragma warning(disable:4355)
 #endif
-Unit::Unit(bool isWorldObject): WorldObject(isWorldObject), m_movedPlayer(nullptr), m_lastSanctuaryTime(0), IsAIEnabled(false), NeedChangeAI(false), m_ControlledByPlayer(false),
+Unit::Unit(bool isWorldObject): WorldObject(isWorldObject), m_unitMovedByMe(nullptr), m_playerMovingMe(nullptr), m_lastSanctuaryTime(0), IsAIEnabled(false), NeedChangeAI(false), m_ControlledByPlayer(false),
 movespline(new Movement::MoveSpline()), i_AI(nullptr), i_disabledAI(nullptr), m_AutoRepeatFirstCast(false), m_procDeep(0), m_castCounter(0), m_removedAurasCount(0), i_motionMaster(this),
 m_regenTimer{0}, isCasterPet{false}, m_ThreatManager(this), m_vehicle(nullptr), m_vehicleKit(nullptr), m_unitTypeMask(UNIT_MASK_NONE), m_rootTimes{0}, m_HostileRefManager(this), _delayInterruptFlag(0), _lastDamagedTime(0), damageTrackingTimer_(),
 playerDamageTaken_(), npcDamageTaken_()
@@ -15864,7 +15864,7 @@ void Unit::SetSpeed(UnitMoveType mtype, float rate, bool forced)
         }
     }
 
-    if (Player* playerMover = GetPlayerMover()) // unit controlled by a player.
+    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved())) // unit controlled by a player.
     {
         // Send notification to self
         WorldPackets::Movement::MoveSetSpeed selfpacket(moveTypeToOpcode[mtype][1]);
@@ -17492,21 +17492,16 @@ void Unit::CleanupsBeforeDelete(bool finalCleanup)
     WorldObject::CleanupsBeforeDelete(finalCleanup);
 }
 
-Unit* Unit::GetMover() const
- {
-     if (Player const* player = ToPlayer())
-         return player->m_mover;
+void Unit::SetMovedUnit(Unit* target)
+{
+    m_unitMovedByMe->m_playerMovingMe = nullptr;
+    m_unitMovedByMe = ASSERT_NOTNULL(target);
+    m_unitMovedByMe->m_playerMovingMe = ASSERT_NOTNULL(ToPlayer());
 
-     return nullptr;
- }
- 
- Player* Unit::GetPlayerMover() const
- {
-     if (Unit* mover = GetMover())
-         return mover->ToPlayer();
-
-     return nullptr;
- }
+    WorldPackets::Movement::MoveSetActiveMover packet;
+    packet.MoverGUID = target->GetGUID();
+    ToPlayer()->SendDirectMessage(packet.Write());
+}
 
 void Unit::UpdateCharmAI()
 {
@@ -22505,7 +22500,7 @@ void Unit::SetRooted(bool apply)
 
     static OpcodeServer const rootOpcodeTable[2][2] = {{SMSG_MOVE_SPLINE_UNROOT, SMSG_MOVE_UNROOT}, {SMSG_MOVE_SPLINE_ROOT, SMSG_MOVE_ROOT}};
 
-    if (Player* playerMover = GetPlayerMover()) // unit controlled by a player.
+    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved())) // unit controlled by a player.
     {
         WorldPackets::Movement::MoveSetFlag packet(rootOpcodeTable[apply][1]);
         packet.MoverGUID = GetGUID();
@@ -22704,18 +22699,14 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
             case CHARM_TYPE_VEHICLE:
                 SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
                 charmer->ToPlayer()->SetClientControl(this, true);
-                charmer->ToPlayer()->SetMover(this);
-                charmer->ToPlayer()->SetViewpoint(this, true);
                 charmer->ToPlayer()->VehicleSpellInitialize();
                 break;
             case CHARM_TYPE_POSSESS:
-                AddUnitState(UNIT_STATE_POSSESSED);
                 SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
                 charmer->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
                 charmer->ToPlayer()->SetClientControl(this, true);
-                charmer->ToPlayer()->SetMover(this);
-                charmer->ToPlayer()->SetViewpoint(this, true);
                 charmer->ToPlayer()->PossessSpellInitialize();
+                AddUnitState(UNIT_STATE_POSSESSED);
                 break;
             case CHARM_TYPE_CHARM:
                 if (IsCreature() && charmer->getClass() == CLASS_WARLOCK)
@@ -22740,13 +22731,11 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
             case CHARM_TYPE_CONVERT:
                 break;
         }
-    }else if (type == CHARM_TYPE_CONVERT)
+    }
+    else if (type == CHARM_TYPE_CONVERT)
     {
         if (ToPlayer())
-        {
             ToPlayer()->SetClientControl(charmer, true);
-            ToPlayer()->SetMover(charmer);
-        }
     }
 
     return true;
@@ -22819,21 +22808,15 @@ void Unit::RemoveCharmedBy(Unit* charmer)
         switch (type)
         {
             case CHARM_TYPE_VEHICLE:
-                charmer->ToPlayer()->SetClientControl(charmer, true);
-                charmer->ToPlayer()->SetViewpoint(this, false);
                 charmer->ToPlayer()->SetClientControl(this, false);
-                if (IsPlayer())
-                    ToPlayer()->SetMover(this);
+                charmer->ToPlayer()->SetClientControl(charmer, true);
                 RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
                 break;
             case CHARM_TYPE_POSSESS:
-                charmer->ToPlayer()->SetClientControl(charmer, true);
-                charmer->ToPlayer()->SetViewpoint(this, false);
-                charmer->ToPlayer()->SetClientControl(this, false);
-                if (IsPlayer())
-                    ToPlayer()->SetMover(this);
-                charmer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
                 ClearUnitState(UNIT_STATE_POSSESSED);
+                charmer->ToPlayer()->SetClientControl(this, false);
+                charmer->ToPlayer()->SetClientControl(charmer, true);
+                charmer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
                 RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED);
                 break;
             case CHARM_TYPE_CHARM:
@@ -22854,13 +22837,11 @@ void Unit::RemoveCharmedBy(Unit* charmer)
             case CHARM_TYPE_CONVERT:
                 break;
         }
-    }else if (type == CHARM_TYPE_CONVERT)
+    }
+    else if (type == CHARM_TYPE_CONVERT)
     {
         if (ToPlayer())
-        {
             ToPlayer()->SetClientControl(charmer, false);
-            ToPlayer()->SetMover(this);
-        }
     }
 
     // a guardian should always have charminfo
@@ -23557,7 +23538,7 @@ void Unit::KnockbackFrom(float x, float y, float speedXY, float speedZ, Movement
     else if (Unit* charmer = GetCharmer())
     {
         player = charmer->ToPlayer();
-        if (player && player->m_mover != this)
+        if (player && player->GetUnitBeingMoved() != this)
             player = nullptr;
     }
 
@@ -24957,7 +24938,7 @@ bool Unit::SetDisableGravity(bool disable, bool isPlayer)
 
     static OpcodeServer const gravityOpcodeTable[2][2] = {{SMSG_MOVE_SPLINE_ENABLE_GRAVITY, SMSG_MOVE_ENABLE_GRAVITY}, {SMSG_MOVE_SPLINE_DISABLE_GRAVITY, SMSG_MOVE_DISABLE_GRAVITY}};
 
-    if (Player* playerMover = GetPlayerMover())
+    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved()))
     {
         WorldPackets::Movement::MoveSetFlag packet(gravityOpcodeTable[disable][1]);
         packet.MoverGUID = GetGUID();
@@ -25041,7 +25022,7 @@ bool Unit::SetCanFly(bool enable)
     if (!enable && IsPlayer())
         ToPlayer()->SetFallInformation(0, GetPositionZ());
 
-    if (Player* playerMover = GetPlayerMover())
+    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved()))
     {
         WorldPackets::Movement::MoveSetFlag packet(flyOpcodeTable[enable][1]);
         packet.MoverGUID = GetGUID();
@@ -25078,7 +25059,7 @@ bool Unit::SetWaterWalking(bool enable)
 
     static OpcodeServer const waterWalkingOpcodeTable[2][2] = {{SMSG_MOVE_SPLINE_SET_LAND_WALK, SMSG_MOVE_SET_LAND_WALK}, {SMSG_MOVE_SPLINE_SET_WATER_WALK, SMSG_MOVE_SET_WATER_WALK}};
 
-    if (Player* playerMover = GetPlayerMover())
+    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved()))
     {
         WorldPackets::Movement::MoveSetFlag packet(waterWalkingOpcodeTable[enable][1]);
         packet.MoverGUID = GetGUID();
@@ -25114,7 +25095,7 @@ bool Unit::SetFeatherFall(bool enable)
 
     static OpcodeServer const featherFallOpcodeTable[2][2] = {{SMSG_MOVE_SPLINE_SET_NORMAL_FALL, SMSG_MOVE_SET_NORMAL_FALL}, {SMSG_MOVE_SPLINE_SET_FEATHER_FALL, SMSG_MOVE_SET_FEATHER_FALL}};
 
-    if (Player* playerMover = GetPlayerMover())
+    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved()))
     {
         WorldPackets::Movement::MoveSetFlag packet(featherFallOpcodeTable[enable][1]);
         packet.MoverGUID = GetGUID();
@@ -25198,7 +25179,7 @@ bool Unit::SetHover(bool enable)
         { SMSG_MOVE_SPLINE_SET_HOVER, SMSG_MOVE_SET_HOVERING }
     };
 
-    if (Player* playerMover = GetPlayerMover())
+    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved()))
     {
         WorldPackets::Movement::MoveSetFlag packet(hoverOpcodeTable[enable][1]);
         packet.MoverGUID = GetGUID();
@@ -25231,7 +25212,7 @@ bool Unit::SetCollision(bool disable)
 
     static OpcodeServer const collisionOpcodeTable[2][2] = {{SMSG_MOVE_SPLINE_ENABLE_COLLISION, SMSG_MOVE_ENABLE_COLLISION}, {SMSG_MOVE_SPLINE_DISABLE_COLLISION, SMSG_MOVE_DISABLE_COLLISION}};
 
-    if (Player* playerMover = GetPlayerMover())
+    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved()))
     {
         WorldPackets::Movement::MoveSetFlag packet(collisionOpcodeTable[disable][1]);
         packet.MoverGUID = GetGUID();
@@ -25547,7 +25528,7 @@ bool Unit::SetCanDoubleJump(bool enable)
         SMSG_MOVE_ENABLE_DOUBLE_JUMP
     };
 
-    if (Player* playerMover = GetPlayerMover())
+    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved()))
     {
         WorldPackets::Movement::MoveSetFlag packet(doubleJumpOpcodeTable[enable]);
         packet.MoverGUID = GetGUID();
@@ -25591,7 +25572,7 @@ bool Unit::SetCanTransitionBetweenSwimAndFly(bool enable)
         RemoveExtraUnitMovementFlag(MOVEMENTFLAG2_CAN_SWIM_TO_FLY_TRANS);
 
     static OpcodeServer const swimToFlyTransOpcodeTable[2] = {SMSG_MOVE_DISABLE_TRANSITION_BETWEEN_SWIM_AND_FLY, SMSG_MOVE_ENABLE_TRANSITION_BETWEEN_SWIM_AND_FLY};
-    if (Player* playerMover = GetPlayerMover())
+    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved()))
     {
         WorldPackets::Movement::MoveSetFlag packet(swimToFlyTransOpcodeTable[enable]);
         packet.MoverGUID = GetGUID();
@@ -25613,7 +25594,7 @@ bool Unit::SetCanTurnWhileFalling(bool enable)
         RemoveExtraUnitMovementFlag(MOVEMENTFLAG2_CAN_TURN_WHILE_FALLING);
 
     static OpcodeServer const canTurnWhileFallingOpcodeTable[2] = { SMSG_MOVE_UNSET_CAN_TURN_WHILE_FALLING, SMSG_MOVE_SET_CAN_TURN_WHILE_FALLING };
-    if (Player* playerMover = GetPlayerMover())
+    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved()))
     {
         WorldPackets::Movement::MoveSetFlag packet(canTurnWhileFallingOpcodeTable[enable]);
         packet.MoverGUID = GetGUID();
@@ -25631,7 +25612,7 @@ void Unit::SendTeleportPacket(Position const& destPos)
     packet.movementInfo->RemoteTimeValid = true;
     Unit* broadcastSource = this;
 
-    if (Player* playerMover = GetPlayerMover())
+    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved()))
     {
         float x, y, z, o;
         destPos.GetPosition(x, y, z, o);

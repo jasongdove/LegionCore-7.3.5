@@ -73,4 +73,6 @@ struct TC_GAME_API CreatureMovementData
     std::string ToString() const;
 };
 
+const uint32 MAX_CREATURE_SPELLS = 8;
+
 #endif

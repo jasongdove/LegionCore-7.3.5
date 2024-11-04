@@ -1070,7 +1070,7 @@ void WorldSession::HandleOpenItem(WorldPackets::Spells::OpenItem& packet)
 {
     Player* player = GetPlayer();
 
-    if (player->m_mover != player)
+    if (player->GetUnitBeingMoved() != player)
         return;
 
     Item* item = player->GetItemByPos(packet.Slot, packet.PackSlot);

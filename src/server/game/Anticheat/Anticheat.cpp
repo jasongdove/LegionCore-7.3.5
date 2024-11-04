@@ -1043,10 +1043,10 @@ bool PlayerCheatData::HandleCustomAnticheatTests(uint32 opcode, MovementInfo& mo
 {
     // TODO These checks are unreliable and should be implemented in other way
 
-    if (!me->m_mover->IsPlayer())
+    if (!me->GetUnitBeingMoved()->IsPlayer())
         return true;
 
-    Player* mover = me->m_mover->ToPlayer();
+    Player* mover = me->GetUnitBeingMoved()->ToPlayer();
 
     /* teleport hack check */
     if (!mover->m_transport && !mover->m_movementInfo.transport.Guid && !mover->isInFlight())

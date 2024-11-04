@@ -22,6 +22,7 @@
 #include "CreatureAISelector.h"
 #include "FleeingMovementGenerator.h"
 #include "FlightPathMovementGenerator.h"
+#include "GenericMovementGenerator.h"
 #include "HomeMovementGenerator.h"
 #include "IdleMovementGenerator.h"
 #include "MoveSpline.h"
@@ -237,7 +238,7 @@ void MotionMaster::MoveTargetedHome()
         if (target)
         {
             TC_LOG_DEBUG("misc", "Following %s (GUID: %lu)", target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : static_cast<Creature*>(target)->GetDBTableGUIDLow());
-            if (!_owner->m_movedPlayer)
+            if (!_owner->GetPlayerMovingMe())
             {
                 TC_LOG_DEBUG("misc", "Following %s (GUID: %lu)", target->IsPlayer() ? "player" : "creature", target->IsPlayer() ? target->GetGUIDLow() : static_cast<Creature*>(target)->GetDBTableGUIDLow());
                 Mutate(new FollowMovementGenerator<Creature>(*target, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE)), MOTION_SLOT_ACTIVE);
@@ -795,6 +796,18 @@ void MotionMaster::MoveBackward(uint32 id, float x, float y, float z, float spee
     if (speed > 0.0f)
         init.SetVelocity(speed);
     Mutate(new EffectMovementGenerator(id), MOTION_SLOT_CONTROLLED);
+}
+
+void MotionMaster::LaunchMoveSpline(Movement::MoveSplineInit&& init, uint32 id/*= 0*/, MovementSlot slot/*= MOTION_SLOT_ACTIVE*/, MovementGeneratorType type/*= EFFECT_MOTION_TYPE*/)
+{
+    if (IsInvalidMovementGeneratorType(type))
+    {
+        TC_LOG_DEBUG("movement.motionmaster", "MotionMaster::LaunchMoveSpline: '%s', tried to launch a spline with an invalid MovementGeneratorType: %u (Id: %u, Slot: %u)", _owner->GetGUID().ToString().c_str(), type, id, slot);
+        return;
+    }
+
+    TC_LOG_DEBUG("movement.motionmaster", "MotionMaster::LaunchMoveSpline: '%s', initiates spline Id: %u (Type: %u, Slot: %u)", _owner->GetGUID().ToString().c_str(), id, type, slot);
+    Mutate(new GenericMovementGenerator(std::move(init), type, id), slot);
 }
 
 /******************** Private methods ********************/

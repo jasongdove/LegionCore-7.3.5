@@ -1651,9 +1651,11 @@ class Unit : public WorldObject
         CharmInfo* InitCharmInfo();
         void DeleteCharmInfo();
         void UpdateCharmAI();
-        Unit* GetMover() const;
-        Player* GetPlayerMover() const;
-        Player* m_movedPlayer;
+
+        void SetMovedUnit(Unit* target);
+        Unit* GetUnitBeingMoved() const { return m_unitMovedByMe; }
+        Player* GetPlayerMovingMe() const { return m_playerMovingMe; }
+
         SharedVisionList const& GetSharedVisionList() { return m_sharedVision; }
         void AddPlayerToVision(Player* player);
         void RemovePlayerFromVision(Player* player);
@@ -2560,6 +2562,9 @@ class Unit : public WorldObject
         float m_dmg_multiplier = 1.0f;
 
         float m_speed_rate[MAX_MOVE_TYPE];
+
+        Unit* m_unitMovedByMe; // only ever set for players, and only for direct client control
+        Player* m_playerMovingMe; // only set for direct client control (possess effects, vehicles and similar)
 
         uint32 m_overrideAutoattack[2];
 

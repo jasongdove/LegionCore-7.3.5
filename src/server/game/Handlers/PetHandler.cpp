@@ -433,8 +433,8 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPackets::Spells::PetCastSpell& 
 
     // TODO: need to check victim?
     SpellCastResult result;
-    if (caster->m_movedPlayer)
-        result = spell->CheckPetCast(caster->m_movedPlayer->GetSelectedUnit());
+    if (caster->GetPlayerMovingMe())
+        result = spell->CheckPetCast(caster->GetPlayerMovingMe()->GetSelectedUnit());
     else
         result = spell->CheckPetCast(nullptr);
     if (result == SPELL_CAST_OK)

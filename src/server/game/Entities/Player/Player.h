@@ -2863,7 +2863,6 @@ class Player : public Unit, public GridObject<Player>
         /*********************************************************/
         /***                 VARIOUS SYSTEMS                   ***/
         /*********************************************************/
-        Unit* m_mover;
         WorldObject* m_seer;
 
         void UpdateFallInformationIfNeed(MovementInfo const& minfo, uint16 opcode);
@@ -2871,8 +2870,6 @@ class Player : public Unit, public GridObject<Player>
         void HandleFall(MovementInfo const& movementInfo);
 
         void SetClientControl(Unit* target, bool allowMove);
-
-        void SetMover(Unit* target);
 
         void SetSeer(WorldObject* target) { m_seer = target; }
         void SetViewpoint(WorldObject* target, bool apply);

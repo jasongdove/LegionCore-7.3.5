@@ -35,7 +35,7 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spells::ItemUse& cast)
     Player* pUser = _player;
 
     // ignore for remote control state
-    if (pUser->m_mover != pUser)
+    if (pUser->GetUnitBeingMoved() != pUser)
         return;
 
     // client provided targets
@@ -152,7 +152,7 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spells::ItemUse& cast)
 
 void WorldSession::HandleGameObjectUse(WorldPackets::GameObject::GameObjectUse& packet)
 {
-    if (_player->m_mover != _player || !_player->CanContact() || _player->IsSpectator())
+    if (_player->GetUnitBeingMoved() != _player || !_player->CanContact() || _player->IsSpectator())
         return;
 
     if (GameObject* obj = GetPlayer()->GetMap()->GetGameObject(packet.Guid))
@@ -165,9 +165,9 @@ void WorldSession::HandleGameobjectReportUse(WorldPackets::GameObject::GameObjRe
     if (!go)
         return;
 
-    if (_player->m_mover != _player)
+    if (_player->GetUnitBeingMoved() != _player)
     {
-        if (!(_player->IsOnVehicle(_player->m_mover) || _player->IsMounted()))
+        if (!(_player->IsOnVehicle(_player->GetUnitBeingMoved()) || _player->IsMounted()))
             return;
 
         if (_player->NeedDismount() && !go->GetGOInfo()->IsUsableMounted())
@@ -211,7 +211,7 @@ void WorldSession::HandleGameobjectReportUse(WorldPackets::GameObject::GameObjRe
 
 void WorldSession::HandleCastSpellOpcode(WorldPackets::Spells::CastSpell& cast)
 {
-    Unit* mover = _player->m_mover;
+    Unit* mover = _player->GetUnitBeingMoved();
     if (mover != _player && mover->IsPlayer())
     {
         TC_LOG_ERROR("network", "WORLD: mover != _player id %u", cast.Cast.SpellID);
@@ -499,7 +499,7 @@ void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPackets::Spells::Cance
 
 void WorldSession::HandleCancelChanneling(WorldPackets::Spells::CancelChannelling& packet)
 {
-    Unit* mover = _player->m_mover;
+    Unit* mover = _player->GetUnitBeingMoved();
     if (mover != _player && mover->IsPlayer())
         return;
 
@@ -512,7 +512,7 @@ void WorldSession::HandleTotemDestroyed(WorldPackets::Totem::TotemDestroyed& pac
     if (!player)
         return;
 
-    if (player->m_mover != player)
+    if (player->GetUnitBeingMoved() != player)
         return;
 
     ++packet.Slot;

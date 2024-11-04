@@ -33,6 +33,7 @@ class PathGenerator;
 
 namespace Movement
 {
+    class MoveSplineInit;
     struct SpellEffectExtraData;
 }
 
@@ -42,7 +43,7 @@ namespace Movement
 #define SPEED_CHARGE    42.0f
 
 // values 0 ... MAX_DB_MOTION_TYPE-1 used in DB
-enum MovementGeneratorType
+enum MovementGeneratorType : uint8
 {
     IDLE_MOTION_TYPE                = 0,                   // IdleMovementGenerator.h
     RANDOM_MOTION_TYPE              = 1,                   // RandomMovementGenerator.h
@@ -176,6 +177,7 @@ class MotionMaster
         void MoveRotate(uint32 time, RotateDirection direction, bool repeat = false);
         void MoveBackward(uint32 id, float x, float y, float z, float speed = 0.0f);
 
+        void LaunchMoveSpline(Movement::MoveSplineInit&& init, uint32 id = 0, MovementSlot slot = MOTION_SLOT_ACTIVE, MovementGeneratorType type = EFFECT_MOTION_TYPE);
     private:
         void pop();
         bool NeedInitTop() const;
@@ -197,5 +199,8 @@ class MotionMaster
         bool _initialize[MAX_MOTION_SLOT];
         uint8 _cleanFlag;
 };
+
+inline bool IsInvalidMovementGeneratorType(MovementGeneratorType const type) { return type == MAX_DB_MOTION_TYPE || type == MAX_MOTION_TYPE; }
+
 #endif
 
