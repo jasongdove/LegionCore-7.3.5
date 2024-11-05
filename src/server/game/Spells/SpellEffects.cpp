@@ -5005,16 +5005,6 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
                     AddPct(m_damage, aurEff->GetAmount());
             break;
         }
-        case 49998: // Death Strike
-        {
-            float pctDamage = m_caster->CanPvPScalar() ? m_spellInfo->GetEffect(EFFECT_2, m_diffMode)->CalcValue(_caster) / 2 : m_spellInfo->GetEffect(EFFECT_2, m_diffMode)->CalcValue(_caster);
-            int32 lastTime = m_spellInfo->GetEffect(EFFECT_3, m_diffMode)->CalcValue(_caster);
-            int32 pctHeal = m_spellInfo->GetEffect(EFFECT_4, m_diffMode)->CalcValue(_caster);
-            float bp = _caster->CountPctFromMaxHealth(pctHeal) + CalculatePct(_caster->GetDamageTakenInPastSecs(lastTime, true, true), pctDamage);
-
-            _caster->CastCustomSpell(_caster, 45470, &bp, nullptr, nullptr, false);
-            break;
-        }
         case 53: // Backstab
         {
             if (!unitTarget->HasInArc(static_cast<float>(M_PI/2), _caster))

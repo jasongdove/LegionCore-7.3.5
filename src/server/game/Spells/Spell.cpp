@@ -1029,8 +1029,13 @@ void Spell::SelectImplicitAreaTargets(SpellEffIndex effIndex, SpellImplicitTarge
             ASSERT(false && "Spell::SelectImplicitAreaTargets: received not implemented target reference type");
             return;
     }
+
     std::list<WorldObject*> targets;
-    float radius = m_spellInfo->GetEffect(effIndex, m_diffMode)->CalcRadius(m_caster) * m_spellValue->RadiusMod;
+    SpellEffectInfo const* effect = m_spellInfo->GetEffect(effIndex, m_diffMode);
+    if (!effect)
+        return;
+
+    float radius = effect->CalcRadius(m_caster) * m_spellValue->RadiusMod;
     if (radius <= 0)
     {
         if (m_caster->InInstance())
@@ -1047,7 +1052,7 @@ void Spell::SelectImplicitAreaTargets(SpellEffIndex effIndex, SpellImplicitTarge
 
     SearchAreaTargets(targets, radius, center, referer, targetType.GetObjectType(), targetType.GetCheckType(), m_spellInfo->Effects[effIndex]->ImplicitTargetConditions, allowTargetObjSize);
 
-    TC_LOG_DEBUG("spells", "Spell::SelectImplicitAreaTargets %u, radius %f, GetObjectType %u, targets count %zull, effIndex %i",
+    TC_LOG_DEBUG("spells", "Spell::SelectImplicitAreaTargets %u, radius %f, GetObjectType %u, targets count %zu, effIndex %i",
         m_spellInfo->Id, radius, targetType.GetObjectType(), targets.size(), effIndex);
 
     CallScriptObjectAreaTargetSelectHandlers(targets, effIndex, targetType.GetTarget());
@@ -1226,7 +1231,6 @@ void Spell::SelectImplicitAreaTargets(SpellEffIndex effIndex, SpellImplicitTarge
 void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplicitTargetInfo const& targetType)
 {
     SpellDestination dest(*m_caster);
-    //m_targets.SetDst(*m_caster);
 
     switch (targetType.GetTarget())
     {
@@ -1292,7 +1296,10 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
     }
 
     if (targetType.GetDirectionType() == TARGET_DIR_NONE)
+    {
+        m_targets.SetDst(dest);
         return;
+    }
 
     float dist = 0.0f;
     float angle = targetType.CalcDirectionAngle();
