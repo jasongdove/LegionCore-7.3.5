@@ -633,7 +633,7 @@ void AuctionBotSeller::SetPricesOfItem(ItemTemplate const* itemProto, SellerConf
     // prefer market data when available
     auto marketData = _marketData.find(itemProto->GetId());
     if (marketData != _marketData.end())
-        basePriceFloat = marketData->second;
+        basePriceFloat = marketData->second * stackCount;
 
     float range = basePriceFloat * 0.04f;
 
