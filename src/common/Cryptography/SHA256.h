@@ -23,6 +23,7 @@
 #include <string>
 #include <type_traits>
 #include <openssl/sha.h>
+#include <openssl/hmac.h>
 
 class BigNumber;
 
@@ -46,7 +47,7 @@ public:
     uint32 GetLength() const;
 
 private:
-    SHA256_CTX mC;
+    EVP_MD_CTX* _ctx;
     uint8 mDigest[SHA256_DIGEST_LENGTH];
 };
 

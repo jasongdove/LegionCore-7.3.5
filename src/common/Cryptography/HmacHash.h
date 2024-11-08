@@ -33,18 +33,19 @@ typedef EVP_MD const* (*HashCreateFn)();
 template<HashCreateFn HashCreator, uint32 DigestLength>
 class HmacHash
 {
-public:
-    HmacHash(uint32 len, uint8 const* seed);
-    ~HmacHash();
-    void UpdateData(std::string const& str);
-    void UpdateData(uint8 const* data, size_t len);
-    void Finalize();
-    uint8* ComputeHash(BigNumber* bn);
-    uint8* GetDigest() { return _digest; }
-    uint32 GetLength() const { return DigestLength; }
-private:
-    HMAC_CTX* _ctx;
-    uint8 _digest[DigestLength];
+    public:
+        HmacHash(uint32 len, uint8 const* seed);
+        ~HmacHash();
+        void UpdateData(std::string const& str);
+        void UpdateData(uint8 const* data, size_t len);
+        void Finalize();
+        uint8* ComputeHash(BigNumber* bn);
+        uint8* GetDigest() { return _digest; }
+        uint32 GetLength() const { return DigestLength; }
+    private:
+        EVP_MD_CTX* _ctx;
+        EVP_PKEY* _key;
+        uint8 _digest[DigestLength];
 };
 
 typedef HmacHash<EVP_sha1, SHA_DIGEST_LENGTH> HmacSha1;
