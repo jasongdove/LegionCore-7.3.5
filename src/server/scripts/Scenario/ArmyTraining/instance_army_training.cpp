@@ -261,9 +261,9 @@ public:
                     points = 425;
 
                 for (; points >= 100; points -= 100)
-                    loot->AddItem(LootStoreItem((urand(1, 2) == 1 ? 141870 : 147416), LOOT_ITEM_TYPE_ITEM, 100, 1, 0, 1, 1));
+                    loot->AddItem(LootStoreItem((urand(1, 2) == 1 ? 141870 : 147416), 0, 0, 100, false, 1, 0, 1, 1));
                 for (; points >= 25; points -= 25)
-                    loot->AddItem(LootStoreItem((urand(1, 2) == 1 ? 147418 : 140260), LOOT_ITEM_TYPE_ITEM, 100, 1, 0, 1, 1));
+                    loot->AddItem(LootStoreItem((urand(1, 2) == 1 ? 147418 : 140260), 0, 0, 100, false, 1, 0, 1, 1));
             }
         }
         

@@ -1110,7 +1110,7 @@ void OutdoorPvPAshran::FillCustomPvPLoots(Player* looter, Loot& loot, ObjectGuid
     if (m_PlayerCurrencyLoots.find(container) == m_PlayerCurrencyLoots.end())
         return;
 
-    loot.AddItem(LootStoreItem(CURRENCY_TYPE_ARTIFACT_FRAGMENT, LOOT_ITEM_TYPE_CURRENCY, 100.0f, 0, 0, m_PlayerCurrencyLoots[container], m_PlayerCurrencyLoots[container]));
+    loot.AddItem(LootStoreItem(0, CURRENCY_TYPE_ARTIFACT_FRAGMENT, 0, 100.0f, false, 0, 0, m_PlayerCurrencyLoots[container], m_PlayerCurrencyLoots[container]));
     loot.FillCurrencyLoot(looter);
 }
 

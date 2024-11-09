@@ -154,21 +154,23 @@ class ConditionMgr;
 
 struct LootStoreItem
 {
-    std::list<Condition*>  conditions;                               // additional loot condition
-    float   chance;                                         // always positive, chance to drop for both quest and non-quest items, chance to be used for refs
+    std::list<Condition*>  conditions;                      // additional loot condition
     uint32  itemid;                                         // id of the item
-    int32   mincountOrRef;                                  // mincount for drop items (positive) or minus referenced TemplateleId (negative)
-    uint32  maxcount;                                       // max drop count for the item (mincountOrRef positive) or Ref multiplicator (mincountOrRef negative)
+    uint32  currencyid;                                     // id of the currency
+    uint32  reference;                                      // reference template id
+    float   chance;                                         // always positive, chance to drop for both quest and non-quest items, chance to be used for refs
+    bool    needs_quest : 1;                                // quest drop (quest is required for item to drop)
+    int32   mincount;                                       // mincount for drop items
+    uint32  maxcount;                                       // max drop count for the item mincount or ref multiplier
     uint16  lootmode;
     uint8   type;                                           // 0 = item, 1 = currency
-    uint8   group :7;
+    uint8   groupid : 7;
     uint8   ClassificationMask{};
     bool    shared{};
-    bool    needs_quest :1;                                 // quest drop (negative ChanceOrQuestChance in DB)
 
-    // Constructor, converting ChanceOrQuestChance -> (chance, needs_quest)
+    // Constructor
     // displayid is filled in IsValid() which must be called after
-    LootStoreItem(uint32 _itemid, uint8 _type, float _chanceOrQuestChance, uint16 _lootmode, uint8 _group, int32 _mincountOrRef, uint32 _maxcount);
+    LootStoreItem(uint32 _itemid, uint32 _currencyid, uint32 _reference, float _chance, bool _needs_quest, uint16 _lootmode, uint8 _groupid, int32 _mincount, uint32 _maxcount);
 
     bool Roll(bool rate, bool isDungeon = false, bool isZoneLoot = false) const;                             // Checks if the entry takes it's chance (at loot generation)
     bool IsValid(LootStore const& store, uint32 entry) const;
@@ -224,7 +226,7 @@ struct LootItem
     LootItem();
 
     // Constructor, copies most fields from LootStoreItem, generates random count and random suffixes/properties
-    // Should be called for non-reference LootStoreItem entries only (mincountOrRef > 0)
+    // Should be called for non-reference LootStoreItem entries only (reference = 0)
     explicit LootItem(LootStoreItem const& li, Loot* loot);
     void init(Loot* loot);
 
@@ -270,7 +272,7 @@ class LootStore
         uint32 LoadAndCollectLootIds(LootIdSet& ids_set);
         void CheckLootRefs(LootIdSet* ref_set = nullptr) const; // check existence reference and remove it from ref_set
         void ReportUnusedIds(LootIdSet const& ids_set) const;
-        void ReportNotExistedId(uint32 id) const;
+        void ReportNonExistingId(uint32 id) const;
 
         bool HaveLootFor(uint32 loot_id) const { return m_LootTemplates.find(loot_id) != m_LootTemplates.end(); }
         bool HaveQuestLootFor(uint32 loot_id) const;
