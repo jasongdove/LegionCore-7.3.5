@@ -325,7 +325,7 @@ bool LootStoreItem::IsValid(LootStore const& store, uint32 entry) const
 
     if (groupid && type == LOOT_ITEM_TYPE_CURRENCY)
     {
-        TC_LOG_ERROR("sql.sql", "Table '%s' Entry %d currency %d: group is set, but currencies must not have group - skipped", store.GetName(), entry, itemid);
+        TC_LOG_ERROR("sql.sql", "Table '%s' Entry %d currency %d: group is set, but currencies must not have group - skipped", store.GetName(), entry, currencyid);
         return false;
     }
 
@@ -355,10 +355,10 @@ bool LootStoreItem::IsValid(LootStore const& store, uint32 entry) const
         }
         else if (type == LOOT_ITEM_TYPE_CURRENCY)
         {
-            CurrencyTypesEntry const* currency = sCurrencyTypesStore.LookupEntry(itemid);
+            CurrencyTypesEntry const* currency = sCurrencyTypesStore.LookupEntry(currencyid);
             if (!currency)
             {
-                TC_LOG_ERROR("sql.sql", "Table '%s' Entry %d: currency entry %u not exists - skipped", store.GetName(), entry, itemid);
+                TC_LOG_ERROR("sql.sql", "Table '%s' Entry %d: currency entry %u not exists - skipped", store.GetName(), entry, currencyid);
                 return false;
             }
         }
@@ -422,6 +422,7 @@ LootItem::LootItem(): type(0), quality(ITEM_QUALITY_POOR), count(0), currency(fa
 LootItem::LootItem(LootStoreItem const& li, Loot* loot)
 {
     item.ItemID = li.itemid;
+    item.CurrencyID = li.currencyid;
     type        = li.type;
     conditions  = li.conditions;
     currency    = type == LOOT_ITEM_TYPE_CURRENCY;
@@ -437,9 +438,10 @@ LootItem::LootItem(LootStoreItem const& li, Loot* loot)
     init(loot);
 }
 
-void LootItem::InitItem(uint32 itemID, uint32 _count, Loot* loot, bool isCurrency)
+void LootItem::InitItem(uint32 itemID, uint32 currencyID, uint32 _count, Loot* loot, bool isCurrency)
 {
     item.ItemID = itemID;
+    item.CurrencyID = currencyID;
     currency = type = isCurrency;
     count = _count;
 
@@ -457,7 +459,7 @@ void LootItem::init(Loot* loot)
         float multiplier = sWorld->getRate(RATE_DROP_CURRENCY_AMOUNT);
         if (loot)
             if (Player const* lootOwner = loot->GetLootOwner())
-                multiplier *= lootOwner->GetTotalAuraMultiplierByMiscValue(SPELL_AURA_MOD_CURRENCY_LOOT, sCurrencyTypesStore.LookupEntry(item.ItemID)->CategoryID);
+                multiplier *= lootOwner->GetTotalAuraMultiplierByMiscValue(SPELL_AURA_MOD_CURRENCY_LOOT, sCurrencyTypesStore.LookupEntry(item.CurrencyID)->CategoryID);
 
         count = uint32(count * multiplier + 0.5f);
     }
@@ -603,19 +605,19 @@ bool Loot::IsPvPLoot(uint32 lootId, WorldObject const* lootFrom)
     return false;
 }
 
-LootItem* Loot::GetLootItem(uint32 entry)
+LootItem* Loot::GetLootItem(uint32 itemID, uint32 currencyID)
 {
     for (auto &i : items)
     {
-        if (i.item.ItemID == entry)
+        if (i.item.ItemID == itemID && i.item.CurrencyID == currencyID)
             return &i;
     }
     return nullptr;
 }
 
-void Loot::AddOrReplaceItem(uint32 itemID, uint32 _count, bool isRes, bool update/*=false*/)
+void Loot::AddOrReplaceItem(uint32 itemID, uint32 currencyID, uint32 _count, bool isRes, bool update/*=false*/)
 {
-    LootItem* item = GetLootItem(itemID);
+    LootItem* item = GetLootItem(itemID, currencyID);
     if (item)
     {
         if (update)
@@ -627,7 +629,7 @@ void Loot::AddOrReplaceItem(uint32 itemID, uint32 _count, bool isRes, bool updat
     else
     {
         LootItem lootItem;
-        lootItem.InitItem(itemID, _count, this, isRes);
+        lootItem.InitItem(itemID, currencyID, _count, this, isRes);
         items.push_back(lootItem);
 
         if (isRes)
@@ -1090,7 +1092,7 @@ QuestItemList* Loot::FillCurrencyLoot(Player* player)
     for (size_t i = 0; i < items.size(); ++i)
     {
         LootItem& item = items[i];
-        if (!item.is_looted && item.currency && AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest, &item))
+        if (!item.is_looted && item.currency && AllowedForPlayer(player, item.item.ItemID, item.item.CurrencyID, item.type, item.needs_quest, &item))
         {
             ql->push_back(QuestItem(i));
             ++unlootedCount;
@@ -1113,7 +1115,7 @@ QuestItemList* Loot::FillFFALoot(Player* player)
     for (size_t i = 0; i < items.size(); ++i)
     {
         LootItem &item = items[i];
-        if (!item.is_looted && item.freeforall && AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest, &item))
+        if (!item.is_looted && item.freeforall && AllowedForPlayer(player, item.item.ItemID, item.item.CurrencyID, item.type, item.needs_quest, &item))
         {
             ql->push_back(QuestItem(i));
             ++unlootedCount;
@@ -1142,9 +1144,9 @@ QuestItemList* Loot::FillQuestLoot(Player* player)
     {
         LootItem &item = quest_items[i];
 
-        TC_LOG_DEBUG("loot", "Loot::FillQuestLoot freeforall %u is_blocked %u is_looted %u ItemID %u AllowedForPlayer %u unlootedCount %u", static_cast<bool>(item.freeforall), static_cast<bool>(item.is_blocked), static_cast<bool>(item.is_looted), item.item.ItemID, AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest), unlootedCount);
+        TC_LOG_DEBUG("loot", "Loot::FillQuestLoot freeforall %u is_blocked %u is_looted %u ItemID %u AllowedForPlayer %u unlootedCount %u", static_cast<bool>(item.freeforall), static_cast<bool>(item.is_blocked), static_cast<bool>(item.is_looted), item.item.ItemID, AllowedForPlayer(player, item.item.ItemID, item.item.CurrencyID, item.type, item.needs_quest), unlootedCount);
 
-        if (!item.is_looted && (AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest, &item) || (item.follow_loot_rules && player->GetGroup() && ((player->GetGroup()->GetLootMethod() == MASTER_LOOT && player->GetGroup()->GetLooterGuid() == player->GetGUID()) || player->GetGroup()->GetLootMethod() != MASTER_LOOT ))))
+        if (!item.is_looted && (AllowedForPlayer(player, item.item.ItemID, item.item.CurrencyID, item.type, item.needs_quest, &item) || (item.follow_loot_rules && player->GetGroup() && ((player->GetGroup()->GetLootMethod() == MASTER_LOOT && player->GetGroup()->GetLooterGuid() == player->GetGUID()) || player->GetGroup()->GetLootMethod() != MASTER_LOOT ))))
         {
             ql->push_back(QuestItem(i));
 
@@ -1183,9 +1185,9 @@ QuestItemList* Loot::FillNonQuestNonFFAConditionalLoot(Player* player, bool pres
     for (size_t i = 0; i < items.size(); ++i)
     {
         LootItem &item = items[i];
-        TC_LOG_DEBUG("loot", "FillNonQuestNonFFAConditionalLoot freeforall %u is_blocked %u is_looted %u ItemID %u AllowedForPlayer %u is_underthreshold %u follow_loot_rules %u", static_cast<bool>(item.freeforall), static_cast<bool>(item.is_blocked), static_cast<bool>(item.is_looted), item.item.ItemID, AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest), static_cast<bool>(item.is_underthreshold), static_cast<bool>(item.follow_loot_rules));
+        TC_LOG_DEBUG("loot", "FillNonQuestNonFFAConditionalLoot freeforall %u is_blocked %u is_looted %u ItemID %u CurrencyID %u AllowedForPlayer %u is_underthreshold %u follow_loot_rules %u", static_cast<bool>(item.freeforall), static_cast<bool>(item.is_blocked), static_cast<bool>(item.is_looted), item.item.ItemID, item.item.CurrencyID, AllowedForPlayer(player, item.item.ItemID, item.item.CurrencyID, item.type, item.needs_quest), static_cast<bool>(item.is_underthreshold), static_cast<bool>(item.follow_loot_rules));
 
-        if (!item.is_looted && !item.freeforall && !item.currency && (AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest, &item) || (item.follow_loot_rules && player->GetGroup() && ((player->GetGroup()->GetLootMethod() == MASTER_LOOT && player->GetGroup()->GetLooterGuid() == player->GetGUID()) || player->GetGroup()->GetLootMethod() != MASTER_LOOT))))
+        if (!item.is_looted && !item.freeforall && !item.currency && (AllowedForPlayer(player, item.item.ItemID, item.item.CurrencyID, item.type, item.needs_quest, &item) || (item.follow_loot_rules && player->GetGroup() && ((player->GetGroup()->GetLootMethod() == MASTER_LOOT && player->GetGroup()->GetLooterGuid() == player->GetGUID()) || player->GetGroup()->GetLootMethod() != MASTER_LOOT))))
         {
             if (presentAtLooting)
             {
@@ -1247,9 +1249,9 @@ void Loot::FillPersonalLootFor(Player* lootOwner)
                             item.is_underthreshold = true;
                     }
 
-                    TC_LOG_DEBUG("loot", "Loot::FillPersonalLootFor freeforall %u is_blocked %u is_looted %u ItemID %u AllowedForPlayer %u is_underthreshold %u", static_cast<bool>(item.freeforall), static_cast<bool>(item.is_blocked), static_cast<bool>(item.is_looted), item.item.ItemID, AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest), static_cast<bool>(item.is_underthreshold));
+                    TC_LOG_DEBUG("loot", "Loot::FillPersonalLootFor freeforall %u is_blocked %u is_looted %u ItemID %u AllowedForPlayer %u is_underthreshold %u", static_cast<bool>(item.freeforall), static_cast<bool>(item.is_blocked), static_cast<bool>(item.is_looted), item.item.ItemID, AllowedForPlayer(player, item.item.ItemID, item.item.CurrencyID, item.type, item.needs_quest), static_cast<bool>(item.is_underthreshold));
 
-                    if (!item.is_looted && !item.freeforall && !item.currency && !item.is_underthreshold && AllowedForPlayer(player, item.item.ItemID, item.type, item.needs_quest, &item))
+                    if (!item.is_looted && !item.freeforall && !item.currency && !item.is_underthreshold && AllowedForPlayer(player, item.item.ItemID, item.item.CurrencyID, item.type, item.needs_quest, &item))
                         item.AddAllowedLooter(player);
                 }
             }
@@ -1499,7 +1501,7 @@ void Loot::BuildLootResponse(WorldPackets::Loot::LootResponse& packet, Player* v
             // blocked rolled items and quest items, and !ffa items
             for (size_t i = 0; i < items.size(); ++i)
             {
-                if (!items[i].is_looted && !items[i].freeforall && !items[i].currency && items[i].conditions.empty() && AllowedForPlayer(viewer, items[i].item.ItemID, items[i].type, items[i].needs_quest, const_cast<LootItem*>(&items[i])))
+                if (!items[i].is_looted && !items[i].freeforall && !items[i].currency && items[i].conditions.empty() && AllowedForPlayer(viewer, items[i].item.ItemID, items[i].item.CurrencyID, items[i].type, items[i].needs_quest, const_cast<LootItem*>(&items[i])))
                 {
                     uint8 slot_type;
 
@@ -1546,7 +1548,7 @@ void Loot::BuildLootResponse(WorldPackets::Loot::LootResponse& packet, Player* v
 
             for (size_t i = 0; i < items.size(); ++i)
             {
-                if (!items[i].is_looted && !items[i].freeforall && !items[i].currency && items[i].conditions.empty() && AllowedForPlayer(viewer, items[i].item.ItemID, items[i].type, items[i].needs_quest, const_cast<LootItem*>(&items[i])))
+                if (!items[i].is_looted && !items[i].freeforall && !items[i].currency && items[i].conditions.empty() && AllowedForPlayer(viewer, items[i].item.ItemID, items[i].item.CurrencyID, items[i].type, items[i].needs_quest, const_cast<LootItem*>(&items[i])))
                 {
                     WorldPackets::Loot::LootItem lootItem;
                     lootItem.LootListID = items[i].LootListID ? items[i].LootListID : i+1;
@@ -1790,9 +1792,9 @@ bool Loot::IsLastEncounter()
 }
 
 // Basic checks for player/item compatibility - if false no chance to see the item in the loot
-bool Loot::AllowedForPlayer(Player const* player, uint32 ItemID, uint8 type, bool needs_quest, LootItem* lootItem) const
+bool Loot::AllowedForPlayer(Player const* player, uint32 ItemID, uint32 CurrencyID, uint8 type, bool needs_quest, LootItem* lootItem) const
 {
-    TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer ItemID %i type %u", ItemID, type);
+    TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer ItemID %u CurrencyID %u type %u", ItemID, CurrencyID, type);
 
     if (lootItem)
         if (!lootItem->AllowedForPlayer(player))
@@ -1831,7 +1833,7 @@ bool Loot::AllowedForPlayer(Player const* player, uint32 ItemID, uint8 type, boo
         if ((pProto->GetFlags2() & ITEM_FLAG2_FACTION_ALLIANCE) && player->GetTeam() != ALLIANCE)
             return false;
 
-        TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer needs_quest %u ItemID %i HasQuestForItem %u", needs_quest, ItemID, player->HasQuestForItem(ItemID));
+        TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer needs_quest %u ItemID %u CurrencyID %u HasQuestForItem %u", needs_quest, ItemID, CurrencyID, player->HasQuestForItem(ItemID));
 
         // check quest requirements
         if (!(pProto->FlagsCu & ITEM_FLAGS_CU_IGNORE_QUEST_STATUS) && ((needs_quest || (pProto->GetStartQuestID() && player->GetQuestStatus(pProto->GetStartQuestID()) != QUEST_STATUS_NONE)) && !player->HasQuestForItem(ItemID)))
@@ -1848,7 +1850,7 @@ bool Loot::AllowedForPlayer(Player const* player, uint32 ItemID, uint8 type, boo
     }
     else if (type == LOOT_ITEM_TYPE_CURRENCY)
     {
-        CurrencyTypesEntry const * currency = sCurrencyTypesStore.LookupEntry(ItemID);
+        CurrencyTypesEntry const * currency = sCurrencyTypesStore.LookupEntry(CurrencyID);
         if (!currency)
             return false;
 
@@ -1857,7 +1859,7 @@ bool Loot::AllowedForPlayer(Player const* player, uint32 ItemID, uint8 type, boo
                 return false;
     }
 
-    TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer ItemID %i allowed true", ItemID);
+    TC_LOG_DEBUG("loot", "Loot::AllowedForPlayer ItemID %u CurrencyID %u allowed true", ItemID, CurrencyID);
 
     return true;
 }
@@ -2551,7 +2553,7 @@ void LootTemplate::AddEntry(LootStoreItem& item)
         }
         else if(item.type == LOOT_ITEM_TYPE_CURRENCY)
         {
-            if (item.itemid == 1220 && item.chance < 100) // Order Resources for rare or go have custom group
+            if (item.currencyid == 1220 && item.chance < 100) // Order Resources for rare or go have custom group
             {
                 uint32 group = 3;
                 if (group >= PersonalGroups.size())
@@ -2768,7 +2770,7 @@ void LootTemplate::ProcessRareOrGoLoot(Loot& loot) const
             if (loot.isRareNext)
                 continue;
 
-            if (i->itemid == 1220 && i->chance < 100) // Order Resources for rare or go have custom group
+            if (i->currencyid == 1220 && i->chance < 100) // Order Resources for rare or go have custom group
                 continue;
 
             if (!i->Roll(false))
@@ -3117,7 +3119,7 @@ void LootTemplate::ProcessOploteChest(Loot& loot) const
 
     for (LootStoreItemList::const_iterator i = OtherPossibleDrops.begin(); i != OtherPossibleDrops.end(); ++i)
     {
-        if (!loot.AllowedForPlayer(lootOwner, i->itemid, i->type, i->needs_quest))
+        if (!loot.AllowedForPlayer(lootOwner, i->itemid, i->currencyid, i->type, i->needs_quest))
             continue;
 
         if (!i->Roll(false))
@@ -3227,9 +3229,9 @@ void LootTemplate::ProcessChallengeChest(Loot& loot, uint32 lootId, Challenge* _
 
     for (LootStoreItemList::const_iterator i = OtherPossibleDrops.begin(); i != OtherPossibleDrops.end(); ++i)
     {
-        TC_LOG_DEBUG("loot", "ProcessChallengeChest OtherPossibleDrops itemid %i chance %f", i->itemid, i->chance);
+        TC_LOG_DEBUG("loot", "ProcessChallengeChest OtherPossibleDrops itemid %i currencyid %i chance %f", i->itemid, i->currencyid, i->chance);
 
-        if (!loot.AllowedForPlayer(lootOwner, i->itemid, i->type, i->needs_quest))
+        if (!loot.AllowedForPlayer(lootOwner, i->itemid, i->currencyid, i->type, i->needs_quest))
             continue;
 
         if (!i->Roll(false))
@@ -3237,7 +3239,7 @@ void LootTemplate::ProcessChallengeChest(Loot& loot, uint32 lootId, Challenge* _
 
         loot.AddItem(*i);                                 // Chance is already checked, just add
 
-        TC_LOG_DEBUG("loot", "ProcessChallengeChest AddItem itemid %i", i->itemid);
+        TC_LOG_DEBUG("loot", "ProcessChallengeChest AddItem itemid %i currencyid %i", i->itemid, i->currencyid);
     }
 
     loot.generateMoneyLoot(900000, 1500000, lootOwner->GetMap()->IsDungeon());

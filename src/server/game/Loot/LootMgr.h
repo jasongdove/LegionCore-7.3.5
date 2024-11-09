@@ -195,6 +195,7 @@ struct LootItem
     struct
     {
         uint32 ItemID = 0;
+        uint32 CurrencyID = 0;
         uint32 RandomPropertiesSeed = 0;
         ItemRandomEnchantmentId RandomPropertiesID;
         int32 UpgradeID = 0;
@@ -230,7 +231,7 @@ struct LootItem
     explicit LootItem(LootStoreItem const& li, Loot* loot);
     void init(Loot* loot);
 
-    void InitItem(uint32 itemID, uint32 count, Loot* loot, bool isCurrency = false);
+    void InitItem(uint32 itemID, uint32 currencyID, uint32 count, Loot* loot, bool isCurrency = false);
 
     // Basic checks for player/item compatibility - if false no chance to see the item in the loot
     bool AllowedForPlayer(Player const* player) const;
@@ -393,8 +394,8 @@ struct Loot
 
     void SetSource(ObjectGuid const& source) { LootSourceGuid = source; }
 
-    LootItem* GetLootItem(uint32 entry);
-    void AddOrReplaceItem(uint32 itemID, uint32 _count, bool isRes = false, bool update = false);
+    LootItem* GetLootItem(uint32 itemID, uint32 currencyID);
+    void AddOrReplaceItem(uint32 itemID, uint32 currencyID, uint32 _count, bool isRes = false, bool update = false);
 
     void clear();
     bool empty() const { return items.empty() && gold == 0; }
@@ -418,7 +419,7 @@ struct Loot
     void AddItem(LootStoreItem const& item, std::vector<uint32> const& bonusListIDs = std::vector<uint32>());
 
     // Basic checks for player/item compatibility - if false no chance to see the item in the loot
-    bool AllowedForPlayer(Player const* player, uint32 ItemID, uint8 type, bool needs_quest, LootItem* lootItem = nullptr) const;
+    bool AllowedForPlayer(Player const* player, uint32 ItemID, uint32 CurrencyID, uint8 type, bool needs_quest, LootItem* lootItem = nullptr) const;
 
     LootItem const* GetItemInSlot(uint32 lootSlot) const;
     LootItem* LootItemInSlot(uint32 lootslot, Player* player, QuestItem** qitem = nullptr, QuestItem** ffaitem = nullptr, QuestItem** conditem = nullptr, QuestItem** currency = nullptr);

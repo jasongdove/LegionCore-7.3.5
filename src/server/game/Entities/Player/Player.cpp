@@ -32653,12 +32653,12 @@ void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
     {
         // TC_LOG_DEBUG("loot", "Player::StoreLootItem currency %i count %u lootSlot %u", item->item.ItemID, item->count, lootSlot);
 
-        if (sCurrencyTypesStore.LookupEntry(item->item.ItemID))
+        if (sCurrencyTypesStore.LookupEntry(item->item.CurrencyID))
         {
-            ModifyCurrency(item->item.ItemID, item->count, true);
+            ModifyCurrency(item->item.CurrencyID, item->count, true);
 
             // log Veiled Argunite and Wakening Essence currency
-            if (item->item.ItemID == 1508 || item->item.ItemID == 1533 || item->item.ItemID == 1160)
+            if (item->item.CurrencyID == 1508 || item->item.CurrencyID == 1533 || item->item.CurrencyID == 1160)
             {
                 std::string lootSource = "unknown";
                 if (loot->objGuid.IsGameObject())
@@ -32667,7 +32667,7 @@ void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
                     lootSource = "creature";
                 else if (loot->objGuid.IsItem())
                     lootSource = "item";
-                sLog->outWarden("Player %s (GUID: %u) adds a currency value %u (%u) from loot source %s (Entry: %u) and type %u", GetName(), GetGUIDLow(), item->count, item->item.ItemID, lootSource.c_str(), loot->objEntry, loot->loot_type);
+                sLog->outWarden("Player %s (GUID: %u) adds a currency value %u (%u) from loot source %s (Entry: %u) and type %u", GetName(), GetGUIDLow(), item->count, item->item.CurrencyID, lootSource.c_str(), loot->objEntry, loot->loot_type);
             }
         }
 
@@ -32676,7 +32676,7 @@ void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
         --loot->unlootedCount;
 
         if (loot->personal)
-            SendDisplayToast(item->item.ItemID, ToastType::CURRENCY, false/*loot->bonusLoot*/, item->count, DisplayToastMethod::DISPLAY_TOAST_ENTRY_LOOT_PERSONAL_1);
+            SendDisplayToast(item->item.CurrencyID, ToastType::CURRENCY, false/*loot->bonusLoot*/, item->count, DisplayToastMethod::DISPLAY_TOAST_ENTRY_LOOT_PERSONAL_1);
 
         return;
     }
