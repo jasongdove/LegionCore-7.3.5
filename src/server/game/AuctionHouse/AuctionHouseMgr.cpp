@@ -186,6 +186,10 @@ void AuctionHouseMgr::SendAuctionWonMail(AuctionEntry* auction, CharacterDatabas
 
 void AuctionHouseMgr::SendAuctionSalePendingMail(AuctionEntry* auction, CharacterDatabaseTransaction& trans)
 {
+    // don't send sale pending mail when mail isn't delayed
+    if (sWorld->getIntConfig(CONFIG_MAIL_DELIVERY_DELAY) == 0)
+        return;
+
     Player* owner = ObjectAccessor::FindPlayer(auction->Owner);
     uint32 owner_accId = ObjectMgr::GetPlayerAccountIdByGUID(auction->Owner);
     // owner exist (online or offline)
