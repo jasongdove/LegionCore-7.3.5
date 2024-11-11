@@ -24,10 +24,6 @@ WorldStateMgr::WorldStateMgr()
     m_nextSave = sWorld->getIntConfig(CONFIG_INTERVAL_SAVE);
 }
 
-WorldStateMgr::~WorldStateMgr()
-{
-}
-
 WorldStateMgr& WorldStateMgr::Instance()
 {
     static WorldStateMgr instance;
@@ -72,6 +68,13 @@ void WorldStateMgr::Initialize()
     AddTemplate(WorldStates::WS_PVP_ARENA_ENABLED, WorldStatesData::Types::World, 0, 1 << WorldStatesData::Flags::InitialState, sWorld->getBoolConfig(CONFIG_ARENA_SEASON_IN_PROGRESS));
     AddTemplate(WorldStates::WS_ARENA_SEASON_ID, WorldStatesData::Types::World, 0, 1 << WorldStatesData::Flags::InitialState, sWorld->getIntConfig(CONFIG_ARENA_SEASON_ID));
     AddTemplate(WorldStates::WS_RATED_BG_ENABLED, WorldStatesData::Types::World, 0, 1 << WorldStatesData::Flags::InitialState, sWorld->getBoolConfig(CONFIG_ARENA_SEASON_IN_PROGRESS));
+}
+
+void WorldStateMgr::Unload()
+{
+    for (auto state : _worldStateV)
+        if (state)
+            state->Unload();
 }
 
 WorldStateTemplate const* WorldStateMgr::FindTemplate(uint32 variableID)

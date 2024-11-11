@@ -13,12 +13,14 @@ class WorldStateMgr
 {
 public:
     WorldStateMgr();
-    ~WorldStateMgr();
+    ~WorldStateMgr() = default;
 
     void Update(uint32 diff);
 
     static WorldStateMgr& Instance();
     void Initialize();
+
+    void Unload();
 
     void LoadTemplatesFromDB();
     void LoadTemplatesFromObjectTemplateDB();

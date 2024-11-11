@@ -80,6 +80,8 @@ struct WorldState
 
     void Reload();
 
+    void Unload();
+
     void AddClient(ObjectGuid const& guid);
     bool HasClient(ObjectGuid const& guid);
     void RemoveClient(ObjectGuid const& guid);
