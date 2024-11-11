@@ -8827,25 +8827,18 @@ void AuraEffect::HandleAuraStrangulate(AuraApplication const* aurApp, uint8 mode
     if (!target)
         return;
 
-    switch (m_spellInfo->Id)
-    {
-        case 108194: //Asphyxiate
-        case 221562: //Asphyxiate
-            target->SetControlled(apply, UNIT_STATE_STUNNED);
-            target->UpdateHeight(apply ? 1.0f : 0.0f);
-            break;
-        case 121448: //Encased in Resin
-        case 208944: //Elisande: Time Stop
-        case 249241: //Felhounds: Molten Touch
-            target->SetControlled(apply, UNIT_STATE_STUNNED);
-            break;
-        case 258373: //Argus: Grasp of the Unmaker
-            target->SetControlled(apply, UNIT_STATE_STUNNED);
-            target->SetDisableGravity(apply);
-            break;
-        default:
-            break;
-    }
+    target->SetControlled(apply, UNIT_STATE_STUNNED);
+
+    // Do not remove DisableGravity if there are more than this auraEffect of that kind on the unit or if it's a creature with DisableGravity on its movement template.
+    if (!apply
+        && (target->HasAuraType(GetAuraType())
+            //|| target->HasAuraType(SPELL_AURA_MOD_ROOT_DISABLE_GRAVITY)
+            || (target->IsCreature() && target->ToCreature()->GetMovementTemplate().Flight == CreatureFlightMovementType::DisableGravity)))
+        return;
+
+    if (target->SetDisableGravity(apply))
+        if (!apply && !target->IsFlying())
+            target->GetMotionMaster()->MoveFall();
 }
 
 void AuraEffect::HandleOverrideActionbarSpells(AuraApplication const* aurApp, uint8 mode, bool apply) const

@@ -10714,7 +10714,7 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, DamageInfo* dmgInfoProc, AuraEff
                 return false;
 
             if (procSpell->HasAura(SPELL_AURA_MOD_CONFUSE) || procSpell->HasAura(SPELL_AURA_MOD_FEAR) || procSpell->HasAura(SPELL_AURA_MOD_FEAR_2) ||
-                procSpell->HasAura(SPELL_AURA_MOD_STUN) || procSpell->HasAura(SPELL_AURA_STRANGULATE) || procSpell->HasAura(SPELL_AURA_MOD_ROOTED) || 
+                procSpell->HasAura(SPELL_AURA_MOD_STUN) || procSpell->HasAura(SPELL_AURA_STRANGULATE) || procSpell->HasAura(SPELL_AURA_MOD_ROOTED) ||
                 procSpell->HasAura(SPELL_AURA_MOD_SILENCE) || procSpell->Categories.Mechanic == MECHANIC_POLYMORPH || procSpell->Categories.Mechanic == MECHANIC_GRIP ||
                 (procEx & PROC_EX_INTERRUPT) || (procEx & PROC_EX_DISPEL))
             {
@@ -22428,7 +22428,7 @@ void Unit::SetControlled(bool apply, UnitState state)
 void Unit::ApplyControlStatesIfNeeded()
 {
     // Unit States might have been already cleared but auras still present. I need to check with HasAuraType
-    if (HasUnitState(UNIT_STATE_STUNNED) || HasAuraType(SPELL_AURA_MOD_STUN)) // || HasAuraType(SPELL_AURA_MOD_STUN_DISABLE_GRAVITY))
+    if (HasUnitState(UNIT_STATE_STUNNED) || HasAuraType(SPELL_AURA_MOD_STUN) || HasAuraType(SPELL_AURA_STRANGULATE))
         SetStunned(true);
 
     if (HasUnitState(UNIT_STATE_ROOT) || HasAuraType(SPELL_AURA_MOD_ROOT)) // || HasAuraType(SPELL_AURA_MOD_ROOT_2) || HasAuraType(SPELL_AURA_MOD_ROOT_DISABLE_GRAVITY))

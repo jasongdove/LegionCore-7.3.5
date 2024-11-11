@@ -30033,7 +30033,7 @@ void Player::SendInitialPacketsAfterAddToMap(bool login)
                 (*auraList->begin())->HandleEffect(this, AURA_EFFECT_HANDLE_SEND_FOR_CLIENT, true);
     }
 
-    if (HasAuraType(SPELL_AURA_MOD_STUN))
+    if (HasAuraType(SPELL_AURA_MOD_STUN) || HasAuraType(SPELL_AURA_STRANGULATE))
         SetRooted(true);
 
     WorldPackets::Movement::MoveSetCompoundState setCompoundState;
