@@ -8455,6 +8455,10 @@ void SpellMgr::LoadSpellCustomAttr()
         }
     }
 
+    // 34980 Mennu's Healing Ward
+    if (auto* properties = const_cast<SummonPropertiesEntry*>(sSummonPropertiesStore.LookupEntry(121)))
+        properties->Title = SUMMON_TYPE_TOTEM;
+
     TC_LOG_INFO("server.loading", ">> Loaded spell custom attributes in %u ms", GetMSTimeDiffToNow(oldMSTime));
 
     oldMSTime = getMSTime();
