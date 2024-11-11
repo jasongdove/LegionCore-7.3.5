@@ -700,6 +700,8 @@ struct GameObjectTemplate
     uint32 GetLootId() const;
     uint32 GetGossipMenuId() const;
     uint32 GetEventScriptId() const;
+    uint32 GetTrivialSkillHigh() const;
+    uint32 GetTrivialSkillLow() const;
     uint32 GetCooldown() const;
     uint32 GetSpell() const;
     bool HasQuestItem() const;

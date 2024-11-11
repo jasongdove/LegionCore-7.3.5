@@ -338,6 +338,8 @@ class Object
         bool IsUnitOwnedByPlayer() const;
 
         bool IsGameObject() const { return GetTypeId() == TYPEID_GAMEOBJECT; }
+        static GameObject* ToGameObject(Object* o) { return o ? o->ToGameObject() : nullptr; }
+        static GameObject const* ToGameObject(Object const* o) { return o ? o->ToGameObject() : nullptr; }
         GameObject* ToGameObject() { if (IsGameObject()) return reinterpret_cast<GameObject*>(this); return nullptr; }
         GameObject const* ToGameObject() const { if (IsGameObject()) return reinterpret_cast<GameObject const*>(this); return nullptr; }
 

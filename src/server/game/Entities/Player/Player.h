@@ -2485,7 +2485,7 @@ class Player : public Unit, public GridObject<Player>
         bool UpdateSkillPro(uint16 SkillId, int32 Chance, uint32 step);
 
         bool UpdateCraftSkill(uint32 spellid);
-        bool UpdateGatherSkill(uint32 SkillId, uint32 SkillValue, uint32 RedLevel, uint32 Multiplicator = 1);
+        bool UpdateGatherSkill(uint32 skillId, uint32 skillValue, uint32 redLevel, uint32 multiplicator = 1, WorldObject const* object = nullptr);
         bool UpdateFishingSkill();
 
         float GetHealthBonusFromStamina();

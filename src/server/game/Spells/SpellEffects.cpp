@@ -3589,14 +3589,10 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
         {
             if (gameObjTarget)
             {
-                if (gameObjTarget->GetGOInfo()->type == GAMEOBJECT_TYPE_CHEST)
-                    reqSkillValue = gameObjTarget->GetGOInfo()->chest.trivialSkillLow - 50;
-                else if (gameObjTarget->GetGOInfo()->type == GAMEOBJECT_TYPE_GATHERING_NODE)
-                    reqSkillValue = gameObjTarget->GetGOInfo()->gatheringNode.trivialSkillLow - 50;
-
                 // Allow one skill-up until respawned
-                if (!gameObjTarget->IsInSkillupList(player->GetGUID()) && player->UpdateGatherSkill(skillId, pureSkillValue, reqSkillValue))
+                if (!gameObjTarget->IsInSkillupList(player->GetGUID()))
                 {
+                    player->UpdateGatherSkill(skillId, pureSkillValue, reqSkillValue, 1, gameObjTarget);
                     gameObjTarget->AddToSkillupList(player->GetGUID());
                     if (skillId == SKILL_MINING || skillId == SKILL_HERBALISM || skillId == SKILL_ARCHAEOLOGY)
                         player->GiveGatheringXP();

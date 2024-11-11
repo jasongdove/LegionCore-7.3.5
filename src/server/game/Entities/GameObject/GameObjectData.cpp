@@ -252,6 +252,26 @@ uint32 GameObjectTemplate::GetEventScriptId() const
     }
 }
 
+uint32 GameObjectTemplate::GetTrivialSkillHigh() const
+{
+    switch (type)
+    {
+        case GAMEOBJECT_TYPE_CHEST:          return chest.trivialSkillHigh;
+        case GAMEOBJECT_TYPE_GATHERING_NODE: return gatheringNode.trivialSkillHigh;
+        default: return 0;
+    }
+}
+
+uint32 GameObjectTemplate::GetTrivialSkillLow() const
+{
+    switch (type)
+    {
+        case GAMEOBJECT_TYPE_CHEST:          return chest.trivialSkillLow;
+        case GAMEOBJECT_TYPE_GATHERING_NODE: return gatheringNode.trivialSkillLow;
+        default: return 0;
+    }
+}
+
 uint32 GameObjectTemplate::GetCooldown() const
 {
     switch (type)
