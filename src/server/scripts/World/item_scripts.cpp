@@ -168,7 +168,7 @@ public:
         ItemPosCountVec dest;
         uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 39883, 1); // Cracked Egg
         if (msg == EQUIP_ERR_OK)
-            player->StoreNewItem(dest, 39883, true, Item::GenerateItemRandomPropertyId(39883));
+            player->StoreNewItem(dest, 39883, true, GenerateItemRandomBonusListId(39883));
 
         return true;
     }
@@ -188,7 +188,7 @@ public:
         ItemPosCountVec dest;
         uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 44718, 1); // Ripe Disgusting Jar
         if (msg == EQUIP_ERR_OK)
-            player->StoreNewItem(dest, 44718, true, Item::GenerateItemRandomPropertyId(44718));
+            player->StoreNewItem(dest, 44718, true, GenerateItemRandomBonusListId(44718));
 
         return true;
     }
@@ -208,7 +208,7 @@ public:
         ItemPosCountVec dest;
         uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 94296, 1); // Cracked Primal Egg
         if (msg == EQUIP_ERR_OK)
-            player->StoreNewItem(dest, 94296, true, Item::GenerateItemRandomPropertyId(94296));
+            player->StoreNewItem(dest, 94296, true, GenerateItemRandomBonusListId(94296));
 
         return true;
     }
@@ -570,7 +570,7 @@ public:
         ItemPosCountVec dest;
         uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 137608, 1);
         if (msg == EQUIP_ERR_OK)
-            player->StoreNewItem(dest, 137608, true, Item::GenerateItemRandomPropertyId(137608));
+            player->StoreNewItem(dest, 137608, true, GenerateItemRandomBonusListId(137608));
 
         return true;
     }
@@ -587,7 +587,7 @@ public:
         ItemPosCountVec dest;
         uint8 msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 153191, 1);
         if (msg == EQUIP_ERR_OK)
-            player->StoreNewItem(dest, 153191, true, Item::GenerateItemRandomPropertyId(153191));
+            player->StoreNewItem(dest, 153191, true, GenerateItemRandomBonusListId(153191));
 
         return true;
     }

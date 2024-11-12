@@ -900,8 +900,7 @@ void AuctionBotSeller::AddNewAuctions(SellerConfiguration& config)
 
         // Update the just created item so that if it needs random properties it has them.
         // Ex:  Notched Shortsword of Stamina will only generate as a Notched Shortsword without this.
-        ItemRandomEnchantmentId randomPropertyId = Item::GenerateItemRandomPropertyId(itemId);
-        item->SetItemRandomProperties(randomPropertyId);
+        item->SetItemRandomBonusList(GenerateItemRandomBonusListId(itemId));
 
         uint32 buyoutPrice;
         uint32 bidPrice = 0;

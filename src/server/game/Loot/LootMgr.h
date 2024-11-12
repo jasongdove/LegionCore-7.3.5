@@ -196,8 +196,7 @@ struct LootItem
     {
         uint32 ItemID = 0;
         uint32 CurrencyID = 0;
-        uint32 RandomPropertiesSeed = 0;
-        ItemRandomEnchantmentId RandomPropertiesID;
+        ItemRandomBonusListId RandomBonusListId = 0;
         int32 UpgradeID = 0;
 
         struct

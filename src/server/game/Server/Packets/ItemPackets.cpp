@@ -186,11 +186,13 @@ void WorldPackets::Item::ItemInstance::Initialize(::Item const* item)
     RandomPropertiesSeed = item->GetItemSuffixFactor();
     RandomPropertiesID = item->GetItemRandomPropertyId();
     std::vector<uint32> const& bonusListIds = item->GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUS_LIST_IDS);
-    if (!bonusListIds.empty())
+    if (!bonusListIds.empty() || item->GetItemRandomBonusListId())
     {
         ItemBonus.emplace();
         ItemBonus->BonusListIDs.insert(ItemBonus->BonusListIDs.end(), bonusListIds.begin(), bonusListIds.end());
         ItemBonus->Context = item->GetUInt32Value(ITEM_FIELD_CONTEXT);
+        if (item->GetItemRandomBonusListId())
+            ItemBonus->BonusListIDs.push_back(item->GetItemRandomBonusListId());
     }
 
     if (uint32 mask = item->GetUInt32Value(ITEM_FIELD_MODIFIERS_MASK))
@@ -206,14 +208,13 @@ void WorldPackets::Item::ItemInstance::Initialize(::Item const* item)
 void WorldPackets::Item::ItemInstance::Initialize(LootItem const& lootItem)
 {
     ItemID = lootItem.item.ItemID;
-    RandomPropertiesSeed = lootItem.item.RandomPropertiesSeed;
-    if (lootItem.item.RandomPropertiesID.Type != ItemRandomEnchantmentType::BonusList)
-        RandomPropertiesID = lootItem.item.RandomPropertiesID.Id;
-    if (!lootItem.item.ItemBonus.BonusListIDs.empty())
+    if (!lootItem.item.ItemBonus.BonusListIDs.empty() || lootItem.item.RandomBonusListId)
     {
         ItemBonus.emplace();
         ItemBonus->BonusListIDs = lootItem.item.ItemBonus.BonusListIDs;
         ItemBonus->Context = lootItem.item.ItemBonus.Context;
+        if (lootItem.item.RandomBonusListId)
+            ItemBonus->BonusListIDs.push_back(lootItem.item.RandomBonusListId);
     }
 
     if (lootItem.item.UpgradeID)
@@ -226,9 +227,11 @@ void WorldPackets::Item::ItemInstance::Initialize(LootItem const& lootItem)
 void WorldPackets::Item::ItemInstance::Initialize(VoidStorageItem const* voidItem)
 {
     ItemID = voidItem->ItemEntry;
-    RandomPropertiesSeed = voidItem->ItemSuffixFactor;
-    if (voidItem->ItemRandomPropertyId.Type != ItemRandomEnchantmentType::BonusList)
-        RandomPropertiesID = voidItem->ItemRandomPropertyId.Id;
+    if (voidItem->RandomBonusListId)
+    {
+        ItemBonus.emplace();
+        ItemBonus->BonusListIDs.push_back(voidItem->RandomBonusListId);
+    }
     if (voidItem->ItemUpgradeId)
     {
         Modifications.emplace();
@@ -239,14 +242,13 @@ void WorldPackets::Item::ItemInstance::Initialize(VoidStorageItem const* voidIte
 void WorldPackets::Item::ItemInstance::Initialize(Roll const* roll)
 {
     ItemID = roll->item.ItemID;
-    RandomPropertiesSeed = roll->item.RandomPropertiesSeed;
-    if (roll->item.RandomPropertiesID.Type != ItemRandomEnchantmentType::BonusList)
-        RandomPropertiesID = roll->item.RandomPropertiesID.Id;
-    if (!roll->item.ItemBonus.BonusListIDs.empty())
+    if (!roll->item.ItemBonus.BonusListIDs.empty() || roll->item.RandomBonusListId)
     {
         ItemBonus.emplace();
         ItemBonus->BonusListIDs = roll->item.ItemBonus.BonusListIDs;
         ItemBonus->Context = roll->item.ItemBonus.Context;
+        if (roll->item.RandomBonusListId)
+            ItemBonus->BonusListIDs.push_back(roll->item.RandomBonusListId);
     }
 }
 
@@ -270,9 +272,8 @@ void WorldPackets::Item::ItemInstance::Initialize(VendorItem const* vendorItem)
 
     ItemBonusInstanceData bonus;
     bonus.Context = vendorItem->Context;
-    RandomPropertiesSeed = vendorItem->RandomPropertiesSeed;
-    if (vendorItem->RandomPropertiesID.Type != ItemRandomEnchantmentType::BonusList)
-        RandomPropertiesID = vendorItem->RandomPropertiesID.Id;
+    if (vendorItem->RandomBonusListId)
+        bonus.BonusListIDs.push_back(vendorItem->RandomBonusListId);
 
     for (uint16 bonusListId : vendorItem->BonusListIDs)
         if (bonusListId)
@@ -295,12 +296,12 @@ void WorldPackets::Item::ItemInstance::Initialize(std::string item)
     {
         switch (count)
         {
-            case 0:
-                RandomPropertiesSeed = uint32(atoul(token));
-                break;
-            case 1:
-                RandomPropertiesID = uint32(atoul(token));
-                break;
+//            case 0:
+//                RandomPropertiesSeed = uint32(atoul(token));
+//                break;
+//            case 1:
+//                RandomPropertiesID = uint32(atoul(token));
+//                break;
             case 2:
                 bonus.Context = uint32(atoul(token));
                 break;

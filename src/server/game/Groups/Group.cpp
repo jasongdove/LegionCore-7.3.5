@@ -50,8 +50,7 @@ Roll::Roll(ObjectGuid _guid, LootItem const& li) : itemCount(li.count), totalPla
 {
     item.itemGUID = _guid;
     item.ItemID = li.item.ItemID;
-    item.RandomPropertiesID = li.item.RandomPropertiesID;
-    item.RandomPropertiesSeed = li.item.RandomPropertiesSeed;
+    item.RandomBonusListId = li.item.RandomBonusListId;
     item.ItemBonus.Context = li.item.ItemBonus.Context;
     item.ItemBonus.BonusListIDs = li.item.ItemBonus.BonusListIDs;
 }
@@ -1590,7 +1589,7 @@ void Group::CountTheRoll(Rolls::iterator rollI)
                     item->is_looted = true;
                     loot->NotifyItemRemoved(roll->itemSlot);
                     loot->unlootedCount--;
-                    player->StoreNewItem(dest, roll->item.ItemID, true, item->item.RandomPropertiesID, item->GetAllowedLooters(), item->item.ItemBonus.BonusListIDs, item->item.ItemBonus.Context);
+                    player->StoreNewItem(dest, roll->item.ItemID, true, item->item.RandomBonusListId, item->GetAllowedLooters(), item->item.ItemBonus.BonusListIDs, item->item.ItemBonus.Context);
                 }
                 else
                 {
@@ -1640,7 +1639,7 @@ void Group::CountTheRoll(Rolls::iterator rollI)
                         item->is_looted = true;
                         loot->NotifyItemRemoved(roll->itemSlot);
                         loot->unlootedCount--;
-                        player->StoreNewItem(dest, roll->item.ItemID, true, item->item.RandomPropertiesID, item->GetAllowedLooters(), item->item.ItemBonus.BonusListIDs, item->item.ItemBonus.Context);
+                        player->StoreNewItem(dest, roll->item.ItemID, true, item->item.RandomBonusListId, item->GetAllowedLooters(), item->item.ItemBonus.BonusListIDs, item->item.ItemBonus.Context);
                     }
                     else
                     {

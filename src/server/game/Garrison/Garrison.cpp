@@ -2562,7 +2562,7 @@ void Garrison::RewardMission(uint32 missionRecID, bool owermax/* = false*/)
 
     ItemPosCountVec dest;
     if (_owner->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, missionRewardEntry->RewardItemID, missionRewardEntry->ItemAmount) == EQUIP_ERR_OK)
-        if (Item* item = _owner->StoreNewItem(dest, missionRewardEntry->RewardItemID, true, Item::GenerateItemRandomPropertyId(missionRewardEntry->RewardItemID, _owner->GetLootSpecID())))
+        if (Item* item = _owner->StoreNewItem(dest, missionRewardEntry->RewardItemID, true, GenerateItemRandomBonusListId(missionRewardEntry->RewardItemID)))
             _owner->SendNewItem(item, missionRewardEntry->ItemAmount, true, false);
 
     if (auto sYard = GetPlotWithBuildingType(GARR_BTYPE_SALVAGE_YARD))
@@ -2586,7 +2586,7 @@ void Garrison::RewardMission(uint32 missionRecID, bool owermax/* = false*/)
         {
             ItemPosCountVec dest2;
             if (_owner->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest2, itemID, 1) == EQUIP_ERR_OK)
-                if (Item* item = _owner->StoreNewItem(dest2, itemID, true, Item::GenerateItemRandomPropertyId(itemID, _owner->GetLootSpecID())))
+                if (Item* item = _owner->StoreNewItem(dest2, itemID, true, GenerateItemRandomBonusListId(itemID)))
                     _owner->SendNewItem(item, itemID, true, false);
         }
     }
@@ -3230,7 +3230,7 @@ void Garrison::CompleteShipments(GameObject *go)
         InventoryResult msg = _owner->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, item.item.ItemID, item.count);
         if (msg == EQUIP_ERR_OK)
         {
-            if (Item* pItem = _owner->StoreNewItem(dest, item.item.ItemID, true, item.item.RandomPropertiesID, GuidSet(), item.item.ItemBonus.BonusListIDs, item.item.ItemBonus.Context))
+            if (Item* pItem = _owner->StoreNewItem(dest, item.item.ItemID, true, item.item.RandomBonusListId, GuidSet(), item.item.ItemBonus.BonusListIDs, item.item.ItemBonus.Context))
                 _owner->SendNewItem(pItem, item.count, false, false, true);
         }
         else

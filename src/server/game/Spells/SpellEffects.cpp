@@ -2939,7 +2939,7 @@ void Spell::DoCreateItem(uint32 /*effIndex*/, uint32 itemtype, std::vector<uint3
     if (num_to_add)
     {
         // create the new item and store it
-        Item* pItem = player->StoreNewItem(dest, newitemid, true, Item::GenerateItemRandomPropertyId(newitemid, player->GetLootSpecID()), GuidSet(), bonusListIDs);
+        Item* pItem = player->StoreNewItem(dest, newitemid, true, GenerateItemRandomBonusListId(newitemid), GuidSet(), bonusListIDs);
 
         if (Guild* guild = sGuildMgr->GetGuildById(player->GetGuildId()))
         {

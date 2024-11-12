@@ -1583,7 +1583,7 @@ public:
                 bonusListIDs.push_back(atol(token));
         }
 
-        Item* item = playerTarget->StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId), GuidSet(), bonusListIDs);
+        Item* item = playerTarget->StoreNewItem(dest, itemId, true, GenerateItemRandomBonusListId(itemId), GuidSet(), bonusListIDs);
         if (count > 0 && item)
         {
             player->SendNewItem(item, count, false, true);
@@ -1654,7 +1654,7 @@ public:
             return false;
         }
 
-        Item* item = playerTarget->StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId), GuidSet(), sObjectMgr->GetItemBonusTree(itemId, modId, player->getLevel()));
+        Item* item = playerTarget->StoreNewItem(dest, itemId, true, GenerateItemRandomBonusListId(itemId), GuidSet(), sObjectMgr->GetItemBonusTree(itemId, modId, player->getLevel()));
 
         // remove binding (let GM give it to another player later)
         if (player == playerTarget)
@@ -3808,11 +3808,11 @@ public:
         // check space and find places
         ItemPosCountVec dest;
         InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1);
-        Item* item = player->StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId));
+        Item* item = player->StoreNewItem(dest, itemId, true, GenerateItemRandomBonusListId(itemId));
         msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1);
-        item = player->StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId));
+        item = player->StoreNewItem(dest, itemId, true, GenerateItemRandomBonusListId(itemId));
         msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1);
-        item = player->StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId));
+        item = player->StoreNewItem(dest, itemId, true, GenerateItemRandomBonusListId(itemId));
 
         if (count == 0 || dest.empty())                         // can't add any
         {
@@ -4005,7 +4005,7 @@ public:
             return false;
         }
 
-        Item* item = playerTarget->StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId));
+        Item* item = playerTarget->StoreNewItem(dest, itemId, true, GenerateItemRandomBonusListId(itemId));
 
         // remove binding (let GM give it to another player later)
         if (player == playerTarget)

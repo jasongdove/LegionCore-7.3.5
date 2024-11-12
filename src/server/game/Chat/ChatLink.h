@@ -82,16 +82,12 @@ protected:
     ItemTemplate const* _item;
     int32 _enchantId;
     int32 _gemItemId[3];
-    int32 _randomPropertyId;
-    int32 _randomPropertySeed;
     int32 _reporterLevel;
     int32 _reporterSpec;
     int32 _context;
     std::vector<int32> _bonusListIDs;
     std::vector<std::pair<uint32, int32>> _modifiers;
     std::vector<int32> _gemBonusListIDs[3];
-    ItemRandomSuffixEntry const* _suffix;
-    ItemRandomPropertiesEntry const* _property;
 };
 
 //"|c%s|Hquest:%d:%d:%d:%d|h[%s]|h%s"

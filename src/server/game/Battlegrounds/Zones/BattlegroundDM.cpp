@@ -401,7 +401,7 @@ void BattlegroundDeathMatch::EndBattleground(uint32 team)
                             ItemPosCountVec dest;
                             if (player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1) == EQUIP_ERR_OK)
                             {
-                                if (auto item = player->StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId, playerSpecID), GuidSet(), itemModifiers))
+                                if (auto item = player->StoreNewItem(dest, itemId, true, GenerateItemRandomBonusListId(itemId), GuidSet(), itemModifiers))
                                 {
                                     player->SendNewItem(item, 1, true, false, true);
                                     player->SendDisplayToast(itemId, ToastType::ITEM, false, 1, DisplayToastMethod::DISPLAY_TOAST_ENTRY_PVP_FACTION, 0, item);

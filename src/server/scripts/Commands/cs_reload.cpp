@@ -114,7 +114,7 @@ public:
             { "gossip_menu",                  SEC_ADMINISTRATOR, true,  &HandleReloadGossipMenuCommand,                 ""},
             { "gossip_menu_option",           SEC_ADMINISTRATOR, true,  &HandleReloadGossipMenuOptionCommand,           ""},
             { "guild_rewards",                SEC_ADMINISTRATOR, true,  &HandleReloadGuildRewardsCommand,               ""},
-            { "item_enchantment_template",    SEC_ADMINISTRATOR, true,  &HandleReloadItemEnchantementsCommand,          ""},
+            { "item_random_bonus_list_template", SEC_ADMINISTRATOR, true,  &HandleReloadItemRandomBonusListTemplatesCommand,          ""},
             { "item_loot_template",           SEC_ADMINISTRATOR, true,  &HandleReloadLootTemplatesItemCommand,          ""},
             { "lfg_dungeon_rewards",          SEC_ADMINISTRATOR, true,  &HandleReloadLfgRewardsCommand,                 ""},
             { "letter_analog",                SEC_ADMINISTRATOR, true,  &HandleReloadLetterAnalogCommand,               ""},
@@ -321,7 +321,7 @@ public:
     static bool HandleReloadAllItemCommand(ChatHandler* handler, const char* /*args*/)
     {
         HandleReloadPageTextsCommand(handler, "a");
-        HandleReloadItemEnchantementsCommand(handler, "a");
+        HandleReloadItemRandomBonusListTemplatesCommand(handler, "a");
         return true;
     }
 
@@ -992,11 +992,11 @@ public:
         return true;
     }
 
-    static bool HandleReloadItemEnchantementsCommand(ChatHandler* handler, const char* /*args*/)
+    static bool HandleReloadItemRandomBonusListTemplatesCommand(ChatHandler* handler, const char* /*args*/)
     {
-        TC_LOG_INFO("misc", "Re-Loading Item Random Enchantments Table...");
-        LoadRandomEnchantmentsTable();
-        handler->SendGlobalGMSysMessage("DB table `item_enchantment_template` reloaded.");
+        TC_LOG_INFO("misc", "Re-Loading Random item bonus list definitions...");
+        LoadItemRandomBonusListTemplates();
+        handler->SendGlobalGMSysMessage("DB table `item_random_bonus_list_template` reloaded.");
         return true;
     }
 

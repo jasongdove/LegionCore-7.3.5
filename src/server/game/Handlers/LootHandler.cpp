@@ -620,7 +620,7 @@ void WorldSession::HandleMasterLootItem(WorldPackets::Loot::MasterLootItem& pack
 
         // list of players allowed to receive this item in trade
         // not move item from loot to target inventory
-        Item* newitem = target->StoreNewItem(dest, item.item.ItemID, true, item.item.RandomPropertiesID, item.GetAllowedLooters(), item.item.ItemBonus.BonusListIDs, item.item.ItemBonus.Context);
+        Item* newitem = target->StoreNewItem(dest, item.item.ItemID, true, item.item.RandomBonusListId, item.GetAllowedLooters(), item.item.ItemBonus.BonusListIDs, item.item.ItemBonus.Context);
         target->SendNewItem(newitem, uint32(item.count), false, false, true);
         target->UpdateAchievementCriteria(CRITERIA_TYPE_LOOT_ITEM, item.item.ItemID, item.count);
         target->UpdateAchievementCriteria(CRITERIA_TYPE_LOOT_TYPE, loot->loot_type, item.count);

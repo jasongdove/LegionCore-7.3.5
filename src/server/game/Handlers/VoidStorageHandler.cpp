@@ -203,7 +203,7 @@ void WorldSession::HandleVoidStorageTransfer(WorldPackets::VoidStorage::VoidStor
                 SendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INVENTORY_FULL);
                 return;
             }
-            item = player->StoreNewItem(dest, itemVS->ItemEntry, true, itemVS->ItemRandomPropertyId, GuidSet());
+            item = player->StoreNewItem(dest, itemVS->ItemEntry, true, itemVS->RandomBonusListId, GuidSet());
 
             item->SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, itemVS->ItemSuffixFactor);
             item->SetGuidValue(ITEM_FIELD_CREATOR, itemVS->CreatorGuid);

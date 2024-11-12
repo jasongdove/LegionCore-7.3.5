@@ -1242,12 +1242,12 @@ struct VoidStorageItem
 {
     VoidStorageItem();
     VoidStorageItem(uint64 id, Item* _item, bool _change);
-    VoidStorageItem(uint64 id, uint32 entry, ObjectGuid const& creator, ItemRandomEnchantmentId randomPropertyId, uint32 suffixFactor, bool _change);
+    VoidStorageItem(uint64 id, uint32 entry, ObjectGuid const& creator, ItemRandomBonusListId randomBonusListId, uint32 suffixFactor, bool _change);
     VoidStorageItem(VoidStorageItem&& vsi, bool _change);
 
     ObjectGuid CreatorGuid;
     Item* item = nullptr;
-    ItemRandomEnchantmentId ItemRandomPropertyId;
+    ItemRandomBonusListId RandomBonusListId;
     uint64 ItemId = 0;
     uint32 ItemEntry = 0;
     uint32 ItemSuffixFactor = 0;
@@ -1758,9 +1758,9 @@ class Player : public Unit, public GridObject<Player>
         std::list<uint32> GetSpecListByClass(uint32 classId) const;
         bool CanGetItemForLoot(ItemTemplate const* proto, bool specCheck = true) const;
         bool CheckGemForSpec(ItemTemplate const* proto, uint32 playerSpecID) const;
-        Item* StoreNewItem(ItemPosCountVec const& pos, uint32 item, bool update, ItemRandomEnchantmentId const& randomPropertyId = {}, GuidSet const& allowedLooters = GuidSet(), std::vector<uint32> const& bonusListIDs = std::vector<uint32>(), uint32 context = 0, bool isRefunde = false);
+        Item* StoreNewItem(ItemPosCountVec const& pos, uint32 item, bool update, ItemRandomBonusListId const& randomBonusListId = 0, GuidSet const& allowedLooters = GuidSet(), std::vector<uint32> const& bonusListIDs = std::vector<uint32>(), uint32 context = 0, bool isRefunde = false);
         Item* StoreItem(ItemPosCountVec const& pos, Item* pItem, bool update);
-        Item* EquipNewItem(uint16 pos, uint32 item, bool update, int32 randomPropertyId = 0, std::vector<uint32> const& bonusListIDs = std::vector<uint32>(), uint32 context = 0, bool isRefunde = false);
+        Item* EquipNewItem(uint16 pos, uint32 item, bool update, ItemRandomBonusListId randomBonusListId = 0, std::vector<uint32> const& bonusListIDs = std::vector<uint32>(), uint32 context = 0, bool isRefunde = false);
         Item* EquipItem(uint16 pos, Item* pItem, bool update);
         void AutoUnequipOffhandIfNeed(bool force = false);
         void EquipChildItem(uint8 parentBag, uint8 parentSlot, Item* parentItem);

@@ -401,12 +401,12 @@ bool LinkExtractor::IsValidMessage()
     return true;
 }
 
-ItemChatLink::ItemChatLink(): ChatLink(), _item(nullptr), _enchantId(0), _randomPropertyId(0), _randomPropertySeed(0), _reporterLevel(0), _reporterSpec(0), _context(0), _suffix(nullptr), _property(nullptr)
+ItemChatLink::ItemChatLink(): ChatLink(), _item(nullptr), _enchantId(0), _reporterLevel(0), _reporterSpec(0), _context(0)
 {
     memset(_gemItemId, 0, sizeof(_gemItemId));
 }
 
-ItemChatLink::ItemChatLink(uint32 id) : ChatLink(), _item(sObjectMgr->GetItemTemplate(id)), _enchantId(0), _gemItemId{}, _randomPropertyId(0), _randomPropertySeed(0), _reporterLevel(0), _reporterSpec(0), _context(0), _suffix(nullptr), _property(nullptr) { }
+ItemChatLink::ItemChatLink(uint32 id) : ChatLink(), _item(sObjectMgr->GetItemTemplate(id)), _enchantId(0), _gemItemId{}, _reporterLevel(0), _reporterSpec(0), _context(0) { }
 
 // |color|Hitem:item_id:perm_ench_id:gem1:gem2:gem3:0:random_property:property_seed:reporter_level:reporter_spec:modifiers_mask:context:numBonusListIDs:bonusListIDs(%d):mods(%d):gem1numBonusListIDs:gem1bonusListIDs(%d):gem2numBonusListIDs:gem2bonusListIDs(%d):gem3numBonusListIDs:gem3bonusListIDs(%d)|h[name]|h|r
 // |cffa335ee|Hitem:124382:0:0:0:0:0:0:0:0:0:0:0:4:42:562:565:567|h[Edict of Argus]|h|r");
@@ -492,35 +492,16 @@ bool ItemChatLink::Initialize(std::istringstream& iss)
     if (!CheckDelimiter(iss, DELIMITER, "item"))
         return false;
 
-    if (HasValue(iss) && !ReadInt32(iss, _randomPropertyId))
+    if (HasValue(iss) && !ReadInt32(iss, zero))
     {
         TC_LOG_DEBUG("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading item random property id", iss.str().c_str());
         return false;
     }
 
-    if (_randomPropertyId > 0)
-    {
-        _property = sItemRandomPropertiesStore.LookupEntry(_randomPropertyId);
-        if (!_property)
-        {
-            TC_LOG_DEBUG("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid item property id %u in |item command", iss.str().c_str(), _randomPropertyId);
-            return false;
-        }
-    }
-    else if (_randomPropertyId < 0)
-    {
-        _suffix = sItemRandomSuffixStore.LookupEntry(-_randomPropertyId);
-        if (!_suffix)
-        {
-            TC_LOG_DEBUG("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid item suffix id %u in |item command", iss.str().c_str(), -_randomPropertyId);
-            return false;
-        }
-    }
-
     if (!CheckDelimiter(iss, DELIMITER, "item"))
         return false;
 
-    if (HasValue(iss) && !ReadInt32(iss, _randomPropertySeed))
+    if (HasValue(iss) && !ReadInt32(iss, zero))
     {
         TC_LOG_DEBUG("chat.system", "ChatHandler::isValidChatMessage('%s'): sequence finished unexpectedly while reading item random property seed", iss.str().c_str());
         return false;

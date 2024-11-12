@@ -1118,7 +1118,7 @@ void Battleground::PlayerReward(Player* player, bool isWinner)
             ItemPosCountVec dest;
             if (player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, legendaryItemID, 1) == EQUIP_ERR_OK)
             {
-                if (auto item = player->StoreNewItem(dest, legendaryItemID, true, Item::GenerateItemRandomPropertyId(legendaryItemID, playerSpecID), GuidSet(), sObjectMgr->GetItemBonusTree(legendaryItemID, 0, playerLevel, 0, 0)))
+                if (auto item = player->StoreNewItem(dest, legendaryItemID, true, GenerateItemRandomBonusListId(legendaryItemID), GuidSet(), sObjectMgr->GetItemBonusTree(legendaryItemID, 0, playerLevel, 0, 0)))
                 {
                     sLog->outWarden("Player %s on map %u with killpoints %f and chance %f looted legendary item %u from source: PvP (rewardType %u)", player->GetName(), player->GetMapId(), player->m_killPoints, chance, legendaryItemID, uint8(type));
                     player->SendNewItem(item, 1, true, false, true);
@@ -1176,7 +1176,7 @@ void Battleground::PlayerReward(Player* player, bool isWinner)
         ItemPosCountVec dest;
         if (player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1) == EQUIP_ERR_OK)
         {
-            if (auto item = player->StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId, playerSpecID), GuidSet(), itemModifiers))
+            if (auto item = player->StoreNewItem(dest, itemId, true, GenerateItemRandomBonusListId(itemId), GuidSet(), itemModifiers))
             {
                 player->SendNewItem(item, 1, true, false, true);
                 player->SendDisplayToast(itemId, ToastType::ITEM, false, 1, IsRated() ? DisplayToastMethod::DISPLAY_TOAST_ENTRY_RATED_PVP_REWARD : DisplayToastMethod::DISPLAY_TOAST_ENTRY_PVP_FACTION, 0, item);

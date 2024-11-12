@@ -152,11 +152,11 @@ VoidStorageItem::VoidStorageItem(uint64 id, Item* _item, bool _change) : item(_i
 {
 }
 
-VoidStorageItem::VoidStorageItem(uint64 id, uint32 entry, ObjectGuid const& creator, ItemRandomEnchantmentId randomPropertyId, uint32 suffixFactor, bool _change) : CreatorGuid(creator), ItemRandomPropertyId(randomPropertyId), ItemId(id), ItemEntry(entry), ItemSuffixFactor(suffixFactor), change(_change)
+VoidStorageItem::VoidStorageItem(uint64 id, uint32 entry, ObjectGuid const& creator, ItemRandomBonusListId randomBonusListId, uint32 suffixFactor, bool _change) : CreatorGuid(creator), RandomBonusListId(randomBonusListId), ItemId(id), ItemEntry(entry), ItemSuffixFactor(suffixFactor), change(_change)
 {
 }
 
-VoidStorageItem::VoidStorageItem(VoidStorageItem&& vsi, bool _change) : CreatorGuid(vsi.CreatorGuid), item(vsi.item), ItemRandomPropertyId(vsi.ItemRandomPropertyId), ItemId(vsi.ItemId),
+VoidStorageItem::VoidStorageItem(VoidStorageItem&& vsi, bool _change) : CreatorGuid(vsi.CreatorGuid), item(vsi.item), RandomBonusListId(vsi.RandomBonusListId), ItemId(vsi.ItemId),
 ItemEntry(vsi.ItemEntry), ItemSuffixFactor(vsi.ItemSuffixFactor), ItemUpgradeId(vsi.ItemUpgradeId), change(_change)
 {
 }
@@ -1054,7 +1054,7 @@ bool Player::StoreNewItemInBestSlots(uint32 titem_id, uint32 titem_amount, bool 
         if (msg != EQUIP_ERR_OK)
             break;
 
-        EquipNewItem(eDest, titem_id, true, Item::GenerateItemRandomPropertyId(titem_id, GetLootSpecID()).Id, bonusListIDs);
+        EquipNewItem(eDest, titem_id, true, GenerateItemRandomBonusListId(titem_id), bonusListIDs);
         AutoUnequipOffhandIfNeed();
         --titem_amount;
     }
@@ -1068,7 +1068,7 @@ bool Player::StoreNewItemInBestSlots(uint32 titem_id, uint32 titem_amount, bool 
     InventoryResult msg = CanStoreNewItem(INVENTORY_SLOT_BAG_0, NULL_SLOT, sDest, titem_id, titem_amount);
     if (msg == EQUIP_ERR_OK)
     {
-        StoreNewItem(sDest, titem_id, true, Item::GenerateItemRandomPropertyId(titem_id, GetLootSpecID()), GuidSet(), bonusListIDs);
+        StoreNewItem(sDest, titem_id, true, GenerateItemRandomBonusListId(titem_id), GuidSet(), bonusListIDs);
         return true;                                        // stored
     }
 
@@ -15268,7 +15268,7 @@ bool Player::CheckGemForSpec(ItemTemplate const* proto, uint32 playerSpecID) con
 }
 
 // Return stored item (if stored to stack, it can diff. from pItem). And pItem ca be deleted in this case.
-Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 itemID, bool update, ItemRandomEnchantmentId const& randomPropertyId /*= {}*/, GuidSet const& allowedLooters /*= GuidSet()*/, std::vector<uint32> const& bonusListIDs /*= std::vector<uint32>()*/, uint32 context/* = 0*/, bool isRefunde)
+Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 itemID, bool update, ItemRandomBonusListId const& randomBonusListId /*= 0*/, GuidSet const& allowedLooters /*= GuidSet()*/, std::vector<uint32> const& bonusListIDs /*= std::vector<uint32>()*/, uint32 context/* = 0*/, bool isRefunde)
 {
     uint32 count = 0;
     for (auto itr = dest.cbegin(); itr != dest.cend(); ++itr)
@@ -15283,7 +15283,7 @@ Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 itemID, bool upda
         item->SetFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_REFUNDABLE);
 
     item->SetFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_NEW_ITEM);
-    item->SetItemRandomProperties(randomPropertyId);
+    item->SetItemRandomBonusList(randomBonusListId);
 
     if (uint32 upgradeID = sDB2Manager.GetRulesetItemUpgrade(itemID))
         item->SetModifier(ITEM_MODIFIER_UPGRADE_ID, upgradeID);
@@ -15584,11 +15584,11 @@ Item* Player::_StoreItem(uint16 pos, Item* pItem, uint32 count, bool clone, bool
     return pItem2;
 }
 
-Item* Player::EquipNewItem(uint16 pos, uint32 item, bool update, int32 randomPropertyId /*= 0*/, std::vector<uint32> const& bonusListIDs /*= std::vector<uint32>()*/, uint32 context, bool isRefunde/* = false*/)
+Item* Player::EquipNewItem(uint16 pos, uint32 item, bool update, ItemRandomBonusListId randomBonusListId /*= 0*/, std::vector<uint32> const& bonusListIDs /*= std::vector<uint32>()*/, uint32 context, bool isRefunde/* = false*/)
 {
     if (Item* pItem = Item::CreateItem(item, 1, this))
     {
-        pItem->SetItemRandomProperties(ItemRandomEnchantmentId(ItemRandomEnchantmentType::Property, randomPropertyId));
+        pItem->SetItemRandomBonusList(randomBonusListId);
 
         for (uint32 bonusListID : bonusListIDs)
             pItem->AddBonuses(bonusListID);
@@ -19218,7 +19218,7 @@ void Player::RewardQuestPackage(uint32 questPackageId, uint32 onlyItemId /*= 0*/
                 ItemPosCountVec dest;
                 if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, questPackageItem->ItemID, questPackageItem->ItemQuantity) == EQUIP_ERR_OK)
                 {
-                    Item* item = StoreNewItem(dest, questPackageItem->ItemID, true, Item::GenerateItemRandomPropertyId(questPackageItem->ItemID));
+                    Item* item = StoreNewItem(dest, questPackageItem->ItemID, true, GenerateItemRandomBonusListId(questPackageItem->ItemID));
                     SendNewItem(item, questPackageItem->ItemQuantity, true, false);
                 }
             }
@@ -19237,7 +19237,7 @@ void Player::RewardQuestPackage(uint32 questPackageId, uint32 onlyItemId /*= 0*/
                 ItemPosCountVec dest;
                 if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, questPackageItem->ItemID, questPackageItem->ItemQuantity) == EQUIP_ERR_OK)
                 {
-                    Item* item = StoreNewItem(dest, questPackageItem->ItemID, true, Item::GenerateItemRandomPropertyId(questPackageItem->ItemID));
+                    Item* item = StoreNewItem(dest, questPackageItem->ItemID, true, GenerateItemRandomBonusListId(questPackageItem->ItemID));
                     SendNewItem(item, questPackageItem->ItemQuantity, true, false);
                 }
             }
@@ -19307,7 +19307,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
                 ItemPosCountVec dest;
                 if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, reward, quest->RewardChoiceItemCount[i]) == EQUIP_ERR_OK)
                 {
-                    Item* item = StoreNewItem(dest, reward, true, Item::GenerateItemRandomPropertyId(reward));
+                    Item* item = StoreNewItem(dest, reward, true, GenerateItemRandomBonusListId(reward));
                     SendNewItem(item, quest->RewardChoiceItemCount[i], true, false);
                 }
             }
@@ -19327,7 +19327,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
                 ItemPosCountVec dest;
                 if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, quest->RewardItemCount[i]) == EQUIP_ERR_OK)
                 {
-                    Item* item = StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId, GetLootSpecID()), GuidSet(), sObjectMgr->GetItemBonusTree(itemId, GetMap()->GetDifficultyLootItemContext(), getLevel()), GetMap()->GetDifficultyLootItemContext());
+                    Item* item = StoreNewItem(dest, itemId, true, GenerateItemRandomBonusListId(itemId), GuidSet(), sObjectMgr->GetItemBonusTree(itemId, GetMap()->GetDifficultyLootItemContext(), getLevel()), GetMap()->GetDifficultyLootItemContext());
                     // triggers some lua events
                     SendDisplayToast(itemId, ToastType::ITEM, false, quest->RewardItemCount[i], DisplayToastMethod::DISPLAY_TOAST_SPECIAL_UNK, quest_id, item);
                     SendNewItem(item, quest->RewardItemCount[i], true, false);
@@ -19429,7 +19429,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
                         if (wq->worldQuest->MinItemLevel)
                             needLevel = wq->worldQuest->MinItemLevel;
 
-                        rewardItem = StoreNewItem(dest, wq->Recipe->ItemID, true, Item::GenerateItemRandomPropertyId(wq->Recipe->ItemID, GetLootSpecID()), GuidSet(), sObjectMgr->GetItemBonusTree(wq->Recipe->ItemID, std::get<0>(bonusTree), getLevel(), 0, 0, needLevel), std::get<0>(bonusTree));
+                        rewardItem = StoreNewItem(dest, wq->Recipe->ItemID, true, GenerateItemRandomBonusListId(wq->Recipe->ItemID), GuidSet(), sObjectMgr->GetItemBonusTree(wq->Recipe->ItemID, std::get<0>(bonusTree), getLevel(), 0, 0, needLevel), std::get<0>(bonusTree));
                         // triggers some lua events
                         SendDisplayToast(wq->Recipe->ItemID, ToastType::ITEM, false, wq->Recipe->ItemCount, DisplayToastMethod::DISPLAY_TOAST_SPECIAL_UNK, quest_id, rewardItem);
                         SendNewItem(rewardItem, wq->Recipe->ItemCount, true, false);
@@ -19462,7 +19462,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
                         if (wq->worldQuest->MinItemLevel)
                             needLevel = wq->worldQuest->MinItemLevel;
 
-                        rewardItem = StoreNewItem(dest, ItemID, true, Item::GenerateItemRandomPropertyId(ItemID, GetLootSpecID()), GuidSet(), sObjectMgr->GetItemBonusTree(ItemID, std::get<0>(bonusTree), getLevel(), 0, 0, needLevel), std::get<0>(bonusTree));
+                        rewardItem = StoreNewItem(dest, ItemID, true, GenerateItemRandomBonusListId(ItemID), GuidSet(), sObjectMgr->GetItemBonusTree(ItemID, std::get<0>(bonusTree), getLevel(), 0, 0, needLevel), std::get<0>(bonusTree));
                         // triggers some lua events
                         SendDisplayToast(ItemID, ToastType::ITEM, false, ItemCount, DisplayToastMethod::DISPLAY_TOAST_SPECIAL_UNK, quest_id, rewardItem);
                         SendNewItem(rewardItem, ItemCount, true, false);
@@ -22917,17 +22917,17 @@ void Player::LoadCorpse()
 
 void Player::_LoadInventory(PreparedQueryResult result, PreparedQueryResult artifactsResult, uint32 timeDiff)
 {
-    //        0     1          2            3                4      5         6        7      8             9                   10                11          12          13
-    //        guid, itemEntry, creatorGuid, giftCreatorGuid, count, duration, charges, flags, enchantments, randomPropertyType, randomPropertyId, durability, playedTime, text,
-    //        14         15                  16                  17              18                  19
+    //        0     1          2            3                4      5         6        7      8             9                   10                11     12
+    //        guid, itemEntry, creatorGuid, giftCreatorGuid, count, duration, charges, flags, enchantments, randomBonusListId, durability, playedTime, text,
+    //        13         14                  15                  16              17                  18
     //        upgradeId, battlePetSpeciesId, battlePetBreedData, battlePetLevel, battlePetDisplayId, bonusListIDs,
-    //        20                              21                           22                           23                           24
+    //        19                              20                           21                           22                           23
     //        itemModifiedAppearanceAllSpecs, itemModifiedAppearanceSpec1, itemModifiedAppearanceSpec2, itemModifiedAppearanceSpec3, itemModifiedAppearanceSpec4,
-    //        25                            26                         27                         28                         29
+    //        24                            25                         26                         27                         28
     //        spellItemEnchantmentAllSpecs, spellItemEnchantmentSpec1, spellItemEnchantmentSpec2, spellItemEnchantmentSpec3, spellItemEnchantmentSpec4,
-    //        30          31           32           33                34          35           36           37                38          39           40           41                
+    //        29          30           31           32                33          34           35           36                37          38           39           40
     //        gemItemId1, gemBonuses1, gemContext1, gemScalingLevel1, gemItemId2, gemBonuses2, gemContext2, gemScalingLevel2, gemItemId3, gemBonuses3, gemContext3, gemScalingLevel3,
-    //        42                 43                      44  45                    46   47 
+    //        41                 42                      43  44                    45   46
     //        fixedScalingLevel, artifactKnowledgeLevel, xp, artifactAppearanceId, bag, slot
     //        FROM character_inventory ci JOIN item_instance ii ON ci.item = ii.guid WHERE ci.guid = ? ORDER BY bag, slot
 
@@ -23018,10 +23018,10 @@ void Player::_LoadInventory(PreparedQueryResult result, PreparedQueryResult arti
                     });
                 }
  
-                ObjectGuid bGUID = fields[50].GetUInt64() ? ObjectGuid::Create<HighGuid::Item>(fields[50].GetUInt64()) : ObjectGuid::Empty;
-                uint8 slot = fields[51].GetUInt8();
+                ObjectGuid bGUID = fields[49].GetUInt64() ? ObjectGuid::Create<HighGuid::Item>(fields[49].GetUInt64()) : ObjectGuid::Empty;
+                uint8 slot = fields[50].GetUInt8();
 
-                item->SetDonateItem(fields[52].GetBool());
+                item->SetDonateItem(fields[51].GetBool());
 
                 _collectionMgr->CheckHeirloomUpgrades(item);
 
@@ -23374,8 +23374,8 @@ void Player::_LoadVoidStorage(PreparedQueryResult result, PreparedQueryResult re
             uint32 itemEntry = fields[1].GetUInt32();
             uint32 slot = fields[2].GetUInt32();
             ObjectGuid creatorGuid = ObjectGuid::Create<HighGuid::Player>(fields[3].GetUInt64());
-            ItemRandomEnchantmentId randomProperty(ItemRandomEnchantmentType(fields[4].GetUInt8()), fields[5].GetUInt32());
-            uint32 suffixFactor = fields[6].GetUInt32();
+            ItemRandomBonusListId randomBonusListId = fields[4].GetUInt32();
+            uint32 suffixFactor = fields[5].GetUInt32();
 
             if (itemId.IsEmpty())
             {
@@ -23403,7 +23403,7 @@ void Player::_LoadVoidStorage(PreparedQueryResult result, PreparedQueryResult re
 
             AllLegendarys.insert(itemEntry);
 
-            _voidStorageItems[slot] = new VoidStorageItem(itemId.GetCounter(), itemEntry, creatorGuid, randomProperty, suffixFactor, false);
+            _voidStorageItems[slot] = new VoidStorageItem(itemId.GetCounter(), itemEntry, creatorGuid, randomBonusListId, suffixFactor, false);
         }
         while (result->NextRow());
     }
@@ -25705,10 +25705,9 @@ void Player::_SaveVoidStorage(CharacterDatabaseTransaction& trans)
             stmt->setUInt32(2, _voidStorageItems[i]->item ? _voidStorageItems[i]->item->GetEntry() : _voidStorageItems[i]->ItemEntry);
             stmt->setUInt32(3, i);
             stmt->setUInt64(4, _voidStorageItems[i]->CreatorGuid.GetCounter());
-            stmt->setUInt8(5, uint8(_voidStorageItems[i]->ItemRandomPropertyId.Type));
-            stmt->setUInt32(6, _voidStorageItems[i]->ItemRandomPropertyId.Id);
-            stmt->setUInt32(7, _voidStorageItems[i]->ItemSuffixFactor);
-            stmt->setUInt64(8, _voidStorageItems[i]->item ? _voidStorageItems[i]->item->GetGUIDLow() : 0);
+            stmt->setUInt32(5, _voidStorageItems[i]->RandomBonusListId);
+            stmt->setUInt32(6, _voidStorageItems[i]->ItemSuffixFactor);
+            stmt->setUInt64(7, _voidStorageItems[i]->item ? _voidStorageItems[i]->item->GetGUIDLow() : 0);
             trans->Append(stmt);
         }
     }
@@ -28108,15 +28107,15 @@ inline bool Player::_StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 c
         }
     }
 
-    ItemRandomEnchantmentId RandomPropertiesID = crItem->RandomPropertiesID;
-    if (RandomPropertiesID.Id == 0)
-        RandomPropertiesID = Item::GenerateItemRandomPropertyId(item, GetLootSpecID());
+    ItemRandomBonusListId randomBonusListId = crItem->RandomBonusListId;
+    if (randomBonusListId == 0)
+        randomBonusListId = GenerateItemRandomBonusListId(item);
 
     bool isRefund = bool(pProto->GetFlags() & ITEM_FLAG_ITEM_PURCHASE_RECORD && crItem->ExtendedCost && pProto->GetMaxStackSize() == 1 && !crItem->DonateCost);
 
     Item* it = bStore ?
-        StoreNewItem(vDest, item, true, RandomPropertiesID, GuidSet(), crItem->BonusListIDs, crItem->Context, isRefund) :
-        EquipNewItem(uiDest, item, true, RandomPropertiesID.Id, crItem->BonusListIDs, crItem->Context, isRefund);
+        StoreNewItem(vDest, item, true, randomBonusListId, GuidSet(), crItem->BonusListIDs, crItem->Context, isRefund) :
+        EquipNewItem(uiDest, item, true, randomBonusListId, crItem->BonusListIDs, crItem->Context, isRefund);
     if (it)
     {
         uint32 new_count = pVendor->UpdateVendorItemCurrentCount(crItem, count);
@@ -32632,7 +32631,7 @@ bool Player::AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore cons
                 continue;
             }
 
-            Item* pItem = StoreNewItem(dest, lootItem->item.ItemID, true, lootItem->item.RandomPropertiesID, GuidSet(), lootItem->item.ItemBonus.BonusListIDs, lootItem->item.ItemBonus.Context);
+            Item* pItem = StoreNewItem(dest, lootItem->item.ItemID, true, lootItem->item.RandomBonusListId, GuidSet(), lootItem->item.ItemBonus.BonusListIDs, lootItem->item.ItemBonus.Context);
             SendNewItem(pItem, lootItem->count, false, false, broadcast);
         }
     }
@@ -32730,7 +32729,7 @@ void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
         return;
     }
 
-    Item* newitem = StoreNewItem(dest, item->item.ItemID, true, item->item.RandomPropertiesID, item->GetAllowedLooters(), item->item.ItemBonus.BonusListIDs, item->item.ItemBonus.Context);
+    Item* newitem = StoreNewItem(dest, item->item.ItemID, true, item->item.RandomBonusListId, item->GetAllowedLooters(), item->item.ItemBonus.BonusListIDs, item->item.ItemBonus.Context);
     if (!newitem)
         return;
 
@@ -34449,7 +34448,7 @@ bool Player::AddItem(uint32 itemId, uint32 count, uint32* noSpaceForCount, Objec
         return false;
     }
 
-    Item* item = StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId, GetLootSpecID()));
+    Item* item = StoreNewItem(dest, itemId, true, GenerateItemRandomBonusListId(itemId));
     if (item)
     {
         if (!guid.IsEmpty())
@@ -35711,7 +35710,7 @@ void Player::PvpRatedQuestReward(uint32 quest_id)
         ItemPosCountVec dest;
         if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, 1) == EQUIP_ERR_OK)
         {
-            if (auto item = StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId, GetLootSpecID()), GuidSet(), itemModifiers))
+            if (auto item = StoreNewItem(dest, itemId, true, GenerateItemRandomBonusListId(itemId), GuidSet(), itemModifiers))
             {
                 SendNewItem(item, 1, true, false, true);
                 SendDisplayToast(itemId, ToastType::ITEM, false, 1, DisplayToastMethod::DISPLAY_TOAST_ENTRY_RATED_PVP_REWARD, 0, item);

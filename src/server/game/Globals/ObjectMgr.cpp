@@ -2912,6 +2912,7 @@ void ObjectMgr::LoadItemTemplates()
         itemTemplate.FlagsCu = 0;
         itemTemplate.ItemSpecClassMask = 0;
         itemTemplate.SpellPPMRate = 0.0f;
+        itemTemplate.RandomBonusListTemplateId = 0;
         ++sparseCount;
 
         itemTemplate.IsMultiClass = false;
@@ -3017,7 +3018,7 @@ void ObjectMgr::LoadItemTemplateAddon()
     uint32 oldMSTime = getMSTime();
     uint32 count = 0;
 
-    QueryResult result = WorldDatabase.Query("SELECT Id, FlagsCu, FoodType, MinMoneyLoot, MaxMoneyLoot, SpellPPMChance FROM item_template_addon");
+    QueryResult result = WorldDatabase.Query("SELECT Id, FlagsCu, FoodType, MinMoneyLoot, MaxMoneyLoot, SpellPPMChance, RandomBonusListTemplateId FROM item_template_addon");
     if (result)
     {
         do
@@ -3043,6 +3044,7 @@ void ObjectMgr::LoadItemTemplateAddon()
             itemTemplate.MinMoneyLoot = minMoneyLoot;
             itemTemplate.MaxMoneyLoot = maxMoneyLoot;
             itemTemplate.SpellPPMRate = fields[5].GetFloat();
+            itemTemplate.RandomBonusListTemplateId = fields[6].GetUInt32();
             ++count;
         } while (result->NextRow());
     }
@@ -6715,8 +6717,8 @@ int ObjectMgr::LoadReferenceVendor(int32 vendor, int32 item, uint8 type, std::se
             uint32 ExtendedCost = fields[3].GetUInt32();
             uint8  type_         = fields[4].GetUInt8();
             uint64 money        = fields[5].GetUInt64();
-            uint32 RandomPropertiesSeed = fields[6].GetUInt32();
-            uint32 RandomPropertiesID = fields[7].GetUInt32();
+//            uint32 RandomPropertiesSeed = fields[6].GetUInt32();
+//            uint32 RandomPropertiesID = fields[7].GetUInt32();
             std::vector<uint32> bonusListIDs;
             Tokenizer BonusListID(fields[8].GetString(), ' ');
             for (char const* token : BonusListID)
@@ -6734,7 +6736,7 @@ int ObjectMgr::LoadReferenceVendor(int32 vendor, int32 item, uint8 type, std::se
 
             VendorItemData& vList = _cacheVendorItemStore[vendor];
 
-            vList.AddItem(item_id, maxcount, incrtime, ExtendedCost, type_, money, RandomPropertiesSeed, RandomPropertiesID, bonusListIDs, ItemModifiers, DoNotFilterOnVendor, Context, PlayerConditionID);
+            vList.AddItem(item_id, maxcount, incrtime, ExtendedCost, type_, money, 0, bonusListIDs, ItemModifiers, DoNotFilterOnVendor, Context, PlayerConditionID);
             ++count;
         }
     } while (result->NextRow());
@@ -6780,8 +6782,8 @@ void ObjectMgr::LoadVendors()
             uint32 ExtendedCost = fields[4].GetUInt32();
             uint8  type         = fields[5].GetUInt8();
             uint64 money        = fields[6].GetUInt64();
-            uint32 RandomPropertiesSeed = fields[7].GetUInt32();
-            uint32 RandomPropertiesID = fields[8].GetUInt32();
+//            uint32 RandomPropertiesSeed = fields[7].GetUInt32();
+//            uint32 RandomPropertiesID = fields[8].GetUInt32();
             std::vector<uint32> bonusListIDs;
             Tokenizer BonusListID(fields[9].GetString(), ' ');
             for (char const* token : BonusListID)
@@ -6799,7 +6801,7 @@ void ObjectMgr::LoadVendors()
 
             VendorItemData& vList = _cacheVendorItemStore[entry];
 
-            vList.AddItem(item_id, maxcount, incrtime, ExtendedCost, type, money, RandomPropertiesSeed, RandomPropertiesID, bonusListIDs, ItemModifiers, DoNotFilterOnVendor, Context, PlayerConditionID);
+            vList.AddItem(item_id, maxcount, incrtime, ExtendedCost, type, money, 0, bonusListIDs, ItemModifiers, DoNotFilterOnVendor, Context, PlayerConditionID);
             ++count;
         }
     }
@@ -6910,7 +6912,7 @@ void ObjectMgr::LoadDonateVendors()
             {
                 VendorItemData& vList = _cacheDonateVendorItemStore[entry];
 
-                vList.AddItem(item_id, 0, incrtime, ExtendedCost, ITEM_VENDOR_TYPE_ITEM, money, 0, 0, bonusListIDs, std::vector<int32>(), false, 0, 0, storeId, DonateCost);
+                vList.AddItem(item_id, 0, incrtime, ExtendedCost, ITEM_VENDOR_TYPE_ITEM, money, 0, bonusListIDs, std::vector<int32>(), false, 0, 0, storeId, DonateCost);
             }
             else
             {
@@ -8705,8 +8707,9 @@ std::vector<uint32> ObjectMgr::GetItemBonusTree(uint32 ItemID, uint32 itemBonusT
         bool sosketSlot3 = true;
         if (!onlyBonus && pProto->HasStats() && roll_chance_f(10.0f)) // Genarate second stats
         {
-            if (uint32 statID = GetItemThirdStat(ItemID, sosketSlot1, sosketSlot2, sosketSlot3))
-                bonusListIDs.push_back(statID);
+            // TODO:
+//            if (uint32 statID = GetItemThirdStat(ItemID, sosketSlot1, sosketSlot2, sosketSlot3))
+//                bonusListIDs.push_back(statID);
             canSecondStat--;
         }
 
@@ -8728,8 +8731,9 @@ std::vector<uint32> ObjectMgr::GetItemBonusTree(uint32 ItemID, uint32 itemBonusT
                     if (canSecondStat > 0 && !onlyBonus && pProto->GetClass() != ITEM_CLASS_GEM && roll_chance_f(10.0f)) // Genarate second stats
                     {
                         canSecondStat--;
-                        if (uint32 statID = GetItemThirdStat(ItemID, sosketSlot1, sosketSlot2, sosketSlot3))
-                            bonusListIDs.push_back(statID);
+                        // TODO:
+//                        if (uint32 statID = GetItemThirdStat(ItemID, sosketSlot1, sosketSlot2, sosketSlot3))
+//                            bonusListIDs.push_back(statID);
                     }
                 }
                 else

@@ -470,9 +470,11 @@ void LootItem::init(Loot* loot)
         follow_loot_rules = proto && (proto->FlagsCu & ITEM_FLAGS_CU_FOLLOW_LOOT_RULES);
         count = uint32(count + 0.5f);
         
-        item.RandomPropertiesSeed = proto && proto->GetItemRandomSuffixGroupID() ? GenerateEnchSuffixFactor(proto) : 0;
-        if (loot)
-            item.RandomPropertiesID = Item::GenerateItemRandomPropertyId(item.ItemID, loot->personal ? loot->GetLootOwner()->GetLootSpecID() : 0);
+//        item.RandomPropertiesSeed = proto && proto->GetItemRandomSuffixGroupID() ? GenerateEnchSuffixFactor(proto) : 0;
+//        if (loot)
+//            item.RandomPropertiesID = Item::GenerateItemRandomPropertyId(item.ItemID, loot->personal ? loot->GetLootOwner()->GetLootSpecID() : 0);
+
+        item.RandomBonusListId = GenerateItemRandomBonusListId(item.ItemID);
         
         item.UpgradeID = sDB2Manager.GetRulesetItemUpgrade(item.ItemID);
 

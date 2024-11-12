@@ -768,6 +768,7 @@ struct ItemTemplate
 
     // extra fields, not part of db2 files
     float  SpellPPMRate;
+    uint32 RandomBonusListTemplateId;
     uint32 ScriptId;
     uint32 FoodType;
     uint32 MinMoneyLoot;

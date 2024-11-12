@@ -23,47 +23,25 @@
 #include "Containers.h"
 #include "ObjectMgr.h"
 
-struct EnchStoreItem
+namespace
 {
-    ItemRandomEnchantmentType type;
-    uint32 ench;
-    float chance;
-
-    EnchStoreItem() : type(ItemRandomEnchantmentType::Property), ench(0), chance(0) { }
-    EnchStoreItem(ItemRandomEnchantmentType _type, uint32 _ench, float _chance) : type(_type), ench(_ench), chance(_chance) { }
-};
-
-typedef std::vector<EnchStoreItem> EnchStoreList;
-
-class EnchantmentStore
-{
-    std::unordered_map<uint32, EnchStoreList> _data[2];
-
-public:
-    std::unordered_map<uint32, EnchStoreList>& operator[](ItemRandomEnchantmentType type)
+    struct RandomBonusListIds
     {
-        ASSERT(type != ItemRandomEnchantmentType::BonusList, "Random bonus lists do not have their own storage, use Suffix for them");
-        return _data[uint8(type)];
-    }
+        std::vector<int32> BonusListIDs;
+        std::vector<double> Chances;
+    };
 
-} static RandomItemEnch;
+    std::unordered_map<uint32, RandomBonusListIds> _storage;
+}
 
-class EnchantmentItemStore
-{
-public:
-    EnchStoreList _data;
-} static ItemBonusEnch;
-
-void LoadRandomEnchantmentsTable()
+void LoadItemRandomBonusListTemplates()
 {
     uint32 oldMSTime = getMSTime();
 
-    RandomItemEnch[ItemRandomEnchantmentType::Property].clear();
-    RandomItemEnch[ItemRandomEnchantmentType::Suffix].clear();
-    ItemBonusEnch._data.clear();
+    _storage.clear();
 
-    //                                                 0      1     2      3
-    QueryResult result = WorldDatabase.Query("SELECT entry, type, ench, chance FROM item_enchantment_template");
+    //                                               0   1            2
+    QueryResult result = WorldDatabase.Query("SELECT Id, BonusListID, Chance FROM item_random_bonus_list_template");
 
     if (result)
     {
@@ -73,198 +51,115 @@ void LoadRandomEnchantmentsTable()
         {
             Field* fields = result->Fetch();
 
-            uint32 entry = fields[0].GetUInt32();
-            ItemRandomEnchantmentType type = ItemRandomEnchantmentType(fields[1].GetUInt8());
-            uint32 ench = fields[2].GetUInt32();
-            float chance = fields[3].GetFloat();
+            uint32 id = fields[0].GetUInt32();
+            uint32 bonusListId = fields[1].GetUInt32();
+            float chance = fields[2].GetFloat();
 
-            switch (type)
+            if (!sDB2Manager.GetItemBonusList(bonusListId))
             {
-                case ItemRandomEnchantmentType::Property:
-                    if (!sItemRandomPropertiesStore.LookupEntry(ench))
-                    {
-                        TC_LOG_ERROR("sql.sql", "Property %u used in `item_enchantment_template` by entry %u doesn't have exist in ItemRandomProperties.db2", ench, entry);
-                        continue;
-                    }
-                    break;
-                case ItemRandomEnchantmentType::Suffix:
-                    if (!sItemRandomSuffixStore.LookupEntry(ench))
-                    {
-                        TC_LOG_ERROR("sql.sql", "Suffix %u used in `item_enchantment_template` by entry %u doesn't have exist in ItemRandomSuffix.db2", ench, entry);
-                        continue;
-                    }
-                    break;
-                case ItemRandomEnchantmentType::BonusList:
-                    if (!sDB2Manager.GetItemBonusList(ench))
-                    {
-                        TC_LOG_ERROR("sql.sql", "Bonus list %u used in `item_enchantment_template` by entry %u doesn't have exist in ItemBonus.db2", ench, entry);
-                        continue;
-                    }
-                    break;
-                default:
-                    TC_LOG_ERROR("sql.sql", "Invalid random enchantment type specified in `item_enchantment_template` table for `entry` %u `ench` %u", entry, ench);
-                    break;
+                TC_LOG_ERROR("sql.sql", "Bonus list %d used in `item_random_bonus_list_template` by id %u doesn't have exist in ItemBonus.db2", bonusListId, id);
+                continue;
             }
 
             if (chance < 0.000001f || chance > 100.0f)
             {
-                TC_LOG_ERROR("sql.sql", "Random item enchantment for entry %u type %u ench %u has invalid chance %f", entry, uint32(type), ench, chance);
+                TC_LOG_ERROR("sql.sql", "Bonus list %d used in `item_random_bonus_list_template` by id %u has invalid chance %f", bonusListId, id, chance);
                 continue;
             }
 
-            switch (type)
-            {
-                case ItemRandomEnchantmentType::Property:
-                    RandomItemEnch[ItemRandomEnchantmentType::Property][entry].emplace_back(type, ench, chance);
-                    break;
-                case ItemRandomEnchantmentType::Suffix:
-                case ItemRandomEnchantmentType::BonusList: // random bonus lists use RandomSuffix field in ItemSparse.db2
-                    RandomItemEnch[ItemRandomEnchantmentType::Suffix][entry].emplace_back(type, ench, chance);
-                    break;
-                default:
-                    break;
-            }
+            RandomBonusListIds& ids = _storage[id];
+            ids.BonusListIDs.push_back(bonusListId);
+            ids.Chances.push_back(chance);
 
             ++count;
         } while (result->NextRow());
 
-        TC_LOG_INFO("server.loading", ">> Loaded %u Item Enchantment definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+        TC_LOG_INFO("server.loading", ">> Loaded %u Random item bonus list definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     }
     else
-        TC_LOG_ERROR("server.loading", ">> Loaded 0 Item Enchantment definitions. DB table `item_enchantment_template` is empty.");
-
-    //                                      0       1
-    result = WorldDatabase.Query("SELECT BonusID, chance FROM item_enchantment_bonus");
-    if (result)
-    {
-        uint32 count = 0;
-
-        do
-        {
-            Field* fields = result->Fetch();
-
-            uint32 BonusID = fields[0].GetUInt32();
-            float chance = fields[1].GetFloat();
-
-            if (chance < 0.000001f || chance > 100.0f)
-            {
-                TC_LOG_ERROR("sql.sql", "Random item enchantment for BonusID %u has invalid chance %f", BonusID, chance);
-                continue;
-            }
-
-            ItemBonusEnch._data.emplace_back(ItemRandomEnchantmentType::BonusList, BonusID, chance);
-
-            ++count;
-        } while (result->NextRow());
-
-        TC_LOG_INFO("server.loading", ">> Loaded %u Item Enchantment Bonus definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    }
-    else
-        TC_LOG_ERROR("server.loading", ">> Loaded 0 Item Enchantment Bonus definitions. DB table `item_enchantment_bonus` is empty.");
+        TC_LOG_ERROR("server.loading", ">> Loaded 0 Random item bonus list definitions. DB table `item_random_bonus_list_template` is empty.");
 }
 
-ItemRandomEnchantmentId GetItemEnchantMod(int32 entry, ItemRandomEnchantmentType type, uint32 ItemID, uint32 spec_id)
+//uint32 GetItemThirdStat(uint32 ItemID, bool& sosketSlot1, bool& sosketSlot2, bool& sosketSlot3)
+//{
+//    ItemTemplate const* proto = sObjectMgr->GetItemTemplate(ItemID);
+//    if (!proto)
+//        return 0;
+//
+//    EnchStoreList enchList;
+//
+//    if (proto->MaxDurability)
+//    {
+//        if (sosketSlot1)
+//        {
+//            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 40, 22.71235f);
+//            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 41, 22.71235f);
+//            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 42, 22.71235f);
+//        }
+//        if (sosketSlot2)
+//            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 43, 22.71235f);
+//        if (sosketSlot3)
+//            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 1808, 9.1506f);
+//    }
+//    else
+//    {
+//        if (sosketSlot1)
+//        {
+//            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 40, 22.71235f);
+//            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 41, 22.71235f);
+//            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 42, 22.71235f);
+//        }
+//        if (sosketSlot2)
+//            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 1808, 22.71235f);
+//        if (sosketSlot3)
+//            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 1808, 9.1506f);
+//    }
+//
+//    if (enchList.empty())
+//        return 0;
+//
+//    auto selectedItr = Trinity::Containers::SelectRandomWeightedContainerElement(enchList, [](EnchStoreItem const& enchant)
+//    {
+//        return enchant.chance;
+//    });
+//
+//    switch (selectedItr->ench)
+//    {
+//        case 40:
+//        case 41:
+//        case 42:
+//            sosketSlot1 = false;
+//            break;
+//        case 43:
+//            sosketSlot2 = false;
+//            break;
+//        case 1808:
+//            if (!proto->MaxDurability && !sosketSlot3)
+//                sosketSlot2 = false;
+//            sosketSlot3 = false;
+//            break;
+//    }
+//
+//    return selectedItr->ench;
+//}
+
+ItemRandomBonusListId GenerateItemRandomBonusListId(uint32 item_id)
 {
-    ItemTemplate const* itemProto = sObjectMgr->GetItemTemplate(ItemID);
+    ItemTemplate const* itemProto = sObjectMgr->GetItemTemplate(item_id);
     if (!itemProto)
-        return{};
-
-    if (entry == -1)
-        return{};
-
-    EnchStoreList enchList;
-
-    if (type == ItemRandomEnchantmentType::Suffix)
-        enchList = ItemBonusEnch._data;
-
-    if (enchList.empty())
-    {
-        if (!entry)
-            return{};
-
-        auto tab = RandomItemEnch[type].find(entry);
-        if (tab == RandomItemEnch[type].end())
-        {
-            TC_LOG_ERROR("sql.sql", "Item RandomProperty / RandomSuffix id #%u spec_id %u used in `item_template` but it does not have records in `item_enchantment_template` table.", entry, spec_id);
-            return{};
-        }
-        enchList = tab->second;
-    }
-
-    auto selectedItr = Trinity::Containers::SelectRandomWeightedContainerElement(enchList, [type, spec_id](EnchStoreItem const& enchant)
-    {
-        if(spec_id)
-        {
-            if(!CheckSpecProp(enchant.ench, type, spec_id))
-                return 0.0f;
-        }
-        return enchant.chance;
-    });
-
-    return{ selectedItr->type, selectedItr->ench };
-}
-
-uint32 GetItemThirdStat(uint32 ItemID, bool& sosketSlot1, bool& sosketSlot2, bool& sosketSlot3)
-{
-    ItemTemplate const* proto = sObjectMgr->GetItemTemplate(ItemID);
-    if (!proto)
         return 0;
 
-    EnchStoreList enchList;
-
-    if (proto->MaxDurability)
-    {
-        if (sosketSlot1)
-        {
-            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 40, 22.71235f);
-            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 41, 22.71235f);
-            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 42, 22.71235f);
-        }
-        if (sosketSlot2)
-            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 43, 22.71235f);
-        if (sosketSlot3)
-            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 1808, 9.1506f);
-    }
-    else
-    {
-        if (sosketSlot1)
-        {
-            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 40, 22.71235f);
-            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 41, 22.71235f);
-            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 42, 22.71235f);
-        }
-        if (sosketSlot2)
-            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 1808, 22.71235f);
-        if (sosketSlot3)
-            enchList.emplace_back(ItemRandomEnchantmentType::BonusListAddition, 1808, 9.1506f);
-    }
-
-    if (enchList.empty())
+    if (!itemProto->RandomBonusListTemplateId)
         return 0;
 
-    auto selectedItr = Trinity::Containers::SelectRandomWeightedContainerElement(enchList, [](EnchStoreItem const& enchant)
+    auto tab = _storage.find(itemProto->RandomBonusListTemplateId);
+    if (tab == _storage.end())
     {
-        return enchant.chance;
-    });
-
-    switch (selectedItr->ench)
-    {
-        case 40:
-        case 41:
-        case 42:
-            sosketSlot1 = false;
-            break;
-        case 43:
-            sosketSlot2 = false;
-            break;
-        case 1808:
-            if (!proto->MaxDurability && !sosketSlot3)
-                sosketSlot2 = false;
-            sosketSlot3 = false;
-            break;
+        TC_LOG_ERROR("sql.sql", "Item RandomBonusListTemplateId id #%u used in `item_template_addon` but it does not have records in `item_random_bonus_list_template` table.", itemProto->RandomBonusListTemplateId);
+        return 0;
     }
 
-    return selectedItr->ench;
+    return *Trinity::Containers::SelectRandomWeightedContainerElement(tab->second.BonusListIDs, tab->second.Chances);
 }
 
 uint32 GenerateEnchSuffixFactor(ItemTemplate const* itemProto, uint32 level)
@@ -349,60 +244,60 @@ uint32 GetRandomPropertyPoints(uint32 itemLevel, uint32 quality, uint32 inventor
     return 0;
 }
 
-bool CheckSpecProp(uint32 ench, ItemRandomEnchantmentType type, uint32 SpecID)
-{
-    if (type == ItemRandomEnchantmentType::Property)
-    {
-        if(ItemRandomPropertiesEntry const* random_id = sItemRandomPropertiesStore.LookupEntry(ench))
-        {
-            for (auto enchantmentID : random_id->Enchantment)
-            {
-                if (SpellItemEnchantmentEntry const* pEnchant = sSpellItemEnchantmentStore.LookupEntry(enchantmentID))
-                {
-                    for (uint8 s = 0; s < MAX_ITEM_ENCHANTMENT_EFFECTS; ++s)
-                    {
-                        if (pEnchant->Effect[s] != ITEM_ENCHANTMENT_TYPE_STAT)
-                            continue;
-
-                        if (!CheckStatsSpec(pEnchant->EffectArg[s], SpecID))
-                            return false;
-                    }
-                }
-            }
-        }
-    }
-    else if (type == ItemRandomEnchantmentType::Suffix)
-    {
-        if(ItemRandomSuffixEntry const* random_id = sItemRandomSuffixStore.LookupEntry(ench))
-        {
-            for (auto enchantmentID : random_id->Enchantment)
-            {
-                if (SpellItemEnchantmentEntry const* pEnchant = sSpellItemEnchantmentStore.LookupEntry(enchantmentID))
-                {
-                    for (uint8 s = 0; s < MAX_ITEM_ENCHANTMENT_EFFECTS; ++s)
-                    {
-                        if (pEnchant->Effect[s] != ITEM_ENCHANTMENT_TYPE_STAT)
-                            continue;
-
-                        if (!CheckStatsSpec(pEnchant->EffectArg[s], SpecID))
-                            return false;
-                    }
-                }
-            }
-        }
-    }
-    else if (type == ItemRandomEnchantmentType::BonusList)
-    {
-        if (DB2Manager::ItemBonusList const* bonuses = sDB2Manager.GetItemBonusList(ench))
-        {
-            for (ItemBonusEntry const* itemBonus : *bonuses)
-                if (itemBonus->Type == ITEM_BONUS_STAT)
-                    if (!CheckStatsSpec(itemBonus->Value[0], SpecID))
-                        return false;
-        }
-    }
-    return true;
-}
+//bool CheckSpecProp(uint32 ench, ItemRandomEnchantmentType type, uint32 SpecID)
+//{
+//    if (type == ItemRandomEnchantmentType::Property)
+//    {
+//        if(ItemRandomPropertiesEntry const* random_id = sItemRandomPropertiesStore.LookupEntry(ench))
+//        {
+//            for (auto enchantmentID : random_id->Enchantment)
+//            {
+//                if (SpellItemEnchantmentEntry const* pEnchant = sSpellItemEnchantmentStore.LookupEntry(enchantmentID))
+//                {
+//                    for (uint8 s = 0; s < MAX_ITEM_ENCHANTMENT_EFFECTS; ++s)
+//                    {
+//                        if (pEnchant->Effect[s] != ITEM_ENCHANTMENT_TYPE_STAT)
+//                            continue;
+//
+//                        if (!CheckStatsSpec(pEnchant->EffectArg[s], SpecID))
+//                            return false;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    else if (type == ItemRandomEnchantmentType::Suffix)
+//    {
+//        if(ItemRandomSuffixEntry const* random_id = sItemRandomSuffixStore.LookupEntry(ench))
+//        {
+//            for (auto enchantmentID : random_id->Enchantment)
+//            {
+//                if (SpellItemEnchantmentEntry const* pEnchant = sSpellItemEnchantmentStore.LookupEntry(enchantmentID))
+//                {
+//                    for (uint8 s = 0; s < MAX_ITEM_ENCHANTMENT_EFFECTS; ++s)
+//                    {
+//                        if (pEnchant->Effect[s] != ITEM_ENCHANTMENT_TYPE_STAT)
+//                            continue;
+//
+//                        if (!CheckStatsSpec(pEnchant->EffectArg[s], SpecID))
+//                            return false;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    else if (type == ItemRandomEnchantmentType::BonusList)
+//    {
+//        if (DB2Manager::ItemBonusList const* bonuses = sDB2Manager.GetItemBonusList(ench))
+//        {
+//            for (ItemBonusEntry const* itemBonus : *bonuses)
+//                if (itemBonus->Type == ITEM_BONUS_STAT)
+//                    if (!CheckStatsSpec(itemBonus->Value[0], SpecID))
+//                        return false;
+//        }
+//    }
+//    return true;
+//}
 
 bool CheckStatsSpec(uint32 StatType, uint32 SpecID)
 {

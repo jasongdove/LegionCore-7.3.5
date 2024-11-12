@@ -514,10 +514,9 @@ class Item : public Object
 
         int32 GetItemRandomPropertyId() const;
         uint32 GetItemSuffixFactor() const;
-        void SetItemRandomProperties(ItemRandomEnchantmentId const& randomPropId);
         void UpdateItemSuffixFactor();
-        static ItemRandomEnchantmentId GenerateItemRandomPropertyId(uint32 item_id, uint32 spec_id = 0);
-        ItemRandomEnchantmentId GetItemRandomEnchantmentId() const;
+        ItemRandomBonusListId GetItemRandomBonusListId() const { return m_randomBonusListId; }
+        void SetItemRandomBonusList(ItemRandomBonusListId bonusListId);
         void SetEnchantment(EnchantmentSlot slot, uint32 id, uint32 duration, uint32 charges, ObjectGuid = ObjectGuid::Empty);
         void SetEnchantmentDuration(EnchantmentSlot slot, uint32 duration, Player* owner);
         void SetEnchantmentCharges(EnchantmentSlot slot, uint32 charges);
@@ -678,7 +677,7 @@ class Item : public Object
         uint32 m_paidExtendedCost;
         bool DonateItem = false;
         GuidSet allowedGUIDs;
-        ItemRandomEnchantmentId m_randomEnchantment;
+        ItemRandomBonusListId m_randomBonusListId;    // store separately to easily find which bonus list is the one randomly given for stat rolling
         uint32 m_scaleLvl;
         uint32 m_artIlvlBonus;
         ObjectGuid m_childItem;

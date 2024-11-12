@@ -433,8 +433,7 @@ void Item::SaveToDB(CharacterDatabaseTransaction& trans)
             }
             stmt->setString(++index, ssEnchants.str());
 
-            stmt->setUInt8(++index, uint8(GetItemRandomEnchantmentId().Type));
-            stmt->setUInt32(++index, GetItemRandomEnchantmentId().Id);
+            stmt->setUInt32(++index, GetItemRandomBonusListId());
             stmt->setUInt16(++index, GetUInt32Value(ITEM_FIELD_DURABILITY));
             stmt->setUInt32(++index, GetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME));
             stmt->setString(++index, ""); // m_text
@@ -706,17 +705,17 @@ bool Item::LoadFromDB(ObjectGuid::LowType const& guid, ObjectGuid const& owner_g
 {
     //! WARNING! IF CHANGE FIELD ORDER - DO IT ON GuildMgr::LoadGuilds FOR GB Loading Items, AND CHAR_SEL_MAILITEMS CHAR_SEL_AUCTION_ITEMS 
 
-    //0     1          2            3                4      5         6        7      8             9                   10                11          12          13
-    //guid, itemEntry, creatorGuid, giftCreatorGuid, count, duration, charges, flags, enchantments, randomPropertyType, randomPropertyId, durability, playedTime, text,
-    //14         15                  16                  17              18                  19            20              21              22              23               24               25
+    //0     1          2            3                4      5         6        7      8             9                   10        11          12
+    //guid, itemEntry, creatorGuid, giftCreatorGuid, count, duration, charges, flags, enchantments, randomBonusListId, durability, playedTime, text,
+    //13         14                  15                  16              17                  18            19              20              21              22               23               24
     //upgradeId, battlePetSpeciesId, battlePetBreedData, battlePetLevel, battlePetDisplayId, bonusListIDs, challengeMapID, challengeLevel, challengeAffix, challengeAffix1, challengeAffix2, challengeKeyIsCharded
-    //26                              27                           28                           29                           30
+    //25                              26                           27                           28                           29
     //itemModifiedAppearanceAllSpecs, itemModifiedAppearanceSpec1, itemModifiedAppearanceSpec2, itemModifiedAppearanceSpec3, itemModifiedAppearanceSpec4,
-    //31                            32                         33                         34                         35
+    //30                            31                         32                         33                         34
     //spellItemEnchantmentAllSpecs, spellItemEnchantmentSpec1, spellItemEnchantmentSpec2, spellItemEnchantmentSpec3, spellItemEnchantmentSpec4,
-    //36          37           38           39                40          41           42           43                44          45           46           47                
+    //35          36           37           38                39          40           41           42                43          44           45           46
     //gemItemId1, gemBonuses1, gemContext1, gemScalingLevel1, gemItemId2, gemBonuses2, gemContext2, gemScalingLevel2, gemItemId3, gemBonuses3, gemContext3, gemScalingLevel3,
-    //48                 49                      50            51                   52             53
+    //47                 48                      49            50                   51             52
     //fixedScalingLevel, artifactKnowledgeLevel, xp, artifactAppearanceId, dungeonEncounterID, contextID FROM item_instance
 
     // create item before any checks for store correct guid
@@ -774,18 +773,9 @@ bool Item::LoadFromDB(ObjectGuid::LowType const& guid, ObjectGuid const& owner_g
     SetUInt32Value(ITEM_FIELD_DYNAMIC_FLAGS, itemFlags);
 
     _LoadIntoDataField(fields[8].GetString(), ITEM_FIELD_ENCHANTMENT, MAX_ENCHANTMENT_SLOT * MAX_ENCHANTMENT_OFFSET);
-    m_randomEnchantment.Type = ItemRandomEnchantmentType(fields[9].GetUInt8());
-    m_randomEnchantment.Id = fields[10].GetUInt32();
-    if (m_randomEnchantment.Type == ItemRandomEnchantmentType::Property)
-        SetUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID, m_randomEnchantment.Id);
-    else if (m_randomEnchantment.Type == ItemRandomEnchantmentType::Suffix)
-    {
-        SetInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID, -int32(m_randomEnchantment.Id));
-        UpdateItemSuffixFactor();
-    }
+    m_randomBonusListId = fields[9].GetUInt32();
 
-
-    uint32 durability = fields[11].GetUInt16();
+    uint32 durability = fields[10].GetUInt16();
     SetUInt32Value(ITEM_FIELD_DURABILITY, durability);
     // update max durability (and durability) if need
     SetUInt32Value(ITEM_FIELD_MAX_DURABILITY, proto->MaxDurability);
@@ -795,10 +785,10 @@ bool Item::LoadFromDB(ObjectGuid::LowType const& guid, ObjectGuid const& owner_g
         need_save = true;
     }
 
-    SetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME, fields[12].GetUInt32());
-    SetText(fields[13].GetString());
+    SetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME, fields[11].GetUInt32());
+    SetText(fields[12].GetString());
 
-    uint32 upgradeId = fields[14].GetUInt32();
+    uint32 upgradeId = fields[13].GetUInt32();
     if (auto const& v = sObjectMgr->GetItemTemplate(entry))
     {
         if ((v->GetFlags3() & ITEM_FLAG3_ITEM_CAN_BE_UPGRADED) != 0)
@@ -817,12 +807,12 @@ bool Item::LoadFromDB(ObjectGuid::LowType const& guid, ObjectGuid const& owner_g
 
     SetModifier(ITEM_MODIFIER_UPGRADE_ID, upgradeId);
 
-    SetModifier(ITEM_MODIFIER_BATTLE_PET_SPECIES_ID, fields[15].GetUInt32());
-    SetModifier(ITEM_MODIFIER_BATTLE_PET_BREED_DATA, fields[16].GetUInt32());
-    SetModifier(ITEM_MODIFIER_BATTLE_PET_LEVEL, fields[17].GetUInt16());
-    SetModifier(ITEM_MODIFIER_BATTLE_PET_DISPLAY_ID, fields[18].GetUInt32());
+    SetModifier(ITEM_MODIFIER_BATTLE_PET_SPECIES_ID, fields[14].GetUInt32());
+    SetModifier(ITEM_MODIFIER_BATTLE_PET_BREED_DATA, fields[15].GetUInt32());
+    SetModifier(ITEM_MODIFIER_BATTLE_PET_LEVEL, fields[16].GetUInt16());
+    SetModifier(ITEM_MODIFIER_BATTLE_PET_DISPLAY_ID, fields[17].GetUInt32());
 
-    Tokenizer tokenListIDs(fields[19].GetString(), ' ');
+    Tokenizer tokenListIDs(fields[18].GetString(), ' ');
     std::vector<uint32> bonusListIDs;
     for (char const* token : tokenListIDs)
         bonusListIDs.push_back(uint32(atoul(token)));
@@ -830,47 +820,47 @@ bool Item::LoadFromDB(ObjectGuid::LowType const& guid, ObjectGuid const& owner_g
     for (auto& token : bonusListIDs)
         AddBonuses(token);
 
-    SetModifier(ITEM_MODIFIER_TRANSMOG_APPEARANCE_ALL_SPECS, fields[20].GetUInt32());
-    SetModifier(ITEM_MODIFIER_TRANSMOG_APPEARANCE_SPEC_1, fields[21].GetUInt32());
-    SetModifier(ITEM_MODIFIER_TRANSMOG_APPEARANCE_SPEC_2, fields[22].GetUInt32());
-    SetModifier(ITEM_MODIFIER_TRANSMOG_APPEARANCE_SPEC_3, fields[23].GetUInt32());
-    SetModifier(ITEM_MODIFIER_TRANSMOG_APPEARANCE_SPEC_4, fields[24].GetUInt32());
+    SetModifier(ITEM_MODIFIER_TRANSMOG_APPEARANCE_ALL_SPECS, fields[19].GetUInt32());
+    SetModifier(ITEM_MODIFIER_TRANSMOG_APPEARANCE_SPEC_1, fields[20].GetUInt32());
+    SetModifier(ITEM_MODIFIER_TRANSMOG_APPEARANCE_SPEC_2, fields[21].GetUInt32());
+    SetModifier(ITEM_MODIFIER_TRANSMOG_APPEARANCE_SPEC_3, fields[22].GetUInt32());
+    SetModifier(ITEM_MODIFIER_TRANSMOG_APPEARANCE_SPEC_4, fields[23].GetUInt32());
 
-    SetModifier(ITEM_MODIFIER_ENCHANT_ILLUSION_ALL_SPECS, fields[25].GetUInt32());
-    SetModifier(ITEM_MODIFIER_ENCHANT_ILLUSION_SPEC_1, fields[26].GetUInt32());
-    SetModifier(ITEM_MODIFIER_ENCHANT_ILLUSION_SPEC_2, fields[27].GetUInt32());
-    SetModifier(ITEM_MODIFIER_ENCHANT_ILLUSION_SPEC_3, fields[28].GetUInt32());
-    SetModifier(ITEM_MODIFIER_ENCHANT_ILLUSION_SPEC_4, fields[29].GetUInt32());
+    SetModifier(ITEM_MODIFIER_ENCHANT_ILLUSION_ALL_SPECS, fields[24].GetUInt32());
+    SetModifier(ITEM_MODIFIER_ENCHANT_ILLUSION_SPEC_1, fields[25].GetUInt32());
+    SetModifier(ITEM_MODIFIER_ENCHANT_ILLUSION_SPEC_2, fields[26].GetUInt32());
+    SetModifier(ITEM_MODIFIER_ENCHANT_ILLUSION_SPEC_3, fields[27].GetUInt32());
+    SetModifier(ITEM_MODIFIER_ENCHANT_ILLUSION_SPEC_4, fields[28].GetUInt32());
 
     uint32 const gemFields = 4;
     ItemDynamicFieldGems gemData[MAX_GEM_SOCKETS];
     memset(gemData, 0, sizeof(gemData));
     for (uint32 i = 0; i < MAX_GEM_SOCKETS; ++i)
     {
-        gemData[i].ItemId = fields[30 + i * gemFields].GetUInt32();
-        Tokenizer gemBonusListIDs(fields[31 + i * gemFields].GetString(), ' ');
+        gemData[i].ItemId = fields[29 + i * gemFields].GetUInt32();
+        Tokenizer gemBonusListIDs(fields[30 + i * gemFields].GetString(), ' ');
         uint32 b = 0;
         for (char const* token : gemBonusListIDs)
             if (uint32 bonusListID = atoul(token))
                 gemData[i].BonusListIDs[b++] = bonusListID;
 
-        gemData[i].Context = fields[32 + i * gemFields].GetUInt8();
+        gemData[i].Context = fields[31 + i * gemFields].GetUInt8();
         if (gemData[i].ItemId)
-            SetGem(i, &gemData[i], fields[33 + i * gemFields].GetUInt32());
+            SetGem(i, &gemData[i], fields[32 + i * gemFields].GetUInt32());
     }
 
-    SetModifier(ITEM_MODIFIER_SCALING_STAT_DISTRIBUTION_FIXED_LEVEL, fields[42].GetUInt32());
-    SetModifier(ITEM_MODIFIER_ARTIFACT_KNOWLEDGE_LEVEL, fields[43].GetUInt32());
+    SetModifier(ITEM_MODIFIER_SCALING_STAT_DISTRIBUTION_FIXED_LEVEL, fields[41].GetUInt32());
+    SetModifier(ITEM_MODIFIER_ARTIFACT_KNOWLEDGE_LEVEL, fields[42].GetUInt32());
 
-    SetUInt64Value(ITEM_FIELD_ARTIFACT_XP, fields[44].GetUInt64());
-    SetModifier(ITEM_MODIFIER_ARTIFACT_APPEARANCE_ID, fields[45].GetUInt32());
-    if (ArtifactAppearanceEntry const* artifactAppearance = sArtifactAppearanceStore.LookupEntry(fields[45].GetUInt32()))
+    SetUInt64Value(ITEM_FIELD_ARTIFACT_XP, fields[43].GetUInt64());
+    SetModifier(ITEM_MODIFIER_ARTIFACT_APPEARANCE_ID, fields[44].GetUInt32());
+    if (ArtifactAppearanceEntry const* artifactAppearance = sArtifactAppearanceStore.LookupEntry(fields[44].GetUInt32()))
         SetAppearanceModId(artifactAppearance->ItemAppearanceModifierID);
 
-    SetModifier(ITEM_MODIFIER_ARTIFACT_TIER, fields[46].GetUInt32());
-    dungeonEncounterID = fields[47].GetUInt32();
-    SetUInt32Value(ITEM_FIELD_CONTEXT, fields[48].GetUInt8());
-    createdTime = fields[49].GetUInt32();
+    SetModifier(ITEM_MODIFIER_ARTIFACT_TIER, fields[45].GetUInt32());
+    dungeonEncounterID = fields[46].GetUInt32();
+    SetUInt32Value(ITEM_FIELD_CONTEXT, fields[47].GetUInt8());
+    createdTime = fields[48].GetUInt32();
 
     // Remove bind flag for items vs NO_BIND set
     if (IsSoulBound() && GetBonding() == NO_BIND)
@@ -1049,64 +1039,12 @@ uint32 Item::GetItemSuffixFactor() const
     return GetUInt32Value(ITEM_FIELD_PROPERTY_SEED);
 }
 
-ItemRandomEnchantmentId Item::GenerateItemRandomPropertyId(uint32 item_id, uint32 spec_id)
+void Item::SetItemRandomBonusList(ItemRandomBonusListId bonusListId)
 {
-    ItemTemplate const* itemProto = sObjectMgr->GetItemTemplate(item_id);
-    if (!itemProto || !itemProto->HasEnchantment())
-        return{};
-
-    if (itemProto->GetRandomSelect())
-        return GetItemEnchantMod(itemProto->GetRandomSelect(), ItemRandomEnchantmentType::Property, item_id, spec_id);
-    return GetItemEnchantMod(itemProto->GetItemRandomSuffixGroupID(), ItemRandomEnchantmentType::Suffix, item_id, spec_id);
-}
-
-ItemRandomEnchantmentId Item::GetItemRandomEnchantmentId() const
-{
-    return m_randomEnchantment;
-}
-
-void Item::SetItemRandomProperties(ItemRandomEnchantmentId const& randomPropId)
-{
-    if (!randomPropId.Id)
+    if (!bonusListId)
         return;
 
-    switch (randomPropId.Type)
-    {
-        case ItemRandomEnchantmentType::Property:
-            if (auto const& entry = sItemRandomPropertiesStore.LookupEntry(randomPropId.Id))
-            {
-                if (GetUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID) != randomPropId.Id)
-                {
-                    SetUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID, randomPropId.Id);
-                    SetState(ITEM_CHANGED, GetOwner());
-                }
-                for (uint32 i = PROP_ENCHANTMENT_SLOT_0; i <= PROP_ENCHANTMENT_SLOT_4; ++i)
-                    SetEnchantment(EnchantmentSlot(i), entry->Enchantment[i - PROP_ENCHANTMENT_SLOT_0], 0, 0);
-            }
-            m_randomEnchantment = randomPropId;
-            break;
-        case ItemRandomEnchantmentType::Suffix:
-            if (auto const& entry = sItemRandomSuffixStore.LookupEntry(randomPropId.Id))
-            {
-                if (GetInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID) != -int32(randomPropId.Id) || !GetItemSuffixFactor())
-                {
-                    SetInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID, -int32(randomPropId.Id));
-                    UpdateItemSuffixFactor();
-                    SetState(ITEM_CHANGED, GetOwner());
-                }
-
-                for (uint32 i = PROP_ENCHANTMENT_SLOT_0; i <= PROP_ENCHANTMENT_SLOT_4; ++i)
-                    SetEnchantment(EnchantmentSlot(i), entry->Enchantment[i - PROP_ENCHANTMENT_SLOT_0], 0, 0);
-            }
-            m_randomEnchantment = randomPropId;
-            break;
-        case ItemRandomEnchantmentType::BonusList:
-        case ItemRandomEnchantmentType::BonusListAddition:
-            AddBonuses(randomPropId.Id);
-            break;
-        default:
-            break;
-    }
+    AddBonuses(bonusListId);
 }
 
 void Item::UpdateItemSuffixFactor()
@@ -1850,9 +1788,9 @@ Item* Item::CloneItem(uint32 count, Player const* player) const
     for (uint32 bonusListID : GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUS_LIST_IDS))
         newItem->AddBonuses(bonusListID);
 
-    // player CAN be NULL in which case we must not update random properties because that accesses player's item update queue
+    // player CAN be NULL in which case we must not update random bonus list because that accesses player's item update queue
     if (player)
-        newItem->SetItemRandomProperties(GetItemRandomEnchantmentId());
+        newItem->SetItemRandomBonusList(GetItemRandomBonusListId());
 
     return newItem;
 }

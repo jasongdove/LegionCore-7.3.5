@@ -195,8 +195,7 @@ class Roll
         {
             ObjectGuid itemGUID;
             uint32 ItemID = 0;
-            uint32 RandomPropertiesSeed = 0;
-            ItemRandomEnchantmentId RandomPropertiesID;
+            ItemRandomBonusListId RandomBonusListId;
 
             struct
             {
