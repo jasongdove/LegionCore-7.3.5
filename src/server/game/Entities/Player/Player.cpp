@@ -32585,7 +32585,7 @@ bool Player::AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore cons
     for (uint32 i = 0; i < max_slot; ++i)
     {
         LootItem* lootItem = loot.LootItemInSlot(i, this);
-        if (!loot.AllowedForPlayer(this, lootItem->item.ItemID, lootItem->type, lootItem->needs_quest, lootItem))
+        if (!loot.AllowedForPlayer(this, lootItem->item.ItemID, lootItem->item.CurrencyID, lootItem->type, lootItem->needs_quest, lootItem))
             continue;
 
         if (lootItem->currency)
