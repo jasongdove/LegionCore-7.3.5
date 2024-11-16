@@ -3770,10 +3770,10 @@ void Player::SetXP(uint32 xp)
 
 // Give xp when gathering herbalism and mininh
 // Formulas found here : http://www.wowwiki.com/Formulas:Gather_XP
-void Player::GiveGatheringXP()
+void Player::GiveGatheringXP(uint32 xpLevel)
 {
     uint32 level = getLevel();
-    uint32 gain = 0;
+    float gain = 0;
 
     if (level >= sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
         return;
@@ -3791,20 +3791,34 @@ void Player::GiveGatheringXP()
     else if (level > 84 && level < 90)
         gain = 1720 * level - 138800; // (7400 - 14280),  Guessed, TODO : find blizzlike formula (7400 - 14280)
 
-    gain /= 10.0f;
+    // not perfect, but better than a flat 10%
+    int32 difference = level - xpLevel;
+    if (difference < 0)
+        gain *= std::max(0.1f, 1.0f + difference * 0.026f); // 2.6% penalty per level when player level < node level
+    else if (difference == 6)
+        gain *= 0.8f;
+    else if (difference == 7)
+        gain *= 0.6f;
+    else if (difference == 8)
+        gain *= 0.4f;
+    else if (difference == 9)
+        gain *= 0.2f;
+    else if (difference > 9)
+        gain *= 0.1f;
 
     float GatheringXpRate = 1;
 
-    if (float rate = GetSession()->GetPersonalXPRate())
+    float rate = GetSession()->GetPersonalXPRate();
+    if (rate > 0)
         GatheringXpRate = rate;
-    else if(GetPersonnalXpRate())
+    else if(GetPersonnalXpRate() > 0)
         GatheringXpRate = GetPersonnalXpRate();
     else
         GatheringXpRate = sWorld->getRate(RATE_XP_GATHERING);
 
     gain *= GatheringXpRate;
 
-    GiveXP(gain, NULL);
+    GiveXP(uint32(gain), nullptr);
 }
 
 // Update player to next level

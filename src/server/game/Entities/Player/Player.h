@@ -1620,7 +1620,7 @@ class Player : public Unit, public GridObject<Player>
 
         void GiveXP(uint32 xp, Unit* victim, float groupRate = 1.0f);
         void SetXP(uint32 xp);
-        void GiveGatheringXP();
+        void GiveGatheringXP(uint32 xpLevel);
         void GiveLevel(uint8 level);
 
         void InitStatsForLevel(bool reapplyMods = false);

@@ -3480,6 +3480,7 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
 
     Player* player = m_caster->ToPlayer();
 
+    uint32 xpLevel = 0;
     uint32 lockId = 0;
     ObjectGuid guid;
 
@@ -3544,6 +3545,7 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
             return;
 
         lockId = goInfo->GetLockId();
+        xpLevel = goInfo->GetXpLevel();
         guid = gameObjTarget->GetGUID();
 
         if (auto const& goTemplate = sObjectMgr->GetGameObjectTemplate(gameObjTarget->GetEntry()))
@@ -3595,7 +3597,7 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
                     player->UpdateGatherSkill(skillId, pureSkillValue, reqSkillValue, 1, gameObjTarget);
                     gameObjTarget->AddToSkillupList(player->GetGUID());
                     if (skillId == SKILL_MINING || skillId == SKILL_HERBALISM || skillId == SKILL_ARCHAEOLOGY)
-                        player->GiveGatheringXP();
+                        player->GiveGatheringXP(xpLevel);
                 }
             }
             else if (itemTarget)
