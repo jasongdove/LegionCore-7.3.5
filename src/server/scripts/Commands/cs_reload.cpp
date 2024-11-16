@@ -453,6 +453,7 @@ public:
             cInfo->GossipMenuId       = fields[index++].GetUInt32();
             cInfo->minlevel           = fields[index++].GetUInt8();
             cInfo->maxlevel           = fields[index++].GetUInt8();
+            cInfo->HealthScalingExpansion = fields[index++].GetUInt32();
             cInfo->faction            = fields[index++].GetUInt16();
             cInfo->npcflag            = fields[index++].GetUInt32();
             cInfo->speed_walk         = fields[index++].GetFloat();

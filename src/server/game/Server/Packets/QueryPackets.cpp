@@ -71,8 +71,8 @@ WorldPacket const* WorldPackets::Query::QueryCreatureResponse::Write()
 
         _worldPacket << static_cast<int32>(Stats.QuestItems.size());
         _worldPacket << Stats.CreatureMovementInfoID;
+        _worldPacket << Stats.HealthScalingExpansion;
         _worldPacket << Stats.RequiredExpansion;
-        _worldPacket << Stats.FlagQuest;
         _worldPacket << Stats.VignetteID;
 
         if (!Stats.Title.empty())

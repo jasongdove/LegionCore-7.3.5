@@ -121,6 +121,15 @@ struct CreatureSpell
 };
 typedef std::unordered_map<uint32, CreatureSpell> CreatureSpellList;
 
+struct CreatureLevelScaling
+{
+    uint16 MinLevel;
+    uint16 MaxLevel;
+    int16 DeltaLevelMin;
+    int16 DeltaLevelMax;
+    uint16 Duration;
+};
+
 // from `creature_template` table
 struct CreatureTemplate
 {
@@ -141,6 +150,7 @@ struct CreatureTemplate
     uint32 Classification;
     uint32 MovementInfoID;
     uint32 Family;                                         // enum CreatureFamily
+    int32 HealthScalingExpansion;
     int8   RequiredExpansion;
     uint32 TypeFlags[2];                                   // enum CreatureTypeFlags[0] mask values [1] unk for now
     uint32 Type;                                           // enum CreatureType values
@@ -180,13 +190,10 @@ struct CreatureTemplate
     uint32 unit_flags2 = 2048;                             // enum UnitFlags2 mask values
     uint32 unit_flags3 = 0;                                // enum UnitFlags3 mask values
     uint32 VehicleId = 0;
-    uint16 ScaleLevelDuration = 0;
     uint16 SandboxScalingID = 0;
     uint8 maxlevel = 1;
     uint8 minlevel = 1;
-    uint8 ScaleLevelMin = 0;
-    uint8 ScaleLevelMax = 0;
-    int16 ScaleLevelDelta = 0;
+    Optional<CreatureLevelScaling> levelScaling;
     int8 ControllerID = 0;
     float dmg_multiplier = 1.0f;
     float HoverHeight = 1.0f;
@@ -598,6 +605,15 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         bool HasScalableLevels() const;
         uint8 GetLevelForTarget(WorldObject const* target) const override;
 
+        uint64 GetMaxHealthByLevel(uint8 level) const;
+        float GetHealthMultiplierForTarget(WorldObject const* target) const override;
+
+        float GetBaseDamageForLevel(uint8 level) const;
+        float GetDamageMultiplierForTarget(WorldObject const* target) const override;
+
+        float GetBaseArmorForLevel(uint8 level) const;
+        float GetArmorMultiplierForTarget(WorldObject const* target) const override;
+
         bool IsInEvadeMode() const { return HasUnitState(UNIT_STATE_EVADE); }
 
         bool AIM_Initialize(CreatureAI* ai = nullptr);
@@ -827,6 +843,8 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         float GetFollowDistance() const override { return m_followDistance; }
         void SetFollowDistance(float dist) { m_followDistance = dist; }
 
+        bool CanGiveExperience() const;
+
         void ForcedDespawn(uint32 timeMSToDespawn = 0, Seconds const& forceRespawnTimer = Seconds(0));
 
         void SetLockAI(bool lock) { m_AI_locked = lock; }
@@ -860,9 +878,6 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         uint32 disableAffix;
         bool IsAffixDisabled(uint8 affixe) const { return (disableAffix & (1 << affixe)) != 0; }
 
-        uint8 ScaleLevelMin = 0;
-        uint8 ScaleLevelMax = 0;
-        uint32 GetScalingID();
         bool m_CanCallAssistance;
         uint8 m_callAssistanceText;
 

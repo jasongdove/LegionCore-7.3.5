@@ -1213,13 +1213,13 @@ class Unit : public WorldObject
         bool IsVehicle() const  { return (m_unitTypeMask & UNIT_MASK_VEHICLE) != 0; }
         bool isMinion() const   { return (m_unitTypeMask & UNIT_MASK_MINION) != 0; }
         bool isTrainingDummy() const { return m_unitTypeMask & UNIT_MASK_TRAINING_DUMMY; }
+        bool IsCritter() const { return GetCreatureType() == CREATURE_TYPE_CRITTER; }
         bool isAnySummons() const;
         bool CanVehicleAI() const;
 
         uint8 getLevel() const;
         uint8 GetLevelForTarget(WorldObject const* /*target*/) const override { return getLevel(); }
         uint8 GetEffectiveLevel() const;
-        uint8 getLevelForXPReward(Player const* player) const;
         float getScaleForTarget(int32 delta) const;
         uint32 GetDamageFromLevelScale(Unit* target, uint32 damage);
         void SetLevel(uint8 lvl);
@@ -1272,6 +1272,10 @@ class Unit : public WorldObject
         void SetFullHealth() { SetHealth(GetMaxHealth()); }
         int64 ModifyHealth(int64 val, Unit* victim = nullptr, uint32 spellId = 0);
         int64 GetHealthGain(int64 dVal);
+
+        virtual float GetHealthMultiplierForTarget(WorldObject const* /*target*/) const { return 1.0f; }
+        virtual float GetDamageMultiplierForTarget(WorldObject const* /*target*/) const { return 1.0f; }
+        virtual float GetArmorMultiplierForTarget(WorldObject const* /*target*/) const { return 1.0f; }
 
         Powers getPowerType() const { return Powers(GetUInt32Value(UNIT_FIELD_DISPLAY_POWER)); }
         void SetFieldPowerType(uint32 powerType) { SetUInt32Value(UNIT_FIELD_DISPLAY_POWER, powerType); }

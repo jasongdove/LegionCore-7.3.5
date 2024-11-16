@@ -732,6 +732,7 @@ class ObjectMgr
         void LoadCreatureLocales();
         void LoadCreatureDifficultyStat();
         void LoadCreatureTemplates();
+        void LoadCreatureScalingData();
         void LoadWDBCreatureTemplates();
         void LoadCreatureTemplateAddons();
         void CheckCreatureTemplate(CreatureTemplate const* cInfo);

@@ -984,7 +984,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
     //health, mana, armor and resistance
     if(!InitBaseStat(creature_ID, damageSet))
     {
-        SetCreateHealth(stats->BaseHealth[cinfo->RequiredExpansion]);
+        SetCreateHealth(stats->BaseHealth[cinfo->HealthScalingExpansion]);
         SetCreateMana(stats->GenerateMana(cinfo));
         SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
     }

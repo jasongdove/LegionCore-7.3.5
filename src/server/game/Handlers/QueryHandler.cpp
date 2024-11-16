@@ -89,6 +89,7 @@ void WorldSession::HandleCreatureQuery(WorldPackets::Query::QueryCreature& packe
         stats.EnergyMulti = creatureInfo->PowerMulti;
         stats.Leader = creatureInfo->Leader;
         stats.CreatureMovementInfoID = creatureInfo->MovementInfoID;
+        stats.HealthScalingExpansion = creatureInfo->HealthScalingExpansion;
         stats.RequiredExpansion = creatureInfo->RequiredExpansion;
         stats.VignetteID = creatureInfo->VignetteID;
         for (auto questItem : creatureInfo->QuestItem)

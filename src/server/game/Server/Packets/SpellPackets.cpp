@@ -59,8 +59,8 @@ namespace WorldPackets
             TargetLevel = target->getLevel();
             Expansion = creatureTemplate->RequiredExpansion;
             Class = creatureTemplate->unit_class;
-            TargetMinScalingLevel = creatureTemplate->ScaleLevelMin;
-            TargetMaxScalingLevel = creatureTemplate->ScaleLevelMax;
+            TargetMinScalingLevel = creatureTemplate->levelScaling->MinLevel;
+            TargetMaxScalingLevel = creatureTemplate->levelScaling->MaxLevel;
             TargetScalingLevelDelta = int8(attacker->GetInt32Value(UNIT_FIELD_SCALING_LEVEL_DELTA));
             return true;
         }
@@ -78,8 +78,8 @@ namespace WorldPackets
             TargetLevel = target->getLevel();
             Expansion = creatureTemplate->RequiredExpansion;
             Class = creatureTemplate->unit_class;
-            TargetMinScalingLevel = creatureTemplate->ScaleLevelMin;
-            TargetMaxScalingLevel = creatureTemplate->ScaleLevelMax;
+            TargetMinScalingLevel = creatureTemplate->levelScaling->MinLevel;
+            TargetMaxScalingLevel = creatureTemplate->levelScaling->MaxLevel;
             TargetScalingLevelDelta = int8(target->GetInt32Value(UNIT_FIELD_SCALING_LEVEL_DELTA));
             return true;
         }
@@ -97,8 +97,8 @@ namespace WorldPackets
             TargetLevel = target->getLevel();
             Expansion = creatureTemplate->RequiredExpansion;
             Class = creatureTemplate->unit_class;
-            TargetMinScalingLevel = creatureTemplate->ScaleLevelMin;
-            TargetMaxScalingLevel = creatureTemplate->ScaleLevelMax;
+            TargetMinScalingLevel = creatureTemplate->levelScaling->MinLevel;
+            TargetMaxScalingLevel = creatureTemplate->levelScaling->MaxLevel;
             TargetScalingLevelDelta = int8(attacker->GetInt32Value(UNIT_FIELD_SCALING_LEVEL_DELTA));
             return true;
         }

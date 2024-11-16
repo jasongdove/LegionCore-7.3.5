@@ -46,6 +46,27 @@ namespace Trinity
         return CURRENT_EXPANSION;
     }
 
+    inline float GetDamageMultiplierForExpansion(uint32 playerExpansion, uint32 creatureExpansion)
+    {
+        if (playerExpansion > creatureExpansion)
+        {
+            switch (creatureExpansion)
+            {
+                case EXPANSION_CLASSIC:
+                case EXPANSION_THE_BURNING_CRUSADE:
+                    return 20.0f;
+                case EXPANSION_WRATH_OF_THE_LICH_KING:
+                    return 25.0f;
+                case EXPANSION_CATACLYSM:
+                    return 13.5f;
+                default:
+                    break;
+            }
+        }
+
+        return 1.0f;
+    }
+
     namespace Honor
     {
         inline float hk_honor_at_level_f(uint8 level, float multiplier = 1.0f)
@@ -60,20 +81,25 @@ namespace Trinity
             return uint32(ceil(hk_honor_at_level_f(level, multiplier)));
         }
     }
+
     namespace XP
     {
         inline uint8 GetGrayLevel(uint8 pl_level)
         {
             uint8 level;
 
-            if (pl_level <= 5)
+            if (pl_level < 7)
                 level = 0;
-            else if (pl_level <= 39)
-                level = pl_level - 5 - pl_level / 10;
-            else if (pl_level <= 59)
-                level = pl_level - 1 - pl_level / 5;
+            else if (pl_level < 35)
+            {
+                uint8 count = 0;
+                for (int i = 15; i <= pl_level; ++i)
+                    if (i % 5 == 0) ++count;
+
+                level = (pl_level - 7) - (count - 1);
+            }
             else
-                level = pl_level - 9;
+                level = pl_level - 10;
 
             sScriptMgr->OnGrayLevelCalculation(level, pl_level);
             return level;
@@ -139,11 +165,21 @@ namespace Trinity
             GtXpEntry const* xpMob = sXpGameTable.GetRow(mob_level);
 
             if (mob_level >= pl_level)
-                baseGain = uint32(round(xpPlayer->PerKill * (1 + 0.05f * std::min(mob_level - pl_level, 4))));
+            {
+                uint8 nLevelDiff = mob_level - pl_level;
+                if (nLevelDiff > 4)
+                    nLevelDiff = 4;
+
+                baseGain = uint32(round(xpPlayer->PerKill * (1 + 0.05f * nLevelDiff)));
+            }
             else
             {
-                if (mob_level > GetGrayLevel(pl_level))
-                    baseGain = uint32(round(xpMob->PerKill * ((1 - ((pl_level - mob_level) / float(GetZeroDifference(pl_level)))) * (xpMob->Divisor / xpPlayer->Divisor))));
+                uint8 gray_level = GetGrayLevel(pl_level);
+                if (mob_level > gray_level)
+                {
+                    uint8 ZD = GetZeroDifference(pl_level);
+                    baseGain = uint32(round(xpMob->PerKill * ((1 - ((pl_level - mob_level) / float(ZD))) * (xpMob->Divisor / xpPlayer->Divisor))));
+                }
                 else
                     baseGain = 0;
             }
@@ -155,38 +191,47 @@ namespace Trinity
         inline uint32 Gain(Player* player, Unit* u)
         {
             Creature* creature = u->ToCreature();
-            uint32 gain;
+            uint32 gain = 0;
 
-            if (u->IsCreature() && (creature->isTotem() || creature->isPet() ||
-                creature->GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_NO_XP_AT_KILL) ||
-                creature->GetCreatureTemplate()->Type == CREATURE_TYPE_CRITTER)
-                gain = 0;
-            else
+            if (!creature || creature->CanGiveExperience())
             {
-                gain = BaseGain(player->getLevel(), u->getLevelForXPReward(player));
+                float xpMod = 1.0f;
 
-                if (gain != 0 && u->IsCreature() && creature->isElite())
+                gain = BaseGain(player->getLevel(), u->GetLevelForTarget(player));
+
+                if (gain && creature)
                 {
                     // Players get only 10% xp for killing creatures of lower expansion levels than himself
-                    if ((uint32(creature->GetCreatureTemplate()->RequiredExpansion) < GetExpansionForLevel(player->getLevel())))
+                    auto creatureExpansion = uint32(creature->GetCreatureTemplate()->HealthScalingExpansion);
+
+                    // try to work around zone scaling, e.g. BC zones scale to 80 and we don't want
+                    // to cut XP by 90% inside those levels
+                    if (creature->HasScalableLevels())
+                        creatureExpansion = GetExpansionForLevel(creature->GetLevelForTarget(player));
+
+                    if (creatureExpansion < GetExpansionForLevel(player->getLevel()))
                         gain = uint32(round(gain / 10.0f));
 
-                    // Elites in instances have a 2.75x XP bonus instead of the regular 2x world bonus.
-                    if (u->GetMap() && u->GetMap()->IsDungeon())
-                        gain = uint32(gain * 2.75f);
-                    else
-                        gain *= 2;
+                    if(creature->isElite())
+                    {
+                        // Elites in instances have a 2.75x XP bonus instead of the regular 2x world bonus.
+                        if (u->GetMap() && u->GetMap()->IsDungeon())
+                            xpMod *= 2.75f;
+                        else
+                            xpMod *= 2.0f;
+                    }
+
+                    //xpMod *= creature->GetCreatureTemplate()->ModExperience;
                 }
 
-                float KillXpRate = 1.0f;
                 if (float rate = player->GetSession()->GetPersonalXPRate())
-                    KillXpRate = rate;
+                    xpMod *= rate;
                 else if(player->GetPersonnalXpRate())
-                    KillXpRate = player->GetPersonnalXpRate();
+                    xpMod *= player->GetPersonnalXpRate();
                 else
-                    KillXpRate = GetRateInfo(creature);
+                    xpMod *= GetRateInfo(creature);
 
-                gain = uint32(gain * KillXpRate);
+                gain = uint32(gain * xpMod);
             }
 
             sScriptMgr->OnGainCalculation(gain, player, u);
@@ -200,7 +245,8 @@ namespace Trinity
             if (isRaid)
             {
                 // FIXME: Must apply decrease modifiers depending on raid size.
-                rate = 1.0f;
+                // set to < 1 to, so client will display raid related strings
+                rate = 0.99f;
             }
             else
             {
