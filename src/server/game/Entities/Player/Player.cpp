@@ -22398,6 +22398,8 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     _LoadTalents(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADTALENTS), holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_PVP_TALENTS));
     _LoadSpells(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSPELLS));
 
+    LearnSpecializationSpells();
+
     _LoadGlyphs(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_GLYPHS));
     _LoadAuras(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADAURAS), holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADAURAS_EFFECTS), time_diff);
     _LoadGlyphAuras();
@@ -29936,8 +29938,6 @@ void Player::SendInitialPacketsBeforeAddToMap(bool login)
         m_reputationMgr.SendInitialReputations();
 
         SendCurrencies();
-
-        LearnSpecializationSpells();
     }
 
     // Reset Vignitte data
