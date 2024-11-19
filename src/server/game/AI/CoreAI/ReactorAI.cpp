@@ -32,8 +32,12 @@ void ReactorAI::MoveInLineOfSight(Unit*) {}
 
 void ReactorAI::InitializeAI()
 {
+    auto mapDifficulty = me->GetMap()->GetDifficultyID();
     for (auto& spell : *me->CreatureSpells)
     {
+        if (!spell.second.CanUseInDifficulty(mapDifficulty))
+            continue;
+
         if (SpellInfo const* sInfo = sSpellMgr->GetSpellInfo(spell.second.SpellID))
             if (sInfo->GetMaxRange(false) >= 30.0f && sInfo->GetMaxRange(false) > me->GetAttackDist() && (sInfo->AttributesCu[0] & SPELL_ATTR0_CU_DIRECT_DAMAGE) && !sInfo->IsTargetingAreaCast())
                 if (!sInfo->IsPositive())
@@ -63,10 +67,12 @@ void ReactorAI::Reset()
     spellCasts.Reset();
     textCombatEvents.Reset();
 
+    auto mapDifficulty = me->GetMap()->GetDifficultyID();
     for (auto& spell : *me->CreatureSpells)
-        if (AISpellInfo[spell.second.SpellID].condition == AICOND_EVADE)
-            if (AISpellInfo[spell.second.SpellID].target == AITARGET_SELF)
-                me->CastSpell(me, spell.second.SpellID, false);
+        if (spell.second.CanUseInDifficulty(mapDifficulty))
+            if (AISpellInfo[spell.second.SpellID].condition == AICOND_EVADE)
+                if (AISpellInfo[spell.second.SpellID].target == AITARGET_SELF)
+                    me->CastSpell(me, spell.second.SpellID, false);
 }
 
 void ReactorAI::UpdateAI(uint32 diff)
@@ -187,11 +193,13 @@ void ReactorAI::JustDied(Unit* killer)
     if (me->isElite() || roll_chance_i(25)) // Prevent spamm text
         TalkAuto(TEXT_GROUP_DIE, killer->GetGUID());
 
+    auto mapDifficulty = me->GetMap()->GetDifficultyID();
     for (auto& spell : *me->CreatureSpells)
-        if (AISpellInfo[spell.second.SpellID].condition == AICOND_DIE)
-            if (SpellInfo const* sInfo = sSpellMgr->GetSpellInfo(spell.second.SpellID))
-                if (sInfo->CanAutoCast(me, killer))
-                    me->CastSpell(killer, spell.second.SpellID, true);
+        if (spell.second.CanUseInDifficulty(mapDifficulty))
+            if (AISpellInfo[spell.second.SpellID].condition == AICOND_DIE)
+                if (SpellInfo const* sInfo = sSpellMgr->GetSpellInfo(spell.second.SpellID))
+                    if (sInfo->CanAutoCast(me, killer))
+                        me->CastSpell(killer, spell.second.SpellID, true);
 }
 
 void ReactorAI::EnterCombat(Unit* who)
@@ -207,8 +215,12 @@ void ReactorAI::EnterCombat(Unit* who)
         textCombatEvents.ScheduleEvent(EVENT_1, text->MinTimer);
     }
     me->CastStop();
+    auto mapDifficulty = me->GetMap()->GetDifficultyID();
     for (auto& spell : *me->CreatureSpells)
     {
+        if (!spell.second.CanUseInDifficulty(mapDifficulty))
+            continue;
+
         if (AISpellInfo[spell.second.SpellID].condition == AICOND_AGGRO)
         {
             if (SpellInfo const* sInfo = sSpellMgr->GetSpellInfo(spell.second.SpellID))

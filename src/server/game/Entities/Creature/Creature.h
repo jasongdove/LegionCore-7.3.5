@@ -115,9 +115,10 @@ const uint32 CREATURE_NOPATH_EVADE_TIME = 5 * IN_MILLISECONDS;
 struct CreatureSpell
 {
     uint32 SpellID;
-    uint32 DifficultyMask;
-    uint32 TimerCast;
+    std::vector<Difficulty> Difficulties;
     CreatureTextEntry const* Text;
+
+    bool CanUseInDifficulty(Difficulty difficulty) const;
 };
 typedef std::unordered_map<uint32, CreatureSpell> CreatureSpellList;
 

@@ -63,6 +63,18 @@
 
 #define ZONE_UPDATE_INTERVAL (10*IN_MILLISECONDS)
 
+bool CreatureSpell::CanUseInDifficulty(Difficulty difficulty) const
+{
+    if (Difficulties.empty())
+        return true;
+
+    for (Difficulty diff : Difficulties)
+        if (diff == difficulty)
+            return true;
+
+    return false;
+}
+
 CreatureMovementData::CreatureMovementData() : Ground(CreatureGroundMovementType::Run), Flight(CreatureFlightMovementType::None), Swim(true), Rooted(false), Random(CreatureRandomMovementType::Walk), InteractionPauseTimer(sWorld->getIntConfig(CONFIG_CREATURE_STOP_FOR_PLAYER)) { }
 
 std::string CreatureMovementData::ToString() const

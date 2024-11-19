@@ -42,6 +42,7 @@
 #include "Spell.h"
 #include "SpellMgr.h"
 #include "SpellScript.h"
+#include "StringConvert.h"
 #include "Util.h"
 #include "Vehicle.h"
 #include "World.h"
@@ -892,8 +893,8 @@ void ObjectMgr::LoadCreatureTemplates()
     }
     while (result->NextRow());
 
-    //                                                      0      1          2             3
-    if (QueryResult results = WorldDatabase.Query("SELECT entry, spell, difficultyMask, timerCast FROM creature_template_spell;"))
+    //                                                      0      1         2
+    if (QueryResult results = WorldDatabase.Query("SELECT entry, spell, Difficulties FROM creature_template_spell;"))
     {
         do
         {
@@ -910,8 +911,33 @@ void ObjectMgr::LoadCreatureTemplates()
             uint32 SpellID = fields[1].GetUInt32();
             CreatureSpell& spell = creatureTemplate->CreatureSpells[SpellID];
             spell.SpellID = SpellID;
-            spell.DifficultyMask = fields[2].GetUInt32();
-            spell.TimerCast = fields[3].GetUInt32();
+
+            bool invalidDifficulties = false;
+            for (std::string_view token : Trinity::Tokenize(fields[2].GetStringView(), ',', false))
+            {
+                Optional<std::underlying_type_t<Difficulty>> tokenValue = Trinity::StringTo<std::underlying_type_t<Difficulty>>(token);
+                if (!tokenValue.has_value())
+                {
+                    invalidDifficulties = true;
+                    TC_LOG_ERROR("sql.sql", "ObjectMgr::LoadCreatureTemplates: Invalid difficulties for creature_template_spell (%u), skipped loading.",
+                                 spell.SpellID);
+                    break;
+                }
+
+                auto difficultyId = Difficulty(tokenValue.value());
+                if (difficultyId && !sDifficultyStore.LookupEntry(difficultyId))
+                {
+                    invalidDifficulties = true;
+                    TC_LOG_ERROR("sql.sql", "ObjectMgr::LoadCreatureTemplates: Invalid difficulty id (%u) for creature_template_spell (%u), skipped loading.",
+                                 difficultyId, spell.SpellID);
+                    break;
+                }
+
+                spell.Difficulties.push_back(difficultyId);
+            }
+
+            if (invalidDifficulties)
+                continue;
         }
         while (results->NextRow());
 

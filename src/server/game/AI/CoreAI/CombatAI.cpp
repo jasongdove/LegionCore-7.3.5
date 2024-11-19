@@ -62,10 +62,12 @@ void AggressorAI::Reset()
     spellCasts.Reset();
     textCombatEvents.Reset();
 
+    auto mapDifficulty = me->GetMap()->GetDifficultyID();
     for (auto& spell : *me->CreatureSpells)
-        if (AISpellInfo[spell.second.SpellID].condition == AICOND_EVADE)
-            if (AISpellInfo[spell.second.SpellID].target == AITARGET_SELF)
-                me->CastSpell(me, spell.second.SpellID, false);
+        if (spell.second.CanUseInDifficulty(mapDifficulty))
+            if (AISpellInfo[spell.second.SpellID].condition == AICOND_EVADE)
+                if (AISpellInfo[spell.second.SpellID].target == AITARGET_SELF)
+                    me->CastSpell(me, spell.second.SpellID, false);
 }
 
 void AggressorAI::UpdateAI(uint32 diff)
@@ -242,11 +244,13 @@ void AggressorAI::JustDied(Unit* killer)
     if (me->isElite() || roll_chance_i(25)) // Prevent spamm text
         TalkAuto(TEXT_GROUP_DIE, killer->GetGUID());
 
+    auto mapDifficulty = me->GetMap()->GetDifficultyID();
     for (auto& spell : *me->CreatureSpells)
-        if (AISpellInfo[spell.second.SpellID].condition == AICOND_DIE)
-            if (SpellInfo const* sInfo = sSpellMgr->GetSpellInfo(spell.second.SpellID))
-                if (sInfo->CanAutoCast(me, killer))
-                    me->CastSpell(killer, spell.second.SpellID, true);
+        if (spell.second.CanUseInDifficulty(mapDifficulty))
+            if (AISpellInfo[spell.second.SpellID].condition == AICOND_DIE)
+                if (SpellInfo const* sInfo = sSpellMgr->GetSpellInfo(spell.second.SpellID))
+                    if (sInfo->CanAutoCast(me, killer))
+                        me->CastSpell(killer, spell.second.SpellID, true);
 }
 
 void AggressorAI::EnterCombat(Unit* who)
@@ -260,8 +264,12 @@ void AggressorAI::EnterCombat(Unit* who)
         textCombatEvents.ScheduleEvent(EVENT_1, text->MinTimer);
     }
     me->CastStop();
+    auto mapDifficulty = me->GetMap()->GetDifficultyID();
     for (auto& spell : *me->CreatureSpells)
     {
+        if (!spell.second.CanUseInDifficulty(mapDifficulty))
+            continue;
+
         if (AISpellInfo[spell.second.SpellID].condition == AICOND_AGGRO)
         {
             if (SpellInfo const* sInfo = sSpellMgr->GetSpellInfo(spell.second.SpellID))
