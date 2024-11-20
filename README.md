@@ -42,7 +42,7 @@ The generated folders `dbc`, `maps`, `vmaps`, `mmaps`, `cameras` and `gt` are al
 TODO
 
 # Reporting issues
-Issues can be reported via the [Github issue tracker](https://github.com/jasongdove/LegionCore-7.3.5/issues).
+Issues can be reported via the [Github issue tracker](https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/issues).
 
 Please take the time to review existing issues before submitting your own to
 prevent duplicates.

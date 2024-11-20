@@ -316,7 +316,7 @@ bool DBUpdater<T>::Populate(DatabaseWorkerPool<T>& pool)
             {
                 std::string const filename = base.filename().generic_string();
                 std::string const workdir = boost::filesystem::current_path().generic_string();
-                TC_LOG_ERROR("sql.updates", ">> File \"%s\" is missing, download it from \"https://github.com/jasongdove/LegionCore-7.3.5/releases\"" \
+                TC_LOG_ERROR("sql.updates", ">> File \"%s\" is missing, download it from \"https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/releases\"" \
                     " uncompress it and place the file \"%s\" in the directory \"%s\".", filename.c_str(), filename.c_str(), workdir.c_str());
                 break;
             }
