@@ -129,10 +129,8 @@ void AuraApplication::_HandleEffect(uint8 effIndex, bool apply)
     if(HasEffect(effIndex) != (!apply))
         return;
     ASSERT((1<<effIndex) & _effectsToApply);
-    #ifdef WIN32
-    TC_LOG_DEBUG("spells", "AuraApplication::_HandleEffect: GetId %i, GetAuraType %u, apply: %u: amount: %i, m_send_baseAmount: %i, effIndex: %i GetDuration %i, guid %u GetStackAmount %u GetComboPoints %u GetCharges %u",
+    TC_LOG_DEBUG("spells", "AuraApplication::_HandleEffect: GetId %i, GetAuraType %u, apply: %u: amount: %f, m_send_baseAmount: %f, effIndex: %i GetDuration %i, guid %u GetStackAmount %u GetComboPoints %u GetCharges %u",
     GetBase()->GetId(), aurEff->GetAuraType(), apply, aurEff->GetAmount(), aurEff->GetBaseSendAmount(), effIndex, GetBase()->GetDuration(), GetBase()->GetOwner()->GetGUIDLow(), GetBase()->GetStackAmount(), GetBase()->GetComboPoints(), GetBase()->GetCharges());
-    #endif
 
     if (apply)
     {

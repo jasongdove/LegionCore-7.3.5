@@ -737,14 +737,10 @@ void Spell::SelectImplicitNearbyTargets(SpellEffIndex effIndex, SpellImplicitTar
                     m_targets.SetDst(*referer);
                     return;
                 }
-#ifdef WIN32
                 TC_LOG_DEBUG("spells", "Spell::SelectImplicitNearbyTargets: no target destination on db: spell_target_position of spell ID %u, effect %u - selecting default targets", m_spellInfo->Id, effIndex);
-#endif
                 break;
             default:
-#ifdef WIN32
                 TC_LOG_DEBUG("spells", "Spell::SelectImplicitNearbyTargets: no conditions entry for target with TARGET_CHECK_ENTRY of spell ID %u, effect %u - selecting default targets", m_spellInfo->Id, effIndex);
-#endif
                 break;
         }
     }
@@ -752,15 +748,11 @@ void Spell::SelectImplicitNearbyTargets(SpellEffIndex effIndex, SpellImplicitTar
     WorldObject* target = SearchNearbyTarget(range, targetType.GetObjectType(), targetType.GetCheckType(), condList);
     if (!target)
     {
-        #ifdef WIN32
         TC_LOG_DEBUG("spells", "Spell::SelectImplicitNearbyTargets: cannot find nearby target for spell ID %u, effect %u", m_spellInfo->Id, effIndex);
-        #endif
         return;
     }
 
-    #ifdef WIN32
     TC_LOG_DEBUG("spells", "Spell::SelectImplicitNearbyTargets spell id %u caster %u target %u", m_spellInfo->Id, m_caster->GetGUIDLow(), target->GetGUIDLow());
-    #endif
 
     CallScriptObjectTargetSelectHandlers(target, effIndex);
 
@@ -3888,11 +3880,9 @@ SpellCastResult Spell::prepare(SpellCastTargets const* targets)
             SendChannelUpdate(0);
             m_triggeredByAura->GetBase()->SetDuration(0);
         }
-        #ifdef WIN32
         TC_LOG_DEBUG("spells", "Spell::prepare::CheckCast fail. spell id %u res %u m_caster %u m_originalCaster %u customCastFlags %u mask %u TargetGUID %u",
             m_spellInfo->Id, result, m_caster->GetGUIDLow(), m_originalCaster ? m_originalCaster->GetGUIDLow() : 0,
             _triggeredCastFlags, m_targets.GetTargetMask(), m_targets.GetObjectTargetGUID().GetGUIDLow());
-        #endif
         SendCastResult(result);
 
         finish(false);
@@ -3938,11 +3928,9 @@ SpellCastResult Spell::prepare(SpellCastTargets const* targets)
     // set timer base at cast time
     ReSetTimer();
 
-    #ifdef WIN32
     TC_LOG_DEBUG("spells", "Spell::prepare: spell id %u m_caster %u m_originalCaster %u customCastFlags %u mask %u target %s",
         m_spellInfo->Id, m_caster->GetGUIDLow(), m_originalCaster ? m_originalCaster->GetGUIDLow() : 0,
         _triggeredCastFlags, m_targets.GetTargetMask(), m_targets.GetUnitTarget() ? m_targets.GetUnitTarget()->ToString().c_str() : "" );
-    #endif
 
     LinkedSpell(m_caster, m_targets.GetUnitTarget(), SPELL_LINK_PREPARE_CAST);
 
@@ -4341,9 +4329,7 @@ void Spell::cast(bool skipCheck)
         SpellCastResult castResult = CheckCast(false);
         if (castResult != SPELL_CAST_OK)
         {
-            #ifdef WIN32
             TC_LOG_DEBUG("spells", "Spell::cast::checkcast fail. spell id %u res %u source %u caster %d customCastFlags %u mask %u", m_spellInfo->Id, castResult, m_caster->GetEntry(), m_originalCaster ? m_originalCaster->GetEntry() : -1, _triggeredCastFlags, m_targets.GetTargetMask());
-            #endif
             SendCastResult(castResult);
             SendInterrupted(0);
             //restore spell mods
@@ -5149,9 +5135,7 @@ void Spell::finish(bool ok)
             if (item->IsEquipable() && !item->IsEquipped())
                 m_caster->ToPlayer()->ApplyItemEquipSpell(item, false);
 
-    #ifdef WIN32
     TC_LOG_DEBUG("spells", "Spell::finish Spell: %u m_spellMissMask %u", m_spellInfo->Id, m_spellMissMask);
-    #endif
 
     LinkedSpell(m_caster, m_targets.GetUnitTarget(), SPELL_LINK_FINISH_CAST);
     CallScriptOnFinishCastHandlers();
@@ -6515,9 +6499,7 @@ void Spell::HandleEffects(Unit* pUnitTarget, Item* pItemTarget, GameObject* pGOT
             break;
     }
 
-    #ifdef WIN32
-    TC_LOG_DEBUG("spells", "Spell: %u Effect : %u, damage %i, mode %i idx %i preventDefault %u", m_spellInfo->Id, eff, damage, mode, i, preventDefault);
-    #endif
+    TC_LOG_DEBUG("spells", "Spell: %u Effect : %u, damage %f, mode %i idx %i preventDefault %u", m_spellInfo->Id, eff, damage, mode, i, preventDefault);
 
     if (!preventDefault && eff < TOTAL_SPELL_EFFECTS)
     {
@@ -10690,9 +10672,7 @@ bool WorldObjectSpellTargetCheck::operator()(WorldObject* target)
 
     if (res != SPELL_CAST_OK)
     {
-        #ifdef WIN32
         TC_LOG_DEBUG("spells", "Spell::WorldObjectSpellTargetCheck::checkcast fail. spell id %u res %u caster %s target %s", _spellInfo->Id, res, _caster->GetGUID().ToString().c_str(), target->GetGUID().ToString().c_str());
-        #endif
         return false;
     }
 
@@ -10705,11 +10685,6 @@ bool WorldObjectSpellTargetCheck::operator()(WorldObject* target)
         else
             return false;
     }
-
-    // #ifdef WIN32
-    // TC_LOG_DEBUG("spells", "Spell::WorldObjectSpellTargetCheck spell id %u caster %s target %s _condSrcInfo %u res %u ToCorpse %u ToUnit %u _targetSelectionType %u",
-    // _spellInfo->Id, _caster->GetGUID().ToString().c_str(), target->GetGUID().ToString().c_str(), bool(_condSrcInfo), res, bool(target->ToCorpse()), bool(target->ToUnit()), _targetSelectionType);
-    // #endif
 
     if (unitTarget)
     {

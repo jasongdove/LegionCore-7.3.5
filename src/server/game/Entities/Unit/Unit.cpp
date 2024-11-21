@@ -17917,9 +17917,7 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* target, uint32 procFlag, u
         }
     }
 
-    #ifdef WIN32
-    TC_LOG_DEBUG("spells", "ProcDamageAndSpell: procSpell %u procTriggered %u procFlag %u procExtra %u isVictim %u", procSpell ? procSpell->Id : 0, procTriggered.size(), procFlag, procExtra, isVictim);
-    #endif
+    TC_LOG_DEBUG("spells", "ProcDamageAndSpell: procSpell %u procTriggered %zu procFlag %u procExtra %u isVictim %u", procSpell ? procSpell->Id : 0, procTriggered.size(), procFlag, procExtra, isVictim);
 
     // Nothing found
     if (procTriggered.empty())
@@ -19351,12 +19349,10 @@ bool Unit::SpellProcTriggered(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect*
             if (!itr->randList.empty())
                 spell_trigger = Trinity::Containers::SelectRandomContainerElement(itr->randList);
 
-            #ifdef WIN32
-            TC_LOG_DEBUG("spells", "SpellTriggered target %u, caster %u, spell_trigger %i, chance %i, triggerAmount %i, damage %i, GetAbsorb %i, GetResist %i, GetBlock %i",
+            TC_LOG_DEBUG("spells", "SpellTriggered target %u, caster %u, spell_trigger %i, chance %i, triggerAmount %f, damage %i, GetAbsorb %i, GetResist %i, GetBlock %i",
             itr->target, itr->caster, itr->spell_trigger, itr->chance, triggerAmount, damage, dmgInfoProc->GetAbsorb(), dmgInfoProc->GetResist(), dmgInfoProc->GetBlock());
             TC_LOG_DEBUG("spells", " group %i, effIndex %i, effectmask %i, option %i, (1<<effIndex) %i, procFlag %i addpowertype %i addptype %i procEx %i cooldown %f cooldown_spell_id %i",
             itr->group, effIndex, itr->effectmask, itr->option, (1<<effIndex), procFlag, addpowertype, itr->addptype, procEx, cooldown, cooldown_spell_id);
-            #endif
 
             if (G3D::fuzzyGt(cooldown, 0.0))
             {

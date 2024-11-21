@@ -143,9 +143,7 @@ void AreaTrigger::AddToWorld()
 
 void AreaTrigger::RemoveFromWorld()
 {
-#ifdef WIN32
     TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::RemoveFromWorld Entry: %u CustomEntry: %u", GetRealEntry(), GetCustomEntry());
-#endif
 
     ///- Remove the AreaTrigger from the accessor and from all lists of objects in world
     if (IsInWorld())
@@ -226,9 +224,7 @@ bool AreaTrigger::CreateAreaTrigger(ObjectGuid::LowType guidlow, uint32 triggerE
     else
         return false;
 
-#ifdef WIN32
-    TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger (spell %u) coordinates (X: %f Y: %f) _actionInfo %u", info ? info->Id : 0, GetPositionX(), GetPositionY(), _actionInfo.size());
-#endif
+    TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger (spell %u) coordinates (X: %f Y: %f) _actionInfo %zu", info ? info->Id : 0, GetPositionX(), GetPositionY(), _actionInfo.size());
 
     Object::_Create(ObjectGuid::Create<HighGuid::AreaTrigger>(GetMapId(), atInfo.customEntry, guidlow));
     if (caster)
@@ -359,11 +355,9 @@ bool AreaTrigger::CreateAreaTrigger(ObjectGuid::LowType guidlow, uint32 triggerE
     if (!GetMap()->AddToMap(this))
         return false;
 
-#ifdef WIN32
     TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::Create AreaTrigger caster %s spellID %u spell rage %f dist %f dest - X:%f,Y:%f,Z:%f _nextMoveTime %i duration %i",
         caster ? caster->GetGUID().ToString().c_str() : ObjectGuid::Empty.ToString().c_str(), info ? info->Id : 0, _radius, GetSpellInfo() ? GetSpellInfo()->GetMaxRange() : 0.0f, _spline.VerticesPoints.empty() ? 0.0f : _spline.VerticesPoints[0].x, _spline.VerticesPoints.empty() ? 0.0f : _spline.VerticesPoints[0].y, _spline.VerticesPoints.empty() ? 0.0f : _spline.VerticesPoints[0].z, _nextMoveTime, duration);
-    TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::Create isMoving %i _range %f _spline.VerticesPoints %i moveType %i", isMoving(), _range, _spline.VerticesPoints.size(), atInfo.moveType);
-#endif
+    TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::Create isMoving %i _range %f _spline.VerticesPoints %zu moveType %i", isMoving(), _range, _spline.VerticesPoints.size(), atInfo.moveType);
 
     if (atInfo.maxCount && info && caster)
     {
@@ -380,8 +374,8 @@ bool AreaTrigger::CreateAreaTrigger(ObjectGuid::LowType guidlow, uint32 triggerE
     }
     UpdateAffectedList(0, AT_ACTION_MOMENT_SPAWN);
 
-#ifdef WIN32
     TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger end (spell %u) coordinates (X: %f Y: %f)", info ? info->Id : 0, GetPositionX(), GetPositionY());
+#ifdef TRINITY_DEBUG
     DebugVisualizePolygon();
 #endif
 
@@ -724,9 +718,7 @@ void AreaTrigger::AffectOwner(AreaTriggerActionMoment actionM)
 
 void AreaTrigger::ActionOnUpdate(uint32 /*p_time*/)
 {
-#ifdef WIN32
     TC_LOG_DEBUG("entities.areatrigger", "ActionOnUpdate");
-#endif
 
     // Action for AOE spell with cast on dest
     for (auto & itr : _actionInfo)
@@ -810,10 +802,8 @@ void AreaTrigger::DoAction(Unit* unit, ActionInfo& action)
     if (!caster || !unit || !action.charges && action.action->maxCharges)
         return;
 
-#ifdef WIN32
     TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::DoAction caster %s unit %s type %u spellID %u, moment %u, targetFlags %u",
         caster->GetGUID().ToString().c_str(), unit->GetGUID().ToString().c_str(), action.action->actionType, action.action->spellId, action.action->moment, action.action->targetFlags);
-#endif
 
     if (action.action->targetFlags & AT_TARGET_FLAG_FRIENDLY)
         if (!caster || !caster->IsFriendlyTo(unit) || unit->isTotem())
@@ -1321,10 +1311,8 @@ void AreaTrigger::DoActionLeave(ActionInfo& action)
     if (!caster || !action.charges && action.action->maxCharges)
         return;
 
-#ifdef WIN32
     TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::DoActionLeave caster %s type %u spellID %u, moment %u, targetFlags %u",
         caster->GetGUID().ToString().c_str(), action.action->actionType, action.action->spellId, action.action->moment, action.action->targetFlags);
-#endif
 
     switch (action.action->actionType)
     {
@@ -1640,9 +1628,7 @@ void AreaTrigger::InitSplines()
     if (_CircleData)
         _CircleData->TimeToTarget = _spline.TimeToTarget;
 
-    #ifdef WIN32
-        TC_LOG_DEBUG("entities.areatrigger", "InitSplines TimeToTarget %i _liveTime %u RePatchSpeed %f Speed %f movespline %s", _spline.TimeToTarget, _liveTime, atInfo.RePatchSpeed, atInfo.Speed, movespline->ToString().c_str());
-    #endif
+    TC_LOG_DEBUG("entities.areatrigger", "InitSplines TimeToTarget %i _liveTime %u RePatchSpeed %f Speed %f movespline %s", _spline.TimeToTarget, _liveTime, atInfo.RePatchSpeed, atInfo.Speed, movespline->ToString().c_str());
 
     if (_reachedDestination)
     {
@@ -1722,8 +1708,8 @@ void AreaTrigger::UpdateSplinePosition(uint32 diff)
         ReCalculateSplinePosition();
     }
 
-#ifdef WIN32
     TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::UpdateSplinePosition %f %f %f %i  _reachedDestination %u", GetPositionX(), GetPositionY(), GetPositionZ(), _movementTime, _reachedDestination);
+#ifdef TRINITY_DEBUG
     DebugVisualizePosition();
 #endif
 }
@@ -1944,16 +1930,16 @@ bool AreaTrigger::UpdatePosition(ObjectGuid targetGuid)
             if (relocated)
             {
                 GetMap()->AreaTriggerRelocation(this, caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), caster->GetOrientation());
-                #ifdef WIN32
+#ifdef TRINITY_DEBUG
                 DebugVisualizePolygon();
-                #endif
+#endif
             }
             else if (turn)
             {
                 SetOrientation(caster->GetOrientation());
-                #ifdef WIN32
+#ifdef TRINITY_DEBUG
                 DebugVisualizePolygon();
-                #endif
+#endif
             }
         }
         else
@@ -2184,9 +2170,7 @@ void AreaTrigger::GetCollisionPosition(Position &_dest, float dist, float angle)
     Position pos;
     pos.Relocate(GetPositionX(), GetPositionY(), GetPositionZ() + 2.0f);
 
-#ifdef WIN32
-    TC_LOG_DEBUG("entities.areatrigger", "GetCollisionPosition coordinates (X: %f Y: %f) ", pos.m_positionX, pos.m_positionY, pos.m_positionZ);
-#endif
+    TC_LOG_DEBUG("entities.areatrigger", "GetCollisionPosition coordinates (X: %f Y: %f Z: %f) ", pos.m_positionX, pos.m_positionY, pos.m_positionZ);
 
     float destx = pos.m_positionX + dist * std::cos(angle);
     float desty = pos.m_positionY + dist * std::sin(angle);
@@ -2195,9 +2179,7 @@ void AreaTrigger::GetCollisionPosition(Position &_dest, float dist, float angle)
     bool col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
     if (!col)
     {
-    #ifdef WIN32
-        TC_LOG_DEBUG("entities.areatrigger", "GetCollisionPosition coordinates !col  dest (X: %f Y: %f) ", destx, desty, destz);
-    #endif
+        TC_LOG_DEBUG("entities.areatrigger", "GetCollisionPosition coordinates !col  dest (X: %f Y: %f Z: %f) ", destx, desty, destz);
 
         dist += 200.0f;
         destx = pos.m_positionX + dist * std::cos(angle);
@@ -2205,9 +2187,7 @@ void AreaTrigger::GetCollisionPosition(Position &_dest, float dist, float angle)
         VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
     }
 
-#ifdef WIN32
-    TC_LOG_DEBUG("entities.areatrigger", "GetCollisionPosition coordinates  dest (X: %f Y: %f) Z %f", destx, desty, destz, GetPositionZ());
-#endif
+    TC_LOG_DEBUG("entities.areatrigger", "GetCollisionPosition coordinates  dest (X: %f Y: %f Z: %f) Z %f", destx, desty, destz, GetPositionZ());
 
     destx -= (CONTACT_DISTANCE + _radius) * std::cos(angle);
     desty -= (CONTACT_DISTANCE + _radius) * std::sin(angle);
@@ -2664,10 +2644,8 @@ void AreaTrigger::CalculateSplinePosition(Position const& pos, Position const& p
 
                 m_moveAngleLos = _dest.GetAngle(&_destAngle) - static_cast<float>(M_PI / 2);
 
-            #ifdef WIN32
                 TC_LOG_DEBUG("entities.areatrigger", "AT_MOVE_TYPE_RE_PATH_LOS _timeToTarget %i _dest (%f %f %f) %f",
                     _spline.TimeToTarget, _dest.GetPositionX(), _dest.GetPositionY(), _dest.GetPositionZ(), m_moveAngleLos);
-            #endif
             }
             break;
         }
@@ -2775,10 +2753,10 @@ void AreaTrigger::ReCalculateSplinePosition(bool setReach /*= false*/)
                 InitSplines();
             }
 
-            #ifdef WIN32
-            TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::UpdateMovement AT_MOVE_TYPE_RE_PATH size %i _timeToTarget %i dist %f", _spline.VerticesPoints.size(), _spline.TimeToTarget, dist);
-                DebugVisualizePosition();
-            #endif
+            TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::UpdateMovement AT_MOVE_TYPE_RE_PATH size %zu _timeToTarget %i dist %f", _spline.VerticesPoints.size(), _spline.TimeToTarget, dist);
+#ifdef TRINITY_DEBUG
+            DebugVisualizePosition();
+#endif
             break;
         }
         case AT_MOVE_TYPE_RE_PATH_LOS: //8
@@ -2804,7 +2782,9 @@ void AreaTrigger::ReCalculateSplinePosition(bool setReach /*= false*/)
 
             TC_LOG_DEBUG("entities.areatrigger", "AreaTrigger::UpdateMovement AT_MOVE_TYPE_RE_PATH_LOS size %zu _timeToTarget %i _dest (%f %f %f) %f",
                 _spline.VerticesPoints.size(), _spline.TimeToTarget, _dest.GetPositionX(), _dest.GetPositionY(), _dest.GetPositionZ(), m_moveAngleLos);
+#ifdef TRINITY_DEBUG
                 DebugVisualizePosition();
+#endif
             break;
         }
         default:

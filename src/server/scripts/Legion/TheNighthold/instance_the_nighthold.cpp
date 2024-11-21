@@ -373,10 +373,6 @@ public:
 
         bool CheckRequiredBosses(uint32 bossId, uint32 /*entry*/, Player const* /*player*/ = nullptr) const override
         {
-            #ifdef WIN32
-                return true;
-            #endif
-
             switch (bossId)
             {
                 case DATA_ANOMALY:

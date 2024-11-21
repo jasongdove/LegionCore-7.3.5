@@ -259,10 +259,8 @@ void WorldSession::QueuePacket(WorldPacket* new_packet)
 /// Logging helper for unexpected opcodes
 void WorldSession::LogUnexpectedOpcode(WorldPacket* packet, const char* status, const char *reason)
 {
-    #ifdef WIN32
     TC_LOG_ERROR("network.opcode", "Received unexpected opcode %s Status: %s Reason: %s from %s",
         GetOpcodeNameForLogging(static_cast<OpcodeClient>(packet->GetOpcode())).c_str(), status, reason, GetPlayerName(false).c_str());
-    #endif
 }
 
 /// Logging helper for unexpected opcodes
@@ -271,11 +269,9 @@ void WorldSession::LogUnprocessedTail(WorldPacket const* packet)
     if (!sLog->ShouldLog("network", LOG_LEVEL_TRACE) || packet->rpos() >= packet->wpos())
         return;
 
-    #ifdef WIN32
     TC_LOG_ERROR("network.opcode", "Unprocessed tail data (read stop at %u from %u) Opcode %s from %s",
         uint32(packet->rpos()), uint32(packet->wpos()), GetOpcodeNameForLogging(static_cast<OpcodeClient>(packet->GetOpcode())).c_str(), GetPlayerName(false).c_str());
     packet->print_storage();
-    #endif
 }
 
 /// Update the WorldSession (triggered by World update)
@@ -344,9 +340,7 @@ bool WorldSession::Update(uint32 diff, Map* map)
                         {
                             requeuePackets.push_back(packet);
                             deletePacket = false;
-                            #ifdef WIN32
                             TC_LOG_ERROR("network", "Re-enqueueing packet with opcode %s with with status STATUS_LOGGEDIN. Player is currently not in world yet.", GetOpcodeNameForLogging(opcode).c_str());
-                            #endif
                         }
                     }
                     else if (_player->IsInWorld())
@@ -383,14 +377,10 @@ bool WorldSession::Update(uint32 diff, Map* map)
                     opHandle->Call(this, *packet);
                     break;
                 case STATUS_NEVER:
-                    #ifdef WIN32
                     TC_LOG_ERROR("network.opcode", "Received not allowed opcode %s from %s", GetOpcodeNameForLogging(opcode).c_str(), GetPlayerName(false).c_str());
-                    #endif
                     break;
                 case STATUS_UNHANDLED:
-                    #ifdef WIN32
                     TC_LOG_ERROR("network.opcode", "Received not handled opcode %s from %s", GetOpcodeNameForLogging(opcode).c_str(), GetPlayerName(false).c_str());
-                    #endif
                     break;
             }
         }

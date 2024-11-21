@@ -1362,9 +1362,7 @@ float AuraEffect::CalculateAmount(Unit* caster)
         if (target && target->IsPlayer() && (target->getRace() == RACE_PANDAREN_ALLIANCE || target->getRace() == RACE_PANDAREN_HORDE || target->getRace() == RACE_PANDAREN_NEUTRAL))
             amount *= 2;
 
-    #ifdef WIN32
-    TC_LOG_DEBUG("spells", "AuraApplication::CalculateAmount GetId %i GetAuraType %u amount %i effIndex %i m_amount_mod %f m_amount_add %i GetStackAmount %u", GetId(), GetAuraType(), amount, m_effIndex, m_amount_mod, m_amount_add, GetBase()->GetStackAmount());
-    #endif
+    TC_LOG_DEBUG("spells", "AuraApplication::CalculateAmount GetId %i GetAuraType %u amount %f effIndex %i m_amount_mod %f m_amount_add %f GetStackAmount %u", GetId(), GetAuraType(), amount, m_effIndex, m_amount_mod, m_amount_add, GetBase()->GetStackAmount());
 
     m_calc_amount = amount;
     return amount;

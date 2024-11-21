@@ -753,10 +753,8 @@ bool Spell::SpellDummyTriggered(SpellEffIndex effIndex)
 
         for (const auto& itr : *spellTrigger)
         {
-            #ifdef WIN32
             TC_LOG_DEBUG("spells", "Spell::EffectDummy %u, 1<<effIndex %u, itr->effectmask %u, option %u, spell_trigger %i, target %u (%u ==> %u) explTarget %u effectHandleMode %u",
             m_spellInfo->Id, 1 << effIndex, itr.effectmask, itr.option, itr.spell_trigger, itr.target, triggerTarget ? triggerTarget->GetGUIDLow() : 0, triggerCaster ? triggerCaster->GetGUIDLow() : 0, explTarget ? explTarget->GetGUIDLow() : 0, effectHandleMode);
-            #endif
 
             if (!(itr.handlemask & (1 << effectHandleMode)))
                 continue;
@@ -776,10 +774,8 @@ bool Spell::SpellDummyTriggered(SpellEffIndex effIndex)
                 targetAura = (m_originalCaster ? m_originalCaster : m_caster)->GetUnitForLinkedSpell(m_caster, unitTarget,
                                                                                                      itr.targetaura, explTarget);
 
-            #ifdef WIN32
             TC_LOG_DEBUG("spells", "Spell::EffectDummy2: %u, 1<<effIndex %u, itr->effectmask %u, option %u, spell_trigger %i, target %u (%u ==> %u)", m_spellInfo->Id, 1 << effIndex,
                            itr.effectmask, itr.option, itr.spell_trigger, itr.target, triggerTarget ? triggerTarget->GetGUIDLow() : 0, triggerCaster ? triggerCaster->GetGUIDLow() : 0);
-            #endif
 
             cooldown_spell_id = abs(itr.spell_trigger);
             if (triggerCaster)
@@ -1093,9 +1089,7 @@ bool Spell::SpellDummyTriggered(SpellEffIndex effIndex)
 
 void Spell::EffectDummy(SpellEffIndex effIndex)
 {
-    #ifdef WIN32
-    TC_LOG_DEBUG("spells", "EffectDummy end %i, m_diffMode %i, effIndex %i, spellId %u, damage %i, effectHandleMode %u, GetExplicitTargetMask %u", m_damage, m_diffMode, effIndex, m_spellInfo->Id, damage, effectHandleMode, m_spellInfo->GetExplicitTargetMask());
-    #endif
+    TC_LOG_DEBUG("spells", "EffectDummy end %i, m_diffMode %i, effIndex %i, spellId %u, damage %f, effectHandleMode %u, GetExplicitTargetMask %u", m_damage, m_diffMode, effIndex, m_spellInfo->Id, damage, effectHandleMode, m_spellInfo->GetExplicitTargetMask());
 
     uint32 spell_id = 0;
     int32 bp = 0;
@@ -4922,9 +4916,7 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
     int32 weaponDamage = _caster->CalculateDamage(m_attackType, normalized, m_spellInfo->GetSchoolMask() & SPELL_SCHOOL_MASK_NORMAL, unitTarget);
     bool calculateWPD = true;
 
-    #ifdef WIN32
     TC_LOG_DEBUG("spells", "Spell EffectWeaponDmg spellid %u in Effect(%u) fixed_bonus %i, weaponDamagePercentMod %f weaponDamage %i", m_spellInfo->Id, effIndex, fixed_bonus, weaponDamagePercentMod, weaponDamage);
-    #endif
 
     // Sequence is important
     for (int j = 0; j < MAX_SPELL_EFFECTS; ++j)
@@ -4962,9 +4954,7 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
 
     m_damage += _damage;
 
-    #ifdef WIN32
     TC_LOG_DEBUG("spells", "Spell EffectWeaponDmg spellid %u in Effect(%u) weaponDamage %i, _damage %i m_damage %i effectHandleMode %i ComboPoints %i", m_spellInfo->Id, effIndex, weaponDamage, _damage, m_damage, effectHandleMode, GetComboPoints());
-    #endif
 
     switch (m_spellInfo->Id)
     {

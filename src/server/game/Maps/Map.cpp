@@ -424,9 +424,7 @@ void Map::LoadMapImpl(Map* map, int gx, int gy, bool reload)
     //map already load, delete it before reloading (Is it necessary? Do we really need the ability the reload maps during runtime?)
     if (map->GridMaps[gx][gy])
     {
-        #ifdef WIN32
-        TC_LOG_INFO("maps", "Unloading previously loaded map %u before reloading.", map->GetId());
-        #endif
+        TC_LOG_DEBUG("maps", "Unloading previously loaded map %u before reloading.", map->GetId());
         sScriptMgr->OnUnloadGridMap(map, map->GridMaps[gx][gy], gx, gy);
 
         delete (map->GridMaps[gx][gy]);
@@ -435,9 +433,7 @@ void Map::LoadMapImpl(Map* map, int gx, int gy, bool reload)
 
     // map file name
     std::string fileName = Trinity::StringFormat("%smaps/%04u_%02u_%02u.map", sWorld->GetDataPath().c_str(), map->GetId(), gx, gy);
-    #ifdef WIN32
-    TC_LOG_INFO("maps", "Loading map %s gx: %i, gy: %i", fileName.c_str(), gx, gy);
-    #endif
+    TC_LOG_DEBUG("maps", "Loading map %s gx: %i, gy: %i", fileName.c_str(), gx, gy);
     // loading data
     map->GridMaps[gx][gy] = new GridMap();
     GridMap::LoadResult gridMapLoadResult = map->GridMaps[gx][gy]->loadData(fileName.c_str());

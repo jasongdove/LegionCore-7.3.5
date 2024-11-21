@@ -199,10 +199,8 @@ void CreatureGroup::MemberAttackStart(Creature* member, Unit* target)
     if(!member || !target)
         return;
 
-    #ifdef WIN32
     if(m_leader)
-        TC_LOG_DEBUG("entities.unit", "CreatureGroup::MemberAttackStart: GetDBTableGUIDLow %u GetGUIDLow %u entry %u m_leader %u %u", member->GetDBTableGUIDLow(), member->GetGUIDLow(), member->GetEntry(), m_leader->GetEntry(), m_leader->GetGUIDLow());
-    #endif
+        TC_LOG_DEBUG("entities.unit", "CreatureGroup::MemberAttackStart: GetDBTableGUIDLow %lu GetGUIDLow %u entry %u m_leader %u %u", member->GetDBTableGUIDLow(), member->GetGUIDLow(), member->GetEntry(), m_leader->GetEntry(), m_leader->GetGUIDLow());
 
     uint8 groupAI = 0;
 
