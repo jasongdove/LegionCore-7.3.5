@@ -224,7 +224,7 @@ class boss_lady_deathwhisper : public CreatureScript
             void Reset() override
             {
                 _Reset();
-                me->SetPower(POWER_MANA, me->GetMaxPower(POWER_MANA));
+                me->SetFullPower(POWER_MANA);
                 events.SetPhase(PHASE_ONE);
                 _waveCounter = 0;
                 transform = true;

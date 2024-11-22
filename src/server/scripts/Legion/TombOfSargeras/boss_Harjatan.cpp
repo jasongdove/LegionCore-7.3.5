@@ -238,7 +238,7 @@ public:
                 if (apply)
                     return;
 
-                me->SetPower(me->getPowerType(), 0);
+                me->SetPower(me->GetPowerType(), 0);
                 DoCast(SPELL_FROSTY_DISCHARGE);
                 break;
             case SPELL_DRAW_IN:
@@ -247,7 +247,7 @@ public:
                 if (!me->HasAura(SPELL_FRIGID_BLOWS))
                 {
                     DoCast(SPELL_FROSTY_DISCHARGE);
-                    me->SetPower(me->getPowerType(), 0);
+                    me->SetPower(me->GetPowerType(), 0);
                 }   
                 break;
             }

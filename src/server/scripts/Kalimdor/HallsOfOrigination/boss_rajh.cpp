@@ -89,7 +89,7 @@ class boss_rajh : public CreatureScript
                 SetEquipmentSlots(false, 1728, 0, 0);
 
                 DoCast(me, SPELL_ZERO_POWER, true);
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 100);
                 me->SetPower(POWER_ENERGY, 100);
             }

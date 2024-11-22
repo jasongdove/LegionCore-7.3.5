@@ -157,7 +157,7 @@ struct boss_aggramar : BossAI
     void Reset() override
     {
         _Reset();
-        me->SetPower(me->getPowerType(), IsMythicRaid() ? 60 : 0);
+        me->SetPower(me->GetPowerType(), IsMythicRaid() ? 60 : 0);
         me->SetReactState(REACT_AGGRESSIVE);
         DoCast(me, SPELL_ENABLE_ALTER_POWER, true);
         DoCast(me, SPELL_TAESHALACH_REACH, true);
@@ -655,7 +655,7 @@ class spell_aggramar_energize_periodic : public AuraScript
         if (!caster || !caster->isInCombat())
             return;
 
-        powerCount = caster->GetPower(caster->getPowerType());
+        powerCount = caster->GetPower(caster->GetPowerType());
 
         if (powerCount == 0 || powerCount == 20 || powerCount == 40 || powerCount == 57 || powerCount == 80)
             tickCount = 2;
@@ -663,7 +663,7 @@ class spell_aggramar_energize_periodic : public AuraScript
             tickCount = 3;
 
         if (powerCount < 100)
-            caster->SetPower(caster->getPowerType(), powerCount + tickCount);
+            caster->SetPower(caster->GetPowerType(), powerCount + tickCount);
         else if (!caster->HasUnitState(UNIT_STATE_CASTING))
         {
             caster->CastSpell(caster, SPELL_TAESHALACH_TECHNIQUE);
@@ -701,7 +701,7 @@ class spell_aggramar_wrought_in_flame : public AuraScript
 
         if (powerCount < 100.0f)
         {
-            caster->SetPower(caster->getPowerType(), powerCount);
+            caster->SetPower(caster->GetPowerType(), powerCount);
 
             if (auto _aurEff = GetAura()->GetEffect(EFFECT_3))
                 _aurEff->ChangeAmount(++scaleSize);

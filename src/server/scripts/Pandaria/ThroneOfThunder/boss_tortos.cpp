@@ -98,7 +98,7 @@ public:
             _Reset();
             AddOrRemoveSpellKickShellOnPlayers(false);
             me->RemoveAurasDueToSpell(SPELL_KICK_SHELL_T_AURA);
-            me->setPowerType(POWER_ENERGY);
+            me->SetPowerType(POWER_ENERGY);
             me->SetPower(POWER_ENERGY, 0);
             checkvictim = 0;
             updatepower = 0;

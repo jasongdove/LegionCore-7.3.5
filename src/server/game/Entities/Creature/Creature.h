@@ -651,6 +651,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         void UpdateArmor() override;
         void UpdateMaxHealth() override;
         void UpdateMaxPower(Powers power) override;
+        uint32 GetPowerIndex(Powers power) const override;
         void UpdateAttackPowerAndDamage(bool ranged = false) override;
         void UpdateDamagePhysical(WeaponAttackType attType) override;
         int8 GetOriginalEquipmentId() const { return m_originalEquipmentId; }

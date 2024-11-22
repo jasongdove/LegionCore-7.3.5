@@ -107,7 +107,7 @@ struct boss_witherbark : public BossAI
         for (uint8 i = 0; i < 3; i++)
             me->SummonCreature(NPC_AQUEOUS_GLOBULE_TRIGGER, aquaPos[i]);
 
-        me->setPowerType(POWER_MANA);
+        me->SetPowerType(POWER_MANA);
         me->SetMaxPower(POWER_MANA, 100);
         me->SetReactState(REACT_PASSIVE);
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);

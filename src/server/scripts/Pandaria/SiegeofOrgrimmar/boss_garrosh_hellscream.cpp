@@ -365,7 +365,7 @@ class boss_garrosh_hellscream : public CreatureScript
             boss_garrosh_hellscreamAI(Creature* creature) : BossAI(creature, DATA_GARROSH)
             {
                 instance = creature->GetInstanceScript();
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 100);
                 me->ApplySpellImmune(0, IMMUNITY_ID, SPELL_HELLSCREAM_WARSONG, true);
                 me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_HASTE_SPELLS, true);
@@ -1101,7 +1101,7 @@ public:
                 DoCast(me, SPELL_CONSUMED_HOPE, true);
                 break;
             case NPC_MINION_OF_YSHAARJ:
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 100);
                 me->SetPower(POWER_ENERGY, 0);
                 if (me->ToTempSummon())

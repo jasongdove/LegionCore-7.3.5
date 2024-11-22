@@ -323,7 +323,7 @@ class boss_general_nazgrim : public CreatureScript
             {
                 if (pl->getClass() == CLASS_PRIEST || pl->getClass() == CLASS_MAGE || pl->getClass() == CLASS_WARLOCK)
                     return true;
-                else if ((pl->getPowerType() == POWER_MANA && pl->getClass() == CLASS_DRUID) || pl->getClass() == CLASS_SHAMAN)
+                else if ((pl->GetPowerType() == POWER_MANA && pl->getClass() == CLASS_DRUID) || pl->getClass() == CLASS_SHAMAN)
                     return true;
 
                 return false;
@@ -694,7 +694,7 @@ public:
 
         void Reset()
         {
-            me->setPowerType(POWER_ENERGY);
+            me->SetPowerType(POWER_ENERGY);
             me->SetMaxPower(POWER_ENERGY, 100);
             me->SetPower(POWER_ENERGY, 100);
             plGuid.Clear();

@@ -171,7 +171,7 @@ public:
         void Reset() override
         {
             events.Reset();
-            me->setPowerType(POWER_ENERGY);
+            me->SetPowerType(POWER_ENERGY);
             me->SetMaxPower(POWER_ENERGY, 100);
             me->SetPower(POWER_ENERGY, 100);
             me->SetReactState(REACT_PASSIVE);

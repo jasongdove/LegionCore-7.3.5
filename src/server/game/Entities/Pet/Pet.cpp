@@ -339,7 +339,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petEntry, uint32 petnumber, bool c
     SetCanModifyStats(true);
 
     if (getPetType() == SUMMON_PET && !current)
-        SetPower(getPowerType(), GetMaxPower(getPowerType()));
+        SetFullPower(GetPowerType());
     else
     {
         uint32 savedhealth = petInfo->Health;
@@ -350,7 +350,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petEntry, uint32 petnumber, bool c
         else
         {
             SetHealth(savedhealth);
-            SetPower(getPowerType(), savedmana > uint32(GetMaxPower(getPowerType())) ? GetMaxPower(getPowerType()) : savedmana);
+            SetPower(GetPowerType(), savedmana > uint32(GetMaxPower(GetPowerType())) ? GetMaxPower(GetPowerType()) : savedmana);
         }
     }
 
@@ -922,7 +922,6 @@ bool Pet::CreateBaseAtTamed(CreatureTemplate const* cinfo, Map* map, uint32 phas
     if (!Create(guid, map, phaseMask, cinfo->Entry, pet_number))
         return false;
 
-    setPowerType(POWER_FOCUS);
     SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, 0);
     SetUInt32Value(UNIT_FIELD_PET_EXPERIENCE, 0);
     SetUInt32Value(UNIT_FIELD_PET_NEXT_LEVEL_EXPERIENCE, 2147483647);
@@ -981,12 +980,12 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
 
     CreatureBaseStats const* stats = sObjectMgr->GetCreatureBaseStats(petlevel, cinfo->unit_class);
 
-    //health, mana, armor and resistance
+    // Health, Mana or Power, Armor
     if(!InitBaseStat(creature_ID, damageSet))
     {
         SetCreateHealth(stats->BaseHealth[cinfo->HealthScalingExpansion]);
         SetCreateMana(stats->GenerateMana(cinfo));
-        SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
+        SetFullPower(POWER_MANA);
     }
 
     if(owner && (owner->getClass() == CLASS_HUNTER || owner->getClass() == CLASS_WARLOCK))
@@ -1004,6 +1003,17 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
         SetCreateStat(STAT_INTELLECT, 14 + (petlevel * 4.45));
     }
 
+    // Power
+    if (petType == HUNTER_PET) // Hunter pets have focus
+        SetPowerType(POWER_FOCUS);
+    else if (IsPetGhoul() || IsPetGargoyle() || IsPetAbomination()) // DK pets have energy
+        SetPowerType(POWER_ENERGY);
+    else if (IsWarlockPet()) // Warlock pets have energy (since 5.x)
+        SetPowerType(POWER_ENERGY);
+    else
+        SetPowerType(POWER_MANA);
+
+    // Damage
     SetBonusDamage(0);
     UpdateAllStats();
 

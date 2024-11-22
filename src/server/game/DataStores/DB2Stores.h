@@ -470,7 +470,7 @@ public:
     ChrSpecializationEntry const* GetChrSpecializationByIndex(uint8 classID, uint32 ID);
     ChrSpecializationEntry const* GetDefaultChrSpecializationForClass(uint32 class_) const;
     PetFamilySpellsSet const* GetPetFamilySpells(uint32 family);
-    uint32 GetPowerIndexByClass(uint32 powerType, uint32 classId) const;
+    uint32 GetPowerIndexByClass(Powers power, uint32 classId) const;
     AreaTableEntry const* FindAreaEntry(uint32 area);
     uint32 GetParentZoneOrSelf(uint32 zone);
     static char const* GetPetName(uint32 petfamily, LocaleConstant localeConstant);

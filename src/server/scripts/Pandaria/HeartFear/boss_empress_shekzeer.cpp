@@ -126,7 +126,7 @@ class boss_empress_shekzeer : public CreatureScript
                 me->SetReactState(REACT_DEFENSIVE);
                 phase = PHASE_NONE;
                 events.SetPhase(PHASE_NONE);
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 150);
                 me->SetPower(POWER_ENERGY, 150);
                 sdiedval = 0;

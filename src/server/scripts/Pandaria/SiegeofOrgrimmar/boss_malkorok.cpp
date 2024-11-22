@@ -147,7 +147,7 @@ class boss_malkorok : public CreatureScript
                 me->RemoveAurasDueToSpell(SPELL_FATAL_STRIKE);
                 me->RemoveAurasDueToSpell(SPELL_RELENTLESS_ASSAULT);
                 me->SetReactState(REACT_DEFENSIVE);
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetPower(POWER_ENERGY, 0);
                 asGuids.clear();
                 phase = PHASE_ONE;

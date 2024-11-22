@@ -508,7 +508,7 @@ class spell_gen_pet_summoned : public SpellScriptLoader
 
                         newPet->ClearUnitState(uint32(UNIT_STATE_ALL_STATE));
                         newPet->SetFullHealth();
-                        newPet->SetPower(newPet->getPowerType(), newPet->GetMaxPower(newPet->getPowerType()));
+                        newPet->SetFullPower(newPet->GetPowerType());
 
                         switch (newPet->GetEntry())
                         {

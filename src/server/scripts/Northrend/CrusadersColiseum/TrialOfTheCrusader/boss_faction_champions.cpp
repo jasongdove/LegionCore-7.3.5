@@ -598,7 +598,7 @@ struct boss_faction_championsAI : public BossAI
 
     void UpdatePower()
     {
-        if (me->getPowerType() == POWER_MANA)
+        if (me->GetPowerType() == POWER_MANA)
             me->ModifyPower(POWER_MANA, me->GetMaxPower(POWER_MANA) / 3);
     }
 
@@ -670,7 +670,7 @@ struct boss_faction_championsAI : public BossAI
         for (iter = tList.begin(); iter!=tList.end(); ++iter)
         {
             target = ObjectAccessor::GetUnit(*me, (*iter)->getUnitGuid());
-            if (target && target->getPowerType() == POWER_MANA)
+            if (target && target->GetPowerType() == POWER_MANA)
                 return target;
         }
         return NULL;
@@ -1823,7 +1823,7 @@ class npc_toc_rogue : public CreatureScript
                 events.ScheduleEvent(EVENT_EVISCERATE, urand(20*IN_MILLISECONDS, 40*IN_MILLISECONDS));
                 events.ScheduleEvent(EVENT_WOUND_POISON, urand(5*IN_MILLISECONDS, 10*IN_MILLISECONDS));
                 SetEquipmentSlots(false, 47422, 49982, EQUIP_NO_CHANGE);
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 100);
             }
 

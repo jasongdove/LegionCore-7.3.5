@@ -210,19 +210,19 @@ void WorldPackets::Party::PartyMemberStatseUpdate::Initialize(Player* player)
     if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)
     {
         MemberState.PowerType.emplace();
-        MemberState.PowerType = player->getPowerType();
+        MemberState.PowerType = player->GetPowerType();
     }
 
     if (mask & GROUP_UPDATE_FLAG_CUR_POWER)
     {
         MemberState.CurrentPower.emplace();
-        MemberState.CurrentPower = player->GetPower(player->getPowerType());
+        MemberState.CurrentPower = player->GetPower(player->GetPowerType());
     }
 
     if (mask & GROUP_UPDATE_FLAG_MAX_POWER)
     {
         MemberState.MaxPower.emplace();
-        MemberState.MaxPower = player->GetMaxPower(player->getPowerType());
+        MemberState.MaxPower = player->GetMaxPower(player->GetPowerType());
     }
 
     if (mask & GROUP_UPDATE_FLAG_ZONE)
@@ -770,9 +770,9 @@ void WorldPackets::Party::PartyMemberStats::Initialize(Player* player)
     MemberStats.MaxHealth = player->GetMaxHealth();
 
     // Power
-    MemberStats.PowerType = player->getPowerType();
-    MemberStats.CurrentPower = player->GetPower(player->getPowerType());
-    MemberStats.MaxPower = player->GetMaxPower(player->getPowerType());
+    MemberStats.PowerType = player->GetPowerType();
+    MemberStats.CurrentPower = player->GetPower(player->GetPowerType());
+    MemberStats.MaxPower = player->GetMaxPower(player->GetPowerType());
 
     // Position
     MemberStats.ZoneID = player->GetCurrentZoneID();

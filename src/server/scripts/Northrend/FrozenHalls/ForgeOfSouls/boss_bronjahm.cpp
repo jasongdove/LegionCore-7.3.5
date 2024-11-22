@@ -297,7 +297,7 @@ class spell_bronjahm_magic_bane : public SpellScriptLoader
 
             void RecalculateDamage()
             {
-                if (GetHitUnit()->getPowerType() != POWER_MANA)
+                if (GetHitUnit()->GetPowerType() != POWER_MANA)
                     return;
 
                 const int32 maxDamage = GetCaster()->GetMap()->GetSpawnMode() == 1 ? 15000 : 10000;

@@ -43,7 +43,7 @@ public:
         {
             Talk(3);
             _Reset();
-            me->setPowerType(POWER_ENERGY);
+            me->SetPowerType(POWER_ENERGY);
             me->SetPower(POWER_ENERGY, 0);
             checkdistance = 0;
             berserk = 0;

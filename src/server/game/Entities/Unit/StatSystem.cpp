@@ -906,8 +906,17 @@ void Player::UpdateMaxHealth()
             pet->UpdateMaxHealth();
 }
 
+uint32 Player::GetPowerIndex(Powers power) const
+{
+    return sDB2Manager.GetPowerIndexByClass(power, getClass());
+}
+
 void Player::UpdateMaxPower(Powers power)
 {
+    uint32 powerIndex = GetPowerIndex(power);
+    if (powerIndex == MAX_POWERS || powerIndex >= MAX_POWERS_PER_CLASS)
+        return;
+
     if (power == POWER_ALTERNATE)
         return;
 
@@ -1769,7 +1778,7 @@ void Unit::UpdatePowerRegen(uint32 power)
     if (!powerEntry)
         return;
 
-    uint32 powerIndex = GetPowerIndex(power);
+    uint32 powerIndex = GetPowerIndex(Powers(power));
     if (powerIndex == MAX_POWERS || powerIndex >= MAX_POWERS_PER_CLASS)
         return;
 
@@ -1856,7 +1865,7 @@ bool Creature::UpdateAllStats()
     UpdateMaxHealth();
     UpdateAttackPowerAndDamage();
     UpdateAttackPowerAndDamage(true);
-    UpdateMaxPower(getPowerType());
+    UpdateMaxPower(GetPowerType());
     UpdateMaxPower(POWER_ALTERNATE);
 
     for (int8 i = SPELL_SCHOOL_NORMAL; i < MAX_SPELL_SCHOOL; ++i)
@@ -1913,8 +1922,22 @@ void Creature::UpdateMaxHealth()
     SetMaxHealth(static_cast<uint64>(value));
 }
 
+uint32 Creature::GetPowerIndex(Powers power) const
+{
+    if (power == GetPowerType())
+        return 0;
+    if (power == POWER_ALTERNATE)
+        return 1;
+    if (power == POWER_COMBO_POINTS)
+        return 2;
+    return MAX_POWERS;
+}
+
 void Creature::UpdateMaxPower(Powers power)
 {
+    if (GetPowerIndex(power) == MAX_POWERS)
+        return;
+
     int32 cur_maxpower = GetMaxPower(power);
     int32 value = GetCreatePowers(power);
 
@@ -2137,7 +2160,7 @@ bool Guardian::UpdateStats(Stats stat)
         }
         case STAT_INTELLECT:
         {
-            if (getPowerType() == POWER_MANA)
+            if (GetPowerType() == POWER_MANA)
                 UpdateMaxPower(POWER_MANA);
             if (owner->getClass() == CLASS_MAGE)
                 UpdateAttackPowerAndDamage();
@@ -2152,10 +2175,12 @@ bool Guardian::UpdateStats(Stats stat)
 
 bool Guardian::UpdateAllStats()
 {
+    UpdateMaxHealth();
+
     for (uint8 i = STAT_STRENGTH; i < MAX_STATS; ++i)
         UpdateStats(Stats(i));
 
-    UpdateMaxPower(getPowerType());
+    UpdateMaxPower(GetPowerType());
     UpdateMaxPower(POWER_ALTERNATE);
 
     for (uint8 i = SPELL_SCHOOL_NORMAL; i < MAX_SPELL_SCHOOL; ++i)
@@ -2252,6 +2277,9 @@ void Guardian::UpdateMaxHealth()
 
 void Guardian::UpdateMaxPower(Powers power)
 {
+    if (GetPowerIndex(power) == MAX_POWERS)
+        return;
+
     int32 value = GetCreatePowers(power);
 
     uint32 creature_ID = isHunterPet() ? 1 : GetEntry();

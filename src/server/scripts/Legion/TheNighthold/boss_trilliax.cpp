@@ -592,7 +592,7 @@ public:
         void IsSummonedBy(Unit* summoner) override
         {
             onClick = false;
-            me->setPowerType(POWER_MANA);
+            me->SetPowerType(POWER_MANA);
             me->SetMaxPower(POWER_MANA, 100);
             me->SetPower(POWER_MANA, 0);
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);

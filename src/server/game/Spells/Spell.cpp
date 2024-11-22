@@ -1158,7 +1158,7 @@ void Spell::SelectImplicitAreaTargets(SpellEffIndex effIndex, SpellImplicitTarge
             else
             {
                 for (auto itr = unitTargets.begin(); itr != unitTargets.end();)
-                    if ((*itr)->getPowerType() != static_cast<Powers>(power))
+                    if ((*itr)->GetPowerType() != static_cast<Powers>(power))
                         itr = unitTargets.erase(itr);
                     else
                         ++itr;
@@ -7962,7 +7962,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (!m_caster->IsPlayer() || m_CastItem)
                     break;
 
-                if (m_targets.GetUnitTarget()->getPowerType() != POWER_MANA)
+                if (m_targets.GetUnitTarget()->GetPowerType() != POWER_MANA)
                     return SPELL_FAILED_BAD_TARGETS;
 
                 break;

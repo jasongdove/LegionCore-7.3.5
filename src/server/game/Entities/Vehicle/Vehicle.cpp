@@ -92,7 +92,7 @@ void Vehicle::Install()
     {
         if (PowerDisplayEntry const* powerDisplay = sPowerDisplayStore.LookupEntry(_vehicleInfo->PowerDisplayID[0]))
         {
-            _me->setPowerType(Powers(powerDisplay->ActualType));
+            _me->SetPowerType(Powers(powerDisplay->ActualType));
             _me->SetMaxPower(Powers(powerDisplay->ActualType), _me->GetCreatePowers(Powers(powerDisplay->ActualType)));
             _me->SetPower(Powers(powerDisplay->ActualType), _me->GetPowerForReset(Powers(powerDisplay->ActualType), powerDisplay->ID));
         }
@@ -113,7 +113,7 @@ void Vehicle::Install()
                     powerType = static_cast<Powers>(power->PowerType);
                 break;
             }
-            _me->setPowerType(powerType);
+            _me->SetPowerType(powerType);
             _me->SetMaxPower(powerType, _me->GetCreatePowers(powerType));
             _me->SetPower(powerType, _me->GetPowerForReset(powerType));
         }

@@ -1017,7 +1017,7 @@ class spell_yorsahj_the_unsleeping_mana_void : public SpellScriptLoader
                     {
                         if (unit->GetTypeId() != TYPEID_PLAYER)
                             return true;
-                        return (unit->ToPlayer()->getPowerType() != POWER_MANA);
+                        return (unit->ToPlayer()->GetPowerType() != POWER_MANA);
                     }
             };
 

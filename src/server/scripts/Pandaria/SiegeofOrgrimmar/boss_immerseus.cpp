@@ -368,7 +368,7 @@ public:
             me->RemoveAurasDueToSpell(SPELL_SUBMERGE_2);
             me->RemoveAurasDueToSpell(SPELL_SWELLING_CORRUPTION);
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-            me->setPowerType(POWER_ENERGY);
+            me->SetPowerType(POWER_ENERGY);
             me->SetMaxPower(POWER_ENERGY, 100);
             me->SetPower(POWER_ENERGY, 100);
             lasthp = me->GetMaxHealth();

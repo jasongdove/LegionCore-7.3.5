@@ -97,7 +97,7 @@ class boss_ra_den : public CreatureScript
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
                 if (instance)
                     instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_UNLEASHED_ANIMA);
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 100);
                 me->SetPower(POWER_ENERGY, 0);
                 checkpower = 0;

@@ -1277,9 +1277,9 @@ class Unit : public WorldObject
         virtual float GetDamageMultiplierForTarget(WorldObject const* /*target*/) const { return 1.0f; }
         virtual float GetArmorMultiplierForTarget(WorldObject const* /*target*/) const { return 1.0f; }
 
-        Powers getPowerType() const { return Powers(GetUInt32Value(UNIT_FIELD_DISPLAY_POWER)); }
+        Powers GetPowerType() const { return Powers(GetUInt32Value(UNIT_FIELD_DISPLAY_POWER)); }
         void SetFieldPowerType(uint32 powerType) { SetUInt32Value(UNIT_FIELD_DISPLAY_POWER, powerType); }
-        void setPowerType(Powers power);
+        void SetPowerType(Powers power);
         void SetInitialPowerValue(Powers powerType);
         int32 GetPower(Powers power) const;
         int32 GetMaxPower(Powers power) const;
@@ -1287,6 +1287,7 @@ class Unit : public WorldObject
         void InitialPowers(bool maxpower = false);
         void ResetPowers(float perc = 0.0f, bool duel = false);
         void SetMaxPower(Powers power, int32 val);
+        inline void SetFullPower(Powers power) { SetPower(power, GetMaxPower(power)); }
         int32 GetPowerForReset(Powers power, uint16 powerDisplayID = 0) const;
         void VisualForPower(Powers power, int32 curentVal, int32 modVal = 0, int32 maxPower = 0, bool generate = false, SpellInfo const* spellInfo = nullptr);
         void UpdatePowerState(bool inCombat = true);
@@ -1302,7 +1303,6 @@ class Unit : public WorldObject
         int32 GetPowerCost(int8 power);
         int32 ModifyPower(Powers power, int32 val, bool set = false, SpellInfo const* spellInfo = nullptr);
         int32 ModifyPowerPct(Powers power, float pct, bool apply = true);
-        uint32 GetPowerIndex(uint32 powerType) const;
 
         uint32 GetAttackTime(WeaponAttackType att) const;
         void SetAttackTime(WeaponAttackType att, uint32 val);
@@ -2007,6 +2007,7 @@ class Unit : public WorldObject
         virtual void UpdateArmor() = 0;
         virtual void UpdateMaxHealth() = 0;
         virtual void UpdateMaxPower(Powers power) = 0;
+        virtual uint32 GetPowerIndex(Powers power) const = 0;
         virtual void UpdateAttackPowerAndDamage(bool ranged = false) = 0;
         virtual void UpdateDamagePhysical(WeaponAttackType attType) = 0;
         float GetTotalAttackPowerValue(WeaponAttackType attType) const;
@@ -2724,8 +2725,8 @@ namespace Trinity
             PowerPctOrderPred(Powers power, bool ascending = true) : m_power(power), m_ascending(ascending) {}
             bool operator() (const Unit* a, const Unit* b) const
             {
-                float rA = a->GetMaxPower(m_power) ? float(a->GetPower(m_power)) / float(a->GetMaxPower(m_power)) : 0.0f;
-                float rB = b->GetMaxPower(m_power) ? float(b->GetPower(m_power)) / float(b->GetMaxPower(m_power)) : 0.0f;
+                float rA = a ? a->GetPowerPct(m_power) : 0.0f;
+                float rB = b ? b->GetPowerPct(m_power) : 0.0f;
                 return m_ascending ? rA < rB : rA > rB;
             }
         private:

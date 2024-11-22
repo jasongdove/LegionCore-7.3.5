@@ -2884,7 +2884,7 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const* aurApp, uint8 mo
         {
             //int32 oldPower = target->GetPower(PowerType);
             // reset power to default values only at power change
-            if (target->getPowerType() != PowerType)
+            if (target->GetPowerType() != PowerType)
                 target->SetFieldPowerType(PowerType);
         }
 
@@ -2903,7 +2903,7 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const* aurApp, uint8 mo
             target->SetShapeshiftForm(FORM_NONE);
             if (target->getClass() == CLASS_DRUID)
             {
-                target->setPowerType(POWER_MANA);
+                target->SetPowerType(POWER_MANA);
                 // Remove movement impairing effects also when shifting out
                 target->RemoveMovementImpairingEffects();
             }
@@ -3405,7 +3405,7 @@ void AuraEffect::HandleFeignDeath(AuraApplication const* aurApp, uint8 mode, boo
             creature->InitializeReactState();
         }
 
-        Powers power = target->getPowerType();
+        Powers power = target->GetPowerType();
         target->SetPower(power, target->GetPower(power));
     }
 }
@@ -8512,7 +8512,7 @@ void AuraEffect::HandlePeriodicManaLeechAuraTick(Unit* target, Unit* caster, Spe
 {
     auto powerType = Powers(GetMiscValue());
 
-    if (!caster || !caster->IsAlive() || !target->IsAlive() || target->getPowerType() != powerType)
+    if (!caster || !caster->IsAlive() || !target->IsAlive() || target->GetPowerType() != powerType)
         return;
 
     if (target->HasUnitState(UNIT_STATE_ISOLATED) || target->IsImmunedToDamage(GetSpellInfo()))
@@ -8589,7 +8589,7 @@ void AuraEffect::HandleObsModPowerAuraTick(Unit* target, Unit* caster, SpellEffI
 {
     Powers powerType;
     if (GetMiscValue() == POWER_ALL)
-        powerType = target->getPowerType();
+        powerType = target->GetPowerType();
     else
         powerType = Powers(GetMiscValue());
 
@@ -8698,7 +8698,7 @@ void AuraEffect::HandlePeriodicPowerBurnAuraTick(Unit* target, Unit* caster, Spe
 {
     auto powerType = Powers(GetMiscValue());
 
-    if (!caster || !target->IsAlive() || target->getPowerType() != powerType)
+    if (!caster || !target->IsAlive() || target->GetPowerType() != powerType)
         return;
 
     if (target->HasUnitState(UNIT_STATE_ISOLATED) || target->IsImmunedToDamage(GetSpellInfo()))
@@ -9063,7 +9063,7 @@ void AuraEffect::HandleAuraeEablePowerType(AuraApplication const* aurApp, uint8 
         return;
 
     Unit* target = aurApp->GetTarget();
-    if (target->GetPowerIndex(powerDisplay->ActualType) == MAX_POWERS)
+    if (target->GetPowerIndex(Powers(powerDisplay->ActualType)) == MAX_POWERS)
         return;
 
     if (apply)

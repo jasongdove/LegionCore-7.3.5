@@ -661,7 +661,7 @@ struct npc_command_capsules : VehicleAI
         instance = me->GetInstanceScript();
         me->SetControlled(true, UNIT_STATE_ROOT);
         me->SetReactState(REACT_PASSIVE);
-        me->setPowerType(POWER_RAGE);
+        me->SetPowerType(POWER_RAGE);
     }
 
     std::list<ObjectGuid> shrikeGUIDList;

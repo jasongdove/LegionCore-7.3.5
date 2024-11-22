@@ -3313,9 +3313,9 @@ void SmartScript::ProcessEvent(SmartScriptHolder& e, Unit* unit, uint32 var0, ui
         }
         case SMART_EVENT_MANA_PCT:
         {
-            if (!me || (!me->isInCombat() && !(e.event.event_flags & SMART_EVENT_FLAG_ALLOW_EVENT_IN_COMBAT)) || !me->GetMaxPower(me->getPowerType()))
+            if (!me || (!me->isInCombat() && !(e.event.event_flags & SMART_EVENT_FLAG_ALLOW_EVENT_IN_COMBAT)) || !me->GetMaxPower(me->GetPowerType()))
                 return;
-            auto perc = uint32(100.0f * me->GetPower(me->getPowerType()) / me->GetMaxPower(me->getPowerType()));
+            auto perc = uint32(me->GetPowerPct(me->GetPowerType()));
             if (perc > e.event.minMaxRepeat.max || perc < e.event.minMaxRepeat.min)
                 return;
             RecalcTimer(e, e.event.minMaxRepeat.repeatMin, e.event.minMaxRepeat.repeatMax);
@@ -3324,9 +3324,9 @@ void SmartScript::ProcessEvent(SmartScriptHolder& e, Unit* unit, uint32 var0, ui
         }
         case SMART_EVENT_TARGET_MANA_PCT:
         {
-            if (!me || (!me->isInCombat() && !(e.event.event_flags & SMART_EVENT_FLAG_ALLOW_EVENT_IN_COMBAT)) || !me->getVictim() || !me->getVictim()->GetMaxPower(me->getPowerType()))
+            if (!me || (!me->isInCombat() && !(e.event.event_flags & SMART_EVENT_FLAG_ALLOW_EVENT_IN_COMBAT)) || !me->getVictim() || !me->getVictim()->GetMaxPower(me->GetPowerType()))
                 return;
-            auto perc = uint32(100.0f * me->getVictim()->GetPower(me->getPowerType()) / me->getVictim()->GetMaxPower(me->getPowerType()));
+            auto perc = uint32(me->getVictim()->GetPowerPct(me->getVictim()->GetPowerType()));
             if (perc > e.event.minMaxRepeat.max || perc < e.event.minMaxRepeat.min)
                 return;
             RecalcTimer(e, e.event.minMaxRepeat.repeatMin, e.event.minMaxRepeat.repeatMax);

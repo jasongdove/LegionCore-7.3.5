@@ -286,7 +286,7 @@ struct boss_argus : BossAI
         _Reset();
         DoCast(me, SPELL_ZERO_ENERGY_REGEN, true);
         DoCast(me, SPELL_TITANIC_ESSENCE, true);
-        me->SetPower(me->getPowerType(), 0);
+        me->SetPower(me->GetPowerType(), 0);
         prePhaseFour = false;
         saySkyAndSeaSays = false;
         sayAvatarOfAggramar = false;
@@ -755,7 +755,7 @@ struct boss_argus : BossAI
                     events.RescheduleEvent(EVENT_SKY_AND_SEA, 25000);
                     break;
                 case EVENT_P2_ENERGY:
-                    me->SetPower(me->getPowerType(), 70);
+                    me->SetPower(me->GetPowerType(), 70);
                     DoCast(me, SPELL_P2_ENERGY_CONTROLLER, true);
                     break;
                 case EVENT_EDGE_OF_OBLITERATION:
@@ -851,7 +851,7 @@ struct boss_argus : BossAI
                     me->SummonCreature(NPC_GIFT_OF_THE_LIFEBINDER, 2893.734f, -4545.361f, 292.02f, 3.77f, TEMPSUMMON_DEAD_DESPAWN);
                     me->RemoveAurasDueToSpell(SPELL_P4_ARCANE_DISSOLVE_OUT);
                     me->SetDisplayId(me->GetNativeDisplayId());
-                    me->SetPower(me->getPowerType(), IsMythicRaid() ? 0 : 75);
+                    me->SetPower(me->GetPowerType(), IsMythicRaid() ? 0 : 75);
                     me->AddDelayedCombat(1000, [this]() -> void
                     {
                         instance->DoCastSpellOnPlayers(SPELL_GHOST_TRACKER);
@@ -924,7 +924,7 @@ struct npc_argus_titans_generic : ScriptedAI
     void IsSummonedBy(Unit* summoner) override
     {
         me->CastSpell(me, SPELL_ZERO_ENERGY_REGEN, true);
-        me->SetPower(me->getPowerType(), 0);
+        me->SetPower(me->GetPowerType(), 0);
 
         switch (me->GetEntry())
         {
@@ -1311,7 +1311,7 @@ struct npc_argus_gift_of_the_lifebinder : ScriptedAI
         me->CastSpell(me, SPELL_ZERO_ENERGY_REGEN, true);
         me->CastSpell(me, SPELL_GIFT_OF_THE_LIFEBINDER_AT, true);
         me->CastSpell(me, SPELL_LIFE_GIVING_ROOTS, true);
-        powerCount = me->GetPower(me->getPowerType());
+        powerCount = me->GetPower(me->GetPowerType());
     }
 
     void Reset() override {}
@@ -1338,7 +1338,7 @@ struct npc_argus_gift_of_the_lifebinder : ScriptedAI
                     if (powerCount <= 0)
                         powerCount = 0;
 
-                    me->SetPower(me->getPowerType(), powerCount);
+                    me->SetPower(me->GetPowerType(), powerCount);
                 }
                 else
                     me->CastSpell(me, SPELL_WITHERING_ROOTS, true);
@@ -1619,10 +1619,10 @@ class spell_argus_p1_energize_periodic : public AuraScript
         if (!caster || !caster->isInCombat() || aurEff->GetTickNumber() < 11)
             return;
 
-        uint8 powerCount = caster->GetPower(caster->getPowerType());
+        uint8 powerCount = caster->GetPower(caster->GetPowerType());
 
         if (powerCount < 100)
-            caster->SetPower(caster->getPowerType(), powerCount + 5);
+            caster->SetPower(caster->GetPowerType(), powerCount + 5);
         else if (!caster->HasUnitState(UNIT_STATE_CASTING))
             caster->CastSpell(caster, SPELL_CONE_OF_DEATH_FILTER);
     }
@@ -1648,12 +1648,12 @@ class spell_argus_p2_energize_periodic : public AuraScript
         if (!caster || !caster->isInCombat())
             return;
 
-        powerCount = caster->GetPower(caster->getPowerType());
+        powerCount = caster->GetPower(caster->GetPowerType());
         tickCount = aurEff->GetTickNumber() % 2 ? 2 : 3;
 
         if (powerCount < 100)
         {
-            caster->SetPower(caster->getPowerType(), powerCount + tickCount);
+            caster->SetPower(caster->GetPowerType(), powerCount + tickCount);
 
             if (powerCount == 50)
             {
@@ -1690,12 +1690,12 @@ class spell_argus_p4_energize_periodic : public AuraScript
         if (!caster || !caster->isInCombat())
             return;
 
-        powerCount = caster->GetPower(caster->getPowerType());
+        powerCount = caster->GetPower(caster->GetPowerType());
 
         if (powerCount < 99)
-            caster->SetPower(caster->getPowerType(), powerCount + 2);
+            caster->SetPower(caster->GetPowerType(), powerCount + 2);
         else
-            caster->SetPower(caster->getPowerType(), 0);
+            caster->SetPower(caster->GetPowerType(), 0);
 
         if (++tickCount == maxTick)
         {
@@ -1795,8 +1795,8 @@ class spell_argus_titanforging_energize_periodic : public AuraScript
         if (!caster)
             return;
 
-        if (powerCount = caster->GetPower(caster->getPowerType()))
-            caster->SetPower(caster->getPowerType(), powerCount - 1);
+        if (powerCount = caster->GetPower(caster->GetPowerType()))
+            caster->SetPower(caster->GetPowerType(), powerCount - 1);
     }
 
     void OnCheckTick(AuraEffect const* aurEff)
@@ -1805,7 +1805,7 @@ class spell_argus_titanforging_energize_periodic : public AuraScript
         if (!caster)
             return;
 
-        powerCount = caster->GetPower(caster->getPowerType());
+        powerCount = caster->GetPower(caster->GetPowerType());
 
         if (!allowCast && powerCount >= 20)
         {

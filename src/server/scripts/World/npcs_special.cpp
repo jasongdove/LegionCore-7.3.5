@@ -3192,8 +3192,8 @@ public:
                 me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle(), MovementSlot::MOTION_SLOT_ACTIVE);
             }
 
-            me->SetMaxPower(me->getPowerType(), owner->GetMaxPower(me->getPowerType()));
-            me->SetPower(me->getPowerType(), me->GetMaxPower(me->getPowerType()));
+            me->SetMaxPower(me->GetPowerType(), owner->GetMaxPower(me->GetPowerType()));
+            me->SetPower(me->GetPowerType(), me->GetMaxPower(me->GetPowerType()));
             me->SetMaxHealth(owner->GetMaxHealth());
             me->SetHealth(owner->GetHealth());
             me->SetReactState(ReactStates::REACT_DEFENSIVE);

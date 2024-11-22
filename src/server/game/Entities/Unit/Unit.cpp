@@ -1020,7 +1020,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
     }
 
     // Rage from Damage made (only from direct weapon damage)
-    if (cleanDamage && damagetype == DIRECT_DAMAGE && this != victim && getPowerType() == POWER_RAGE)
+    if (cleanDamage && damagetype == DIRECT_DAMAGE && this != victim && GetPowerType() == POWER_RAGE)
     {
         if (cleanDamage->hitOutCome == MELEE_HIT_NORMAL || cleanDamage->hitOutCome == MELEE_HIT_CRIT)
         {
@@ -1108,7 +1108,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
     if (!damage)
     {
         // Rage from absorbed damage
-        if (cleanDamage && cleanDamage->absorbed_damage && victim->getPowerType() == POWER_RAGE)
+        if (cleanDamage && cleanDamage->absorbed_damage && victim->GetPowerType() == POWER_RAGE)
             victim->RewardRage(cleanDamage->absorbed_damage + cleanDamage->mitigated_damage, false);
 
         return 0;
@@ -1195,7 +1195,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         }
 
         // Rage from damage received
-        if (this != victim && victim->getPowerType() == POWER_RAGE)
+        if (this != victim && victim->GetPowerType() == POWER_RAGE)
             victim->RewardRage(damage + (cleanDamage ? (cleanDamage->absorbed_damage + cleanDamage->mitigated_damage) : 0), false);
 
         if (IsPlayer())
@@ -11144,29 +11144,35 @@ bool Unit::HandleOverrideClassScriptAuraProc(Unit* victim, DamageInfo* /*dmgInfo
     return true;
 }
 
-void Unit::setPowerType(Powers fieldPower)
+void Unit::SetPowerType(Powers power)
 {
-    if (getPowerType() == fieldPower)
+    if (GetPowerType() == power)
         return;
 
     //! For expl. Vehicle power POWER_TYPE_VAULT_CRACKING_PROGRESS = 82 has field = 0;
     //! Maybe it's index? but for vehicle send power category.
-    SetFieldPowerType(fieldPower);
+    SetFieldPowerType(power);
 
     if (IsPlayer())
         ToPlayer()->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_POWER_TYPE);
 
-    Powers new_powertype = fieldPower;
+    Powers new_powertype = power;
+
+    UpdateMaxPower(new_powertype);
+
     switch (new_powertype)
     {
-        case POWER_MANA:
+        case POWER_MANA: // Keep the same (druid form switching...)
+        case POWER_ENERGY:
+            break;
+        case POWER_RAGE: // Reset to zero
+            SetPower(POWER_RAGE, 0);
+        case POWER_FOCUS: // Make it full
+            SetFullPower(new_powertype);
             break;
         default:
-            SetMaxPower(new_powertype, GetCreatePowers(new_powertype));
-            SetPower(new_powertype, GetPowerForReset(new_powertype));
             break;
     }
-    UpdateMaxPower(new_powertype);
 }
 
 void Unit::SetInitialPowerValue(Powers powerType)
@@ -11178,7 +11184,7 @@ void Unit::SetInitialPowerValue(Powers powerType)
     if ((powerTypeEntry->Flags & PowerTypeFlags::UnitsUseDefaultPowerOnInit) != 0)
         SetPower(powerType, powerTypeEntry->DefaultPower);
     else
-        SetPower(powerType, GetMaxPower(powerType));
+        SetFullPower(powerType);
 }
 
 FactionTemplateEntry const* Unit::getFactionTemplateEntry() const
@@ -15489,7 +15495,7 @@ Powers Unit::GetPowerTypeBySpecId(uint32 specID)
     }
     if (ChrClassesEntry const* cEntry = sChrClassesStore.LookupEntry(getClass()))
         return Powers(cEntry->DisplayPower);
-    return getPowerType();
+    return GetPowerType();
 }
 
 void Unit::AddComboPoints(int8 count)
@@ -17041,15 +17047,6 @@ void Unit::SetMaxHealth(uint64 val)
         SetHealth(val);
 }
 
-uint32 Unit::GetPowerIndex(uint32 powerType) const
-{
-    uint32 classId = getClass();
-    if (ToPet() && ToPet()->getPetType() == HUNTER_PET)
-        classId = CLASS_HUNTER;
-
-    return sDB2Manager.GetPowerIndexByClass(powerType, classId);
-}
-
 uint32 Unit::GetAttackTime(WeaponAttackType att) const
 {
     float f_BaseAttackTime = GetFloatValue(UNIT_FIELD_ATTACK_ROUND_BASE_TIME + att) / m_modAttackSpeedPct[att];
@@ -17175,7 +17172,7 @@ void Unit::ResetPowers(float perc, bool duel)
         {
             case POWER_MANA:
                 if (duel)
-                    SetPower(power, GetMaxPower(POWER_MANA));
+                    SetFullPower(POWER_MANA);
                 break;
             case POWER_ALTERNATE:
                 break;

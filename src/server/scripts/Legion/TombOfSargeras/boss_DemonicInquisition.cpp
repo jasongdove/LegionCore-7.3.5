@@ -104,7 +104,7 @@ public:
             _EnterCombat();
             events.Reset();
             
-            me->SetPower(me->getPowerType(), 0);
+            me->SetPower(me->GetPowerType(), 0);
 
             switch (me->GetEntry())
             {
@@ -241,7 +241,7 @@ public:
                         events.RescheduleEvent(EVENT_SCYTHE_SWEEP, 24500);
                         break;
                     case EVENT_CHECK_ENERGY:
-                        if (me->GetPower(me->getPowerType()) >= 100)
+                        if (me->GetPower(me->GetPowerType()) >= 100)
                         {
                             DoCast(me->GetEntry() == NPC_ATRIGAN ? SPELL_BONE_SAW : SPELL_FEL_SQUAL);
                             Talk(1);

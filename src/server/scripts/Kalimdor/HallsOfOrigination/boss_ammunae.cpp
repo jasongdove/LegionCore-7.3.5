@@ -79,7 +79,7 @@ struct boss_ammunae : public BossAI
         _Reset();
 
         DoCast(SPELL_ZERO_POWER);
-        me->setPowerType(POWER_ENERGY);
+        me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
         me->SetPower(POWER_ENERGY, 0);
     }
@@ -155,7 +155,7 @@ struct boss_ammunae : public BossAI
 
                 if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
                 {
-                    switch (target->getPowerType())
+                    switch (target->GetPowerType())
                     {
                     case POWER_FOCUS:
                         DoCast(target, SPELL_CONSUME_LIFE_FOCUS, false);

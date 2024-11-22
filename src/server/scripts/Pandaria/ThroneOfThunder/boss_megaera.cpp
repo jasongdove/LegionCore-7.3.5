@@ -114,7 +114,7 @@ public:
         void Reset()
         {
             events.Reset();
-            me->setPowerType(POWER_ENERGY);
+            me->SetPowerType(POWER_ENERGY);
             me->SetPower(POWER_ENERGY, 0);
 
             if (instance->GetBossState(DATA_MEGAERA != NOT_STARTED))

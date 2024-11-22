@@ -639,7 +639,7 @@ public:
                                 Unit * const target = (*itr)->getTarget();
 
                                 if (target->GetTypeId() == TYPEID_PLAYER
-                                        && target->getPowerType() == POWER_MANA
+                                        && target->GetPowerType() == POWER_MANA
                                         && target->GetPower(POWER_MANA))
                                 {
                                     unitList.push_back(target);

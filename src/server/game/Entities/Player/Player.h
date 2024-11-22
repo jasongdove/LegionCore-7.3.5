@@ -2502,6 +2502,7 @@ class Player : public Unit, public GridObject<Player>
         void UpdateArmor() override;
         void UpdateMaxHealth() override;
         void UpdateMaxPower(Powers power) override;
+        uint32 GetPowerIndex(Powers power) const override;
         void UpdateAttackPowerAndDamage(bool ranged = false) override;
         void UpdateDamagePhysical(WeaponAttackType attType) override;
         void ApplySpellPowerBonus(int32 amount, bool apply);

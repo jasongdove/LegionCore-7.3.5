@@ -1738,7 +1738,7 @@ class npc_madness_of_deathwing_regenerative_blood : public CreatureScript
             void Reset()
             {
                 events.Reset();
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 10);
                 me->SetPower(POWER_ENERGY, 0);
             }

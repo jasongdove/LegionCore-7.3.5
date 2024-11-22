@@ -121,7 +121,7 @@ class boss_iron_juggernaut : public CreatureScript
                 phase = PHASE_ONE;
                 events.SetPhase(PHASE_ONE);
                 me->SetReactState(REACT_DEFENSIVE);
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetPower(POWER_ENERGY, 0);
                 me->RemoveAurasDueToSpell(SPELL_SEISMIC_ACTIVITY);
                 me->RemoveAurasDueToSpell(SPELL_BERSERK);

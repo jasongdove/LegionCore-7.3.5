@@ -57,7 +57,7 @@ public:
         {
             events.Reset();
             me->SetReactState(REACT_PASSIVE);
-            me->setPowerType(POWER_ENERGY);
+            me->SetPowerType(POWER_ENERGY);
             me->SetMaxPower(POWER_ENERGY, 100);
             me->SetPower(POWER_ENERGY, 0);
             events.RescheduleEvent(EVENT_POINT_HOME, 2000);

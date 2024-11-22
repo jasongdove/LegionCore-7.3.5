@@ -208,7 +208,7 @@ public:
                 me->SetReactState(REACT_DEFENSIVE);
             if (me->GetEntry() == NPC_FROST_KING_MALAKK)
                 ResetGarajalSoul();
-            me->setPowerType(POWER_ENERGY);
+            me->SetPowerType(POWER_ENERGY);
             me->SetPower(POWER_ENERGY, 0);
             donehppct = 100; //default value
             timerpower = 0;

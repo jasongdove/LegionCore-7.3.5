@@ -1518,7 +1518,7 @@ public:
             targetGuid.Clear();
             donepct = 1;
             me->SetReactState(REACT_PASSIVE);
-            me->setPowerType(POWER_ENERGY);
+            me->SetPowerType(POWER_ENERGY);
             me->SetMaxPower(POWER_ENERGY, 100);
             me->SetPower(POWER_ENERGY, 0);
             me->SetSpeed(MOVE_RUN, 0.5f);

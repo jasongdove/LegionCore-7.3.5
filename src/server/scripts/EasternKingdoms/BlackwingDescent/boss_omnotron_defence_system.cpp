@@ -283,7 +283,7 @@ class boss_arcanotron : public CreatureScript
                 me->SetFloatValue(UNIT_FIELD_COMBAT_REACH, 5);
 
                 instance->SetData(DATA_HEALTH_OMNOTRON_SHARED, me->GetMaxHealth());
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 100);
                 me->SetPower(POWER_ENERGY, 100);
                 me->SetHealth(me->GetMaxHealth());
@@ -505,7 +505,7 @@ class boss_electron : public CreatureScript
                 me->SetFloatValue(UNIT_FIELD_COMBAT_REACH, 5);
 
                 instance->SetData(DATA_HEALTH_OMNOTRON_SHARED, me->GetMaxHealth());
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 100);
                 me->SetPower(POWER_ENERGY, 100);
                 me->SetHealth(me->GetMaxHealth());
@@ -688,7 +688,7 @@ class boss_magmatron : public CreatureScript
                 me->SetFloatValue(UNIT_FIELD_COMBAT_REACH, 5);
 
                 instance->SetData(DATA_HEALTH_OMNOTRON_SHARED, me->GetMaxHealth());
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 100);
                 me->SetPower(POWER_ENERGY, 100);
                 me->SetHealth(me->GetMaxHealth());
@@ -881,7 +881,7 @@ class boss_toxitron : public CreatureScript
                 me->SetFloatValue(UNIT_FIELD_COMBAT_REACH, 5);
 
                 instance->SetData(DATA_HEALTH_OMNOTRON_SHARED, me->GetMaxHealth());
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 100);
                 me->SetPower(POWER_ENERGY, 100);
                 me->SetHealth(me->GetMaxHealth());

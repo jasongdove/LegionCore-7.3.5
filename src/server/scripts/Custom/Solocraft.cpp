@@ -588,7 +588,7 @@ protected:
                 player->SetFullHealth();
                 player->CastSpell(player, 6962, true);
 
-                if (player->getPowerType() == POWER_MANA || player->getClass() == 11)
+                if (player->GetPowerType() == POWER_MANA || player->getClass() == 11)
                 {
                     player->SetPower(POWER_MANA, player->GetMaxPower(POWER_MANA));
 

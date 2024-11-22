@@ -2200,7 +2200,7 @@ public:
         {
             if (spell->Id == SPELL_EYE_OF_GULDAN_COPY && me->GetAnyOwner())
             {
-                me->SetPower(me->getPowerType(), 0);
+                me->SetPower(me->GetPowerType(), 0);
 
                 if (Creature* new_eye = me->GetAnyOwner()->SummonCreature(me->GetEntry(), me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation()))
                 {

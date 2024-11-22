@@ -3318,9 +3318,9 @@ bool ChrClassesXPowerTypesEntryComparator::Compare(ChrClassesXPowerTypesEntry co
     return left->PowerType < right->PowerType;
 }
 
-uint32 DB2Manager::GetPowerIndexByClass(uint32 powerType, uint32 classId) const
+uint32 DB2Manager::GetPowerIndexByClass(Powers power, uint32 classId) const
 {
-    return _powersByClass[classId][powerType];
+    return _powersByClass[classId][power];
 }
 
 AreaTableEntry const* DB2Manager::FindAreaEntry(uint32 area)

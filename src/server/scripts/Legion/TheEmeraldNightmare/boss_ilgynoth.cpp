@@ -653,7 +653,7 @@ struct npc_ilgynoth_nightmare_horror : public ScriptedAI
 
     void Reset() override
     {
-        me->setPowerType(POWER_ENERGY);
+        me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
         me->SetPower(POWER_ENERGY, 0);
         tickPower_Timer = 1000;

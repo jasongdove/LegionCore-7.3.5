@@ -1051,7 +1051,7 @@ class spell_deathbringer_blood_link_aura : public SpellScriptLoader
             void HandlePeriodicTick(AuraEffect const* /*aurEff*/)
             {
                 PreventDefaultAction();
-                if (GetUnitOwner()->getPowerType() == POWER_ENERGY && GetUnitOwner()->GetPower(POWER_ENERGY) == GetUnitOwner()->GetMaxPower(POWER_ENERGY))
+                if (GetUnitOwner()->GetPowerType() == POWER_ENERGY && GetUnitOwner()->GetPower(POWER_ENERGY) == GetUnitOwner()->GetMaxPower(POWER_ENERGY))
                     if (Creature* saurfang = GetUnitOwner()->ToCreature())
                         saurfang->AI()->DoAction(ACTION_MARK_OF_THE_FALLEN_CHAMPION);
             }
@@ -1107,7 +1107,7 @@ class spell_deathbringer_blood_power : public SpellScriptLoader
 
             bool Load() override
             {
-                if (GetUnitOwner()->getPowerType() != POWER_ENERGY)
+                if (GetUnitOwner()->GetPowerType() != POWER_ENERGY)
                     return false;
                 return true;
             }

@@ -2047,7 +2047,7 @@ class spell_alchemist_rejuvenation : public SpellScriptLoader
             {
                 if(Unit* caster = GetCaster())
                 {
-                    if(caster->getPowerType() == POWER_MANA)
+                    if(caster->GetPowerType() == POWER_MANA)
                     {
                         switch (caster->getLevel())
                         {

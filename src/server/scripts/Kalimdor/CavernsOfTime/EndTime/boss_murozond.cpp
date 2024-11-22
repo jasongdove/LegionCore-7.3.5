@@ -338,7 +338,7 @@ struct npc_murozond_mirror_image : public ScriptedAI
                 m_owner->RemoveAura(SPELL_TEMPORAL_BLAST);
 
                 m_owner->SetHealth(m_owner->GetMaxHealth());
-                m_owner->SetPower(m_owner->getPowerType(), m_owner->GetMaxPower(m_owner->getPowerType()));
+                m_owner->SetPower(m_owner->GetPowerType(), m_owner->GetMaxPower(m_owner->GetPowerType()));
 
                 m_owner->CastSpell(m_owner, SPELL_BLESSING_OF_BRONZE_DRAGONS, true);
                 m_owner->NearTeleportTo(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation(), true);

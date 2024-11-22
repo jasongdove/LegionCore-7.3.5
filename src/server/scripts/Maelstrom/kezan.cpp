@@ -1238,7 +1238,7 @@ class npc_hack_bank_controller : public CreatureScript
     {
         npc_hack_bank_controllerAI(Creature* creature) : ScriptedAI(creature)
         {
-            me->setPowerType(POWER_MANA);
+            me->SetPowerType(POWER_MANA);
             me->SetMaxPower(POWER_MANA, 100);
             me->SetPower(POWER_MANA, 0);
         }
@@ -1278,7 +1278,7 @@ class npc_hack_bank_controller : public CreatureScript
             {
                 // Right
                 me->CastSpell(me, SPELL_POWER_CORRECT, true);
-                if (me->GetPower(me->getPowerType()) < 100)
+                if (me->GetPower(me->GetPowerType()) < 100)
                 {
                     events.ScheduleEvent(EVENT_BANK_GENERATE, urand(1000, 5000));
                     sCreatureTextMgr->SendChat(me, TEXT_RIGHT, _playerGUID);

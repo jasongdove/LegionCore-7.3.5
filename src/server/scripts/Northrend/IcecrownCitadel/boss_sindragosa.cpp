@@ -1169,7 +1169,7 @@ class UnchainedMagicTargetSelector
         bool operator()(WorldObject* target)
         {
             if (Unit* unit = target->ToUnit())
-                return unit->getPowerType() != POWER_MANA;
+                return unit->GetPowerType() != POWER_MANA;
 
             return true;
         }

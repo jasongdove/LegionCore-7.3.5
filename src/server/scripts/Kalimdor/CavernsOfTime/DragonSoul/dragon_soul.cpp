@@ -456,7 +456,7 @@ class npc_dragon_soul_earthen_soldier : public CreatureScript
             void Reset()
             {
                 DoCast(me, SPELL_ZERO_POWER, true);
-                me->setPowerType(POWER_ENERGY);
+                me->SetPowerType(POWER_ENERGY);
                 me->SetMaxPower(POWER_ENERGY, 0);
                 me->SetPower(POWER_ENERGY, 0);
                 events.Reset();
@@ -2258,7 +2258,7 @@ class spell_dragon_soul_cobalt_globule_mana_void : public SpellScriptLoader
                     {
                         if (unit->GetTypeId() != TYPEID_PLAYER)
                             return true;
-                        return (unit->ToPlayer()->getPowerType() != POWER_MANA);
+                        return (unit->ToPlayer()->GetPowerType() != POWER_MANA);
                     }
             };
 

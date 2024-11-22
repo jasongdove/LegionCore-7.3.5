@@ -328,7 +328,7 @@ struct npc_felhounds_shatug : public boss_felhounds_encounters
     {
         boss_felhounds_encounters::EnterCombat(who);
 
-        me->SetPower(me->getPowerType(), 86);
+        me->SetPower(me->GetPowerType(), 86);
         events.RescheduleEvent(EVENT_CORRUPTING, 11000);
     }
 
@@ -497,7 +497,7 @@ struct npc_felhounds_fharg : public boss_felhounds_encounters
         boss_felhounds_encounters::EnterCombat(who);
 
         DoCast(me, SPELL_FHARG_START_LEAP, true);
-        me->SetPower(me->getPowerType(), 62);
+        me->SetPower(me->GetPowerType(), 62);
         events.RescheduleEvent(EVENT_BURNING_MAW, 9000);
     }
 
@@ -1193,7 +1193,7 @@ class spell_felhounds_destroyers_boon_energize : public AuraScript
                 }
             }
 
-            powerCount = caster->GetPower(caster->getPowerType());
+            powerCount = caster->GetPower(caster->GetPowerType());
 
             if (caster->GetEntry() == NPC_SHATUG)
             {
@@ -1207,7 +1207,7 @@ class spell_felhounds_destroyers_boon_energize : public AuraScript
 
             if (powerCount < 100)
             {
-                caster->SetPower(caster->getPowerType(), ++powerCount);
+                caster->SetPower(caster->GetPowerType(), ++powerCount);
             
                 if (!specialAbility_33 && powerCount >= 33)
                 {
@@ -1223,7 +1223,7 @@ class spell_felhounds_destroyers_boon_energize : public AuraScript
             }
             else
             {
-                caster->SetPower(caster->getPowerType(), 0);
+                caster->SetPower(caster->GetPowerType(), 0);
                 caster->GetAI()->DoAction(ACTION_2);
                 specialAbility_33 = false;
                 specialAbility_66 = false;
