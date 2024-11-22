@@ -3160,39 +3160,160 @@ class npc_ebon_gargoyle : public CreatureScript
         }
 };
 
+// 31216 - Mirror Image
 class npc_mage_mirror_image : public CreatureScript
 {
 public:
     npc_mage_mirror_image() : CreatureScript("npc_mage_mirror_image") { }
 
+    enum eSpells
+    {
+        SPELL_MAGE_FROSTBOLT        = 59638,
+        SPELL_MAGE_FIREBALL         = 133,
+        SPELL_MAGE_ARCANE_BLAST     = 30451,
+        SPELL_MAGE_GLYPH            = 63093,
+        SPELL_INITIALIZE_IMAGES     = 102284,
+        SPELL_CLONE_CASTER          = 60352,
+        SPELL_INHERIT_MASTER_THREAT = 58838
+    };
+
     struct npc_mage_mirror_imageAI : CasterAI
     {
-        npc_mage_mirror_imageAI(Creature* creature) : CasterAI(creature) {}
+        npc_mage_mirror_imageAI(Creature* creature) : CasterAI(creature) { }
 
-        uint32 targetCheckTime;
-        bool firstCheck;
-
-        void InitializeAI() override
+        void IsSummonedBy(Unit* owner) override
         {
-            CasterAI::InitializeAI();
-            targetCheckTime = 0;
-            firstCheck = false;
+            if (!owner || !owner->IsPlayer())
+                return;
+
+            if (!me->HasUnitState(UnitState::UNIT_STATE_FOLLOW))
+            {
+                me->GetMotionMaster()->Clear(false);
+                me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle(), MovementSlot::MOTION_SLOT_ACTIVE);
+            }
+
+            me->SetMaxPower(me->getPowerType(), owner->GetMaxPower(me->getPowerType()));
+            me->SetPower(me->getPowerType(), me->GetMaxPower(me->getPowerType()));
+            me->SetMaxHealth(owner->GetMaxHealth());
+            me->SetHealth(owner->GetHealth());
+            me->SetReactState(ReactStates::REACT_DEFENSIVE);
+
+            me->CastSpell(owner, SPELL_INHERIT_MASTER_THREAT, true);
+
+            // here mirror image casts on summoner spell (not present in client dbc) 49866
+            // here should be auras (not present in client dbc): 35657, 35658, 35659, 35660 selfcasted by mirror images (stats related?)
+
+            for (uint32 attackType = 0; attackType < WeaponAttackType::MAX_ATTACK; ++attackType)
+            {
+                WeaponAttackType attackTypeEnum = static_cast<WeaponAttackType>(attackType);
+                me->SetBaseWeaponDamage(attackTypeEnum, WeaponDamageRange::MAXDAMAGE, owner->GetWeaponDamageRange(attackTypeEnum, WeaponDamageRange::MAXDAMAGE));
+                me->SetBaseWeaponDamage(attackTypeEnum, WeaponDamageRange::MINDAMAGE, owner->GetWeaponDamageRange(attackTypeEnum, WeaponDamageRange::MINDAMAGE));
+            }
+
+            me->UpdateAttackPowerAndDamage();
+        }
+
+        void EnterCombat(Unit* /*who*/) override
+        {
+            if (!me->GetOwner())
+                return;
+
+            Player* owner = me->GetOwner()->ToPlayer();
+            if (!owner)
+                return;
+
+            eSpells spellId = eSpells::SPELL_MAGE_FROSTBOLT;
+            /*if (owner->HasAura(SPELL_MAGE_GLYPH))
+            {*/
+            switch (owner->GetSpecializationId())
+            {
+            case TALENT_SPEC_MAGE_ARCANE:   spellId = eSpells::SPELL_MAGE_ARCANE_BLAST; break;
+            case TALENT_SPEC_MAGE_FIRE:     spellId = eSpells::SPELL_MAGE_FIREBALL;     break;
+            default: break;
+            }
+            //}
+
+            events.ScheduleEvent(spellId, 0); ///< Schedule cast
+            me->GetMotionMaster()->Clear(false);
+        }
+
+        void EnterEvadeMode() override
+        {
+            if (me->IsInEvadeMode() || !me->IsAlive())
+                return;
+
+            Unit* owner = me->GetOwner();
+
+            me->CombatStop(true);
+            if (owner && !me->HasUnitState(UNIT_STATE_FOLLOW))
+            {
+                me->GetMotionMaster()->Clear(false);
+                me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle(), MovementSlot::MOTION_SLOT_ACTIVE);
+            }
+        }
+
+        void Reset() override
+        {
+            if (Unit* owner = me->GetOwner())
+            {
+                owner->CastSpell(me, SPELL_INITIALIZE_IMAGES, true);
+                owner->CastSpell(me, SPELL_CLONE_CASTER, true);
+            }
+        }
+
+        bool CanAIAttack(Unit const* target) const override
+        {
+            /// Am I supposed to attack this target? (ie. do not attack polymorphed target)
+            return target && !target->HasAuraType(SPELL_AURA_MOD_CONFUSE);
         }
 
         void UpdateAI(uint32 diff) override
         {
-            targetCheckTime += diff;
-            if (targetCheckTime > 2000 || !firstCheck)
+            events.Update(diff);
+
+            Unit* l_Victim = me->getVictim();
+            if (l_Victim)
             {
-                if (Unit* owner = me->GetOwner())
-                    if (Unit* victim = owner->getVictim())
-                        me->Attack(victim, false);
+                if (CanAIAttack(l_Victim))
+                {
+                    /// If not already casting, cast! ("I'm a cast machine")
+                    if (!me->HasUnitState(UNIT_STATE_CASTING))
+                    {
+                        if (uint32 spellId = events.ExecuteEvent())
+                        {
+                            DoCast(spellId);
+                            uint32 castTime = me->GetCurrentSpellCastTime(spellId);
+                            events.ScheduleEvent(spellId, (castTime ? castTime : 500) + sSpellMgr->GetSpellInfo(spellId)->GetAuraOptions(me->GetSpawnMode())->ProcCategoryRecovery);
+                        }
+                    }
+                }
+                else
+                {
+                    /// My victim has changed state, I shouldn't attack it anymore
+                    if (me->HasUnitState(UNIT_STATE_CASTING))
+                        me->CastStop();
 
-                firstCheck = true;
-                targetCheckTime = 0;
+                    me->AI()->EnterEvadeMode();
+                }
             }
+            else
+            {
+                /// Let's choose a new target
+                Unit* target = me->SelectVictim();
+                if (!target)
+                {
+                    /// No target? Let's see if our owner has a better target for us
+                    if (Unit* owner = me->GetOwner())
+                    {
+                        Unit* ownerVictim = owner->getVictim();
+                        if (ownerVictim && me->canCreatureAttack(ownerVictim))
+                            target = ownerVictim;
+                    }
+                }
 
-            CasterAI::UpdateAI(diff);
+                if (target)
+                    me->AI()->AttackStart(target);
+            }
         }
     };
 

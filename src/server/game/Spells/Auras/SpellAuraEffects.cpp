@@ -2084,6 +2084,10 @@ void AuraEffect::UpdatePeriodic(Unit* caster)
                             break;
                     }
                     break;
+                case SPELLFAMILY_MAGE:
+                    if (GetId() == 55342) // mirror image
+                        m_isPeriodic = false;
+                    break;
                 default:
                     break;
            }
@@ -7242,6 +7246,14 @@ void AuraEffect::HandlePeriodicDummyAuraTick(Unit* target, Unit* caster, SpellEf
                 if (GetTickNumber() > 1)
                     return;
             }
+            break;
+        }
+        case SPELLFAMILY_MAGE:
+        {
+            // Mirror Image
+            if (GetId() == 55342)
+                // Set name of summons to name of caster
+                caster->CastSpell((Unit*)nullptr, GetSpellEffectInfo()->TriggerSpell, true);
             break;
         }
         default:
