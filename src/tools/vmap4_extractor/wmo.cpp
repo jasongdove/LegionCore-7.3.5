@@ -367,7 +367,36 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, bool preciseVectorData)
                 exit(0);
             }
         }
+        //--- Qt
+        // uint32 nColisions = nTriangles * 3;
+        uint32 nColisions = nTriangles * 3;
 
+        if (fwrite("BSPX", 4, 1, output) != 1)
+        {
+            printf("BSPX : Error while writing file nbraches ID");
+            exit(0);
+        }
+        // wsize = sizeof(uint32) + sizeof(unsigned short) * nColisions;
+        wsize = sizeof(uint32) + sizeof(unsigned short) * nColisions;
+        if (fwrite(&wsize, sizeof(int), 1, output) != 1)
+        {
+            printf("BSPX : Error while writing file wsize");
+            // no need to exit?
+        }
+        if (fwrite(&nColisions, sizeof(uint32), 1, output) != 1)
+        {
+            printf("BSPX : Error while writing file nIndexes");
+            exit(0);
+        }
+        if (nColisions > 0)
+        {
+            if (fwrite(MOVI, sizeof(unsigned short), nColisions, output) != nColisions)
+            {
+                printf("BSPX : Error while writing file indexarray");
+                exit(0);
+            }
+        }
+        //--- end
         if(fwrite("VERT",4, 1, output) != 1)
         {
             printf("Error while writing file nbraches ID");
@@ -459,6 +488,13 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, bool preciseVectorData)
         int INDX[] = {0x58444E49, nColTriangles*6+4, nColTriangles*3};
         fwrite(INDX,4,3,output);
         fwrite(MoviEx,2,nColTriangles*3,output);
+
+    	//--- Qt
+        int BSPX[] = { 0x58505342, nColTriangles * 6 + 4, nColTriangles * 3 }; // "BSPX"
+        fwrite(BSPX, 4, 3, output);
+        fwrite(MoviEx, 2, nColTriangles * 3, output);
+        nColTriangles = nColTriangles * 2;
+    	//--- end
 
         // write vertices
         int VERT[] = {0x54524556, nColVertices*3*static_cast<int>(sizeof(float))+4, nColVertices};// "VERT"

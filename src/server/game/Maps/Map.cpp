@@ -334,23 +334,36 @@ bool Map::ExistVMap(uint32 mapid, int gx, int gy)
     {
         if (vmgr->isMapLoadingEnabled())
         {
-            VMAP::LoadResult result = vmgr->existsMap((sWorld->GetDataPath()+ "vmaps").c_str(),  mapid, gx, gy);
-            std::string name = vmgr->getDirFileName(mapid, gx, gy);
-            switch (result)
+            bool exists = vmgr->existsMap((sWorld->GetDataPath()+ "vmaps").c_str(),  mapid, gx, gy);
+            if (!exists)
             {
-                case VMAP::LoadResult::Success:
-                    break;
-                case VMAP::LoadResult::FileNotFound:
-                    TC_LOG_ERROR("maps", "VMap file '%s' does not exist", (sWorld->GetDataPath() + "vmaps/" + name).c_str());
-                    TC_LOG_ERROR("maps", "Please place VMAP files (*.vmtree and *.vmtile) in the vmap directory (%s), or correct the DataDir setting in your worldserver.conf file.", (sWorld->GetDataPath() + "vmaps/").c_str());
-                    return false;
-                case VMAP::LoadResult::VersionMismatch:
-                    TC_LOG_ERROR("maps", "VMap file '%s' couldn't be loaded", (sWorld->GetDataPath() + "vmaps/" + name).c_str());
-                    TC_LOG_ERROR("maps", "This is because the version of the VMap file and the version of this module are different, please re-extract the maps with the tools compiled with this module.");
-                    return false;
+                std::string name = vmgr->getDirFileName(mapid, gx, gy);
+                TC_LOG_ERROR("maps", "VMap file '%s' is missing or points to wrong version of vmap file. Redo vmaps with latest version of vmap_assembler.exe.", (sWorld->GetDataPath()+"vmaps/"+name).c_str());
+                return false;
             }
         }
     }
+//    if (VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager())
+//    {
+//        if (vmgr->isMapLoadingEnabled())
+//        {
+//            VMAP::LoadResult result = vmgr->existsMap((sWorld->GetDataPath()+ "vmaps").c_str(),  mapid, gx, gy);
+//            std::string name = vmgr->getDirFileName(mapid, gx, gy);
+//            switch (result)
+//            {
+//                case VMAP::LoadResult::Success:
+//                    break;
+//                case VMAP::LoadResult::FileNotFound:
+//                    TC_LOG_ERROR("maps", "VMap file '%s' does not exist", (sWorld->GetDataPath() + "vmaps/" + name).c_str());
+//                    TC_LOG_ERROR("maps", "Please place VMAP files (*.vmtree and *.vmtile) in the vmap directory (%s), or correct the DataDir setting in your worldserver.conf file.", (sWorld->GetDataPath() + "vmaps/").c_str());
+//                    return false;
+//                case VMAP::LoadResult::VersionMismatch:
+//                    TC_LOG_ERROR("maps", "VMap file '%s' couldn't be loaded", (sWorld->GetDataPath() + "vmaps/" + name).c_str());
+//                    TC_LOG_ERROR("maps", "This is because the version of the VMap file and the version of this module are different, please re-extract the maps with the tools compiled with this module.");
+//                    return false;
+//            }
+//        }
+//    }
 
     return true;
 }
@@ -2505,7 +2518,7 @@ bool Map::GetAreaInfo(float x, float y, float z, uint32 &flags, int32 &adtId, in
     int32 dgroupId;
 
     bool hasVmapAreaInfo = vmgr->getAreaInfo(GetId(), x, y, vmap_z, vflags, vadtId, vrootId, vgroupId);
-    bool hasDynamicAreaInfo = _dynamicTree.getAreaInfo(x, y, dynamic_z, std::set<uint32>(), false, dflags, dadtId, drootId, dgroupId);
+    bool hasDynamicAreaInfo = _dynamicTree.getAreaInfo(x, y, dynamic_z, std::set<uint32>(), dflags, dadtId, drootId, dgroupId);
     auto useVmap = [&]() { check_z = vmap_z; flags = vflags; adtId = vadtId; rootId = vrootId; groupId = vgroupId; };
     auto useDyn = [&]() { check_z = dynamic_z; flags = dflags; adtId = dadtId; rootId = drootId; groupId = dgroupId; };
 
@@ -2718,27 +2731,27 @@ float Map::GetWaterLevel(float x, float y) const
     return 0;
 }
 
-bool Map::isInLineOfSight(float x1, float y1, float z1, float x2, float y2, float z2, std::set<uint32> const& phases, VMAP::ModelIgnoreFlags ignoreFlags, DynamicTreeCallback* dCallback /*= nullptr*/) const
+bool Map::isInLineOfSight(float x1, float y1, float z1, float x2, float y2, float z2, std::set<uint32> const& phases, DynamicTreeCallback* dCallback /*= nullptr*/) const
 {
-    return VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(GetId(), x1, y1, z1, x2, y2, z2, ignoreFlags)
+    return VMAP::VMapFactory::createOrGetVMapManager()->isInLineOfSight(GetId(), x1, y1, z1, x2, y2, z2)
         && _dynamicTree.isInLineOfSight({ x1, y1, z1 }, { x2, y2, z2 }, phases, dCallback);
 }
 
-bool Map::getObjectHitPos(std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, Position startPos, Position destPos, float modifyDist, DynamicTreeCallback* dCallback /*= nullptr*/)
+bool Map::getObjectHitPos(std::set<uint32> const& phases, Position startPos, Position destPos, float modifyDist, DynamicTreeCallback* dCallback /*= nullptr*/)
 {
     G3D::Vector3 resultPos;
     G3D::Vector3 _startPos = G3D::Vector3(startPos.m_positionX, startPos.m_positionY, startPos.m_positionZ);
     G3D::Vector3 _dstPos = G3D::Vector3(destPos.m_positionX, destPos.m_positionY, destPos.m_positionZ);
-    return _dynamicTree.getObjectHitPos(phases, otherUsePlayerPhasingRules, _startPos, _dstPos, resultPos, modifyDist, dCallback);
+    return _dynamicTree.getObjectHitPos(phases, _startPos, _dstPos, resultPos, modifyDist, dCallback);
 }
 
-bool Map::getObjectHitPos(std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, float x1, float y1, float z1, float x2, float y2, float z2, float& rx, float& ry, float& rz, float modifyDist, DynamicTreeCallback* dCallback /*= nullptr*/)
+bool Map::getObjectHitPos(std::set<uint32> const& phases, float x1, float y1, float z1, float x2, float y2, float z2, float& rx, float& ry, float& rz, float modifyDist, DynamicTreeCallback* dCallback /*= nullptr*/)
 {
     G3D::Vector3 startPos = G3D::Vector3(x1, y1, z1);
     G3D::Vector3 dstPos = G3D::Vector3(x2, y2, z2);
 
     G3D::Vector3 resultPos;
-    bool result = _dynamicTree.getObjectHitPos(phases, otherUsePlayerPhasingRules, startPos, dstPos, resultPos, modifyDist, dCallback);
+    bool result = _dynamicTree.getObjectHitPos(phases, startPos, dstPos, resultPos, modifyDist, dCallback);
     rx = resultPos.x;
     ry = resultPos.y;
     rz = resultPos.z;

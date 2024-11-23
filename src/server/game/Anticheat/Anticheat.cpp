@@ -974,7 +974,7 @@ bool PlayerCheatData::InterpolateMovement(MovementInfo const& mi, uint32 diffMs,
 
     if (!(mi.MoveFlags[0] & (MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR | MOVEMENTFLAG_SWIMMING)))
         z = me->GetMap()->GetHeight(x, y, z);
-    return me->GetMap()->isInLineOfSight(mi.Pos.m_positionX, mi.Pos.m_positionY, mi.Pos.m_positionZ + 0.5f, x, y, z + 0.5f, me->GetPhases(), VMAP::ModelIgnoreFlags::Nothing);
+    return me->GetMap()->isInLineOfSight(mi.Pos.m_positionX, mi.Pos.m_positionY, mi.Pos.m_positionZ + 0.5f, x, y, z + 0.5f, me->GetPhases());
 }
 
 bool PlayerCheatData::GetMaxAllowedDist(MovementInfo const& mi, uint32 diffMs, float &dxy, float &dz, float &speed)

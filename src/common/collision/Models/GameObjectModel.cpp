@@ -39,6 +39,30 @@ struct GameobjectModelData
     bool isWmo;
 };
 
+struct ModelTreeIntersectionCallback
+{
+    ModelTreeIntersectionCallback(std::set<uint32> const& phases) : _didHit(false), _phases(phases), _go(0) { }
+
+    bool operator()(G3D::Ray const& r, GameObjectModel const& obj, float& distance)
+    {
+        _didHit = obj.intersectRay(r, distance, true, _phases);
+        if (_didHit)
+        {
+            if (obj.owner->IsDoor()) // Collision for door
+                distance = distance > 1.0f ? distance - 1.0f : 0.0f;
+            _go = const_cast<GameObject*>(obj.owner->GetOwner());
+        }
+        return _didHit;
+    }
+
+    bool didHit() const { return _didHit; }
+    GameObject* _go;
+
+private:
+    bool _didHit;
+    std::set<uint32> _phases;
+};
+
 typedef std::unordered_map<uint32, GameobjectModelData> ModelList;
 ModelList model_list;
 
@@ -161,12 +185,12 @@ GameObjectModel* GameObjectModel::Create(std::unique_ptr<GameObjectModelOwnerBas
     return mdl;
 }
 
-bool GameObjectModel::intersectRay(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, VMAP::ModelIgnoreFlags ignoreFlags) const
+bool GameObjectModel::intersectRay(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit, std::set<uint32> const& phases) const
 {
-    if (!isCollisionEnabled() || !owner->IsSpawned())
+    if (!owner || !isCollisionEnabled() || !owner->IsSpawned())
         return false;
 
-    if (!owner->InSamePhaseId(phases, otherUsePlayerPhasingRules))
+    if (!owner->InSamePhaseId(phases))
         return false;
 
     float time = ray.intersectionTime(iBound);
@@ -177,7 +201,7 @@ bool GameObjectModel::intersectRay(G3D::Ray const& ray, float& maxDist, bool sto
     Vector3 p = iInvRot * (ray.origin() - iPos) * iInvScale;
     Ray modRay(p, iInvRot * ray.direction());
     float distance = maxDist * iInvScale;
-    bool hit = iModel->IntersectRay(modRay, distance, stopAtFirstHit, ignoreFlags);
+    bool hit = iModel->IntersectRay(modRay, distance, stopAtFirstHit);
     if (hit)
     {
         distance *= iScale;
@@ -186,12 +210,40 @@ bool GameObjectModel::intersectRay(G3D::Ray const& ray, float& maxDist, bool sto
     return hit;
 }
 
-void GameObjectModel::intersectPoint(G3D::Vector3 const& point, VMAP::AreaInfo& info,  std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const
+bool GameObjectModel::intersectLine(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit, std::set<uint32> const& phases) const
 {
-    if (!isCollisionEnabled() || !owner->IsSpawned() || !isMapObject())
+    if (!isCollisionEnabled() || !owner->IsSpawned())
+        return false;
+
+    if (!owner->InSamePhaseId(phases))
+        return false;
+
+    float time = ray.intersectionTime(iBound);
+    if (time == G3D::finf())
+        return false;
+
+    // child bounds are defined in object space:
+    Vector3 p = iInvRot * (ray.origin() - iPos) * iInvScale;
+    Ray modRay(p, iInvRot * ray.direction());
+    float distance = maxDist * iInvScale;
+    bool hit = iModel->intersectLine(modRay, distance, stopAtFirstHit);
+
+    // TC_LOG_ERROR(LOG_FILTER_DYNLOS, "GameObjectModel::intersectLine distance %f hit %u iInvScale %f iScale %f maxDist %f", distance, hit, iInvScale, iScale, maxDist);
+
+    if (hit)
+    {
+        distance *= iScale;
+        maxDist = distance;
+    }
+    return hit;
+}
+
+void GameObjectModel::intersectPoint(G3D::Vector3 const& point, VMAP::AreaInfo& info, std::set<uint32> const& phases) const
+{
+    if (!owner || !isCollisionEnabled() || !owner->IsSpawned() || !isMapObject())
         return;
 
-    if (!owner->InSamePhaseId(phases, otherUsePlayerPhasingRules))
+    if (!owner->InSamePhaseId(phases))
         return;
 
     if (!iBound.contains(point))
@@ -213,7 +265,7 @@ void GameObjectModel::intersectPoint(G3D::Vector3 const& point, VMAP::AreaInfo& 
     }
 }
 
-bool GameObjectModel::getObjectHitPos(std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, G3D::Vector3& resultHitPos, float modifyDist) const
+bool GameObjectModel::getObjectHitPos(std::set<uint32> const& phases, G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, G3D::Vector3& resultHitPos, float modifyDist) const
 {
     bool result = false;
     float maxDist = (endPos - startPos).magnitude();
@@ -230,7 +282,7 @@ bool GameObjectModel::getObjectHitPos(std::set<uint32> const& phases, bool other
     G3D::Vector3 dir = (endPos - startPos)/maxDist;              // direction with length of 1
     G3D::Ray ray(startPos, dir);
     float dist = maxDist;
-    if (intersectRay(ray, dist, false, phases, otherUsePlayerPhasingRules, VMAP::ModelIgnoreFlags::Nothing))
+    if (intersectRay(ray, dist, false, phases))
     {
         resultHitPos = startPos + dir * dist;
         if (modifyDist < 0)
@@ -250,10 +302,11 @@ bool GameObjectModel::getObjectHitPos(std::set<uint32> const& phases, bool other
         resultHitPos = endPos;
         result = false;
     }
+    // TC_LOG_ERROR(LOG_FILTER_DYNLOS, "GameObjectModel::getObjectHitPos dist %f maxDist %f hit %u resultHitPos %f %f %f", dist, maxDist, result, resultHitPos.x, resultHitPos.y, resultHitPos.x);
     return result;
 }
 
-bool GameObjectModel::isInLineOfSight(G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const
+bool GameObjectModel::isInLineOfSight(G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, std::set<uint32> const& phases) const
 {
     float maxDist = (endPos - startPos).magnitude();
 
@@ -273,17 +326,19 @@ bool GameObjectModel::isInLineOfSight(G3D::Vector3 const& startPos, G3D::Vector3
         return true;
 
     G3D::Ray ray(startPos, (endPos - startPos) / maxDist);
-    bool hit = intersectRay(ray, maxDist, true, phases, otherUsePlayerPhasingRules, VMAP::ModelIgnoreFlags::Nothing);
+    bool hit = intersectLine(ray, maxDist, true, phases);
+    // TC_LOG_ERROR(LOG_FILTER_DYNLOS, "GameObjectModel::isInLineOfSight maxSearchDist %f hit %u", maxDist, hit);
 
     return !hit;
 }
 
-float GameObjectModel::getHeight(float x, float y, float z, float maxSearchDist, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const
+float GameObjectModel::getHeight(float x, float y, float z, float maxSearchDist, std::set<uint32> const& phases) const
 {
     G3D::Vector3 v(x, y, z + 0.5f);
     G3D::Ray ray(v, G3D::Vector3(0, 0, -1));
 
-    bool hit = intersectRay(ray, maxSearchDist, false, phases, otherUsePlayerPhasingRules, VMAP::ModelIgnoreFlags::Nothing);
+    bool hit = intersectRay(ray, maxSearchDist, false, phases);
+    // TC_LOG_ERROR(LOG_FILTER_DYNLOS, "GameObjectModel::getHeight maxSearchDist %f v.z %f hit %u height %f", maxSearchDist, v.z, hit, v.z - maxSearchDist);
 
     if (hit)
         return v.z - maxSearchDist;

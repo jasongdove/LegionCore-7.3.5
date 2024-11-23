@@ -1923,7 +1923,7 @@ bool WorldObject::_IsWithinDist(WorldObject const* obj, float dist2compare, bool
     return distsq < maxdist * maxdist;
 }
 
-bool WorldObject::IsWithinLOSInMap(const WorldObject* obj, VMAP::ModelIgnoreFlags ignoreFlags) const
+bool WorldObject::IsWithinLOSInMap(const WorldObject* obj) const
 {
     if (!IsInMap(obj))
         return false;
@@ -1954,10 +1954,10 @@ bool WorldObject::IsWithinLOSInMap(const WorldObject* obj, VMAP::ModelIgnoreFlag
     else
         obj->GetHitSpherePointFor(GetPosition(), x, y, z);
 
-    return IsWithinLOS(x, y, z, ignoreFlags);
+    return IsWithinLOS(x, y, z);
 }
 
-bool WorldObject::IsWithinLOS(float ox, float oy, float oz, VMAP::ModelIgnoreFlags ignoreFlags) const
+bool WorldObject::IsWithinLOS(float ox, float oy, float oz) const
 {
     if (IsInWorld())
     {
@@ -1982,7 +1982,7 @@ bool WorldObject::IsWithinLOS(float ox, float oy, float oz, VMAP::ModelIgnoreFla
         else
             GetHitSpherePointFor({ ox, oy, oz }, x, y, z);
 
-        return GetMap()->isInLineOfSight(x, y, z + 2.f, ox, oy, oz + 2.f, GetPhases(), ignoreFlags);
+        return GetMap()->isInLineOfSight(x, y, z + 2.f, ox, oy, oz + 2.f, GetPhases());
     }
 
     return true;
@@ -1994,7 +1994,7 @@ float WorldObject::GetWaterOrGroundLevel(float x, float y, float z, float* groun
     {
         if (GameObjectModel* _model = transport->m_model)
         {
-            float ground_z = _model->getHeight(x, y, z, DEFAULT_HEIGHT_SEARCH, GetPhases(), IsPlayer() || IsUnitOwnedByPlayer());
+            float ground_z = _model->getHeight(x, y, z, DEFAULT_HEIGHT_SEARCH, GetPhases());
             if (ground_z == -G3D::finf() || ground_z == G3D::finf())
                 return VMAP_INVALID_HEIGHT_VALUE;
 
@@ -2015,7 +2015,7 @@ float WorldObject::GetHeight(float x, float y, float z, bool vmap /*= true*/, fl
     {
         if (GameObjectModel* _model = transport->m_model)
         {
-            float ground_z = _model->getHeight(x, y, z, maxSearchDist, GetPhases(), IsPlayer() || IsUnitOwnedByPlayer());
+            float ground_z = _model->getHeight(x, y, z, maxSearchDist, GetPhases());
             if (ground_z == -G3D::finf() || ground_z == G3D::finf())
                 return VMAP_INVALID_HEIGHT_VALUE;
             return ground_z;
@@ -3381,7 +3381,7 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
         destz -= 0.5f;
 
     // check dynamic collision
-    col = GetMap()->getObjectHitPos(GetPhases(), IsPlayer() || IsUnitOwnedByPlayer(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
+    col = GetMap()->getObjectHitPos(GetPhases(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
 
     // Collided with a gameobject
     if (col)
@@ -3497,7 +3497,7 @@ void WorldObject::MovePositionToTransportCollision(Position &pos, float dist, fl
     G3D::Vector3 pos2(destx, desty, destz + 2.0f);
     G3D::Vector3 resultPos;
 
-    bool col = _model->getObjectHitPos(GetPhases(), IsPlayer() || IsUnitOwnedByPlayer(), pos1, pos2, resultPos, -0.5f);
+    bool col = _model->getObjectHitPos(GetPhases(), pos1, pos2, resultPos, -0.5f);
     destx = resultPos.x;
     desty = resultPos.y;
     destz = resultPos.z;
@@ -3582,7 +3582,7 @@ void WorldObject::MovePositionToCollisionBetween(Position &pos, float distMin, f
     }
 
     // check dynamic collision
-    col = GetMap()->getObjectHitPos(GetPhases(), IsPlayer() || IsUnitOwnedByPlayer(), tempDestx, tempDesty, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
+    col = GetMap()->getObjectHitPos(GetPhases(), tempDestx, tempDesty, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
 
     // Collided with a gameobject
     if (col)
@@ -3829,26 +3829,16 @@ ObjectGuid WorldObject::GetTransGUID() const
 //! If some have 1 2 enother has 1 = see each other.
 //! ir some have 1 2 enorther has 3 - not see.
 //! if some has ignorePhase id - see each.
-bool WorldObject::InSamePhaseId(std::set<uint32> const& phase, bool otherUsePlayerPhasingRules) const
+bool WorldObject::InSamePhaseId(std::set<uint32> const& phase) const
 {
-    bool usePlayerPhasingRules = IsPlayer() || IsUnitOwnedByPlayer();
-
     if (IgnorePhaseId())
         return true;
 
-    if (usePlayerPhasingRules && otherUsePlayerPhasingRules)
+    //- speed up case.
+    if (phase.empty() || m_phaseId.empty() && !IsPlayer())
         return true;
 
-    if (phase.empty() && m_phaseId.empty())
-        return true;
-
-    if (usePlayerPhasingRules && phase.empty())
-        return true;
-
-    if (otherUsePlayerPhasingRules && m_phaseId.empty())
-        return true;
-
-    //! speed up case. should be done in any way. 
+    //! speed up case. should be done in any way.
     // As iteration not check empty data but it should be done.
     if (phase.empty() && !m_phaseId.empty() || !phase.empty() && m_phaseId.empty())
         return false;
@@ -3862,6 +3852,7 @@ bool WorldObject::InSamePhaseId(std::set<uint32> const& phase, bool otherUsePlay
         if (m_phaseBit[PhaseID])
             return true;
     }
+
     return false;
 }
 
@@ -3872,7 +3863,7 @@ std::set<uint32> const& WorldObject::GetPhases() const
 
 bool WorldObject::InSamePhaseId(WorldObject const* obj) const
 {
-    return obj->IgnorePhaseId() || InSamePhaseId(obj->GetPhases(), obj->IsPlayer() || obj->IsUnitOwnedByPlayer());
+    return obj->IgnorePhaseId() || InSamePhaseId(obj->GetPhases());
 }
 
 bool WorldObject::InSamePhase(WorldObject const* obj) const

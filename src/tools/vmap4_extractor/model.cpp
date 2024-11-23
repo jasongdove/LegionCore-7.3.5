@@ -126,6 +126,32 @@ bool Model::ConvertToVMAPModel(const char * outfilename)
         }
         fwrite(indices, sizeof(unsigned short), nIndexes, output);
     }
+	//--- Qt
+    // uint32 branches = 1;
+    // int wsize;
+    // wsize = sizeof(branches) + sizeof(uint32) * branches;
+    // fwrite(&wsize, sizeof(int), 1, output);
+    // fwrite(&branches, sizeof(branches), 1, output);
+    uint32 nColisions = header.nBoundingTriangles; // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    // fwrite(&nColisions, sizeof(uint32), 1, output);
+    fwrite("BSPX", 4, 1, output);
+    wsize = sizeof(uint32) + sizeof(unsigned short) * nColisions;
+    fwrite(&wsize, sizeof(int), 1, output);
+    fwrite(&nColisions, sizeof(uint32), 1, output);
+    if (nColisions > 0)
+    {
+        for (uint32 i = 0; i < nColisions; ++i)
+        {
+            if ((i % 3) - 1 == 0 && i + 1 < nColisions)
+            {
+                uint16 tmp = indices[i];
+                indices[i] = indices[i + 1];
+                indices[i + 1] = tmp;
+            }
+        }
+        fwrite(indices, sizeof(unsigned short), nColisions, output);
+    }
+	//--- end
 
     fwrite("VERT", 4, 1, output);
     wsize = sizeof(int) + sizeof(float) * 3 * nVertices;

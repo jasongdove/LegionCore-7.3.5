@@ -301,7 +301,7 @@ namespace VMAP
             {
                 GroupModel_Raw& raw_group = raw_model.groupsArray[g];
                 groupsArray.push_back(GroupModel(raw_group.mogpflags, raw_group.GroupWMOID, raw_group.bounds ));
-                groupsArray.back().setMeshData(raw_group.vertexArray, raw_group.triangles);
+                groupsArray.back().setMeshData(raw_group.vertexArray, raw_group.triangles, raw_group.collisions);
                 groupsArray.back().setLiquidData(raw_group.liquid);
             }
 
@@ -408,7 +408,7 @@ namespace VMAP
                                 fclose(rf); printf("readfail, op = %i\n", readOperation); delete[] V; return(false); };
 #define CMP_OR_RETURN(V, S)  if (strcmp((V), (S)) != 0)        { \
                                 fclose(rf); printf("cmpfail, %s!=%s\n", V, S);return(false); }
-
+#pragma optimize("", off)
     bool GroupModel_Raw::Read(FILE* rf)
     {
         char blockId[5];
@@ -458,6 +458,23 @@ namespace VMAP
             delete[] indexarray;
         }
 
+        // ---- collision
+        READ_OR_RETURN(&blockId, 4);
+        CMP_OR_RETURN(blockId, "BSPX");
+        READ_OR_RETURN(&blocksize, sizeof(int));
+        uint32 bspindexes;
+        READ_OR_RETURN(&bspindexes, sizeof(uint32));
+        if (bspindexes >0)
+        {
+            uint16 *indexarray = new uint16[bspindexes];
+            READ_OR_RETURN_WITH_DELETE(indexarray, bspindexes*sizeof(uint16));
+            collisions.reserve(bspindexes / 3);
+            for (uint32 i=0; i<bspindexes; i+=3)
+                collisions.push_back(MeshTriangle(indexarray[i], indexarray[i+1], indexarray[i+2]));
+
+            delete[] indexarray;
+        }
+
         // ---- vectors
         READ_OR_RETURN(&blockId, 4);
         CMP_OR_RETURN(blockId, "VERT");
@@ -502,7 +519,7 @@ namespace VMAP
 
         return true;
     }
-
+#pragma optimize("", on)
     GroupModel_Raw::~GroupModel_Raw()
     {
         delete liquid;

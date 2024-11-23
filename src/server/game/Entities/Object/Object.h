@@ -22,7 +22,6 @@
 #include "Common.h"
 #include "GridDefines.h"
 #include "Map.h"
-#include "ModelIgnoreFlags.h"
 #include "MovementInfo.h"
 #include "ObjectDefines.h"
 #include "UpdateData.h"
@@ -494,7 +493,7 @@ class WorldObject : public Object, public WorldLocation
         bool HasPhaseId(uint32 PhaseID) const;
         std::set<uint32> const& GetPhases() const;
         bool InSamePhaseId(WorldObject const* obj) const;
-        bool InSamePhaseId(std::set<uint32> const& phase, bool otherUsePlayerPhasingRules) const;
+        bool InSamePhaseId(std::set<uint32> const& phase) const;
         void RebuildTerrainSwaps();
         void RebuildWorldMapAreaSwaps();
         std::set<uint32> const& GetTerrainSwaps() const { return _terrainSwaps; }
@@ -540,8 +539,8 @@ class WorldObject : public Object, public WorldLocation
         bool IsWithinDist2d(const Position* pos, float dist) const;
         bool IsWithinDist(WorldObject const* obj, float dist2compare, bool is3D = true, bool ignoreObjectSize = false) const; // use only if you will sure about placing both object at same map
         bool IsWithinDistInMap(WorldObject const* obj, float dist2compare, bool is3D = true, bool ignoreObjectSize = false) const;
-        bool IsWithinLOS(float x, float y, float z, VMAP::ModelIgnoreFlags ignoreFlags = VMAP::ModelIgnoreFlags::Nothing) const;
-        bool IsWithinLOSInMap(WorldObject const* obj, VMAP::ModelIgnoreFlags ignoreFlags = VMAP::ModelIgnoreFlags::Nothing) const;
+        bool IsWithinLOS(float x, float y, float z) const;
+        bool IsWithinLOSInMap(WorldObject const* obj) const;
         Position GetHitSpherePointFor(Position const& dest) const;
         void GetHitSpherePointFor(Position const& dest, float& x, float& y, float& z) const;
         bool GetDistanceOrder(WorldObject const* obj1, WorldObject const* obj2, bool is3D = true) const;

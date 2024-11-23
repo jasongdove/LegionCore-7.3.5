@@ -67,7 +67,7 @@ struct AABound
     Copyright (c) 2003-2007 Christopher Kulla
 */
 
-class TC_COMMON_API BIH
+class BIH
 {
     private:
         void init_empty()
