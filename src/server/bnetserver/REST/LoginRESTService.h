@@ -19,18 +19,19 @@
 #define LoginRESTService_h__
 
 #include "DeadlineTimer.h"
-#include "IoContext.h"
-#include "Session.h"
 #include "Define.h"
+#include "IoContext.h"
 #include "Login.pb.h"
-#include <boost/asio/io_service.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/ip/address.hpp>
-#include <boost/asio/deadline_timer.hpp>
+#include "Session.h"
 #include <atomic>
+#include <boost/asio/deadline_timer.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/ip/address.hpp>
+#include <boost/asio/ip/tcp.hpp>
 #include <mutex>
 #include <thread>
 
+class AsyncLoginRequest;
 struct soap;
 struct soap_plugin;
 
@@ -58,6 +59,8 @@ private:
     int32 HandlePost(soap* soapClient);
 
     int32 SendResponse(soap* soapClient, google::protobuf::Message const& response);
+
+    void HandleAsyncRequest(std::shared_ptr<AsyncLoginRequest> request);
 
     std::string CalculateShaPassHash(std::string const& name, std::string const& password);
 
