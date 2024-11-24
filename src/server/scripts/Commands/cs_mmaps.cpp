@@ -97,7 +97,7 @@ public:
         // path
         PathGenerator path(target);
         path.SetUseStraightPath(useStraightPath);
-        path.SetUseRaycast(useRaycast);
+        //path.SetUseRaycast(useRaycast);
         bool result = path.CalculatePath(x, y, z, false);
 
         Movement::PointsArray const& pointPath = path.GetPath();
