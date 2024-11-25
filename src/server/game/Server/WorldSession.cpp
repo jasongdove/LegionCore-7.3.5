@@ -941,7 +941,6 @@ void WorldSession::LoadCharacterTemplates(PreparedQueryResult const& result)
         templateData.iLevel = fields[2].GetUInt32();
         templateData.money = fields[3].GetUInt32();
         templateData.artifact = fields[4].GetBool();
-        templateData.transferId = fields[5].GetUInt32();
         templateData.templateId = fields[6].GetUInt32();
         templateData.charTemplate = sCharacterDataStore->GetCharacterTemplate(templateData.templateId);
     }

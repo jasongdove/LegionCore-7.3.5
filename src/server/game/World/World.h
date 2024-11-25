@@ -711,7 +711,6 @@ class World
         void SetClosed(bool val);
 
         void ProcessMailboxQueue();
-        void Transfer();
 
         uint32 GetPvPMysticCount() const { return m_pvpMysticCount; }
         void AddPvPMysticCount() { m_pvpMysticCount++; }

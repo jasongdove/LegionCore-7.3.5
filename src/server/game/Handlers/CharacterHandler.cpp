@@ -469,21 +469,6 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CreateChar& c
                     stmt->setUInt32(0, newChar.GetGUIDLow());
                     stmt->setUInt32(1, charTemplateData->id);
                     trans->Append(stmt);
-
-                    if (charTemplateData->transferId)
-                    {
-                        uint8 raceID = 2;
-                        if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(createInfo->Race))
-                            raceID = rEntry->Alliance;
-
-                        stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_TRANSFER_REQUESTS);
-                        stmt->setUInt32(0, newChar.GetGUIDLow());
-                        stmt->setUInt8(1, createInfo->Class);
-                        stmt->setUInt8(2, raceID);
-                        stmt->setUInt32(3, charTemplateData->transferId);
-                        trans->Append(stmt);
-                        CharacterDatabase.PExecute("UPDATE `characters` SET transfer_request = '%u' WHERE guid = '%u'", charTemplateData->transferId, newChar.GetGUIDLow());
-                    }
                 }
             }
 

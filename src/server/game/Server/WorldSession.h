@@ -1039,7 +1039,6 @@ struct CharacterTemplateData
     uint32 id = 0;
     uint32 iLevel = 0;
     uint32 money = 0;
-    uint32 transferId = 0;
     uint32 templateId = 0;
     uint8 level = 0;
     bool artifact = true;

@@ -2530,7 +2530,6 @@ void World::Update(uint32 diff)
     {
         m_timers[WUPDATE_MAILBOXQUEUE].Reset();
         ProcessMailboxQueue();
-        Transfer();
     }
     
     if (m_timers[WUPDATE_DONATE_AND_SERVICES].Passed())
@@ -4505,123 +4504,6 @@ void World::AutoRestartServer()
 
     m_NextServerRestart = time_t(m_NextServerRestart + DAY);
     sWorld->setWorldState(WS_AUTO_SERVER_RESTART_TIME, m_NextServerRestart);
-}
-
-void World::Transfer()
-{
-    //state 0 waiting to dump on source server
-    //state 1 load dump char to dest server
-    //state 2 error to many char on acc
-    //state 3 dump char to waiting buy transfer
-    //state 4 waiting buy transfer
-    QueryResult toDump = LoginDatabase.PQuery("SELECT `id`, `account`, `perso_guid`, `to`, `state` FROM transferts WHERE `from` = %u AND state IN (0,3)", realm.Id.Realm);
-    QueryResult toLoad = LoginDatabase.PQuery("SELECT `id`, `account`, `perso_guid`, `from`, `dump`, `toacc`, `transferId` FROM transferts WHERE `to` = %u AND state = 1", realm.Id.Realm);
-
-    TC_LOG_DEBUG("network", "World::Transfer()");
-
-    if(toDump)
-    {
-        do
-        {
-            Field* field = toDump->Fetch();
-            uint32 transaction = field[0].GetUInt32();
-            ObjectGuid::LowType guid = field[2].GetUInt64();
-            uint32 to = field[3].GetUInt32();
-            uint32 state = field[4].GetUInt32();
-
-            if (Player * pPlayer = sObjectMgr->GetPlayerByLowGUID(guid))
-            {
-                pPlayer->GetSession()->SendNotification("You must logout to transfer your char");
-                continue;
-            }
-
-            CharacterDatabase.PExecute("DELETE FROM `group_member` WHERE `memberGuid` = '%u'",  guid);
-            CharacterDatabase.PExecute("DELETE FROM `guild_member` WHERE `guid` = '%u'",        guid);
-
-            std::string dump;
-            DumpReturn dumpState = PlayerDumpWriter().WriteDump(guid, dump);
-
-            TC_LOG_DEBUG("network", "Transfer toDump guid %lu, dump %u", guid, dumpState);
-
-            if (dumpState == DUMP_SUCCESS)
-            {
-                CharacterDatabase.PExecute("UPDATE `characters` SET `at_login` = '512', `deleteInfos_Name` = `name`, `deleteInfos_Account` = `account`, `deleteDate` ='" UI64FMTD "', `name` = '', `account` = 0, `transfer` = '%u' WHERE `guid` = '" UI64FMTD "'", uint64(GameTime::GetGameTime()), to, guid);
-                LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_UPD_DUMP);
-                if(stmt)
-                {
-                    stmt->setString(0, dump);
-                    if(state == 3)
-                        stmt->setUInt32(1, 4);
-                    else
-                        stmt->setUInt32(1, 1);
-                    stmt->setUInt32(2, transaction);
-                    LoginDatabase.Execute(stmt);
-                }
-            }
-            else
-            {
-                LoginDatabase.PQuery("UPDATE `transferts` SET `error` = %u WHERE `id` = '%u'", dumpState, transaction);
-                continue;
-            }
-        }
-        while(toDump->NextRow());
-    }
-
-    if(toLoad)
-    {
-        do
-        {
-            Field* field = toLoad->Fetch();
-            uint32 transaction = field[0].GetUInt32();
-            uint32 account = field[1].GetUInt32();
-            ObjectGuid::LowType guid = field[2].GetUInt64();
-            uint32 from = field[3].GetUInt32();
-            std::string dump = field[4].GetString();
-            uint32 toacc = field[5].GetUInt32();
-            uint32 transferId = field[6].GetUInt32();
-            uint32 newguid = 0;
-            if(!toacc)
-                toacc = account;
-
-            DumpReturn dumpState = PlayerDumpReader().LoadDump(toacc, dump, "", newguid);
-
-            TC_LOG_DEBUG("network", "Transfer toLoad guid %lu, dump %u", guid, dumpState);
-
-            if (dumpState == DUMP_SUCCESS)
-            {
-                LoginDatabase.PQuery("DELETE FROM `transferts` WHERE `id` = %u", transaction);
-                LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_ADD_TRANSFERTS_LOGS);
-                if(stmt)
-                {
-                    stmt->setUInt32(0, transaction);
-                    stmt->setUInt32(1, account);
-                    stmt->setUInt64(2, guid);
-                    stmt->setUInt32(3, from);
-                    stmt->setUInt32(4, realm.Id.Realm);
-                    stmt->setString(5, dump);
-                    stmt->setUInt32(6, toacc);
-                    stmt->setUInt32(7, newguid);
-                    stmt->setUInt32(8, transferId);
-                    LoginDatabase.Execute(stmt);
-                    if(transferId)
-                    {
-                        if (realm.Id.Realm == 59)
-                            LoginDatabase.PQuery("UPDATE `transfer_requests` SET `guid` = '%u' WHERE `id` = '%u'", newguid, transferId);
-                        else
-                            LoginDatabase.PQuery("UPDATE `transfer_requests` SET `status` = '%u', `guid` = '%u' WHERE `id` = '%u'", dumpState, newguid, transferId);
-                    }
-                }
-            }
-            else
-            {
-                LoginDatabase.PQuery("UPDATE `transferts` SET `error` = '%u', `nb_attempt` = `nb_attempt` + 1 WHERE `id` = '%u'", dumpState, transaction);
-                if (transferId && realm.Id.Realm != 59)
-                    LoginDatabase.PQuery("UPDATE `transfer_requests` SET `status` = '%u' WHERE `id` = '%u'", dumpState, transferId);
-                continue;
-            }
-        }
-        while (toLoad->NextRow());
-    }
 }
 
 Realm realm;
