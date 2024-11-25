@@ -10,24 +10,21 @@ struct GossipMenuItems
     uint32          OptionBroadcastTextID;
     uint32          BoxBroadcastTextID;
     uint32          OptionType;
-    uint32          OptionNpcflag;
-    uint32          OptionNpcflag2;
+    uint32          OptionNpcFlag;
     uint32          ActionMenuID;
     uint32          ActionPoiID;
     uint32          BoxMoney;
-    uint32          BoxCurrency;
     std::string     OptionText;
     std::string     BoxText;
-    uint8           OptionNPC;
+    uint8           OptionIcon;
     bool            BoxCoded;
 };
 
 struct GossipMenus
 {
     ConditionList   Conditions;
-    uint32          Entry;
+    uint32          MenuID;
     uint32          TextID;
-    uint32          FriendshipFactionID;
 };
 
 typedef std::multimap<uint32, GossipMenus> GossipMenusContainer;

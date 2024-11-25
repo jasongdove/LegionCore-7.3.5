@@ -39,7 +39,7 @@ GossipMenu::~GossipMenu()
     ClearMenu();
 }
 
-void GossipMenu::AddMenuItem(int32 menuItemId, uint8 icon, std::string const& message, uint32 sender, uint32 action, std::string const& boxMessage, uint32 boxMoney, uint32 boxCurrency, bool coded /*= false*/)
+void GossipMenu::AddMenuItem(int32 menuItemId, uint8 icon, std::string const& message, uint32 sender, uint32 action, std::string const& boxMessage, uint32 boxMoney, bool coded /*= false*/)
 {
     ASSERT(_menuItems.size() <= GOSSIP_MAX_MENU_ITEMS);
 
@@ -61,15 +61,13 @@ void GossipMenu::AddMenuItem(int32 menuItemId, uint8 icon, std::string const& me
 
     GossipMenuItem menuItem;
 
-    menuItem.OptionNPC = icon;
+    menuItem.MenuItemIcon = icon;
     menuItem.Message = message;
     menuItem.IsCoded = coded;
     menuItem.Sender = sender;
     menuItem.OptionType = action;
     menuItem.BoxMessage = boxMessage;
     menuItem.BoxMoney = boxMoney;
-    menuItem.BoxCurrency = boxCurrency;
-    menuItem.menuItemId = menuItemId;
 
     _menuItems[menuItemId] = menuItem;
 }
@@ -102,7 +100,7 @@ void GossipMenu::AddMenuItem(uint32 menuId, uint32 menuItemId, uint32 sender, ui
                 ObjectMgr::GetLocaleString(gossipMenuLocale->BoxText, GetLocale(), strBoxText);
         }
 
-        AddMenuItem(-1, itr->second.OptionNPC, strOptionText, sender, action, strBoxText, itr->second.BoxMoney, itr->second.BoxCurrency, itr->second.BoxCoded);
+        AddMenuItem(-1, itr->second.OptionIcon, strOptionText, sender, action, strBoxText, itr->second.BoxMoney, itr->second.BoxCoded);
     }
 }
 
@@ -219,21 +217,20 @@ bool PlayerMenu::IsGossipOptionCoded(uint32 selection) const
     return _gossipMenu.IsMenuItemCoded(selection);
 }
 
-void PlayerMenu::SendGossipMenu(uint32 titleTextId, ObjectGuid objectGUID, uint32 friendshipFactionID /*= 0*/) const
+void PlayerMenu::SendGossipMenu(uint32 titleTextId, ObjectGuid objectGUID) const
 {
     WorldPackets::NPC::GossipMessage packet;
     packet.GossipGUID = objectGUID;
     packet.TextID = titleTextId;
     packet.GossipID = _gossipMenu.GetMenuId();
-    packet.FriendshipFactionID = friendshipFactionID;
 
     for (auto const& itr : _gossipMenu.GetMenuItems())
     {
         auto const& item = itr.second;
 
         WorldPackets::NPC::ClientGossipOptions opt;
-        opt.ClientOption = item.menuItemId;
-        opt.OptionNPC = item.OptionNPC;
+        opt.ClientOption = itr.first;
+        opt.OptionNPC = item.MenuItemIcon;
         opt.OptionFlags = item.IsCoded;
         opt.OptionCost = item.BoxMoney;
         opt.Text = item.Message;

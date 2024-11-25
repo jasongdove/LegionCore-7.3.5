@@ -1508,7 +1508,7 @@ bool ConditionMgr::addToGossipMenus(Condition* cond)
     {
         for (auto itr = menuBounds.first; itr != menuBounds.second; ++itr)
         {
-            if ((*itr).second.Entry == cond->SourceGroup && (*itr).second.TextID == uint32(cond->SourceEntry))
+            if ((*itr).second.MenuID == cond->SourceGroup && (*itr).second.TextID == uint32(cond->SourceEntry))
             {
                 (*itr).second.Conditions.push_back(cond);
                 return true;

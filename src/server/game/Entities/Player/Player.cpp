@@ -17983,11 +17983,9 @@ void Player::PrepareGossipMenu(WorldObject* source, uint32 menuId /*= 0*/, bool 
 
         if (Creature* creature = source->ToCreature())
         {
-            if (!(itr->second.OptionNpcflag & npcflags))
+            if (!(itr->second.OptionNpcFlag & npcflags))
                 continue;
 
-            if (itr->second.OptionNpcflag2 && !(itr->second.OptionNpcflag2 & npcflags2))
-                continue;
             switch (itr->second.OptionType)
             {
                 case GOSSIP_OPTION_ARMORER:
@@ -18007,6 +18005,9 @@ void Player::PrepareGossipMenu(WorldObject* source, uint32 menuId /*= 0*/, bool 
                     }
                     break;
                 }
+                case GOSSIP_OPTION_LEARNDUALSPEC:
+                    canTalk = false;
+                    break;
                 case GOSSIP_OPTION_TRAINER:
                     if (!creature->isCanTrainingOf(this, false))
                         canTalk = false;
@@ -18112,7 +18113,7 @@ void Player::PrepareGossipMenu(WorldObject* source, uint32 menuId /*= 0*/, bool 
             else if (GossipMenuItemsLocale const* gossipMenuLocale = sGossipDataStore->GetGossipMenuItemsLocale(MAKE_PAIR32(menuId, itr->second.OptionIndex)))
                 ObjectMgr::GetLocaleString(gossipMenuLocale->BoxText, localeConstant, strBoxText);
 
-            menu->GetGossipMenu().AddMenuItem(itr->second.OptionIndex, itr->second.OptionNPC, strOptionText, 0, itr->second.OptionType, strBoxText, itr->second.BoxMoney, itr->second.BoxCurrency, itr->second.BoxCoded);
+            menu->GetGossipMenu().AddMenuItem(itr->second.OptionIndex, itr->second.OptionIcon, strOptionText, 0, itr->second.OptionType, strBoxText, itr->second.BoxMoney, itr->second.BoxCoded);
             menu->GetGossipMenu().AddGossipMenuItemData(itr->second.OptionIndex, itr->second.ActionMenuID, itr->second.ActionPoiID);
         }
     }
@@ -18150,11 +18151,7 @@ void Player::SendPreparedGossip(WorldObject* source)
     if (uint32 menuId = PlayerTalkClass->GetGossipMenu().GetMenuId())
         textId = GetGossipTextId(menuId, source);
 
-    uint32 friendshipFactionID = 0;
-    if (uint32 menuId = PlayerTalkClass->GetGossipMenu().GetMenuId())
-        friendshipFactionID = GetGossipFriendshipFactionID(menuId, source);
-    
-    PlayerTalkClass->SendGossipMenu(textId, source->GetGUID(), friendshipFactionID);
+    PlayerTalkClass->SendGossipMenu(textId, source->GetGUID());
 }
 
 void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 menuId)
@@ -18185,17 +18182,7 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
         return;
 
     int32 cost = int32(item->BoxMoney);
-    int32 currencyID = int32(item->BoxCurrency);
-    if (currencyID)
-    {
-        if (!HasCurrency(currencyID, cost))
-        {
-            SendBuyError(BUY_ERR_NOT_ENOUGHT_MONEY);
-            PlayerTalkClass->SendCloseGossip();
-            return;
-        }
-    }
-    else if (!HasEnoughMoney(int64(cost)))
+    if (!HasEnoughMoney(int64(cost)))
     {
         SendBuyError(BUY_ERR_NOT_ENOUGHT_MONEY);
         PlayerTalkClass->SendCloseGossip();
@@ -18259,6 +18246,8 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
             break;
         case GOSSIP_OPTION_TRAINER:
             GetSession()->SendTrainerList(guid);
+            break;
+        case GOSSIP_OPTION_LEARNDUALSPEC:
             break;
         case GOSSIP_OPTION_UNLEARNTALENTS:
             PlayerTalkClass->SendCloseGossip();
@@ -18358,10 +18347,7 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
             return;
     }
 
-    if (currencyID)
-        ModifyCurrency(currencyID, -cost);
-    else
-        ModifyMoney(-cost);
+    ModifyMoney(-cost);
 }
 
 uint32 Player::GetGossipTextId(WorldObject* source)
@@ -18399,20 +18385,6 @@ uint32 Player::GetDefaultGossipMenuForSource(WorldObject* source)
     }
 
     return 0;
-}
-
-uint32 Player::GetGossipFriendshipFactionID(uint32 menuId, WorldObject* source)
-{
-    uint32 friendshipFactionID = 0;
-    if (!menuId)
-        return friendshipFactionID;
-
-    auto menuBounds = sGossipDataStore->GetGossipMenusMapBounds(menuId);
-    for (auto itr = menuBounds.first; itr != menuBounds.second; ++itr)
-        if (sConditionMgr->IsObjectMeetToConditions(this, source, itr->second.Conditions))
-            friendshipFactionID = itr->second.FriendshipFactionID;
-
-    return friendshipFactionID;
 }
 
 /*********************************************************/

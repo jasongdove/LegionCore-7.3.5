@@ -47,8 +47,8 @@ enum Gossip_Option
     GOSSIP_OPTION_STABLEPET             = 14,                   //UNIT_NPC_FLAG_STABLE              (4194304)
     GOSSIP_OPTION_ARMORER               = 15,                   //UNIT_NPC_FLAG_ARMORER             (4096)
     GOSSIP_OPTION_UNLEARNTALENTS        = 16,                   //UNIT_NPC_FLAG_TRAINER             (16) (bonus option for GOSSIP_OPTION_TRAINER)
-    GOSSIP_OPTION_MAILBOX               = 18,                   //UNIT_NPC_FLAG_MAILBOX
     GOSSIP_OPTION_OUTDOORPVP            = 19,                   //added by code (option for outdoor pvp creatures)
+    GOSSIP_OPTION_LEARNDUALSPEC         = 18,                   //UNIT_NPC_FLAG_TRAINER             (16) (bonus option for GOSSIP_OPTION_TRAINER)
     GOSSIP_OPTION_TRANSMOGRIFIER        = 20,                   //UNIT_NPC_FLAG_TRANSMOGRIFIER
     GOSSIP_OPTION_SCENARIO              = 21,                   //UNIT_NPC_FLAG_GOSSIP
     GOSSIP_OPTION_GARRISON_SHIPMENT     = 22,                   //UNIT_NPC_FLAG2_AI_OBSTACLE 
@@ -58,6 +58,7 @@ enum Gossip_Option
     GOSSIP_OPTION_CHOICE                = 26,                   //UNIT_NPC_FLAG_GOSSIP
     GOSSIP_OPTION_ARTIFACT_RESPEC       = 27,                   //UNIT_NPC_FLAG_ARTIFACT_POWER_RESPEC
     GOSSIP_OPTION_ALLIED_RACE_DETAILS   = 28,                   // SMSG_OPEN_ALLIED_RACE_DETAILS
+    GOSSIP_OPTION_MAILBOX               = 29,                   //UNIT_NPC_FLAG_MAILBOX
     GOSSIP_OPTION_MAX
 };
 
@@ -140,14 +141,12 @@ enum Poi_Icon
 
 struct GossipMenuItem
 {
+    uint8 MenuItemIcon;
     uint32 Sender;
     uint32 OptionType;
     uint32 BoxMoney;
-    uint32 menuItemId;
-    uint32 BoxCurrency;
     std::string Message;
     std::string BoxMessage;
-    uint8 OptionNPC;
     bool IsCoded;
 };
 
@@ -181,7 +180,7 @@ public:
     GossipMenu();
     ~GossipMenu();
 
-    void AddMenuItem(int32 menuItemId, uint8 icon, std::string const& message, uint32 sender, uint32 action, std::string const& boxMessage, uint32 boxMoney, uint32 boxCurrency = 0, bool coded = false);
+    void AddMenuItem(int32 menuItemId, uint8 icon, std::string const& message, uint32 sender, uint32 action, std::string const& boxMessage, uint32 boxMoney, bool coded = false);
     void AddMenuItem(uint32 menuId, uint32 menuItemId, uint32 sender, uint32 action);
 
     void SetMenuId(uint32 menu_id);
@@ -239,7 +238,7 @@ public:
     uint32 GetGossipOptionAction(uint32 selection) const;
     bool IsGossipOptionCoded(uint32 selection) const;
 
-    void SendGossipMenu(uint32 titleTextId, ObjectGuid objectGUID, uint32 friendshipFactionID = 0) const;
+    void SendGossipMenu(uint32 titleTextId, ObjectGuid objectGUID) const;
     void SendCloseGossip() const;
     void SendPointOfInterest(uint32 poiId) const;
     void SendQuestGiverStatus(QuestGiverStatus questStatus, ObjectGuid npcGUID) const;
