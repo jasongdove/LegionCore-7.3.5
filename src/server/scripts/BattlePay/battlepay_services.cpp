@@ -122,90 +122,6 @@ public:
     }
 };
 
-class reachedRefererThreshold : public PlayerScript
-{
-public:
-    reachedRefererThreshold() : PlayerScript("reachedRefererThreshold") { }
-
-    void OnLevelChanged(Player* player, uint8 oldLevel) override
-    {
-        if (player == NULL)
-            return;
-
-        uint32 trackerToken = sWorld->getIntConfig(CONFIG_REFERRAL_TRACKER_TOKEN_TYPE);
-        if (trackerToken <= 0)
-            return;
-
-        if (sWorld->getIntConfig(CONFIG_REFERRAL_TRACKER_LEVEL_THRESHOLD) != oldLevel + 1)
-            return;
-
-        if (!player->GetSession() || player->GetSession()->GetReferer() == 0)
-            return;
-
-        // check that this account has not already counted towards the total referral count
-        CharacterDatabasePreparedStatement* cstmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_NUM_ACCOUNT_CHARS_REACHED_LEVEL);
-        cstmt->setUInt32(0, player->GetSession()->GetAccountId());
-        cstmt->setUInt8(1, sWorld->getIntConfig(CONFIG_REFERRAL_TRACKER_LEVEL_THRESHOLD));
-        PreparedQueryResult result = CharacterDatabase.Query(cstmt);
-
-        uint64 charsReachedThreshold = result ? (*result)[0].GetUInt64() : 0;
-        if (charsReachedThreshold >= 1)
-            return;
-
-        uint32 referer = player->GetSession()->GetReferer();
-
-        LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_TOKEN);
-        stmt->setUInt32(0, referer);
-        stmt->setUInt8(1, trackerToken);
-        result = LoginDatabase.Query(stmt);
-
-        int64 oldTokenAmount = (result) ? (*result)[0].GetInt64() : 0;
-
-        stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_OR_UPD_TOKEN);
-        stmt->setUInt32(0, referer);
-        stmt->setUInt8(1, trackerToken);
-        stmt->setInt64(2, 1);
-        stmt->setInt64(3, 1);
-        LoginDatabase.Execute(stmt);
-
-        uint8 numReferralThresholdReached = 0;
-        uint8 newTokenAmount = oldTokenAmount + 1;
-        switch (newTokenAmount)
-        {
-        case 1:
-            numReferralThresholdReached = 1;
-            break;
-        case 2:
-            numReferralThresholdReached = 2;
-            break;
-        case 5:
-            numReferralThresholdReached = 3;
-            break;
-        case 10:
-            numReferralThresholdReached = 4;
-            break;
-        case 15:
-            numReferralThresholdReached = 5;
-            break;
-        case 25:
-            numReferralThresholdReached = 6;
-            break;
-        default:
-            break;
-        }
-
-        if (numReferralThresholdReached == 0)
-            return;
-
-        stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_OR_UPD_TOKEN);
-        stmt->setUInt32(0, referer);
-        stmt->setUInt8(1, trackerToken + numReferralThresholdReached);
-        stmt->setInt64(2, 1);
-        stmt->setInt64(3, 1);
-        LoginDatabase.Execute(stmt);
-    }
-};
-
 template <uint32 t_AccountServiceFlag> class BattlePay_AccountService : BattlePayProductScript
 {
 public:
@@ -228,6 +144,5 @@ void AddSC_BattlePay_Services()
     new BattlePay_Level<90>("battlepay_service_level90");
     new BattlePay_Level<100>("battlepay_service_level100");
     new playerScriptTokensAvailable();
-    new reachedRefererThreshold();
     //new BattlePay_AccountService<ServiceFlags::PremadePve>("battlepay_service_premade");
 }

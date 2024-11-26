@@ -1279,7 +1279,7 @@ class spell_bs_dominate_mind : public SpellScriptLoader
         }
 };
 
-void AddSC_broken_shore()
+void AddSC_paladin_broken_shore()
 {
     new npc_bs_lord_maxwell_tyrosus();
     new npc_bs_highlord_tirion_fordring();

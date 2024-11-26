@@ -1137,8 +1137,6 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_UNIQUE_IP_TOKEN_TYPE]                       = sConfigMgr->GetIntDefault("UniqueIpEnableTokenType", 0);
     m_int_configs[CONFIG_UNIQUE_IP_TOKEN_AMOUNT]                     = sConfigMgr->GetIntDefault("UniqueIpEnableTokenAmount", 0);
     m_int_configs[CONFIG_DONATE_VENDOR_TOKEN_TYPE]                   = sConfigMgr->GetIntDefault("DonateVendorTokenType", 1);
-    m_int_configs[CONFIG_REFERRAL_TRACKER_TOKEN_TYPE]                = sConfigMgr->GetIntDefault("ReferralTrackerTokenType", 0);
-    m_int_configs[CONFIG_REFERRAL_TRACKER_LEVEL_THRESHOLD]           = sConfigMgr->GetIntDefault("ReferralTrackerLevelThreshold", 110);
 
     m_bool_configs[CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN]            = sConfigMgr->GetBoolDefault("OffhandCheckAtSpellUnlearn", true);
 
