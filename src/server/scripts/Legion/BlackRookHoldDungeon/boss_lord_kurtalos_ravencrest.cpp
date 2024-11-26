@@ -306,7 +306,7 @@ struct boss_latosius : public BossAI
                     Talk(SAY_DREADLORDS_GUILE);
                     DoCast(SPELL_DREADLORDS_GUILE);
                     for (auto id : {EVENT_SHADOW_BOLT_VOLLEY, EVENT_CLOUD_OF_HYPNOSIS, EVENT_STINGING_SWARM})
-                        events.RecalcEventTimer(id, 26000, true);
+                        events.RescheduleEvent(id, 26000, true);
                     events.RescheduleEvent(EVENT_DREADLORDS_GUILE, 82000);
                     events.RescheduleEvent(EVENT_SUM_IMAGE, 4000);
                     break;

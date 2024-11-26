@@ -309,8 +309,8 @@ struct boss_hasabel : BossAI
                 FelStorm();
                 break;
             case SPELL_COLLAPSING_WORLD:
-                events.RecalcEventTimer(EVENT_TRANSPORT_PORTAL, 10000);
-                events.RecalcEventTimer(EVENT_FELSTORM_BARRAGE, 10000);
+                events.RescheduleEvent(EVENT_TRANSPORT_PORTAL, 10000);
+                events.RescheduleEvent(EVENT_FELSTORM_BARRAGE, 10000);
                 break;
         }
     }
@@ -507,7 +507,7 @@ struct boss_hasabel : BossAI
                     Talk(SAY_FELSTORM_BARRAGE);
                     DoCast(SPELL_FELSTORM_BARRAGE);
                     collapsingWorldDelayed = 10000;
-                    events.RecalcEventTimer(EVENT_TRANSPORT_PORTAL, 10000);
+                    events.RescheduleEvent(EVENT_TRANSPORT_PORTAL, 10000);
                     events.RescheduleEvent(EVENT_FELSTORM_BARRAGE, 32000);
                     break;
                 case EVENT_TRANSPORT_PORTAL:
@@ -516,7 +516,7 @@ struct boss_hasabel : BossAI
                         Talk(SAY_TRANSPORT_PORTAL);
                     Position pos = me->GetFirstCollisionPosition(frand(10.0f, 20.0f), frand(0.0f, 6.28f));
                     me->CastSpell(pos, SPELL_TRANSPORT_PORTAL, false);
-                    events.RecalcEventTimer(EVENT_FELSTORM_BARRAGE, 10000);
+                    events.RescheduleEvent(EVENT_FELSTORM_BARRAGE, 10000);
                     events.RescheduleEvent(EVENT_TRANSPORT_PORTAL, 40000);
                     break;
                 }

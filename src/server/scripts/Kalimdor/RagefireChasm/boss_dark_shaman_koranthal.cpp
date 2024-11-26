@@ -100,7 +100,7 @@ struct boss_dark_shaman_koranthal : public BossAI
                 case EVENT_TWISTED_ELEMENTS:
                 {
                     DoCastVictim(SPELL_TWISTED_ELEMENTS);
-                    events.RepeatEvent(7300);
+                    events.Repeat(7300);
                     break;
                 }
                 case EVENT_SHADOW_STORM:
@@ -108,7 +108,7 @@ struct boss_dark_shaman_koranthal : public BossAI
                     Talk(SAY_SHADOW_STORM);
                     DoCast(SPELL_SHADOW_STORM);
                     events.RescheduleEvent(EVENT_TWISTED_ELEMENTS, 15700);
-                    events.RepeatEvent(47200);
+                    events.Repeat(47200);
                     break;
                 }
                 default:

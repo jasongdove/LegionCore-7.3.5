@@ -302,99 +302,100 @@ public:
             
             if (events.GetTimer() > 15000 && !me->IsWithinMeleeRange(me->getVictim()))
                 DoCastAOE(SPELL_PETRIFY_BREATH, true);
-        
-            switch(events.GetEvent())
+
+            while (uint32 eventId = events.ExecuteEvent())
             {
-                case EVENT_NONE: break;
-                case EVENT_SMASH:
-                    if (left && right)
-                    {
-                        if (me->IsWithinMeleeRange(me->getVictim()))
-                            DoCastVictim(SPELL_TWO_ARM_SMASH, true);
-                    }
-                    else if (left || right)
-                    {
-                        if (me->IsWithinMeleeRange(me->getVictim()))
-                            DoCastVictim(SPELL_ONE_ARM_SMASH, true);
-                    }
-                    events.RescheduleEvent(EVENT_SMASH, 15000);
-                    break;
-                case EVENT_SWEEP:
-                    if (left)
-                        DoCastAOE(SPELL_ARM_SWEEP, true);
-                    events.RescheduleEvent(EVENT_SWEEP, 15000);
-                    break;
-                case EVENT_GRIP:
-                    if (right && instance)
-                    {
-                        if (Creature* RightArm = me->GetCreature(*me, instance->GetGuidData(DATA_RIGHT_ARM)))
+                switch (eventId)
+                {
+                    case EVENT_NONE:
+                        break;
+                    case EVENT_SMASH:
+                        if (left && right)
                         {
-                            Talk(EMOTE_STONE_GRIP);
-                            Talk(SAY_GRAB_PLAYER);
-                            // Grip up to 3 players
-                            for (int32 n = 0; n < RAID_MODE(1, 3); ++n)
-                            {
-                                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 40, true))
-                                    if (!pTarget->HasAura(SPELL_STONE_GRIP_STUN))
-                                        GripTargetGUID[n] = pTarget->GetGUID();
-                            }
-                            RightArm->ToCreature()->AI()->DoAction(ACTION_GRIP);
+                            if (me->IsWithinMeleeRange(me->getVictim()))
+                                DoCastVictim(SPELL_TWO_ARM_SMASH, true);
                         }
-                    }
-                    events.RescheduleEvent(EVENT_GRIP, 40000);
-                    break;
-                case EVENT_SHOCKWAVE:
-                    if (left)
-                    {
-                        Talk(SAY_SHOCKWAVE);
-                        DoCast(me, SPELL_SHOCKWAVE, true);
-                        DoCast(me, SPELL_SHOCKWAVE_VISUAL, true);
-                    }
-                    events.RescheduleEvent(EVENT_SHOCKWAVE, urand(15000, 25000));
-                    break;
-                case EVENT_EYEBEAM:
-                    if (Unit *pTarget = SelectTarget(SELECT_TARGET_FARTHEST, 1, 50, true))
-                    {
-                        if (Creature* EyeStalker = me->SummonCreature(NPC_EYEBEAM_STALKER, Lefteye,TEMPSUMMON_TIMED_DESPAWN,10000))
+                        else if (left || right)
                         {
-                            if (Creature* EyeBeam = me->SummonCreature(NPC_EYEBEAM_1,pTarget->GetPositionX(),pTarget->GetPositionY()+9,pTarget->GetPositionZ(),0,TEMPSUMMON_TIMED_DESPAWN,10000))
+                            if (me->IsWithinMeleeRange(me->getVictim()))
+                                DoCastVictim(SPELL_ONE_ARM_SMASH, true);
+                        }
+                        events.ScheduleEvent(EVENT_SMASH, 15000);
+                        break;
+                    case EVENT_SWEEP:
+                        if (left)
+                            DoCastAOE(SPELL_ARM_SWEEP, true);
+                        events.ScheduleEvent(EVENT_SWEEP, 15000);
+                        break;
+                    case EVENT_GRIP:
+                        if (right && instance)
+                        {
+                            if (Creature* RightArm = me->GetCreature(*me, instance->GetGuidData(DATA_RIGHT_ARM)))
                             {
-                                EyeStalker->CastSpell(EyeBeam, SPELL_EYEBEAM_VISUAL_2, true);
-                                EyeBeam->CastSpell(me, SPELL_EYEBEAM_VISUAL_1, true);
-                                EyeBeam->AI()->AttackStart(pTarget);
+                                Talk(EMOTE_STONE_GRIP);
+                                Talk(SAY_GRAB_PLAYER);
+                                // Grip up to 3 players
+                                for (int32 n = 0; n < RAID_MODE(1, 3); ++n)
+                                {
+                                    if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 40, true))
+                                        if (!pTarget->HasAura(SPELL_STONE_GRIP_STUN))
+                                            GripTargetGUID[n] = pTarget->GetGUID();
+                                }
+                                RightArm->ToCreature()->AI()->DoAction(ACTION_GRIP);
                             }
                         }
-                        if (Creature* EyeStalker = me->SummonCreature(NPC_EYEBEAM_STALKER, Righteye,TEMPSUMMON_TIMED_DESPAWN,10000))
+                        events.ScheduleEvent(EVENT_GRIP, 40000);
+                        break;
+                    case EVENT_SHOCKWAVE:
+                        if (left)
                         {
-                            if (Creature* EyeBeam = me->SummonCreature(NPC_EYEBEAM_2,pTarget->GetPositionX(),pTarget->GetPositionY()-9,pTarget->GetPositionZ(),0,TEMPSUMMON_TIMED_DESPAWN,10000))
+                            Talk(SAY_SHOCKWAVE);
+                            DoCast(me, SPELL_SHOCKWAVE, true);
+                            DoCast(me, SPELL_SHOCKWAVE_VISUAL, true);
+                        }
+                        events.ScheduleEvent(EVENT_SHOCKWAVE, urand(15000, 25000));
+                        break;
+                    case EVENT_EYEBEAM:
+                        if (Unit* pTarget = SelectTarget(SELECT_TARGET_FARTHEST, 1, 50, true))
+                        {
+                            if (Creature* EyeStalker = me->SummonCreature(NPC_EYEBEAM_STALKER, Lefteye, TEMPSUMMON_TIMED_DESPAWN, 10000))
                             {
-                                EyeStalker->CastSpell(EyeBeam, SPELL_EYEBEAM_VISUAL_2, true);
-                                EyeBeam->CastSpell(me, SPELL_EYEBEAM_VISUAL_1, true);
-                                EyeBeam->AI()->AttackStart(pTarget);
+                                if (Creature* EyeBeam = me->SummonCreature(NPC_EYEBEAM_1, pTarget->GetPositionX(), pTarget->GetPositionY() + 9, pTarget->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 10000))
+                                {
+                                    EyeStalker->CastSpell(EyeBeam, SPELL_EYEBEAM_VISUAL_2, true);
+                                    EyeBeam->CastSpell(me, SPELL_EYEBEAM_VISUAL_1, true);
+                                    EyeBeam->AI()->AttackStart(pTarget);
+                                }
+                            }
+                            if (Creature* EyeStalker = me->SummonCreature(NPC_EYEBEAM_STALKER, Righteye, TEMPSUMMON_TIMED_DESPAWN, 10000))
+                            {
+                                if (Creature* EyeBeam = me->SummonCreature(NPC_EYEBEAM_2, pTarget->GetPositionX(), pTarget->GetPositionY() - 9, pTarget->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 10000))
+                                {
+                                    EyeStalker->CastSpell(EyeBeam, SPELL_EYEBEAM_VISUAL_2, true);
+                                    EyeBeam->CastSpell(me, SPELL_EYEBEAM_VISUAL_1, true);
+                                    EyeBeam->AI()->AttackStart(pTarget);
+                                }
                             }
                         }
-                            
-                    }
-                    events.RescheduleEvent(EVENT_EYEBEAM, 20000);
-                    break;
-                case EVENT_LEFT:
-                    if (Creature* La = me->GetCreature(*me, instance->GetGuidData(DATA_LEFT_ARM)))
-                    {
-                        La->ToCreature()->AI()->DoAction(ACTION_REMOVE_LEFT);
-                        me->CastSpell(La, SPELL_ARM_RESPAWN, true);
-                    }
-                    left = true;
-                    events.CancelEvent(EVENT_LEFT);
-                    break;                
-                case EVENT_RIGHT:
-                    if (Creature* Ra = me->GetCreature(*me, instance->GetGuidData(DATA_RIGHT_ARM)))
-                    {
-                        Ra->ToCreature()->AI()->DoAction(ACTIOM_REMOVE_RIGHT);
-                        me->CastSpell(Ra, SPELL_ARM_RESPAWN, true);
-                    }
-                    right = true;
-                    events.CancelEvent(EVENT_RIGHT);
-                    break;
+                        events.ScheduleEvent(EVENT_EYEBEAM, 20000);
+                        break;
+                    case EVENT_LEFT:
+                        if (Creature* La = me->GetCreature(*me, instance->GetGuidData(DATA_LEFT_ARM)))
+                        {
+                            La->ToCreature()->AI()->DoAction(ACTION_REMOVE_LEFT);
+                            me->CastSpell(La, SPELL_ARM_RESPAWN, true);
+                        }
+                        left = true;
+                        break;
+                    case EVENT_RIGHT:
+                        if (Creature* Ra = me->GetCreature(*me, instance->GetGuidData(DATA_RIGHT_ARM)))
+                        {
+                            Ra->ToCreature()->AI()->DoAction(ACTIOM_REMOVE_RIGHT);
+                            me->CastSpell(Ra, SPELL_ARM_RESPAWN, true);
+                        }
+                        right = true;
+                        break;
+                }
             }
 
             DoMeleeAttackIfReady();

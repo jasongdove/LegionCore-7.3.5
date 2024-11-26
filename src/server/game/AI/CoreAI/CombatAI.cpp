@@ -435,7 +435,7 @@ void CasterAI::UpdateAI(uint32 diff)
     if (me->HasUnitState(UNIT_STATE_CASTING))
         return;
 
-    if (events.GetEvent())
+    if (!events.Empty())
         if (!me->IsWithinLOSInMap(me->getVictim()))
             if (MotionMaster* mMaster = me->GetMotionMaster())
             {

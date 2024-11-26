@@ -119,7 +119,7 @@ struct boss_slagmaw : public BossAI
                         DoCast(target, SPELL_LAVA_SPIT);
                         _lavaSpitCounter++;
                     }
-                    events.RepeatEvent(1000);
+                    events.Repeat(1s);
                     break;
                 }
                 else if (_lavaSpitCounter == 5)

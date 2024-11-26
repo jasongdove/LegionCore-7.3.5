@@ -183,7 +183,7 @@ struct boss_smashspite_the_hateful : public BossAI
                         me->StopMoving();
                         me->StopAttack();
                         me->CastSpellDelay(target, SPELL_HATEFUL_GAZE, false, 200);
-                        events.RecalcEventTimer(EVENT_EARTHSHAKING_STOMP, 10000);
+                        events.RescheduleEvent(EVENT_EARTHSHAKING_STOMP, 10000);
                     }
                     events.RescheduleEvent(EVENT_HATEFUL_GAZE, 25000);
                     break;

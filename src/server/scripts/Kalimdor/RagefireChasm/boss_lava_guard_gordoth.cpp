@@ -208,13 +208,13 @@ struct boss_lava_guard_gordoth : public BossAI
                 {
                     if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
                         DoCast(target, SPELL_GROUND_RUPTURE);
-                    events.RepeatEvent(12100);
+                    events.Repeat(12100);
                     break;
                 }
                 case EVENT_SEISMIC_SLAM:
                 {
                     DoCast(nullptr, SPELL_SEISMIC_SLAM, TriggerCastFlags(TRIGGERED_IGNORE_SPELL_AND_CATEGORY_CD)); // cast earlier than category cd
-                    events.RepeatEvent(36300);
+                    events.Repeat(36300);
                     break;
                 }
                 default:
