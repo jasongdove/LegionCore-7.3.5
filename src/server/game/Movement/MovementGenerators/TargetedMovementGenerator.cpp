@@ -472,6 +472,9 @@ bool FollowMovementGenerator<Player>::DoUpdate(Player& owner, uint32 diff) { ret
 template<>
 bool FollowMovementGenerator<Creature>::DoUpdate(Creature& owner, uint32 diff)
 {
+    if (!GetTarget())
+        return false;
+
     if (!GetTarget()->IsInWorld() || !owner.IsInMap(GetTarget()))
         return false;
 
