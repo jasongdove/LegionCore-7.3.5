@@ -226,9 +226,6 @@ void WorldSession::HandleArtifactAttunePreviewRelic(WorldPackets::Artifact::Arti
     socket->SetBinding(true);
     socket->SetState(ITEM_CHANGED, _player);
 
-    if (socket->GetDonateItem())
-        sLog->outSpamm("Player %s (GUID: %u) was preview donate relic with Entry: %u (item GUID: %u) in Relic Forge.", _player->GetName(), _player->GetGUIDLow(), socket->GetEntry(), socket->GetGUIDLow());
-
     auto relicks = socket->GetArtifactSockets();
     if (relicks.find(2) == relicks.end())
     {

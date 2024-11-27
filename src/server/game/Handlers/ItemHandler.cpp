@@ -384,12 +384,6 @@ void WorldSession::HandleSellItemOpcode(WorldPackets::Item::SellItem& packet)
             return;
         }
         
-        if (item->GetDonateItem())
-        {
-            player->SendSellError(SELL_ERR_CANT_SELL_ITEM, creature, packet.ItemGUID);
-            return;
-        }
-
         if (packet.Amount == 0)
             packet.Amount = item->GetCount();
         else if (packet.Amount > item->GetCount())

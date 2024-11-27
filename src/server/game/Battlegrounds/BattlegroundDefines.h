@@ -213,15 +213,14 @@ namespace MS
                 BrawlArenaBladesEdge = 875,
                 
                 ///< custom
-                BattlegroundDeathMatch           = 876,
 
                 BrawlAllSix                         = 879,
-                BrawlBattlegroundSilvershardSix        = 883,
+                BrawlBattlegroundSilvershardSix     = 883,
                 BrawlBattlegroundKotmoguTemplateSix = 884,
                 BrawlBattlegroundWarsongSix         = 886,
 
-                BrawlBattlegroundSeethingShore = 890,
-                BattlegroundSeethingShore = 894,
+                BrawlBattlegroundSeethingShore      = 890,
+                BattlegroundSeethingShore           = 894,
 
                 Max
             };
@@ -253,7 +252,6 @@ namespace MS
                 Brawl,
 
                 ///< custom
-                BattlegroundDeathMatch,
                 ArenaSoloQ3v3,
 
                 Max
@@ -446,9 +444,6 @@ namespace MS
                             return BattlegroundQueueTypeId::None;
                     }
 
-                ///< custom
-                case BattlegroundTypeId::BattlegroundDeathMatch:
-                    return BattlegroundQueueTypeId::BattlegroundDeathMatch;
                 default:
                     return BattlegroundQueueTypeId::None;
             }
@@ -491,9 +486,7 @@ namespace MS
                 case BattlegroundQueueTypeId::RatedBattleground:
                     return BattlegroundTypeId::RatedBattleground;
 
-                    ///< custom
-                case BattlegroundQueueTypeId::BattlegroundDeathMatch:
-                    return BattlegroundTypeId::BattlegroundDeathMatch;
+                ///< custom
                 case BattlegroundQueueTypeId::ArenaSoloQ3v3:
                 case BattlegroundQueueTypeId::Arena1v1:
                     return BattlegroundTypeId::ArenaAll;

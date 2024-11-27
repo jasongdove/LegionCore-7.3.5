@@ -112,12 +112,12 @@ void CharacterDatabaseConnection::DoPrepareStatements()
     PrepareStatement(CHAR_INS_CHARACTER_WEEKLYQUESTSTATUS, "REPLACE INTO character_queststatus_weekly (guid, quest, account) VALUES (?, ?, ?)", CONNECTION_ASYNC);
     PrepareStatement(CHAR_INS_CHARACTER_SEASONALQUESTSTATUS, "REPLACE INTO character_queststatus_seasonal (guid, quest, event, account) VALUES (?, ?, ?, ?)", CONNECTION_ASYNC);
     PrepareStatement(CHAR_SEL_CHARACTER_REPUTATION, "SELECT faction, standing, flags FROM character_reputation WHERE guid = ?", CONNECTION_ASYNC);
-    PrepareStatement(CHAR_SEL_CHARACTER_INVENTORY, "SELECT " SelectItemInstanceContent ", bag, slot, ii.isdonateitem FROM character_inventory ci JOIN item_instance ii ON ci.item = ii.guid "
+    PrepareStatement(CHAR_SEL_CHARACTER_INVENTORY, "SELECT " SelectItemInstanceContent ", bag, slot FROM character_inventory ci JOIN item_instance ii ON ci.item = ii.guid "
     "LEFT JOIN item_instance_gems ig ON ii.guid = ig.itemGuid "
     "LEFT JOIN item_instance_transmog iit ON ii.guid = iit.itemGuid "
     "LEFT JOIN item_instance_artifact iia ON ii.itemEntry = iia.itemEntry and ci.guid = iia.char_guid "
     "LEFT JOIN item_instance_modifiers im ON ii.guid = im.itemGuid WHERE ci.guid = ? ORDER BY bag, slot", CONNECTION_ASYNC);
-    PrepareStatement(CHAR_SEL_CHARACTER_NOT_INVENTORY, "SELECT " SelectItemInstanceContent ", ii.isdonateitem FROM item_instance ii "
+    PrepareStatement(CHAR_SEL_CHARACTER_NOT_INVENTORY, "SELECT " SelectItemInstanceContent " FROM item_instance ii "
     "LEFT JOIN character_inventory ci ON ci.item = ii.guid "
     "LEFT JOIN mail_items mi ON mi.item_guid = ii.guid "
     "LEFT JOIN auctionhouse ah ON ah.itemguid = ii.guid "
@@ -189,8 +189,8 @@ void CharacterDatabaseConnection::DoPrepareStatements()
     PrepareStatement(CHAR_DEL_ITEM_BOP_TRADE, "DELETE FROM item_soulbound_trade_data WHERE itemGuid = ? LIMIT 1", CONNECTION_ASYNC);
     PrepareStatement(CHAR_INS_ITEM_BOP_TRADE, "INSERT INTO item_soulbound_trade_data VALUES (?, ?)", CONNECTION_ASYNC);
     PrepareStatement(CHAR_REP_INVENTORY_ITEM, "REPLACE INTO character_inventory (guid, bag, slot, item) VALUES (?, ?, ?, ?)", CONNECTION_ASYNC);
-    PrepareStatement(CHAR_REP_ITEM_INSTANCE, "REPLACE INTO item_instance (itemEntry, owner_guid, creatorGuid, giftCreatorGuid, count, duration, charges, flags, enchantments, randomPropertyType, randomPropertyId, durability, playedTime, text, upgradeId, battlePetSpeciesId, battlePetBreedData, battlePetLevel, battlePetDisplayId, bonusListIDs, itemLevel, dungeonEncounterID,  contextID, createdTime, isdonateitem, guid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", CONNECTION_ASYNC);
-    PrepareStatement(CHAR_UPD_ITEM_INSTANCE, "UPDATE item_instance SET itemEntry = ?, owner_guid = ?, creatorGuid = ?, giftCreatorGuid = ?, count = ?, duration = ?, charges = ?, flags = ?, enchantments = ?, randomPropertyType = ?, randomPropertyId = ?, durability = ?, playedTime = ?, text = ?, upgradeId = ?, battlePetSpeciesId = ?, battlePetBreedData = ?, battlePetLevel = ?, battlePetDisplayId = ?, bonusListIDs = ?, itemLevel = ?, dungeonEncounterID = ?, contextID = ?, isdonateitem = ? WHERE guid = ?", CONNECTION_ASYNC);
+    PrepareStatement(CHAR_REP_ITEM_INSTANCE, "REPLACE INTO item_instance (itemEntry, owner_guid, creatorGuid, giftCreatorGuid, count, duration, charges, flags, enchantments, randomPropertyType, randomPropertyId, durability, playedTime, text, upgradeId, battlePetSpeciesId, battlePetBreedData, battlePetLevel, battlePetDisplayId, bonusListIDs, itemLevel, dungeonEncounterID,  contextID, createdTime, guid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", CONNECTION_ASYNC);
+    PrepareStatement(CHAR_UPD_ITEM_INSTANCE, "UPDATE item_instance SET itemEntry = ?, owner_guid = ?, creatorGuid = ?, giftCreatorGuid = ?, count = ?, duration = ?, charges = ?, flags = ?, enchantments = ?, randomPropertyType = ?, randomPropertyId = ?, durability = ?, playedTime = ?, text = ?, upgradeId = ?, battlePetSpeciesId = ?, battlePetBreedData = ?, battlePetLevel = ?, battlePetDisplayId = ?, bonusListIDs = ?, itemLevel = ?, dungeonEncounterID = ?, contextID = ? WHERE guid = ?", CONNECTION_ASYNC);
     PrepareStatement(CHAR_UPD_ITEM_INSTANCE_ON_LOAD, "UPDATE item_instance SET duration = ?, flags = ?, durability = ? WHERE guid = ?", CONNECTION_ASYNC);
     PrepareStatement(CHAR_DEL_ITEM_INSTANCE, "DELETE FROM item_instance WHERE guid = ?", CONNECTION_ASYNC);
     PrepareStatement(CHAR_INS_ITEM_INSTANCE_GEMS, "REPLACE INTO item_instance_gems (itemGuid, gemItemId1, gemBonuses1, gemContext1, gemScalingLevel1, gemItemId2, gemBonuses2, gemContext2, gemScalingLevel2, gemItemId3, gemBonuses3, gemContext3, gemScalingLevel3) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", CONNECTION_ASYNC);
@@ -693,10 +693,6 @@ void CharacterDatabaseConnection::DoPrepareStatements()
     PrepareStatement(CHAR_SEL_MAILBOX_QUEUE,       "SELECT id, messageType, stationery, sender_guid, receiver_guid, subject, message, money, item, item_count FROM mailbox_queue LIMIT 500",  CONNECTION_SYNCH);
     PrepareStatement(CHAR_DEL_MAILBOX_QUEUE,       "DELETE FROM mailbox_queue WHERE id = ?",                                       CONNECTION_ASYNC);
 
-    // character_donate
-    PrepareStatement(CHAR_ADD_ITEM_DONATE, "REPLACE INTO character_donate (`owner_guid`, `itemguid`, `itemEntry`, `efircount`, `count`, `state`) VALUES (?, ?, ?, ?, ?, ?)", CONNECTION_ASYNC);
-    PrepareStatement(CHAR_ITEM_DONATE_SET_STATE, "UPDATE character_donate SET state = ?, deletedate = ? WHERE itemguid = ?", CONNECTION_ASYNC);
-
     PrepareStatement(CHAR_SEL_PLAYER_KILL, "SELECT victim_guid, count FROM character_kill WHERE guid = ?", CONNECTION_ASYNC);
     PrepareStatement(CHAR_DEL_PLAYER_KILL, "DELETE FROM character_kill WHERE guid = ?", CONNECTION_ASYNC);
     PrepareStatement(CHAR_REP_PLAYER_KILL, "REPLACE INTO character_kill (guid, victim_guid, count) VALUES (?, ? ,?)", CONNECTION_ASYNC);
@@ -827,15 +823,6 @@ void CharacterDatabaseConnection::DoPrepareStatements()
     PrepareStatement(CHAR_UPD_CHALLENGE_KEY, "UPDATE challenge_key SET ID = ?, Level = ?, Affix = ?, Affix1 = ?, Affix2 = ?, KeyIsCharded = ?, timeReset = ?, InstanceID = ? WHERE guid = ?", CONNECTION_ASYNC);
     PrepareStatement(CHAR_INS_CHALLENGE_KEY, "REPLACE INTO challenge_key (ID, Level, Affix, Affix1, Affix2, KeyIsCharded, timeReset, InstanceID, guid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", CONNECTION_ASYNC);
     PrepareStatement(CHAR_DEL_CHALLENGE_KEY, "DELETE FROM challenge_key WHERE guid = ?", CONNECTION_ASYNC);
-
-    PrepareStatement(CHAR_SEL_PLAYER_DEATHMATCH, "SELECT kills, deaths, damage, rating, matches FROM character_deathmatch WHERE guid = ?",  CONNECTION_ASYNC);
-    PrepareStatement(CHAR_REP_PLAYER_DEATHMATCH, "REPLACE INTO character_deathmatch (guid, kills, deaths, damage, rating, matches) values (?, ?, ?, ?, ?, ?)",  CONNECTION_ASYNC);
-
-    PrepareStatement(CHAR_SEL_PLAYER_DEATHMATCH_STORE, "SELECT total_kills, selected_morph, buyed_morphs FROM character_deathmatch_store WHERE guid = ?",  CONNECTION_ASYNC);
-    PrepareStatement(CHAR_REP_PLAYER_DEATHMATCH_STORE, "REPLACE INTO character_deathmatch_store (guid, total_kills, selected_morph, buyed_morphs) values (?, ?, ?, ?)",  CONNECTION_ASYNC);
-
-    PrepareStatement(CHAR_SEL_PLAYER_CHAT_LOGOS, "SELECT buyed_logo, active from character_chat_logos where guid = ?",  CONNECTION_ASYNC);
-    PrepareStatement(CHAR_REP_PLAYER_CHAT_LOGOS, "REPLACE INTO character_chat_logos (guid, buyed_logo, active) values (?, ?, ?)",  CONNECTION_ASYNC);
 
     PrepareStatement(CHAR_SEL_ARMY_TRAINING_INFO, "SELECT `opened_berserk`, `opened_mana_wanted`, `opened_mage`, `opened_hp`, `opened_dmg`, `opened_fixate`, `opened_brave`, `opened_chests` from character_army_training_info where guid = ?",  CONNECTION_ASYNC);
     PrepareStatement(CHAR_REP_ARMY_TRAINING_INFO, "REPLACE INTO character_army_training_info (`guid`, `opened_berserk`, `opened_mana_wanted`, `opened_mage`, `opened_hp`, `opened_dmg`, `opened_fixate`, `opened_brave`, `opened_chests`) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",  CONNECTION_ASYNC);

@@ -90,9 +90,6 @@ void WorldSession::HandleBattlemasterJoin(WorldPackets::Battleground::Join& pack
 
     uint8 bgQueueTypeId = MS::Battlegrounds::GetBgQueueTypeIdByBgTypeID(queueID);
 
-    if (queueID == MS::Battlegrounds::BattlegroundTypeId::BattlegroundDeathMatch)
-        packet.JoinAsGroup = false;
-    
     if (!packet.JoinAsGroup )
     {
         if (player->isUsingLfg())
@@ -138,9 +135,8 @@ void WorldSession::HandleBattlemasterJoin(WorldPackets::Battleground::Join& pack
             return;
         }
 
-        bool isRating = queueID == MS::Battlegrounds::BattlegroundTypeId::BattlegroundDeathMatch;
         BattlegroundQueue& bgQueue = sBattlegroundMgr->GetBattlegroundQueue(bgQueueTypeId);
-        GroupQueueInfo* ginfo = bgQueue.AddGroup(player, nullptr, queueID, bracketEntry, 0, isRating, false, packet.BlacklistMap);
+        GroupQueueInfo* ginfo = bgQueue.AddGroup(player, nullptr, queueID, bracketEntry, 0, false, false, packet.BlacklistMap);
 
         player->SetQueueRoleMask(bracketEntry->RangeIndex, packet.RolesMask);
 
@@ -329,7 +325,7 @@ void WorldSession::HandleBattleFieldPort(WorldPackets::Battleground::Port& packe
         if (!player->IsInvitedForBattlegroundQueueType(bgQueueTypeId))
             return;
 
-        if ((bgQueueTypeId == MS::Battlegrounds::BattlegroundQueueTypeId::Arena1v1 || bgQueueTypeId == MS::Battlegrounds::BattlegroundQueueTypeId::BattlegroundDeathMatch) && !Arena1v1CheckTalents(player))
+        if ((bgQueueTypeId == MS::Battlegrounds::BattlegroundQueueTypeId::Arena1v1) && !Arena1v1CheckTalents(player))
         {
             ChatHandler(player).PSendSysMessage("You can't join on this specialization!");
             return;

@@ -99,23 +99,6 @@ DisplayTime(chat.DisplayTime), HideChatLog(chat.HideChatLog), FakeSenderName(cha
 {
 }
 
-void ModifyMessageForPlayer(WorldObject const* sender, std::string& message, ChatMsg chatType)
-{
-    if (chatType == CHAT_MSG_SAY  || chatType == CHAT_MSG_PARTY ||
-        chatType == CHAT_MSG_RAID || chatType == CHAT_MSG_GUILD ||
-        chatType == CHAT_MSG_YELL || chatType == CHAT_MSG_WHISPER || chatType == CHAT_MSG_CHANNEL)
-        {
-            if (Player const* playerSender = sender->ToPlayer())
-            {
-                std::string const& logo = playerSender->getSelectedChatLogo();
-                if (logo.empty())
-                    return;
-                
-                message = logo + message;
-            }
-        }
-}
-
 void WorldPackets::Chat::Chat::Initialize(ChatMsg chatType, Language language, WorldObject const* sender, WorldObject const* receiver, std::string message,
     uint32 achievementId /*= 0*/, std::string channelName /*= ""*/, LocaleConstant locale /*= DEFAULT_LOCALE*/, std::string addonPrefix /*= ""*/)
 {
@@ -145,9 +128,6 @@ void WorldPackets::Chat::Chat::Initialize(ChatMsg chatType, Language language, W
     AchievementID = achievementId;
     _Channel = std::move(channelName);
     Prefix = std::move(addonPrefix);
-    
-    if (sender)
-        ModifyMessageForPlayer(sender, message, chatType); //custom
     
     ChatText = std::move(message);
 }

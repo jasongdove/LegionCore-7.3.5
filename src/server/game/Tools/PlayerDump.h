@@ -22,7 +22,6 @@
 enum DumpTableType
 {
     DTT_CHARACTER,      //                                  // characters
-    DTT_DONA_TABLE,     // <- guids owner                   // character_donate
 
     DTT_CHAR_TABLE,     //                                  // character_achievement, character_achievement_progress,
                                                             // character_action, character_aura, character_homebind,

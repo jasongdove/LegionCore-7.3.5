@@ -504,7 +504,7 @@ void WorldSession::HandleListInventory(WorldPackets::NPC::Hello& packet)
         SendListInventory(packet.Unit);
 }
 
-void WorldSession::SendListInventory(ObjectGuid const& vendorGuid, uint32 entry)
+void WorldSession::SendListInventory(ObjectGuid const& vendorGuid)
 {
     Player* player = GetPlayer();
     if (!player)
@@ -526,13 +526,7 @@ void WorldSession::SendListInventory(ObjectGuid const& vendorGuid, uint32 entry)
         vendor->SetHomePosition(vendor->GetPosition());
     }
 
-    VendorItemData const* vendorItems;
-    
-    if (entry != 0)
-       vendorItems = sObjectMgr->GetNpcDonateVendorItemList(entry);
-    else
-       vendorItems = vendor->GetVendorItems();
-   
+    VendorItemData const* vendorItems = vendor->GetVendorItems();
     uint32 rawItemCount = vendorItems ? vendorItems->GetItemCount() : 0;
 
     //if (rawItemCount > 300),
@@ -577,9 +571,8 @@ void WorldSession::SendListInventory(ObjectGuid const& vendorGuid, uint32 entry)
                 if (!sConditionMgr->IsObjectMeetToConditions(player, vendor, conditions))
                     continue;
 
-                if (vendorItem->DonateCost == 0)
-                    if (!(itemTemplate->AllowableClass & player->getClassMask()) && itemTemplate->GetBonding() == BIND_WHEN_PICKED_UP)
-                        continue;
+                if (!(itemTemplate->AllowableClass & player->getClassMask()) && itemTemplate->GetBonding() == BIND_WHEN_PICKED_UP)
+                    continue;
 
                 // Custom MoP Script for Pandarens Mounts (Alliance)
                 if (itemTemplate->GetClass() == 15 && itemTemplate->GetSubClass() == 5 && player->getRace() != RACE_PANDAREN_ALLIANCE
@@ -607,41 +600,39 @@ void WorldSession::SendListInventory(ObjectGuid const& vendorGuid, uint32 entry)
                 std::vector<GuildReward> const& rewards = sGuildMgr->GetGuildRewards();
                 bool guildRewardCheckPassed = true;
                 
-                if (!entry)
+                for (const auto & reward : rewards)
                 {
-                    for (const auto & reward : rewards)
+                    if (itemTemplate->GetId() != reward.Entry)
+                        continue;
+
+                    Guild* guild = sGuildMgr->GetGuildById(_player->GetGuildId());
+                    if (!guild)
                     {
-                        if (itemTemplate->GetId() != reward.Entry)
-                            continue;
-
-                        Guild* guild = sGuildMgr->GetGuildById(_player->GetGuildId());
-                        if (!guild)
-                        {
-                            guildRewardCheckPassed = false;
-                            break;
-                        }
-
-                        if (reward.Standing && player->GetReputationRank(REP_GUILD) < reward.Standing)
-                        {
-                            guildRewardCheckPassed = false;
-                            break;
-                        }
-
-                        for (uint32 const id : reward.AchievementsRequired)
-                            if (!guild->GetAchievementMgr().HasAchieved(id))
-                            {
-                                guildRewardCheckPassed = false;
-                                break;
-                            }
-
-                        if (reward.Racemask)
-                            if (!(player->getRaceMask() & reward.Racemask))
-                            {
-                                guildRewardCheckPassed = false;
-                                break;
-                            }
+                        guildRewardCheckPassed = false;
+                        break;
                     }
+
+                    if (reward.Standing && player->GetReputationRank(REP_GUILD) < reward.Standing)
+                    {
+                        guildRewardCheckPassed = false;
+                        break;
+                    }
+
+                    for (uint32 const id : reward.AchievementsRequired)
+                        if (!guild->GetAchievementMgr().HasAchieved(id))
+                        {
+                            guildRewardCheckPassed = false;
+                            break;
+                        }
+
+                    if (reward.Racemask)
+                        if (!(player->getRaceMask() & reward.Racemask))
+                        {
+                            guildRewardCheckPassed = false;
+                            break;
+                        }
                 }
+
                 if (!guildRewardCheckPassed)
                     continue;
             }
@@ -655,12 +646,6 @@ void WorldSession::SendListInventory(ObjectGuid const& vendorGuid, uint32 entry)
             //if (int32 priceMod = player->GetTotalAuraModifier(SPELL_AURA_MOD_VENDOR_ITEMS_PRICES))
                  //price -= CalculatePct(price, priceMod);
 
-            //Hack for donate
-            if (vendorItem->DonateCost != 0)
-            {
-                price = vendorItem->DonateCost * 10000;
-            }
-            
             item.MuID = slot + 1;
             item.Durability = itemTemplate->MaxDurability ? itemTemplate->MaxDurability : -1;
             item.ExtendedCostID = vendorItem->ExtendedCost;

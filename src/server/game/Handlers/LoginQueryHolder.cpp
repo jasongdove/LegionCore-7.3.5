@@ -207,18 +207,6 @@ bool LoginQueryHolder::Initialize()
     stmt->setUInt64(0, lowGuid);
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_VISUAL, stmt);
 
-    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PLAYER_DEATHMATCH);
-    stmt->setUInt64(0, lowGuid);
-    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_DEATHMATCH_STATS, stmt);
-
-    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PLAYER_DEATHMATCH_STORE);
-    stmt->setUInt64(0, lowGuid);
-    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_DEATHMATCH_STORE, stmt);
-
-    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PLAYER_CHAT_LOGOS);
-    stmt->setUInt64(0, lowGuid);
-    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_CHAT_LOGOS, stmt);
-
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PLAYER_LOOTCOOLDOWN);
     stmt->setUInt64(0, lowGuid);
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_LOOTCOOLDOWN, stmt);

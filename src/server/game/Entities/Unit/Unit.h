@@ -2442,10 +2442,6 @@ class Unit : public WorldObject
         void SetAttackDist(float dist) { m_attackDist = dist; }
         float GetAttackDist() { return m_attackDist; }
         
-        uint32 GetCustomDisplayId() const { return _customDisplayId; }
-        void SetCustomDisplayId(uint32 const &modelId) { _customDisplayId = modelId; }
-        void ResetCustomDisplayId() { if (GetDisplayId() == _customDisplayId) SetDisplayId(GetNativeDisplayId(), true); _customDisplayId = 0; }
-
         void SendSpellCooldown(int32 spellID, int32 spelCooldown, int32 cooldown = 0, SpellCooldownFlags flags = SpellCooldownFlags::NONE);
         void SetDynamicPassiveSpells(uint32 spellId, uint32 slot);
         uint32 GetDynamicPassiveSpells(uint32 slot);
@@ -2681,8 +2677,6 @@ class Unit : public WorldObject
         uint16 _movementAnimKitId;
         uint16 _meleeAnimKitId;
         
-        uint32 _customDisplayId;
-
         // ccd system
         uint32 _delayInterruptFlag;
 

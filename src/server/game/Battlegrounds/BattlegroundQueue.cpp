@@ -188,7 +188,7 @@ GroupQueueInfo* BattlegroundQueue::AddGroup(Player* leader, Group* grp, uint16 B
     {
         ginfo->Team = _team; // Wargame
     }
-    else if ((sWorld->getBoolConfig(CONFIG_CROSSFACTIONBG) && JoinType == MS::Battlegrounds::JoinType::None) || BgTypeId == MS::Battlegrounds::BattlegroundTypeId::BattlegroundDeathMatch)   
+    else if (sWorld->getBoolConfig(CONFIG_CROSSFACTIONBG) && JoinType == MS::Battlegrounds::JoinType::None)
     {
         if (m_SelectionPools[TEAM_ALLIANCE].GetPlayerCount() == m_SelectionPools[TEAM_HORDE].GetPlayerCount())
             ginfo->Team = leader->GetBgQueueTeam();
@@ -207,7 +207,7 @@ GroupQueueInfo* BattlegroundQueue::AddGroup(Player* leader, Group* grp, uint16 B
     ginfo->RoleSoloQ = leader->GetRoleForSoloQ();
 
     uint32 index = 0;
-    if ((!isPremade && (!isRated || BgTypeId == MS::Battlegrounds::BattlegroundTypeId::BattlegroundDeathMatch)) || JoinType == MS::Battlegrounds::JoinType::ArenaSoloQ3v3)
+    if ((!isPremade && !isRated) || JoinType == MS::Battlegrounds::JoinType::ArenaSoloQ3v3)
         index += MAX_TEAMS;
     if (ginfo->Team == HORDE)
         index++;
@@ -605,23 +605,6 @@ bool BattlegroundQueue::CheckPremadeMatch(uint8 bracketID, uint32 MinPlayersPerT
         }
     }
 
-    return false;
-}
-
-bool BattlegroundQueue::CheckNormalMatchDeathMatch(uint8 bracketID, uint32 MinPlayers, uint32 MaxPlayers)
-{
-    if (_queuedGroups[bracketID][MS::Battlegrounds::QueueGroupTypes::NormalAlliance].size() + _queuedGroups[bracketID][MS::Battlegrounds::QueueGroupTypes::NormalHorde].size() >= MinPlayers)
-    {
-        for (auto & ali_group : _queuedGroups[bracketID][MS::Battlegrounds::QueueGroupTypes::NormalAlliance])
-            if (!ali_group->IsInvitedToBGInstanceGUID && !m_SelectionPools[TEAM_ALLIANCE].AddGroup(ali_group, MaxPlayers))
-                break;
-
-        for (auto & horde_group : _queuedGroups[bracketID][MS::Battlegrounds::QueueGroupTypes::NormalHorde])
-            if (!horde_group->IsInvitedToBGInstanceGUID && !m_SelectionPools[TEAM_HORDE].AddGroup(horde_group, MaxPlayers))
-                break;
-
-        return true;
-    }
     return false;
 }
 
@@ -1179,7 +1162,7 @@ void BattlegroundQueue::BattlegroundQueueUpdate(uint32 /*diff*/, uint16 bgTypeId
         next = itr;
         ++next;
 
-        if ((*itr)->IsBattleground() && ((*itr)->GetTypeID(true) == bgTypeId || (bgTypeId == MS::Battlegrounds::BattlegroundTypeId::BattlegroundRandom && !(*itr)->IsBrawl()) && (*itr)->GetTypeID(true) != MS::Battlegrounds::BattlegroundTypeId::BattlegroundDeathMatch)
+        if ((*itr)->IsBattleground() && ((*itr)->GetTypeID(true) == bgTypeId || (bgTypeId == MS::Battlegrounds::BattlegroundTypeId::BattlegroundRandom && !(*itr)->IsBrawl()))
         && (*itr)->GetMinLevel() == bracket_MinLevel && (*itr)->GetStatus() > STATUS_WAIT_QUEUE && (*itr)->GetStatus() < STATUS_WAIT_LEAVE)
         {
             auto bg = *itr;
@@ -1229,25 +1212,7 @@ void BattlegroundQueue::BattlegroundQueueUpdate(uint32 /*diff*/, uint16 bgTypeId
     for (uint32 i = TEAM_ALLIANCE; i < MAX_TEAMS; ++i)
         m_SelectionPools[i].Init();
 
-    if (bgTypeId == MS::Battlegrounds::BattlegroundTypeId::BattlegroundDeathMatch)
-    {
-        if (CheckNormalMatchDeathMatch(bracketID, MinPlayersPerTeam, MaxPlayersPerTeam))
-        {            
-            Battleground* bg = sBattlegroundMgr->CreateNewBattleground(bgTypeId, bracketEntry, 0, true, GenerateRandomMap(bgTypeId));
-            if (!bg)
-            {
-                TC_LOG_ERROR("bg.battleground", "BattlegroundQueue::Update - Cannot create battleground: %u", bgTypeId);
-                return;
-            }
-
-            for (uint32 i = TEAM_ALLIANCE; i < MAX_TEAMS; i++)
-                for (std::list<GroupQueueInfo*>::const_iterator citr = m_SelectionPools[TEAM_ALLIANCE + i].SelectedGroups.begin(); citr != m_SelectionPools[TEAM_ALLIANCE + i].SelectedGroups.end(); ++citr)
-                    InviteGroupToBG(*citr, bg, (*citr)->Team);
-
-            bg->StartBattleground();
-        }
-    }
-    else if (bg_template->IsBattleground() && !bg_template->IsRBG())
+    if (bg_template->IsBattleground() && !bg_template->IsRBG())
     {
         if (CheckPremadeMatch(bracketID, MinPlayersPerTeam, MaxPlayersPerTeam))
         {

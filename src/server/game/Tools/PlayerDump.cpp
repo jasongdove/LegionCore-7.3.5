@@ -31,7 +31,7 @@ unknown errors try using DTT_CHAR_TABLE.
 #include "CharacterData.h"
 #include "GlobalFunctional.h"
 
-#define DUMP_TABLE_COUNT 32
+#define DUMP_TABLE_COUNT 31
 struct DumpTable
 {
     char const* name;
@@ -43,7 +43,6 @@ struct DumpTable
 static DumpTable dumpTables[DUMP_TABLE_COUNT] =
 {
     { "characters",                       DTT_CHARACTER, "`guid`, `account`, `name`, `slot`, `race`, `class`, `gender`, `level`, `xp`, `money`, `skin`, `face`, `hairStyle`, `hairColor`, `tattoo`, `horn`, `inventorySlots`, `blindfold`, `facialStyle`, `bankSlots`, `drunk`, `playerFlags`, `playerFlagsEx`, `position_x`, `position_y`, `position_z`, `map`, `instance_id`, `dungeonDifficulty`, `raidDifficulty`, `legacyRaidDifficulty`, `orientation`, `taximask`, `online`, `cinematic`, `totaltime`, `leveltime`, `created_time`, `logout_time`, `is_logout_resting`, `rest_bonus`, `trans_x`, `trans_y`, `trans_z`, `trans_o`, `transguid`, `extra_flags`, `summonedPetNumber`, `at_login`, `zone`, `death_expire_time`, `taxi_path`, `totalKills`, `todayKills`, `yesterdayKills`, `killPoints`, `chosenTitle`, `watchedFaction`, `lfgBonusFaction`, `health`, `mana`, `latency`, `activespec`, `specialization`, `lootspecialization`, `exploredZones`, `equipmentCache`, `knownTitles`, `actionBars`, `grantableLevels`, `deleteInfos_Account`, `deleteInfos_Name`, `deleteDate`, `LastCharacterUndelete`"},
-    { "character_donate",                 DTT_DONA_TABLE, "`owner_guid`, `itemguid`, `type`, `itemEntry`, `efircount`, `count`, `state`, `date`, `deletedate`, `account`"},
     { "character_achievement",            DTT_CHAR_TABLE, "`guid`, `achievement`, `date`"},
     { "character_achievement_progress",   DTT_CHAR_TABLE, "`guid`, `criteria`, `counter`, `date`"},
     { "character_action",                 DTT_CHAR_TABLE, "`guid`, `spec`, `button`, `action`, `type`"},
@@ -63,7 +62,7 @@ static DumpTable dumpTables[DUMP_TABLE_COUNT] =
     { "character_spell_cooldown",         DTT_CHAR_TABLE, "`guid`, `spell`, `item`, `time`"},
     { "character_talent",                 DTT_CHAR_TABLE, "`guid`, `talent`, `spec`"},
     { "character_void_storage",           DTT_VS_TABLE,   "`itemId`, `playerGuid`, `itemEntry`, `slot`, `creatorGuid`, `randomProperty`, `suffixFactor`, `randomPropertyType`, `itemGuid`"},
-    { "item_instance",                    DTT_ITEM,       "`guid`, `itemEntry`, `owner_guid`, `creatorGuid`, `giftCreatorGuid`, `count`, `duration`, `charges`, `flags`, `enchantments`, `randomPropertyType`, `randomPropertyId`, `durability`, `playedTime`, `text`, `upgradeId`, `battlePetSpeciesId`, `battlePetBreedData`, `battlePetLevel`, `battlePetDisplayId`, `bonusListIDs`, `itemLevel`, `dungeonEncounterID`, `contextID`, `createdTime`, `isdonateitem`"},
+    { "item_instance",                    DTT_ITEM,       "`guid`, `itemEntry`, `owner_guid`, `creatorGuid`, `giftCreatorGuid`, `count`, `duration`, `charges`, `flags`, `enchantments`, `randomPropertyType`, `randomPropertyId`, `durability`, `playedTime`, `text`, `upgradeId`, `battlePetSpeciesId`, `battlePetBreedData`, `battlePetLevel`, `battlePetDisplayId`, `bonusListIDs`, `itemLevel`, `dungeonEncounterID`, `contextID`, `createdTime`"},
     { "mail",                             DTT_MAIL,       "`id`, `messageType`, `stationery`, `mailTemplateId`, `sender`, `receiver`, `subject`, `body`, `has_items`, `expire_time`, `deliver_time`, `money`, `cod`, `checked`"},
     { "mail_items",                       DTT_MAIL_ITEM,  "`mail_id`, `item_guid`, `receiver`"},
     { "pet_spell",                        DTT_PET_TABLE,  "`guid`, `spell`, `active`"},
@@ -285,7 +284,6 @@ bool PlayerDumpWriter::DumpTable(std::string& dump, ObjectGuid::LowType guid, ch
         case DTT_PET_TABLE:     fieldname = "guid";      guids = &pets;  break;
         case DTT_MAIL:          fieldname = "receiver";                  break;
         case DTT_MAIL_ITEM:     fieldname = "mail_id";   guids = &mails; break;
-        case DTT_DONA_TABLE:    fieldname = "owner_guid";                break;
         case DTT_VS_TABLE:      fieldname = "playerGuid";                break;
         case DTT_CHAR_VS_FOLLOW:fieldname = "dbId";                      break;
         case DTT_FOLLOW:        fieldname = "dbId";  guids = &follower;  break;
@@ -618,14 +616,6 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
                     ROLLBACK(DUMP_FILE_BROKEN);
                 if (!ChangeGuid(line, 2, items, sObjectMgr->GetGenerator<HighGuid::Item>()->GetNextAfterMaxUsed()))
                     ROLLBACK(DUMP_FILE_BROKEN);             // character_gifts.item_guid update
-                break;
-            }
-            case DTT_DONA_TABLE:
-            {
-                if (!ChangeNth(line, 1, newguid))           // character_donate.owner_guid update
-                    ROLLBACK(DUMP_FILE_BROKEN);
-                if (!ChangeGuid(line, 2, items, sObjectMgr->GetGenerator<HighGuid::Item>()->GetNextAfterMaxUsed()))
-                    ROLLBACK(DUMP_FILE_BROKEN);             // character_donate.itemguid update
                 break;
             }
             case DTT_PET:
@@ -989,20 +979,6 @@ DumpReturn PlayerDumpReader::LoadDump(uint32 account, std::string& dump, std::st
                 if (!ChangeGuid(line, 2, items, sObjectMgr->GetGenerator<HighGuid::Item>()->GetNextAfterMaxUsed()))
                 {
                     TC_LOG_ERROR("network", "LoadPlayerDump: character_gifts.item_guid line: '%s'!", line.c_str());
-                    return DUMP_FILE_BROKEN;
-                }
-                break;
-            }
-            case DTT_DONA_TABLE:
-            {
-                if (!ChangeNth(line, 1, newguid))           // character_donate.owner_guid update
-                {
-                    TC_LOG_ERROR("network", "LoadPlayerDump: character_donate.owner_guid line: '%s'!", line.c_str());
-                    return DUMP_FILE_BROKEN;
-                }
-                if (!ChangeGuid(line, 2, items, sObjectMgr->GetGenerator<HighGuid::Item>()->GetNextAfterMaxUsed()))
-                {
-                    TC_LOG_ERROR("network", "LoadPlayerDump: character_donate.itemguid line: '%s'!", line.c_str());
                     return DUMP_FILE_BROKEN;
                 }
                 break;

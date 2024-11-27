@@ -98,7 +98,6 @@ public:
             { "creature_queststarter",        SEC_ADMINISTRATOR, true,  &HandleReloadCreatureQuestRelationsCommand,     ""},
             { "creature_template",            SEC_ADMINISTRATOR, true,  &HandleReloadCreatureTemplateCommand,           ""},
             { "creature_template_outfits",    SEC_ADMINISTRATOR, true,  &HandleReloadCreatureTemplateOutfitsCommand,    ""},
-            { "deathmatch_products",          SEC_ADMINISTRATOR, true,  &HandleReloadDeathMatchProductsCommand,    ""},
             //{ "db_script_string",             SEC_ADMINISTRATOR, true,  &HandleReloadDbScriptStringCommand,            ""},
             { "disables",                     SEC_ADMINISTRATOR, true,  &HandleReloadDisablesCommand,                   ""},
             { "disenchant_loot_template",     SEC_ADMINISTRATOR, true,  &HandleReloadLootTemplatesDisenchantCommand,    ""},
@@ -171,7 +170,6 @@ public:
             { "vehicle_template_accessory",   SEC_ADMINISTRATOR, true,  &HandleReloadVehicleTemplateAccessoryCommand,   ""},
             { "world_visible_distance",       SEC_ADMINISTRATOR, true,  &HandleReloadWorldVisibleDistanceCommand,       ""},
             { "creature_summon_groups",       SEC_ADMINISTRATOR, true,  &HandleReloadSummonGroups,                      ""},
-            { "donate_vendor",                SEC_ADMINISTRATOR, true,  &HandleReloadNpcDonateVendorCommand,            ""},
             { "world_rate_info",              SEC_ADMINISTRATOR, true,  &HandleReloadWorldRateInfoCommand,              ""},
             { "scenario_data",                SEC_ADMINISTRATOR, true,  &HandleReloadScenarioDataCommand,               ""},
             { "pvp_reward",                   SEC_ADMINISTRATOR, true,  &HandleReloadPvpRewardCommand,                  ""},
@@ -1408,22 +1406,6 @@ public:
     {
         sObjectMgr->LoadTempSummons();
         handler->SendGlobalGMSysMessage("DB tables `creature_summon_groups` reloaded.");
-        return true;
-    }
-
-    static bool HandleReloadNpcDonateVendorCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        TC_LOG_INFO("misc", "Re-Loading `store_products` Table!");
-        sObjectMgr->LoadDonateVendors();
-        handler->SendGlobalGMSysMessage("DB table `store_products` reloaded.");
-        return true;
-    }
-    
-    static bool HandleReloadDeathMatchProductsCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        TC_LOG_INFO("misc", "Re-Loading `deathmatch_products` Table!");
-        sObjectMgr->LoadDeathMatchStore();
-        handler->SendGlobalGMSysMessage("DB table `deathmatch_products` reloaded.");
         return true;
     }
 

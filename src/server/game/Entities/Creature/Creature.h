@@ -443,7 +443,7 @@ enum CreatureActionType
 struct VendorItem
 {
     VendorItem(int32 _item, int32 _maxcount, uint32 _incrtime, uint32 _ExtendedCost, uint8 _Type, uint64 _Money, uint32 _randomPropertiesSeed, ItemRandomEnchantmentId _randomPropertiesID,
-               std::vector<uint32> _bonusListIDs, std::vector<int32> _itemModifiers, bool _DoNotFilterOnVendor, uint8 _context, uint32 _PlayerConditionID, int32 _DonateStoreId, uint32 _DonateCost);
+               std::vector<uint32> _bonusListIDs, std::vector<int32> _itemModifiers, bool _DoNotFilterOnVendor, uint8 _context, uint32 _PlayerConditionID);
 
     int32 item;
     uint32 maxcount;                                        // 0 for infinity item amount
@@ -458,8 +458,6 @@ struct VendorItem
     std::vector<int32> ItemModifiers;
     bool  DoNotFilterOnVendor;
     uint8 Context;
-    int32 DonateStoreId;
-    uint32 DonateCost;
 
     //helpers
     bool IsGoldRequired(ItemTemplate const* pProto) const;
@@ -474,9 +472,9 @@ struct VendorItemData
 
     bool Empty() const { return m_items.empty(); }
     uint32 GetItemCount() const { return m_items.size(); }
-    void AddItem(int32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost, uint8 type, uint64 money, uint32 randomPropertiesSeed = 0, uint32 randomPropertiesID = 0, std::vector<uint32> const& bonusListIDs = std::vector<uint32>(), std::vector<int32> const& itemModifiers = std::vector<int32>(), bool doNotFilterOnVendor = false, uint8 context = 0, uint32 playerConditionID = 0, int32 DonateStoreId = 0, uint32 DonateCost = 0)
+    void AddItem(int32 item, int32 maxcount, uint32 ptime, uint32 ExtendedCost, uint8 type, uint64 money, uint32 randomPropertiesSeed = 0, uint32 randomPropertiesID = 0, std::vector<uint32> const& bonusListIDs = std::vector<uint32>(), std::vector<int32> const& itemModifiers = std::vector<int32>(), bool doNotFilterOnVendor = false, uint8 context = 0, uint32 playerConditionID = 0)
     {
-        m_items.push_back(new VendorItem(item, maxcount, ptime, ExtendedCost, type, money, randomPropertiesSeed, ItemRandomEnchantmentId(ItemRandomEnchantmentType::Property, randomPropertiesID), bonusListIDs, itemModifiers, doNotFilterOnVendor, context, playerConditionID, DonateStoreId, DonateCost));
+        m_items.push_back(new VendorItem(item, maxcount, ptime, ExtendedCost, type, money, randomPropertiesSeed, ItemRandomEnchantmentId(ItemRandomEnchantmentType::Property, randomPropertiesID), bonusListIDs, itemModifiers, doNotFilterOnVendor, context, playerConditionID));
     }
     bool RemoveItem(uint32 itemId, uint8 type);
     VendorItem const* FindItemCostPair(uint32 itemId, uint32 extendedCost, uint8 type) const;

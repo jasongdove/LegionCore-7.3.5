@@ -104,8 +104,8 @@ TrainerSpell const* TrainerSpellData::Find(uint32 spell_id) const
     return Trinity::Containers::MapGetValuePtr(spellList, spell_id);
 }
 
-VendorItem::VendorItem(int32 _item, int32 _maxcount, uint32 _incrtime, uint32 _ExtendedCost, uint8 _Type, uint64 _Money, uint32 _randomPropertiesSeed, ItemRandomEnchantmentId _randomPropertiesID, std::vector<uint32> _bonusListIDs, std::vector<int32> _itemModifiers, bool _DoNotFilterOnVendor, uint8 _context, uint32 _PlayerConditionID, int32 _DonateStoreId, uint32 _DonateCost) : item(_item), maxcount(_maxcount), incrtime(_incrtime), PlayerConditionID(_PlayerConditionID), ExtendedCost(_ExtendedCost), Type(_Type),
-Money(_Money), RandomPropertiesSeed(_randomPropertiesSeed), RandomPropertiesID(_randomPropertiesID), BonusListIDs(std::move(_bonusListIDs)), ItemModifiers(std::move(_itemModifiers)), DoNotFilterOnVendor(_DoNotFilterOnVendor), Context(_context), DonateStoreId(_DonateStoreId), DonateCost(_DonateCost)
+VendorItem::VendorItem(int32 _item, int32 _maxcount, uint32 _incrtime, uint32 _ExtendedCost, uint8 _Type, uint64 _Money, uint32 _randomPropertiesSeed, ItemRandomEnchantmentId _randomPropertiesID, std::vector<uint32> _bonusListIDs, std::vector<int32> _itemModifiers, bool _DoNotFilterOnVendor, uint8 _context, uint32 _PlayerConditionID) : item(_item), maxcount(_maxcount), incrtime(_incrtime), PlayerConditionID(_PlayerConditionID), ExtendedCost(_ExtendedCost), Type(_Type),
+Money(_Money), RandomPropertiesSeed(_randomPropertiesSeed), RandomPropertiesID(_randomPropertiesID), BonusListIDs(std::move(_bonusListIDs)), ItemModifiers(std::move(_itemModifiers)), DoNotFilterOnVendor(_DoNotFilterOnVendor), Context(_context)
 {
 }
 

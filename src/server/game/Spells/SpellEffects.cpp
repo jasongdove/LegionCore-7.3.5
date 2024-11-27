@@ -6312,7 +6312,7 @@ void Spell::EffectDisEnchant(SpellEffIndex /*effIndex*/)
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
         return;
     
-    if (!itemTarget || itemTarget->GetDonateItem())
+    if (!itemTarget)
         return;
 
     if (Player* caster = m_caster->ToPlayer())

@@ -594,7 +594,6 @@ void World::LoadConfigSettings(bool reload)
     }
     rate_values[RATE_MOVESPEED] = sConfigMgr->GetFloatDefault("Rate.MoveSpeed", 1.0f);
     rate_values[RATE_ONLINE] = sConfigMgr->GetFloatDefault("Rate.Online", 1.0f);
-    rate_values[RATE_DONATE] = sConfigMgr->GetFloatDefault("Rate.Donate", 1.0f);
     if (rate_values[RATE_MOVESPEED] < 0)
     {
         TC_LOG_ERROR("server.loading", "Rate.MoveSpeed (%f) must be > 0. Using 1 instead.", rate_values[RATE_MOVESPEED]);
@@ -1133,10 +1132,8 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_ARENA_START_MATCHMAKER_RATING]              = sConfigMgr->GetIntDefault ("Arena.ArenaStartMatchmakerRating", 1500);
     m_bool_configs[CONFIG_ARENA_SEASON_IN_PROGRESS]                  = sConfigMgr->GetBoolDefault("Arena.ArenaSeason.InProgress", true);
     m_bool_configs[CONFIG_ARENA_LOG_EXTENDED_INFO]                   = sConfigMgr->GetBoolDefault("ArenaLog.ExtendedInfo", false);
-    m_bool_configs[CONFIG_ARENA_DEATHMATCH]                          = sConfigMgr->GetBoolDefault("DeathMatch", false);
     m_int_configs[CONFIG_UNIQUE_IP_TOKEN_TYPE]                       = sConfigMgr->GetIntDefault("UniqueIpEnableTokenType", 0);
     m_int_configs[CONFIG_UNIQUE_IP_TOKEN_AMOUNT]                     = sConfigMgr->GetIntDefault("UniqueIpEnableTokenAmount", 0);
-    m_int_configs[CONFIG_DONATE_VENDOR_TOKEN_TYPE]                   = sConfigMgr->GetIntDefault("DonateVendorTokenType", 1);
 
     m_bool_configs[CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN]            = sConfigMgr->GetBoolDefault("OffhandCheckAtSpellUnlearn", true);
 
@@ -1369,8 +1366,7 @@ void World::LoadConfigSettings(bool reload)
     }
     m_bool_configs[CONFIG_DISABLE_RESTART] = sConfigMgr->GetBoolDefault("DisableRestart", true);
     m_bool_configs[CONFIG_DISABLE_NEW_ONLINE] = sConfigMgr->GetBoolDefault("DisableUpdateOnlineTable", false);
-    m_bool_configs[CONFIG_DISABLE_DONATELOADING] = sConfigMgr->GetBoolDefault("DisableDonateLoading", false);
-    
+
     m_bool_configs[CONFIG_BLACKMARKET_ENABLED] = sConfigMgr->GetBoolDefault("BlackMarket.Enabled", true);
     m_bool_configs[CONFIG_FEATURE_SYSTEM_BPAY_STORE_ENABLED] = sConfigMgr->GetBoolDefault("Bpay.Enabled", true);
 
@@ -1416,7 +1412,6 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_RESPAWN_FROM_PLAYER_COUNT] = sConfigMgr->GetIntDefault("RespawnTimeFromPlayerCount", 10);
 
     m_bool_configs[CONFIG_PET_BATTLES] = sConfigMgr->GetBoolDefault("PetBattles", true);
-    m_bool_configs[CONFIG_DONATE_ON_TESTS] = sConfigMgr->GetBoolDefault("Donate.On.Tests", false);
 
     m_int_configs[CONFIG_ARTIFACT_RESEARCH_TIMER] = sConfigMgr->GetIntDefault("Artifact.Research.Timer", 432000); // in sec
 
@@ -2061,11 +2056,6 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO("server.loading", "Loading Vendors...");
     sObjectMgr->LoadVendors();                                   // must be after load CreatureTemplate and ItemTemplate
     
-    TC_LOG_INFO("server.loading", "Loading Donate Vendors...");
-    sObjectMgr->LoadDonateVendors(); 
-    
-    m_timers[WUPDATE_DONATE_AND_SERVICES].SetInterval( 3 * HOUR * IN_MILLISECONDS);
-
     TC_LOG_INFO("server.loading", "Loading Trainers...");
     sObjectMgr->LoadTrainerSpell();                              // must be after load CreatureTemplate
 
@@ -2129,9 +2119,6 @@ void World::SetInitialWorldSettings()
     sScriptDataStore->LoadWaypointScripts();
     sScriptDataStore->LoadDbScriptStrings();                            // must be after Load*Scripts calls
     sScriptDataStore->LoadSpellScriptNames();
-
-    TC_LOG_INFO("server.loading", "Loading DeathMatch Store Products...");
-    sObjectMgr->LoadDeathMatchStore();
 
     TC_LOG_INFO("server.loading", "Initializing Scripts...");
     sScriptMgr->Initialize();
@@ -2530,12 +2517,6 @@ void World::Update(uint32 diff)
         ProcessMailboxQueue();
     }
     
-    if (m_timers[WUPDATE_DONATE_AND_SERVICES].Passed())
-    {
-        m_timers[WUPDATE_DONATE_AND_SERVICES].Reset();
-        sObjectMgr->LoadDonateVendors();
-    }
-
     ///- Ping to keep MySQL connections alive
     if (m_timers[WUPDATE_PINGDB].Passed())
     {

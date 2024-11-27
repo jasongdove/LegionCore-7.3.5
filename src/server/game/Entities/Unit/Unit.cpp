@@ -338,8 +338,6 @@ playerDamageTaken_(), npcDamageTaken_()
     _focusSpell = nullptr;
     _lastLiquid = nullptr;
     
-    _customDisplayId = 0;
-    
     _isWalkingBeforeCharm = false;
 
     m_IsInKillingProcess = false;
@@ -18634,26 +18632,6 @@ void Unit::SetDisplayId(uint32 modelId, bool resize /* = false */)
         RemoveAurasDueToSpell(127315);
     }
 
-    if (IsPlayer() && modelId == GetCustomDisplayId())  // если идет арена, проверяем на облики
-    { 
-       if (ToPlayer()->GetBattleground() && GetMapId() != 1101)
-       {
-            if (GetModelForForm(GetShapeshiftForm()))
-                SetDisplayId(GetModelForForm(GetShapeshiftForm()));
-            else
-                SetDisplayId(GetNativeDisplayId());
-            return;
-       }
-    }
-    
-       //for custom morph if reshift - need set scale normally
-    if (IsPlayer() && GetCustomDisplayId() && !(modelId == GetCustomDisplayId()))
-       SetObjectScale(1.0f);
-    
-       // this need for custom morph (donate)
-    if (resize && (IsPlayer() || GetEntry() == 230008))
-        SetObjectScale(1.0f / GetModelSize(modelId));
-    
     SetUInt32Value(UNIT_FIELD_DISPLAY_ID, modelId);
 
     if (ToCreature())
@@ -18794,8 +18772,6 @@ void Unit::RestoreDisplayId()
     else if (uint32 modelId = GetModelForForm(GetShapeshiftForm()))
         SetDisplayId(modelId);
     // no auras found - set modelid to default
-    else if (GetCustomDisplayId())
-       SetDisplayId(GetCustomDisplayId(), true);
     else
         SetDisplayId(GetNativeDisplayId());
 }
@@ -25914,9 +25890,6 @@ bool Unit::IsInDisallowedMountForm() const
         if (transformSpellInfo->HasAttribute(SPELL_ATTR0_CASTABLE_WHILE_MOUNTED))
             return false;
             
-    if (GetDisplayId() == GetCustomDisplayId()) // donate morph allow use mount
-        return false;
-
     switch (GetDisplayId()) // hackfix for some morph allow use mount
     {
     case 35107: case 69858: case 68670 :case 68671: case 42851: case 42853: case 42854: case 7550: case 58943: return false; default: break;

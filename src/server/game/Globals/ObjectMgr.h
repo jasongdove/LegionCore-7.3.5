@@ -138,108 +138,6 @@ struct SpellClickInfo
     bool IsFitToRequirements(Unit const* clicker, Unit const* clickee) const;
 };
 
-struct DonVenCat
-{
-    int32 action;
-    std::string Names[12];
-    // std::string NameEn;
-    // std::string NameKo;
-    // std::string NameFr;
-    // std::string NameDe;
-    // std::string NameCn;
-    // std::string NameTw;
-    // std::string NameEs;
-    // std::string NameMx;
-    // std::string NameRu;
-    // std::string NamePt;
-    // std::string NameBr;
-    // std::string NameIt;
-    uint32 type;
-    uint8 faction;
-    bool is_available_for_preview = false;
-};
-
-struct DonVenAdd
-{
-    uint32 action;
-    uint32 cost;
-    uint32 type;
-    uint32 storeId;
-    uint8 faction = 0;
-    
-    std::string Names[12];
-    // std::string NameEn;
-    // std::string NameKo;
-    // std::string NameFr;
-    // std::string NameDe;
-    // std::string NameCn;
-    // std::string NameTw;
-    // std::string NameEs;
-    // std::string NameMx;
-    // std::string NameRu;
-    // std::string NamePt;
-    // std::string NameBr;
-    // std::string NameIt;
-    
-};
-
-
-enum DMStoreTypes
-{
-    DM_TYPE_MORPH  = 0,
-    DM_TYPE_LOGO,
-    
-    DM_TYPE_MAX
-};
-
-enum DonateStoreTypes // + 1 from db
-{
-    DONATE_TYPE_ITEM = 1,       // 0 db
-    DONATE_TYPE_TITLE = 2,      // 1 db
-    DONATE_TYPE_ACHIEVEMENTS = 3, //! 2 db. Not realised
-    DONATE_TYPE_MORPH = 4,      // 3 db
-
-    DONATE_TYPE_MAX
-};
-
-struct DonVenCatBase
-{
-    int32 parent = 0;
-    uint8 type = DONATE_TYPE_ITEM;
-    int32 next_page = -1, prev_page = -1;
-    bool is_available_for_preview = false;
-    
-    std::vector<DonVenCat> categories{};
-    std::vector<DonVenAdd> additionals{};
-};
-
-struct DeathMatchStore
-{
-    DeathMatchStore(std::string  name_, uint8 type_, std::string logo_, uint32 cost_, uint32 personal_id_) : type(type_), logo(logo_), product(0), cost(cost_), personal_id(personal_id_), name(std::move(name_))
-    {
-        std::ostringstream ss;
-        ss << logo_ << " Cost = " << cost_ << " DeathMatch's currency";
-        name = ss.str();
-    }
-
-    DeathMatchStore(std::string const& name_, uint8 type_, uint32 product_, uint32 cost_, uint32 personal_id_) : type(type_), product(product_), cost(cost_), personal_id(personal_id_), name(name_)
-    {
-        std::ostringstream ss;
-        ss << name_ << " Cost = " << cost_ << " DeathMatch's currency";
-        name = ss.str();
-    }
-    
-    ~DeathMatchStore() = default;
-    
-    uint8 type;
-    
-    std::string logo;
-    uint32 product;
-    
-    uint32 cost;
-    uint32 personal_id;
-    std::string name;
-};
 typedef std::multimap<uint32, SpellClickInfo> SpellClickInfoContainer;
 typedef std::pair<SpellClickInfoContainer::const_iterator, SpellClickInfoContainer::const_iterator> SpellClickInfoMapBounds;
 
@@ -536,11 +434,7 @@ typedef std::multimap<uint32, GraveYardData> GraveYardContainer;
 
 
 typedef std::unordered_map<int32, VendorItemData> CacheVendorItemContainer;
-typedef std::unordered_map<int32, VendorItemData> CacheDonateVendorItemContainer;
 typedef std::unordered_map<uint32, TrainerSpellData> CacheTrainerSpellContainer;
-typedef std::vector<float> PriceForLevelUp;
-typedef std::vector<float> PriceForArtLevelUp;
-typedef std::unordered_map<uint32, float> PriceForAddBonus;
 
 typedef std::unordered_map<uint8, uint8> ExpansionRequirementContainer;
 typedef std::unordered_map<uint32, std::string> RealmNameContainer;
@@ -604,13 +498,6 @@ class ObjectMgr
 
     public:
         typedef std::unordered_map<uint32, Item*> ItemMap;
-        
-        typedef std::unordered_map<int32, DonVenCatBase> DonateVendorCat;
-        typedef std::unordered_map<int32, std::vector<int32>> FakeDonateVendorCat;
-        typedef std::unordered_map<int32, int32> ReversFakeDonateVendorCat;
-        typedef std::unordered_map<uint32, std::map<uint32, DonVenAdd> > DonVenAdds; // [type][entry]
-        typedef std::unordered_map<uint8, std::vector<DeathMatchStore>> DeathMatchProducts;
-        typedef std::unordered_map<uint32, std::vector<DeathMatchStore>> DeathMatchProductsById;
         
         typedef std::map<AccessRequirementKey, AccessRequirement> AccessRequirementContainer;
         typedef std::unordered_map<uint32, RepRewardRate > RepRewardRateContainer;
@@ -794,7 +681,6 @@ class ObjectMgr
         void LoadGameTele();
 
         void LoadVendors();
-        void LoadDonateVendors();
         void LoadTrainerSpell();
         void AddSpellToTrainer(uint32 entry, uint32 spell, uint32 spellCost, uint32 reqSkill, uint32 reqSkillValue, uint32 reqLevel);
 
@@ -809,8 +695,6 @@ class ObjectMgr
         
         void LoadCreatureOutfits();
         
-        void LoadDeathMatchStore();
-
         PhaseDefinitionStore const* GetPhaseDefinitionStore() { return &_PhaseDefinitionStore; }
         SpellPhaseStore const* GetSpellPhaseStore() { return &_SpellPhaseStore; }
 
@@ -835,7 +719,6 @@ class ObjectMgr
         uint32 GeneratePetNumber();
         uint64 GenerateVoidStorageItemId();
         uint64 GenerateReportComplaintID();
-        uint64 GenerateSupportTicketSubmitBugID();
 
         MailLevelReward const* GetMailLevelReward(uint32 level, uint32 raceMask);
 
@@ -964,18 +847,6 @@ class ObjectMgr
         }
 
         VendorItemData const* GetNpcVendorItemList(uint32 entry) const;
-        VendorItemData const* GetNpcDonateVendorItemList(int32 entry) const;
-        DonVenCatBase const* GetDonateVendorCat(int32 entry) const;
-        bool IsActivateDonateService() const;
-        std::vector<int32> const* GetFakeDonateVendorCat(int32 entry) const;
-        int32 const* GetRealDonateVendorCat(int32 entry) const;
-        DonVenAdd const* GetDonateVendorAdditionalInfo(uint32 type, uint32 entry) const;
-        std::vector<DeathMatchStore> const* GetDeathMatchStore(uint8 type) const;
-        std::vector<DeathMatchStore> const* GetDeathMatchStoreById(uint32 id) const;
-        float const* GetPriceForLevelUp(uint8 level);
-        float const* GetPriceForArtLevelUp(uint8 level);
-        PriceForAddBonus const* GetPricesForAddBonus();
-        const float& GetDonateDiscount() const;
 
         void AddVendorItem(uint32 entry, uint32 item, int32 maxcount, uint32 incrtime, uint32 extendedCost, uint8 type, uint64 money, bool persist = true); // for event
         bool RemoveVendorItem(uint32 entry, uint32 item, uint8 type, bool persist = true); // for event
@@ -1043,8 +914,6 @@ class ObjectMgr
         uint32 _hiPetNumber;
         ObjectGuid::LowType _voidItemId;
         uint64 _reportComplaintID;
-        uint64 _supportTicketSubmitBugID;
-        float donateDiscount = 1;
 
         // first free low guid for selected guid type
         ObjectGuidGenerator<HighGuid::Player> _playerGuidGenerator;
@@ -1158,13 +1027,7 @@ class ObjectMgr
         TrinityStringLocaleContainer _trinityStringLocaleStore;
 
         CacheVendorItemContainer _cacheVendorItemStore;
-        CacheDonateVendorItemContainer _cacheDonateVendorItemStore;
         CacheTrainerSpellContainer _cacheTrainerSpellStore;
-        PriceForLevelUp _priceforlevelupStore;
-        PriceForArtLevelUp _priceforArtlevelupStore;
-        PriceForAddBonus _priceforAddBonusStore;
-        mutable std::recursive_mutex m_donate_lock;
-        std::atomic<bool> m_donate_waite;
 
         std::unordered_map<uint8, RaceUnlockRequirement> _raceUnlockRequirementStore;
         ExpansionRequirementContainer _classExpansionRequirementStore;
@@ -1177,7 +1040,6 @@ class ObjectMgr
             GO_TO_GO,
             GO_TO_CREATURE,         // GO is dependant on creature
         };
-
 
         ScenarioDataMap _scenarioData;
         ScenarioDataListMap _scenarioDataList;
@@ -1193,13 +1055,6 @@ class ObjectMgr
 
         GameObjectActionMap _gameObjectActionMap;
 
-        DonateVendorCat _donvendorcat;
-        FakeDonateVendorCat _fakedonvendorcat;
-        ReversFakeDonateVendorCat _reversfakedonvendorcat;
-        DonVenAdds _donvenadds;
-        
-        DeathMatchProducts _dmProducts;
-        DeathMatchProductsById _dmProductsById;
         CurrencysLoot  _currencysLoot;
 
         std::set<uint32> _transportMaps; // Helper container storing map ids that are for transports only, loaded from gameobject_template

@@ -18,7 +18,6 @@
 
 #include "Battleground.h"
 #include "Arena.h"
-#include "BattlegroundDM.h"
 #include "BattlegroundMgr.h"
 #include "BattlegroundPackets.h"
 #include "Bracket.h"
@@ -815,36 +814,6 @@ void Battleground::EndBattleground(uint32 winner)
        }
     }
 
-    if (IsArena() && GetJoinType() == MS::Battlegrounds::JoinType::Arena1v1)
-    {
-        for (auto const& playerItr : GetPlayers())
-        {
-            Player* player = GetPlayer(playerItr, "EndBattleground");
-            uint32 team = playerItr.second.Team;
-            if (!player)
-                continue;
-
-            auto playerScore = PlayerScores.find(playerItr.first);
-            if (playerScore != PlayerScores.end())
-            {
-                player->ModifyDeathMatchStats(playerScore->second->GetScore(SCORE_KILLING_BLOWS), playerScore->second->GetScore(SCORE_DEATHS), playerScore->second->GetScore(SCORE_DAMAGE_DONE),
-                    BattlegroundDeathMatch::CalculateRating(playerScore->second), playerScore->second->GetScore(SCORE_KILLING_BLOWS));
-            }
-            else
-            {
-                uint8 killingBlows = team == winner;
-                uint8 deaths = !killingBlows;
-                int64 damage = player->GetMaxHealth();
-                player->ModifyDeathMatchStats(killingBlows, deaths, damage,
-                    BattlegroundDeathMatch::CalculateRating(killingBlows, deaths, damage), killingBlows);
-            }
-
-            player->DeMorph();
-            player->ResetCustomDisplayId();
-            player->SetObjectScale(1.0f);
-        }
-    }
-
     WorldPackets::Battleground::PVPLogData pvpLogData;
     BuildPvPLogDataPacket(pvpLogData);
     SendPacketToAll(pvpLogData.Write());
@@ -1449,8 +1418,6 @@ void Battleground::AddPlayer(Player* player)
     AddOrSetPlayerToCorrectBgGroup(player, team);
 
     player->ScheduleDelayedOperation(DELAYED_UPDATE_AFTER_TO_BG);
-
-    player->ResetCustomDisplayId();
 
     if (IsBrawl())
     {

@@ -379,8 +379,6 @@ ObjectMgr::ObjectMgr(): _mailId(0), DBCLocaleIndex(), _playerInfo{}
     _voidItemId = 1;
     _skipUpdateCount = 1;
     _reportComplaintID = 1;
-    _supportTicketSubmitBugID = 1;
-    m_donate_waite = false;
 }
 
 ObjectMgr::~ObjectMgr()
@@ -400,10 +398,6 @@ ObjectMgr::~ObjectMgr()
     for (CacheVendorItemContainer::iterator itr = _cacheVendorItemStore.begin(); itr != _cacheVendorItemStore.end(); ++itr)
         itr->second.Clear();
     
-    for (CacheDonateVendorItemContainer::iterator itr = _cacheDonateVendorItemStore.begin(); itr != _cacheDonateVendorItemStore.end(); ++itr)
-        itr->second.Clear();
-    
-
     _cacheTrainerSpellStore.clear();
 
     for (DungeonEncounterContainer::iterator itr =_dungeonEncounterStore.begin(); itr != _dungeonEncounterStore.end(); ++itr)
@@ -5118,10 +5112,6 @@ void ObjectMgr::SetHighestGuids()
     if (result)
         _reportComplaintID = (*result)[0].GetUInt64()+1;
 
-    result = CharacterDatabase.Query("SELECT MAX(ID) FROM report_bugreport");
-    if (result)
-        _supportTicketSubmitBugID = (*result)[0].GetUInt64()+1;
-
     result = CharacterDatabase.Query("SELECT MAX(guildId) FROM guild");
     if (result)
         sGuildMgr->SetNextGuildId((*result)[0].GetUInt64()+1);
@@ -5166,16 +5156,6 @@ uint64 ObjectMgr::GenerateReportComplaintID()
         World::StopNow(ERROR_EXIT_CODE);
     }
     return _reportComplaintID++;
-}
-
-uint64 ObjectMgr::GenerateSupportTicketSubmitBugID()
-{
-    if (_supportTicketSubmitBugID >= std::numeric_limits<uint64>::max())
-    {
-        TC_LOG_ERROR("misc", "_supportTicketSubmitBugID overflow!! Can't continue, shutting down server. ");
-        World::StopNow(ERROR_EXIT_CODE);
-    }
-    return _supportTicketSubmitBugID++;
 }
 
 MailLevelReward const* ObjectMgr::GetMailLevelReward(uint32 level, uint32 raceMask)
@@ -6566,20 +6546,6 @@ bool ObjectMgr::DeleteGameTele(std::string const& name)
     return false;
 }
 
-bool ObjectMgr::IsActivateDonateService() const
-{
-    if (auto const* donvencat = GetDonateVendorCat(0))
-    {
-        for (auto itr = donvencat->categories.begin(); itr != donvencat->categories.end(); ++itr)
-        {
-            if ((*itr).action == -1)
-                return true;
-        }
-    }
-
-    return false;
-}
-
 void ObjectMgr::LoadMailLevelRewards()
 {
     uint32 oldMSTime = getMSTime();
@@ -6888,323 +6854,6 @@ void ObjectMgr::LoadVendors()
     TC_LOG_INFO("server.loading", ">> Loaded %d Vendors in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
  
-void ObjectMgr::LoadDonateVendors()
-{ 
-    if (sWorld->getBoolConfig(CONFIG_DISABLE_DONATELOADING))
-        return;
-
-    // donate venodrs for Tokens    
-    uint32 oldMSTime = getMSTime();
-    m_donate_waite = true;
-    std::lock_guard<std::recursive_mutex> guard(m_donate_lock);
-
-    _cacheDonateVendorItemStore.clear();
-    _fakedonvendorcat.clear();
-    _reversfakedonvendorcat.clear();
-    _donvenadds.clear();
-    _donvendorcat.clear();
-    
-    uint32 count = 0;  
-    
-    // float donateDiscount;
-    
-    QueryResult result_discount = LoginDatabase.PQuery("SELECT rate from store_discounts where enable = 1 AND UNIX_TIMESTAMP(start) <= UNIX_TIMESTAMP() AND UNIX_TIMESTAMP(end) >= UNIX_TIMESTAMP()");
-    
-    if (!result_discount)
-        donateDiscount = 1;
-    else
-    {
-        Field* fielddi = result_discount->Fetch();
-        donateDiscount = fielddi[0].GetFloat();
-    }
-    
-    QueryResult result_don = LoginDatabase.PQuery("SELECT `s_p`.`category`, `s_p`.`item`, `s_p_r`.`token`, `s_p`.`enable`, `s_p`.`bonus`, `s_p`.`id`, `s_c`.`type`, `spl`.type, `spl`.`ru`, `spl`.`us`, `spl`.`kr`, `spl`.`fr`, `spl`.`de`, `spl`.`cn`, `spl`.`tw`, `spl`.`es`, `spl`.`mx`,`spl`.`pt`, `spl`.`br`, `spl`.`it`, s_p.faction FROM `store_products` AS s_p JOIN `store_categories` AS s_c ON `s_c`.`id` = `s_p`.`category` JOIN `store_product_realms` AS s_p_r ON `s_p_r`.`product` = `s_p`.`id` LEFT JOIN `store_product_locales` AS spl ON `spl`.`product` = `s_p`.`item` WHERE `s_p`.`enable` = '1' AND `s_p_r`.`realm` = '%u' AND `s_p_r`.`enable` = 1  ORDER by `s_p`.`category`;", sWorld->GetRealmId());
-    if (result_don)
-    {
-        // it's some magic
-        int32 currentFakeCat = 250000;
-        int32 oldFakeCat = currentFakeCat;
-        int32 currentCat = 0;
-        int32 currentcount = 1;
-        bool useFakeCat = false;
-        do
-        {
-            Field* fields = result_don->Fetch();
-
-            int32 entry        = fields[0].GetInt32();
-            int32 item_id       = fields[1].GetInt32();
-            uint32 DonateCost   = uint32(ceil(fields[2].GetUInt32() * donateDiscount)); //цениик
-            uint8 enable        = fields[3].GetUInt8();
-            std::vector<uint32> bonusListIDs;
-            Tokenizer BonusListID(fields[4].GetString(), ':');
-            for (char const* token : BonusListID)
-                bonusListIDs.push_back(atol(token));
-            
-            int32 storeId       = fields[5].GetInt32();
-            
-            uint32 ExtendedCost     = 0;
-            uint32 incrtime     = 0;
-            uint32  type         = fields[6].GetUInt32();
-                      
-            if (!fields[7].GetString().empty())
-                if (fields[7].GetUInt32() != type)
-                    continue;
-            
-            type += 1; // for correct values like enum
-
-            if (type >= DONATE_TYPE_MAX)
-                continue;
-            
-            uint64 money     = 0;
-            
-            if (enable == 0)
-                continue;
-            if (DonateCost == 0)
-                continue;
-            
-            if (currentCat != entry)
-            {
-                currentCat = entry;
-                currentcount = 0;
-                useFakeCat = false;
-                oldFakeCat = entry;
-            } 
-            else if (currentcount > 150 || (type > DONATE_TYPE_ITEM && currentcount >= 12))
-            {
-                if (useFakeCat) // just in fakes categories, then can change old fake, else it display original id
-                    oldFakeCat = currentFakeCat++;
-                else
-                    currentFakeCat++;
-                
-                currentcount -=  (type == DONATE_TYPE_ITEM ? 150 : 13);
-                _fakedonvendorcat[entry].push_back(currentFakeCat);
-                _reversfakedonvendorcat[currentFakeCat] = entry;
-                useFakeCat = true;
-                TC_LOG_INFO("server.loading", ">> Continue in new FakeCat = %d from old cat = %d", currentFakeCat, entry);
-            }
-            
-            if (useFakeCat)
-                entry = currentFakeCat;
-
-            if (type == DONATE_TYPE_ITEM)
-            {
-                VendorItemData& vList = _cacheDonateVendorItemStore[entry];
-
-                vList.AddItem(item_id, 0, incrtime, ExtendedCost, ITEM_VENDOR_TYPE_ITEM, money, 0, 0, bonusListIDs, std::vector<int32>(), false, 0, 0, storeId, DonateCost);
-            }
-            else
-            {
-                DonVenCatBase& sub_base = _donvendorcat[entry];
-                    
-                DonVenAdd data;
-                data.action = item_id;
-                data.cost = DonateCost;
-                data.type = type;
-                data.storeId = storeId;
-                
-                uint8 index = 8;
-                data.Names[8] = (!fields[index].GetString().empty() ? fields[index].GetString() : "");
-                for (uint8 i = 0; i < 12; ++i)
-                    if (i != 8)
-                        data.Names[i] = (!fields[++index].GetString().empty() ? fields[index].GetString(): data.Names[8]);
-                
-                data.faction = fields[++index].GetUInt8();
-                sub_base.additionals.push_back(data);
-
-                if (useFakeCat)
-                {
-                    sub_base.prev_page = oldFakeCat;
-                    
-                    DonVenCatBase& prev_base = _donvendorcat[oldFakeCat];
-                    prev_base.next_page = entry;
-                }
-                
-                _donvenadds[type][item_id] = data;
-
-                /*
-                switch(type)
-                {
-                    case DONATE_TYPE_TITLE:
-                        _donvenadds[DONATE_TYPE_TITLE][item_id] = data;
-                        break;
-
-                    default:
-                        continue;
-                }
-
-                */
-            }
-            ++count;
-            ++currentcount;
-        
-        }
-        while (result_don->NextRow());
-
-        TC_LOG_INFO("server.loading", ">> Loaded %d Donate Vendors in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    }
-    
-    
-    
-    oldMSTime = getMSTime();
-    count = 0;
-
-    QueryResult result_cat = LoginDatabase.PQuery("SELECT `sc`.`pid`, `sc`.`id`, `scr`.`return`, `scl`.`name_ru`, `scl`.`name_us`, `scl`.`name_kr`, `scl`.`name_fr`, `scl`.`name_de`, `scl`.`name_cn`, `scl`.`name_tw`, `scl`.`name_es`, `scl`.`name_mx`,`scl`.`name_pt`, `scl`.`name_br`, `scl`.`name_it`,  `scl`.`description_ru`, `scl`.`description_us`, `scl`.`description_kr`, `scl`.`description_fr`, `scl`.`description_de`, `scl`.`description_cn`, `scl`.`description_tw`, `scl`.`description_es`, `scl`.`description_mx`, `scl`.`description_ru`, `scl`.`description_pt`, `scl`.`description_br`, `scl`.`description_it`, `sc`.`type`, `sc`.`faction` FROM `store_categories` AS sc LEFT JOIN `store_category_locales` AS scl ON `scl`.`category` = `sc`.`id` LEFT JOIN `store_category_realms` AS scr ON `scr`.`category` = `sc`.`id` WHERE `sc`.`enable` = '1' AND `scr`.`realm` = '%u' AND `scr`.`enable` = 1 GROUP BY `sc`.`id` ORDER BY `sc`.`sort` DESC, `sc`.`pid` ASC, `sc`.`id` ASC;", sWorld->GetRealmId());
-    
-    std::vector<uint32> correct_availables{};
-    if (result_cat)
-    {
-    
-         do
-        {
-            Field* fields = result_cat->Fetch();
-
-            DonVenCat data;
-            uint32 index = 0;
-            int32 Parent        = fields[index].GetInt32();
-            data.action = fields[++index].GetInt32();;
-            bool returnable = fields[++index].GetBool();
-            
-            data.Names[8] =  (!fields[++index].GetString().empty() ? fields[index].GetString(): "");
-            for (uint8 i = 0; i < 12; ++i)
-                if (i != 8)
-                    data.Names[i] = (!fields[++index].GetString().empty() ? fields[index].GetString(): data.Names[8]);
-            
-            std::string default_description = !fields[++index].GetString().empty() ? fields[index].GetString(): "";            
-            default_description = !fields[++index].GetString().empty() ? fields[index].GetString(): default_description; // if exist eng, then use eng, else use rus
-            
-            data.Names[0] += default_description;
-            for (uint8 i = 1; i < 12; ++i)
-                data.Names[i] += (!fields[++index].GetString().empty() ? fields[index].GetString(): default_description);
-
-            uint32  type         = fields[++index].GetUInt32() + 1;
-            uint8 faction = fields[++index].GetUInt8();
-            data.type = type;
-            
-            if (data.action >= 230100 || type != DONATE_TYPE_ITEM)
-            {
-                data.Names[8] += (returnable ?  "|cff008000 [Есть возврат]|r" :  "|cffFF0000 [Нет возврата]|r");
-                for (uint8 i = 0; i < 12; ++i)
-                    if (i != 8)
-                        data.Names[i] += (returnable ?  "|cff008000 [Returnable]|r" :  "|cffFF0000 [No Returnable]|r");
-            }
-
-            if (type == DONATE_TYPE_MORPH)
-            {
-                data.is_available_for_preview = true;
-                if (Parent)
-                    correct_availables.push_back(Parent);
-            }
-
-            data.faction = faction;
-
-            DonVenCatBase& sub_base = _donvendorcat[data.action];
-            sub_base.type = type;
-            sub_base.parent = Parent;
-            
-            DonVenCatBase& base = _donvendorcat[Parent];
-            base.categories.push_back(data);
-
-
-            if(std::vector<int32> const* fakeCat = sObjectMgr->GetFakeDonateVendorCat(data.action)) // push fake cat on this menu
-            {
-                int8 counter = 2;
-                for (std::vector<int32>::const_iterator itr = fakeCat->begin(); itr != fakeCat->end(); ++itr)
-                {
-                    if (type == DONATE_TYPE_ITEM)
-                    {
-                        TC_LOG_INFO("server.loading", ">> FakeCat = %d was created succesfull", *itr);
-                        DonVenCat datafake;
-                        datafake.action = uint32(*itr);
-                        for (uint8 i = 0; i < 12; ++i)
-                            datafake.Names[i] = data.Names[i] + " #" + std::to_string(counter);
-                        datafake.type = type;
-                        datafake.faction = faction;
-                        
-                        base.categories.push_back(datafake);
-                    }
-                    
-                    DonVenCatBase& sub_base2 = _donvendorcat[uint32(*itr)];
-                    sub_base2.type = type;
-                    sub_base2.parent = Parent;
-                    ++counter;
-                }
-            }
-            ++count;    
-        }
-        while (result_cat->NextRow());
-        
-        TC_LOG_INFO("server.loading", ">> Loaded %d Donate Vendor Categories in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    }
-
-    for (const auto& id : correct_availables)
-    {
-        uint32 action = id;
-        const auto& cat = _donvendorcat[action];
-        uint32 parent = cat.parent;
-        do
-        {
-            auto& parent_cat = _donvendorcat[parent];
-            for (auto& categori : parent_cat.categories)
-                if (categori.action == action)
-                {
-                    categori.is_available_for_preview = true;
-                    break;
-                }
-
-            if (parent != parent_cat.parent) // not both 0
-            {
-                action = parent;
-                parent = parent_cat.parent;
-            }
-            else
-                break;
-        } while (true);
-    }
-    // reload
-    oldMSTime = getMSTime();
-    count = 0;
-    
-    _priceforlevelupStore.clear();
-    _priceforArtlevelupStore.clear();
-    
-    QueryResult result_level = LoginDatabase.PQuery("SELECT level, token, type FROM `store_level_prices` WHERE realm = %u", sWorld->GetRealmId());
-    
-    if (result_level)
-    {
-    
-        do
-        {
-            Field* fields = result_level->Fetch();
-
-            uint32 level        = fields[0].GetUInt32();
-            float cost          = ceil(fields[1].GetFloat() * donateDiscount);
-            uint8 type          = fields[2].GetUInt8();
-            
-            switch(type)
-            {
-                case 0:
-                    if (_priceforlevelupStore.size() <= level)
-                        _priceforlevelupStore.resize(level + 1);
-                    _priceforlevelupStore[level] = cost;
-                    break;
-                case 1:
-                    if (_priceforArtlevelupStore.size() <= level)
-                        _priceforArtlevelupStore.resize(level + 1);
-                    _priceforArtlevelupStore[level] = cost;
-                    break;
-                case 2: _priceforAddBonusStore[level] = cost; break;
-                default:
-                    break;
-            }
-            
-            ++count;    
-        } while (result_level->NextRow());
-        
-        TC_LOG_INFO("server.loading", ">> Loaded %d cost for levelup (lvl and art) in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    }
-    m_donate_waite = false;
-}
-
 void ObjectMgr::AddVendorItem(uint32 entry, uint32 item, int32 maxcount, uint32 incrtime, uint32 extendedCost, uint8 type, uint64 money, bool persist /*= true*/)
 {
     VendorItemData& vList = _cacheVendorItemStore[entry];
@@ -7336,90 +6985,7 @@ bool ObjectMgr::IsVendorItemValid(uint32 vendor_entry, uint32 id, int32 maxcount
 
 VendorItemData const* ObjectMgr::GetNpcVendorItemList(uint32 entry) const
 {
-    if (m_donate_waite)
-        std::lock_guard<std::recursive_mutex> guard(m_donate_lock);
     return Trinity::Containers::MapGetValuePtr(_cacheVendorItemStore, entry);
-}
-
-VendorItemData const* ObjectMgr::GetNpcDonateVendorItemList(int32 entry) const
-{
-    if (m_donate_waite)
-        std::lock_guard<std::recursive_mutex> guard(m_donate_lock);
-    return Trinity::Containers::MapGetValuePtr(_cacheDonateVendorItemStore, entry);
-}
-
-DonVenCatBase const* ObjectMgr::GetDonateVendorCat(int32 entry) const
-{
-    if (m_donate_waite)
-        std::lock_guard<std::recursive_mutex> guard(m_donate_lock);
-    return Trinity::Containers::MapGetValuePtr(_donvendorcat, entry);
-}
-
-std::vector<int32> const* ObjectMgr::GetFakeDonateVendorCat(int32 entry) const
-{
-    if (m_donate_waite)
-        std::lock_guard<std::recursive_mutex> guard(m_donate_lock);
-    return Trinity::Containers::MapGetValuePtr(_fakedonvendorcat, entry);
-}
-
-int32 const* ObjectMgr::GetRealDonateVendorCat(int32 entry) const
-{
-    if (m_donate_waite)
-        std::lock_guard<std::recursive_mutex> guard(m_donate_lock);
-    return Trinity::Containers::MapGetValuePtr(_reversfakedonvendorcat, entry);
-}
-
-DonVenAdd const* ObjectMgr::GetDonateVendorAdditionalInfo(uint32 type, uint32 entry) const
-{
-    if (m_donate_waite)
-        std::lock_guard<std::recursive_mutex> guard(m_donate_lock);
-    auto ptr = _donvenadds.find(type);
-    if (ptr == _donvenadds.end())
-        return nullptr;
-
-    return Trinity::Containers::MapGetValuePtr((*ptr).second, entry);
-}
-
-std::vector<DeathMatchStore> const* ObjectMgr::GetDeathMatchStore(uint8 type) const
-{
-    if (m_donate_waite)
-        std::lock_guard<std::recursive_mutex> guard(m_donate_lock);
-    return Trinity::Containers::MapGetValuePtr(_dmProducts, type);
-}
-
-std::vector<DeathMatchStore> const* ObjectMgr::GetDeathMatchStoreById(uint32 id) const
-{
-    if (m_donate_waite)
-        std::lock_guard<std::recursive_mutex> guard(m_donate_lock);
-    return Trinity::Containers::MapGetValuePtr(_dmProductsById, id);
-}
-
-float const* ObjectMgr::GetPriceForLevelUp(uint8 level) 
-{
-    if (m_donate_waite)
-        std::lock_guard<std::recursive_mutex> guard(m_donate_lock);
-    if (_priceforlevelupStore.size() <= level)
-        return nullptr;
-    return &_priceforlevelupStore[level];
-}
-
-float const* ObjectMgr::GetPriceForArtLevelUp(uint8 level) 
-{
-    if (m_donate_waite)
-        std::lock_guard<std::recursive_mutex> guard(m_donate_lock);
-    if (_priceforArtlevelupStore.size() <= level)
-        return nullptr;
-    return &_priceforArtlevelupStore[level];
-}
-
-PriceForAddBonus const* ObjectMgr::GetPricesForAddBonus()
-{
-    return &_priceforAddBonusStore;
-};
-
-const float& ObjectMgr::GetDonateDiscount() const
-{
-    return donateDiscount;
 }
 
 void ObjectMgr::LoadScriptNames()
@@ -9620,58 +9186,4 @@ uint32 ObjectMgr::GetCreatureDisplay(int32 modelid) const
         return 11686; // invisible for mirror image
 
     return 0;
-}
-
-
-void ObjectMgr::LoadDeathMatchStore()
-{ 
-    // donate venodrs for Tokens    
-    uint32 oldMSTime = getMSTime();
-    
-    _dmProducts.clear();
-    _dmProductsById.clear();
-    
-    uint32 count = 0;  
-    
-    // float donateDiscount;
-    
-    QueryResult result = CharacterDatabase.PQuery("SELECT type, product, cost, name from character_deathmatch_products");
-    
-    if (result)
-    {
-        do
-        {
-            Field* field = result->Fetch();
-            uint8 type = field[0].GetUInt8();
-            if (type >= DM_TYPE_MAX)
-                continue;
-
-            std::string product = field[1].GetString();
-            uint32 product_uint = 0;
-
-            if (type == DM_TYPE_MORPH)
-            {
-                product_uint = atoi(product.c_str());
-                if (!product_uint)
-                    continue;
-            }
-
-            uint32 cost = field[2].GetUInt32();
-            std::string name = field[3].GetString();
-
-            if (product_uint != 0)
-            {
-                _dmProducts[type].push_back(DeathMatchStore(name, type, product_uint, cost, ++count));
-                _dmProductsById[count].push_back(DeathMatchStore(name, type, product_uint, cost, count));
-            }
-            else
-            {
-                _dmProducts[type].push_back(DeathMatchStore(name, type, product, cost, ++count));
-                _dmProductsById[count].push_back(DeathMatchStore(name, type, product, cost, count));
-            }
-
-        } while (result->NextRow());
-    }
-    
-    TC_LOG_INFO("server.loading", ">> Loaded %d DeathMatch Store products in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }

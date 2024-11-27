@@ -339,12 +339,6 @@ void WorldSession::HandleMailDelete(WorldPackets::Mail::MailDelete& packet)
     player->m_mailsUpdated = true;
     if (Mail* m = _player->GetMail(packet.MailID))
     {
-        if (m->stationery == 61 && (m->receiver == m->sender) && m->HasItems()) // donate. Can't delete
-        {
-            player->SendMailResult(packet.MailID, MAIL_DELETED, MAIL_ERR_INTERNAL_ERROR);
-            return;
-        }
-
         // delete shouldn't show up for COD mails
         if (m->COD)
         {
@@ -362,11 +356,6 @@ void WorldSession::HandleMailReturnToSender(WorldPackets::Mail::MailReturnToSend
     Player* player = _player;
     Mail* m = player->GetMail(packet.MailID);
     if (!m || m->state == MAIL_STATE_DELETED || m->deliver_time > GameTime::GetGameTime() || m->sender != packet.SenderGUID.GetCounter())
-    {
-        player->SendMailResult(packet.MailID, MAIL_RETURNED_TO_SENDER, MAIL_ERR_INTERNAL_ERROR);
-        return;
-    }
-    if (m->stationery == 61 && (m->receiver == m->sender)) // donate. Can't return
     {
         player->SendMailResult(packet.MailID, MAIL_RETURNED_TO_SENDER, MAIL_ERR_INTERNAL_ERROR);
         return;

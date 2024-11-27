@@ -3288,14 +3288,6 @@ void AuraEffect::HandleAuraCloneCaster(AuraApplication const* aurApp, uint8 mode
         if (!caster || caster == target)
             return;
         
-        // this need for donate morph
-        if (caster->IsPlayer() && caster->GetCustomDisplayId() && (caster->GetDisplayId() == caster->GetCustomDisplayId()))
-        {
-            if (target->IsPlayer())
-                return;
-            target->SetObjectScale(caster->GetFloatValue(OBJECT_FIELD_SCALE));
-        }
-
         target->InitMirrorImageData(caster);
 
         // What must be cloned? at least display and scale

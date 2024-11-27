@@ -29,7 +29,6 @@
 #include "BattlegroundArathiBasin.h"
 #include "BattlegroundBattleForGilneas.h"
 #include "BattlegroundDeepwindGorge.h"
-#include "BattlegroundDM.h"
 #include "BattlegroundEyeOfTheStorm.h"
 #include "BattlegroundIsleOfConquest.h"
 #include "BattlegroundKotmoguTemplate.h"
@@ -419,9 +418,6 @@ Battleground* BattlegroundMgr::CreateNewBattleground(uint16 bgTypeId, PVPDifficu
         case MS::Battlegrounds::BattlegroundTypeId::BrawlBattlegroundSilvershardSix:
             bg = new BattlegroundSilvershardMines;
             break;
-        case MS::Battlegrounds::BattlegroundTypeId::BattlegroundDeathMatch:
-            bg = new BattlegroundDeathMatch;
-            break;
         case MS::Battlegrounds::BattlegroundTypeId::BrawlBattlegroundSouthshoreVsTarrenMill:
             bg = new BrawlBattlegroundSouthshoreVsTarrenMill;
             break;
@@ -562,9 +558,6 @@ void BattlegroundMgr::CreateBattleground(CreateBattlegroundData& data)
             break;
         case MS::Battlegrounds::BattlegroundTypeId::BattlegroundDeepwindGorge:
             bg = new BattlegroundDeepwindGorge;
-            break;
-        case MS::Battlegrounds::BattlegroundTypeId::BattlegroundDeathMatch:
-            bg = new BattlegroundDeathMatch;
             break;
         case MS::Battlegrounds::BattlegroundTypeId::BrawlBattlegroundShadoPan:
             bg = new BrawlBattlegroundShadoPan;

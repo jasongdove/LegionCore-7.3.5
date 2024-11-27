@@ -456,8 +456,6 @@ void Item::SaveToDB(CharacterDatabaseTransaction& trans)
             if (uState == ITEM_NEW)
                 stmt->setUInt32(++index, GameTime::GetGameTime());
             
-            stmt->setBool(++index, GetDonateItem());
-
             stmt->setUInt64(++index, guid);
 
             trans->Append(stmt);
@@ -1259,9 +1257,6 @@ bool Item::CanBeTraded(bool mail, bool trade) const
     if ((!mail || !IsBoundAccountWide()) && (IsSoulBound() && (!HasFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_BOP_TRADEABLE) || !trade)))
         return false;
 
-    if (GetDonateItem())
-        return false;
-    
     if (IsBag() && (Player::IsBagPos(GetPos()) || !ToBag()->IsEmpty()))
         return false;
 
@@ -2121,16 +2116,6 @@ uint64 Item::GetPaidMoney()
 uint32 Item::GetPaidExtendedCost()
 {
     return m_paidExtendedCost;
-}
-
-void Item::SetDonateItem(bool apply)
-{
-    DonateItem = apply;
-}
-
-bool Item::GetDonateItem() const
-{
-    return DonateItem;
 }
 
 void Item::UpdatePlayedTime(Player* owner)
@@ -3466,32 +3451,6 @@ void Item::UpgradeLegendary()
     // Correct transmog bonus in craft item
     if (GetUInt32Value(ITEM_FIELD_CONTEXT) == 13 && !GetItemModifiedAppearance() && !_bonusData.AppearanceModID)
         AddBonuses(3408);
-
-    if (GetDonateItem())
-    {
-        if (GetItemLevel(GetOwnerLevel()) >= 915 && GetRequiredLevel() == 101) // Fix bug with old by items
-            AddBonuses(3431);
-
-        bool needClearBonus = false;
-        std::set<uint32> bonusListID;
-        for (uint32 bonusID : GetDynamicValues(ITEM_DYNAMIC_FIELD_BONUS_LIST_IDS))
-        {
-            if(bonusID == 3)
-                needClearBonus = true;
-            bonusListID.insert(bonusID);
-        }
-        if (needClearBonus)
-        {
-            bonusListID.erase(3);
-            ClearDynamicValue(ITEM_DYNAMIC_FIELD_BONUS_LIST_IDS);
-            _bonusData.Initialize(GetTemplate());
-
-            for (uint32 bonusID : bonusListID)
-                AddBonuses(bonusID);
-
-            SetState(ITEM_CHANGED, GetOwner());
-        }
-    }
 
     if (!proto->IsLegionLegendary())
         return;

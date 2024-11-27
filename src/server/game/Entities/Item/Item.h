@@ -590,8 +590,6 @@ class Item : public Object
         ObjectGuid GetRefundRecipient();
         uint64 GetPaidMoney();
         uint32 GetPaidExtendedCost();
-        void SetDonateItem(bool apply);
-        bool GetDonateItem() const; // can't be traded, selled or add on auction
 
         void UpdatePlayedTime(Player* owner);
         uint32 GetPlayedTime();
@@ -676,7 +674,6 @@ class Item : public Object
         ObjectGuid m_refundRecipient;
         uint64 m_paidMoney;
         uint32 m_paidExtendedCost;
-        bool DonateItem = false;
         GuidSet allowedGUIDs;
         ItemRandomEnchantmentId m_randomEnchantment;
         uint32 m_scaleLvl;

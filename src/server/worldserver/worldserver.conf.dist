@@ -1064,7 +1064,7 @@ PlayerStart.String = ""
 #        Example:     "Welcome to John\'s Server@This server runs on Trinity Core."
 #        Default:     "Welcome to a Trinity Core server."
 
-Motd = "Welcome to LegionCore Server."
+Motd = "Welcome to a LegionCore Server."
 
 #
 #    Server.LoginInfo

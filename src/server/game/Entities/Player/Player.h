@@ -1044,9 +1044,6 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOADWORLDQUESTSTATUS,
     PLAYER_LOGIN_QUERY_BATTLE_PETS,
     PLAYER_LOGIN_QUERY_CHALLENGE_KEY,
-    PLAYER_LOGIN_QUERY_LOAD_DEATHMATCH_STATS,
-    PLAYER_LOGIN_QUERY_LOAD_DEATHMATCH_STORE,
-    PLAYER_LOGIN_QUERY_LOAD_CHAT_LOGOS,
     PLAYER_LOGIN_QUERY_ACCOUNT_PROGRESS,
     PLAYER_LOGIN_QUERY_ARMY_TRAINING,
     PLAYER_LOGIN_QUERY_LOAD_LFGCOOLDOWN,
@@ -1431,45 +1428,6 @@ struct WorldQuestInfo
     bool needSave = false;
 };
 
-
-struct DeathMatchScore
-{
-	DeathMatchScore() : kills(0), deaths(0), damage(0), rating(0), matches(0), needSave(false), totalKills(0), selectedMorph(0){};
-    uint32 kills;
-    uint32 deaths;
-    uint64 damage;
-    uint32 rating;
-    uint32 matches;
-    bool needSave;
-    
-    uint32 totalKills;
-    std::set<uint32> buyedMorphs;
-    uint32 selectedMorph;
-    
-    bool HasMorph(uint32 morph)
-    {
-        if (buyedMorphs.find(morph) != buyedMorphs.end())
-            return true;
-        
-        return false;
-    }
-    
-    bool BuyMorph(uint32 morph, uint32 cost)
-    {
-        if (totalKills < cost)
-            return false;
-        
-        if (HasMorph(morph))
-            return false;
-        
-        totalKills -= cost;
-        
-        buyedMorphs.insert(morph);
-        
-        return true;
-    }
-};
-
 enum ArmyTrainingUnits
 {
     ARMY_UNIT_COMMON,
@@ -1664,12 +1622,6 @@ class Player : public Unit, public GridObject<Player>
         void WhisperAddon(std::string const& text, std::string const& prefix, Player* receiver);
         void BossWhisper(std::string const& text, const uint32 language, ObjectGuid receiver);
 
-        std::string const& getSelectedChatLogo() const {return selected_chat_logo;}
-        void setSelectedChatLogo(std::string const& text);
-       // bool BuyChatLogoByTokens(std::string const& logo, uint32 cost);
-        bool hasChatLogo(std::string const& logo) const;
-        bool BuyChatLogoByDeathMatch(std::string const& logo, uint32 cost);
-
         /*********************************************************/
         /***                    STORAGE SYSTEM                 ***/
         /*********************************************************/
@@ -1711,14 +1663,10 @@ class Player : public Unit, public GridObject<Player>
         uint8 _inventoryEndSlot;
         void SetInventorySlotCount(uint8 slots);
         void SetBankBagSlotCount(uint8 count) { SetByteValue(PLAYER_FIELD_BYTES_3, PLAYER_BYTES_3_OFFSET_BANK_BAG_SLOTS, count); }
-        
-        uint32 CustomMultiDonate = 0; // entry for multi-vendors
+
         bool HasToken(uint8 tokenType, uint32 count) const;
         bool ChangeTokenCount(uint8 tokenType, int64 change, uint8 buyType, uint64 productId);
-        void ModifyCanUseDonate(bool apply){ canUseDonate = apply; }
-        bool GetCanUseDonate() const { return canUseDonate; }
-        std::string GetInfoForDonate() const;
-        
+
         bool HasItemCount(uint32 item, uint32 count = 1, bool inBankAlso = false) const;
         bool HasItemFitToSpellRequirements(SpellInfo const* spellInfo, Item const* ignoreItem = nullptr) const;
         bool CanNoReagentCast(SpellInfo const* spellInfo) const;
@@ -2849,8 +2797,6 @@ class Player : public Unit, public GridObject<Player>
         bool HasWinToday(uint8 type) { return _hasWinToday[type]; }
         void SetWinToday(bool isWinner, uint8 type = 0, bool all = true);
         
-        void ModifyDeathMatchStats(uint32 kills, uint32 deaths, uint64 damage, int32 rating, uint32 totalKills, uint32 matches = 1);
-        DeathMatchScore* getDeathMatchScore() { return &dmScore; }
         /*********************************************************/
         /***               OUTDOOR PVP SYSTEM                  ***/
         /*********************************************************/
@@ -3416,8 +3362,6 @@ class Player : public Unit, public GridObject<Player>
         void _SaveLootCooldown(CharacterDatabaseTransaction& trans);
         void _SaveWorldQuestStatus(CharacterDatabaseTransaction& trans);
         void _SaveChallengeKey(CharacterDatabaseTransaction& trans);
-        void _SaveDeathMatchStats(CharacterDatabaseTransaction& trans);
-        void _SaveChatLogos(CharacterDatabaseTransaction& trans);
         void _SaveArmyTrainingInfo(CharacterDatabaseTransaction& trans);
         void _SaveAccountProgress(CharacterDatabaseTransaction& trans);
         void _SaveLfgCooldown(CharacterDatabaseTransaction& trans);
@@ -3734,7 +3678,6 @@ class Player : public Unit, public GridObject<Player>
 
         uint32 _lastTargetedGO;
         float m_PersonnalXpRate;
-        bool canUseDonate = true;
 
         uint32 m_knockBackTimer;
 
@@ -3768,9 +3711,6 @@ class Player : public Unit, public GridObject<Player>
 
         WargameRequest* _wargameRequest;
         std::unordered_map<uint32, std::vector<ItemDynamicFieldArtifactPowers>> GlobalArtifactData;
-        DeathMatchScore dmScore;
-        std::string selected_chat_logo;
-        std::map<std::string, bool> buyed_chat_logos;
         std::unordered_map<uint8, uint8>  m_bgQueueRoles{};
         std::unordered_map<uint8, uint8>  m_bgQueueRolesTemp{};
         uint32  m_lastActiveLFGRole{};

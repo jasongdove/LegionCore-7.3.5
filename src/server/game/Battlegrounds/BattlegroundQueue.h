@@ -62,7 +62,6 @@ public:
 
     void FillPlayersToBG(Battleground* bg, uint8 bracketID);
     bool CheckPremadeMatch(uint8 bracketID, uint32 MinPlayersPerTeam, uint32 MaxPlayersPerTeam);
-    bool CheckNormalMatchDeathMatch(uint8 bracketID, uint32 MinPlayers, uint32 MaxPlayers);
     bool CheckNormalMatch(Battleground* bg_template, uint8 bracketID, uint32 minPlayers, uint32 maxPlayers);
     bool CalculateSoloQTeams(uint8 bracketID);
     bool SelectRatedTeams(uint32 bracket_id, GroupQueueInfo* & team1, GroupQueueInfo* & team2);
