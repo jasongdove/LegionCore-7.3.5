@@ -24,7 +24,7 @@
 
 struct CreatureTextEntry
 {
-    uint32 entry;
+    uint32 creatureId;
     uint32 duration;
     uint32 sound;
     uint32 BroadcastTextID;

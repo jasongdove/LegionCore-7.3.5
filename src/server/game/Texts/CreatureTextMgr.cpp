@@ -105,8 +105,8 @@ void CreatureTextMgr::LoadCreatureTexts()
     mTextMap.clear(); // for reload case
     mTextRepeatMap.clear(); //reset all currently used temp texts
 
-                                      //      0      1        2   3     4     5         6            7      8         9      10                 11      12         13
-    auto result = WorldDatabase.Query("SELECT Entry, GroupID, ID, Text, Type, Language, Probability, Emote, Duration, Sound, BroadcastTextID, MinTimer, MaxTimer, SpellID FROM creature_text ORDER BY GroupID");
+                                      //      0           1        2   3     4     5         6            7      8         9      10                 11      12         13
+    auto result = WorldDatabase.Query("SELECT CreatureID, GroupID, ID, Text, Type, Language, Probability, Emote, Duration, Sound, BroadcastTextID, MinTimer, MaxTimer, SpellID FROM creature_text ORDER BY GroupID");
     if (!result)
     {
         TC_LOG_INFO("server.loading", ">> Loaded 0 ceature texts. DB table `creature_text` is empty.");
@@ -121,7 +121,7 @@ void CreatureTextMgr::LoadCreatureTexts()
         Field* fields = result->Fetch();
 
         CreatureTextEntry temp;
-        temp.entry = fields[0].GetUInt32();
+        temp.creatureId = fields[0].GetUInt32();
         temp.group = fields[1].GetUInt8();
         temp.id = fields[2].GetUInt8();
         temp.text = fields[3].GetString();
@@ -138,53 +138,53 @@ void CreatureTextMgr::LoadCreatureTexts()
 
         if (!GetLanguageDescByID(temp.lang))
         {
-            TC_LOG_ERROR("sql.sql", "CreatureTextMgr:  Entry %u, Group %u in table `creature_texts` using Language %u but Language does not exist.", temp.entry, temp.group, uint32(temp.lang));
+            TC_LOG_ERROR("sql.sql", "CreatureTextMgr:  Entry %u, Group %u in table `creature_texts` using Language %u but Language does not exist.", temp.creatureId, temp.group, uint32(temp.lang));
             temp.lang = LANG_UNIVERSAL;
         }
 
         if (temp.type >= MAX_CHAT_MSG_TYPE)
         {
-            TC_LOG_ERROR("sql.sql", "CreatureTextMgr:  Entry %u, Group %u in table `creature_texts` has Type %u but this Chat Type does not exist.", temp.entry, temp.group, uint32(temp.type));
+            TC_LOG_ERROR("sql.sql", "CreatureTextMgr:  Entry %u, Group %u in table `creature_texts` has Type %u but this Chat Type does not exist.", temp.creatureId, temp.group, uint32(temp.type));
             temp.type = CHAT_MSG_SAY;
         }
 
         if (temp.emote && !sEmotesStore.LookupEntry(temp.emote))
         {
-            TC_LOG_ERROR("sql.sql", "CreatureTextMgr:  Entry %u, Group %u in table `creature_texts` has Emote %u but emote does not exist.", temp.entry, temp.group, uint32(temp.emote));
+            TC_LOG_ERROR("sql.sql", "CreatureTextMgr:  Entry %u, Group %u in table `creature_texts` has Emote %u but emote does not exist.", temp.creatureId, temp.group, uint32(temp.emote));
             temp.emote = EMOTE_ONESHOT_NONE;
         }
 
         if (temp.BroadcastTextID && !sBroadcastTextStore.LookupEntry(temp.BroadcastTextID))
         {
-            TC_LOG_ERROR("sql.sql", "CreatureTextMgr: Entry %u, Group %u, Id %u in table `creature_text` has non-existing or incompatible BroadcastTextID %u.", temp.entry, temp.group, temp.id, temp.BroadcastTextID);
+            TC_LOG_ERROR("sql.sql", "CreatureTextMgr: Entry %u, Group %u, Id %u in table `creature_text` has non-existing or incompatible BroadcastTextID %u.", temp.creatureId, temp.group, temp.id, temp.BroadcastTextID);
             temp.BroadcastTextID = 0;
         }
 
         if (temp.SpellID && !sSpellMgr->GetSpellInfo(temp.SpellID))
         {
-            TC_LOG_ERROR("sql.sql", "CreatureTextMgr: Entry %u, Group %u, Id %u in table `creature_text` has non-existing or incompatible SpellID %u.", temp.entry, temp.group, temp.id, temp.SpellID);
+            TC_LOG_ERROR("sql.sql", "CreatureTextMgr: Entry %u, Group %u, Id %u in table `creature_text` has non-existing or incompatible SpellID %u.", temp.creatureId, temp.group, temp.id, temp.SpellID);
             temp.SpellID = 0;
         }
 
-        if (IsDuplicateText(temp.entry, temp.text))
+        if (IsDuplicateText(temp.creatureId, temp.text))
         {
-            WorldDatabase.PExecute("DELETE FROM creature_text WHERE Entry = %u AND GroupID = %u AND ID = %u", temp.entry, temp.group, temp.id);
+            WorldDatabase.PExecute("DELETE FROM creature_text WHERE Entry = %u AND GroupID = %u AND ID = %u", temp.creatureId, temp.group, temp.id);
             continue;
         }
 
         //entry not yet added, add empty TextHolder (list of groups)
-        if (mTextMap.find(temp.entry) == mTextMap.end())
+        if (mTextMap.find(temp.creatureId) == mTextMap.end())
             ++creatureCount;
 
-        if (mTextList.size() <= temp.entry)
-            mTextList.resize(temp.entry + 1, nullptr);
+        if (mTextList.size() <= temp.creatureId)
+            mTextList.resize(temp.creatureId + 1, nullptr);
 
         //add the text into our entry's group
         if (!temp.id)
-            temp.id = mTextMap[temp.entry][temp.group].size();
+            temp.id = mTextMap[temp.creatureId][temp.group].size();
 
-        mTextMap[temp.entry][temp.group].push_back(temp);
-        mTextList[temp.entry] = &mTextMap[temp.entry];
+        mTextMap[temp.creatureId][temp.group].push_back(temp);
+        mTextList[temp.creatureId] = &mTextMap[temp.creatureId];
 
         ++textCount;
     } while (result->NextRow());
