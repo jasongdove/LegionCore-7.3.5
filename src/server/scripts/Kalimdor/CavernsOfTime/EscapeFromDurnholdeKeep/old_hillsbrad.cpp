@@ -255,7 +255,7 @@ public:
         if (creature->isQuestGiver())
         {
             player->PrepareQuestMenu(creature->GetGUID());
-            player->SendPreparedQuest(creature->GetGUID());
+            player->SendPreparedQuest(creature);
         }
 
         InstanceScript* instance = creature->GetInstanceScript();

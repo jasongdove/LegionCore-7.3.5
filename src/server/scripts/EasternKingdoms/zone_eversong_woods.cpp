@@ -281,7 +281,7 @@ public:
         if (CAST_AI(npc_second_trial_controller::master_kelerun_bloodmournAI, creature->AI())->questPhase == 0)
         {
             player->PrepareQuestMenu(creature->GetGUID());
-            player->SendPreparedQuest(creature->GetGUID());
+            player->SendPreparedQuest(creature);
         }
 
         player->SEND_GOSSIP_MENU(creature->GetEntry(), creature->GetGUID());

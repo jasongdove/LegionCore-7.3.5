@@ -18072,21 +18072,12 @@ void Player::SendPreparedGossip(WorldObject* source)
     if (!source)
         return;
 
-    if (source->IsCreature())
+    if (source->GetTypeId() == TYPEID_UNIT || source->GetTypeId() == TYPEID_GAMEOBJECT)
     {
-        // in case no gossip flag and quest menu not empty, open quest menu (client expect gossip menu with this flag)
-        if (!source->ToCreature()->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) && !PlayerTalkClass->GetQuestMenu().Empty())
+        // only use quest menu with one quest, otherwise use gossip menu
+        if (PlayerTalkClass->GetGossipMenu().Empty() && PlayerTalkClass->GetQuestMenu().GetMenuItemCount() == 1)
         {
-            SendPreparedQuest(source->GetGUID());
-            return;
-        }
-    }
-    else if (source->IsGameObject())
-    {
-        // probably need to find a better way here
-        if (!PlayerTalkClass->GetGossipMenu().GetMenuId() && !PlayerTalkClass->GetQuestMenu().Empty())
-        {
-            SendPreparedQuest(source->GetGUID());
+            SendPreparedQuest(source);
             return;
         }
     }
@@ -18183,7 +18174,7 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
             break;
         case GOSSIP_OPTION_QUESTGIVER:
             PrepareQuestMenu(guid);
-            SendPreparedQuest(guid);
+            SendPreparedQuest(source);
             break;
         case GOSSIP_OPTION_VENDOR:
         case GOSSIP_OPTION_ARMORER:
@@ -18424,7 +18415,7 @@ void Player::PrepareQuestMenu(ObjectGuid guid)
     }
 }
 
-void Player::SendPreparedQuest(ObjectGuid guid)
+void Player::SendPreparedQuest(WorldObject* source)
 {
     QuestMenu& questMenu = PlayerTalkClass->GetQuestMenu();
     if (questMenu.Empty())
@@ -18439,26 +18430,25 @@ void Player::SendPreparedQuest(ObjectGuid guid)
         // Auto open -- maybe also should verify there is no greeting
         if (Quest const* quest = sQuestDataStore->GetQuestTemplate(questId))
         {
-            Object* object = ObjectAccessor::GetObjectByTypeMask(*this, guid, TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT | TYPEMASK_ITEM);
             if (qmi0.QuestIcon == 4)
-                PlayerTalkClass->SendQuestGiverRequestItems(quest, guid, CanRewardQuest(quest, false), true);
+                PlayerTalkClass->SendQuestGiverRequestItems(quest, source->GetGUID(), CanRewardQuest(quest, false), true);
             // Send completable on repeatable and autoCompletable quest if player don't have quest
             /// @todo verify if check for !quest->IsDaily() is really correct (possibly not)
-            else if (!object->hasQuest(questId) && !object->hasInvolvedQuest(questId))
+            else if (!source->hasQuest(questId) && !source->hasInvolvedQuest(questId))
                 PlayerTalkClass->SendCloseGossip();
             else
             {
                 if (quest->IsAutoAccept() && CanAddQuest(quest, true) && CanTakeQuest(quest, true))
-                    AddQuestAndCheckCompletion(quest, object);
+                    AddQuestAndCheckCompletion(quest, source);
 
                 if (quest->IsAutoComplete() && quest->IsRepeatable() && !quest->IsDailyOrWeekly() && !quest->IsMonthly())
-                    PlayerTalkClass->SendQuestGiverRequestItems(quest, object->GetGUID(), CanCompleteRepeatableQuest(quest), true);
+                    PlayerTalkClass->SendQuestGiverRequestItems(quest, source->GetGUID(), CanCompleteRepeatableQuest(quest), true);
                 else if (quest->IsAutoComplete() && !quest->IsDailyOrWeekly() && !quest->IsMonthly())
-                    PlayerTalkClass->SendQuestGiverRequestItems(quest, object->GetGUID(), CanRewardQuest(quest, false), true);
+                    PlayerTalkClass->SendQuestGiverRequestItems(quest, source->GetGUID(), CanRewardQuest(quest, false), true);
                 else
                 {
                     SetPopupQuestId(0);
-                    PlayerTalkClass->SendQuestGiverQuestDetails(quest, object->GetGUID(), true, false);
+                    PlayerTalkClass->SendQuestGiverQuestDetails(quest, source->GetGUID(), true, false);
                 }
             }
 
@@ -18470,7 +18460,7 @@ void Player::SendPreparedQuest(ObjectGuid guid)
     uint32 BroadcastTextID = 0;
 
     // need pet case for some quests
-    Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid);
+    Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, source->GetGUID());
     if (creature)
     {
         uint32 textid = GetGossipTextId(creature);
@@ -18479,7 +18469,7 @@ void Player::SendPreparedQuest(ObjectGuid guid)
             BroadcastTextID = gossiptext->Data[0].BroadcastTextID;
     }
 
-    PlayerTalkClass->SendQuestGiverQuestList(BroadcastTextID, guid);
+    PlayerTalkClass->SendQuestGiverQuestList(BroadcastTextID, source->GetGUID());
 }
 
 bool Player::IsActiveQuest(uint32 quest_id) const

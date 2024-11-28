@@ -977,7 +977,7 @@ Quests.HighLevelHideDiff = -1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-Quests.IgnoreRaid = 1
+Quests.IgnoreRaid = 0
 
 #
 #    Quests.IgnoreAutoAccept
@@ -985,7 +985,7 @@ Quests.IgnoreRaid = 1
 #        Default:     0 - (Disabled, DB values determine if quest is marked auto accept or not.)
 #                     1 - (Enabled, clients will not be told to automatically accept any quest.)
 
-Quests.IgnoreAutoAccept = 1
+Quests.IgnoreAutoAccept = 0
 
 #
 #    Quests.IgnoreAutoComplete
@@ -993,7 +993,7 @@ Quests.IgnoreAutoAccept = 1
 #        Default:     0 - (Disabled, DB values determine if quest is marked auto complete or not.)
 #                     1 - (Enabled, clients will not be told to automatically complete any quest.)
 
-Quests.IgnoreAutoComplete = 1
+Quests.IgnoreAutoComplete = 0
 
 #
 #    MaxPrimaryTradeSkill

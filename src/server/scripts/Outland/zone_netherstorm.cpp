@@ -303,7 +303,7 @@ public:
         if (go->GetGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             player->PrepareQuestMenu(go->GetGUID());
-            player->SendPreparedQuest(go->GetGUID());
+            player->SendPreparedQuest(go);
         }
 
         Creature* manaforge = NULL;

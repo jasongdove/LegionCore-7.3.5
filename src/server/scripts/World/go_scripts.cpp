@@ -91,7 +91,7 @@ public:
         if (go->GetGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             player->PrepareQuestMenu(go->GetGUID());
-            player->SendPreparedQuest(go->GetGUID());
+            player->SendPreparedQuest(go);
         }
 
         if (player->GetQuestStatus(4285) == QUEST_STATUS_INCOMPLETE)
@@ -111,7 +111,7 @@ public:
         if (go->GetGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             player->PrepareQuestMenu(go->GetGUID());
-            player->SendPreparedQuest(go->GetGUID());
+            player->SendPreparedQuest(go);
         }
 
         if (player->GetQuestStatus(4287) == QUEST_STATUS_INCOMPLETE)
@@ -131,7 +131,7 @@ public:
         if (go->GetGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             player->PrepareQuestMenu(go->GetGUID());
-            player->SendPreparedQuest(go->GetGUID());
+            player->SendPreparedQuest(go);
         }
 
         if (player->GetQuestStatus(4288) == QUEST_STATUS_INCOMPLETE)

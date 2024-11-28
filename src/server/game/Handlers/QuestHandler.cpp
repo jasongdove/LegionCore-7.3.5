@@ -216,6 +216,21 @@ void WorldSession::HandleQuestGiverAcceptQuest(WorldPackets::Quest::QuestGiverAc
 
             _player->PlayerTalkClass->SendCloseGossip();
 
+            if (quest->HasFlag(QUEST_FLAGS_LAUNCH_GOSSIP_ACCEPT))
+            {
+                auto launchGossip = [&](WorldObject* worldObject)
+                {
+                    _player->PlayerTalkClass->ClearMenus();
+                    _player->PrepareGossipMenu(worldObject, _player->GetDefaultGossipMenuForSource(worldObject), true);
+                    _player->SendPreparedGossip(worldObject);
+                };
+
+                if (Creature* creature = object->ToCreature())
+                    launchGossip(creature);
+                else if (GameObject* go = object->ToGameObject())
+                    launchGossip(go);
+            }
+
             if (quest->SourceSpellID)
                 _player->CastSpell(_player, quest->SourceSpellID, true);
 
