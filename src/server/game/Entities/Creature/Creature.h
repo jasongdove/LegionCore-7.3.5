@@ -752,6 +752,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         void RemoveCorpse(bool setSpawnTime = true);
 
         void DespawnOrUnsummon(uint32 msTimeToDespawn = 0, Seconds const& forceRespawnTimer = Seconds::zero());
+        void DespawnOrUnsummon(Milliseconds time, Seconds forceRespawnTime = 0s) { DespawnOrUnsummon(uint32(time.count()), forceRespawnTime); }
 
         time_t const& GetRespawnTime() const { return m_respawnTime; }
         time_t GetRespawnTimeEx() const;

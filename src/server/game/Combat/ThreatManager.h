@@ -43,18 +43,40 @@ public:
     HostileReference(Unit* refUnit, ThreatManager* threatManager, float threat);
 
     void addThreat(float modThreat);
-    void setThreat(float threat);
+    void setThreat(float threat) { addThreat(threat - iThreat); }
+
     void addThreatPercent(int32 percent);
-    float getThreat() const;
 
-    bool isOnline() const;
+    float getThreat() const { return iThreat + iTempThreatModifier; }
 
-    bool isAccessible() const;
+    bool isOnline() const { return iOnline; }
 
-    void setTempThreat(float threat);
-    void addTempThreat(float threat);
-    void resetTempThreat();
-    float getTempThreatModifier();
+    // The Unit might be in water and the creature can not enter the water, but has range attack
+    // in this case online = true, but accessible = false
+    bool isAccessible() const { return iAccessible; }
+
+    // used for temporary setting a threat and reducing it later again.
+    // the threat modification is stored
+    void setTempThreat(float threat)
+    {
+        addTempThreat(threat - iTempThreatModifier);
+    }
+
+    void addTempThreat(float threat)
+    {
+        if (!threat)
+            return;
+        iTempThreatModifier += threat;
+        ThreatRefStatusChangeEvent event(UEV_THREAT_REF_THREAT_CHANGE, this, threat);
+        fireStatusChanged(event);
+    }
+
+    void resetTempThreat()
+    {
+        addTempThreat(-iTempThreatModifier);
+    }
+
+    float getTempThreatModifier() { return iTempThreatModifier; }
 
     void updateOnlineStatus();
 
@@ -62,23 +84,33 @@ public:
 
     void setAccessibleState(bool isAccessible);
 
-    bool operator ==(const HostileReference& hostileRef) const;
+    bool operator==(HostileReference const& hostileRef) const { return hostileRef.getUnitGuid() == getUnitGuid(); }
 
-    ObjectGuid getUnitGuid() const;
+    ObjectGuid getUnitGuid() const { return iUnitGuid; }
 
+    // reference is not needed anymore. really delete it !
     void removeReference();
 
-    HostileReference* next();
+    HostileReference* next() { return static_cast<HostileReference*>(Reference<Unit, ThreatManager>::next()); }
 
-    void targetObjectBuildLink();
-    void targetObjectDestroyLink();
-    void sourceObjectDestroyLink();
+    // Tell our refTo (target) object that we have a link
+    void targetObjectBuildLink() override;
+
+    // Tell our refTo (target) object, that the link is cut
+    void targetObjectDestroyLink() override;
+
+    // Tell our refFrom (source) object, that the link is cut (Target destroyed)
+    void sourceObjectDestroyLink() override;
+
 private:
+    // Inform the source, that the status of that reference was changed
     void fireStatusChanged(ThreatRefStatusChangeEvent& threatRefStatusChangeEvent);
 
     Unit* getSourceUnit();
+
+private:
     float iThreat;
-    float iTempThreatModifier;                          // used for taunt
+    float iTempThreatModifier;                          // used for SPELL_AURA_MOD_TOTAL_THREAT
     ObjectGuid iUnitGuid;
     bool iOnline;
     bool iAccessible;

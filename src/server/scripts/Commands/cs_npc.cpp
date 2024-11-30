@@ -980,8 +980,6 @@ public:
 
                 if (dynamicFlags & UNIT_DYNFLAG_HIDE_MODEL)
                     ss_flags << "HideModel ";
-                if (dynamicFlags & UNIT_DYNFLAG_NOT_SELECTABLE_MODEL)
-                    ss_flags << "NotSlectableModel ";
                 if (dynamicFlags & UNIT_DYNFLAG_LOOTABLE)
                     ss_flags << "Lootable ";
                 if (dynamicFlags & UNIT_DYNFLAG_TRACK_UNIT)
@@ -990,6 +988,8 @@ public:
                     ss_flags << "Tapped ";
                 if (dynamicFlags & UNIT_DYNFLAG_SPECIALINFO)
                     ss_flags << "SpecialInfo ";
+                if (dynamicFlags & UNIT_DYNFLAG_DEAD)
+                    ss_flags << "Dead ";
                 if (dynamicFlags & UNIT_DYNFLAG_REFER_A_FRIEND)
                     ss_flags << "ReferFriend ";
                 if (dynamicFlags & UNIT_DYNFLAG_DISABLE_SAME_INTARACT)

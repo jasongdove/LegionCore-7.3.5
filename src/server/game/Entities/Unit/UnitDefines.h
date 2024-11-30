@@ -151,7 +151,7 @@ enum UnitFlags : uint32
     UNIT_FLAG_SKINNABLE             = 0x04000000,
     UNIT_FLAG_MOUNT                 = 0x08000000,
     UNIT_FLAG_PREVENT_KNEELING_WHEN_LOOTING = 0x10000000,
-    UNIT_FLAG_PREVENT_EMOTES        = 0x20000000,           // used in Feing Death spell
+    UNIT_FLAG_PREVENT_EMOTES        = 0x20000000,           // used in Feign Death spell
     UNIT_FLAG_SHEATHE               = 0x40000000,
     UNIT_FLAG_UNK_31                = 0x80000000
 };

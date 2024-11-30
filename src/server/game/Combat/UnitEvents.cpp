@@ -18,26 +18,6 @@
 
 #include "UnitEvents.h"
 
-UnitBaseEvent::UnitBaseEvent(uint32 pType)
-{
-    iType = pType;
-}
-
-uint32 UnitBaseEvent::getType() const
-{
-    return iType;
-}
-
-bool UnitBaseEvent::matchesTypeMask(uint32 pMask) const
-{
-    return (iType & pMask) != 0;
-}
-
-void UnitBaseEvent::setType(uint32 pType)
-{
-    iType = pType;
-}
-
 ThreatRefStatusChangeEvent::ThreatRefStatusChangeEvent(uint32 pType): UnitBaseEvent(pType), iThreatManager(nullptr)
 {
     iHostileReference = nullptr;
@@ -93,22 +73,4 @@ void ThreatRefStatusChangeEvent::setThreatManager(ThreatManager* pThreatManager)
 ThreatManager* ThreatRefStatusChangeEvent::getThreatManager() const
 {
     return iThreatManager;
-}
-
-ThreatManagerEvent::ThreatManagerEvent(uint32 pType): ThreatRefStatusChangeEvent(pType), iThreatContainer(nullptr)
-{
-}
-
-ThreatManagerEvent::ThreatManagerEvent(uint32 pType, HostileReference* pHostileReference): ThreatRefStatusChangeEvent(pType, pHostileReference), iThreatContainer(nullptr)
-{
-}
-
-void ThreatManagerEvent::setThreatContainer(ThreatContainer* pThreatContainer)
-{
-    iThreatContainer = pThreatContainer;
-}
-
-ThreatContainer* ThreatManagerEvent::getThreatContainer() const
-{
-    return iThreatContainer;
 }

@@ -1844,7 +1844,7 @@ class spell_tos_spiritual_barrier_dissonance : public AuraScript
     {
         if (GetTarget())
         {
-            GetTarget()->SetFlag(OBJECT_FIELD_DYNAMIC_FLAGS, UNIT_DYNFLAG_NOT_SELECTABLE_MODEL);
+            GetTarget()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             if (GetTarget()->IsPlayer())
             {
@@ -1896,7 +1896,7 @@ class spell_tos_spiritual_barrier_dissonance : public AuraScript
     {
         if (GetTarget())
         {
-            GetTarget()->RemoveFlag(OBJECT_FIELD_DYNAMIC_FLAGS, UNIT_DYNFLAG_NOT_SELECTABLE_MODEL);
+            GetTarget()->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
             if (GetTarget()->IsPlayer())
                 GetTarget()->ToPlayer()->UpdateCustomField();

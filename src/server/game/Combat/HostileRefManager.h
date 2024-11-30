@@ -28,13 +28,11 @@ class SpellInfo;
 
 class HostileRefManager : public RefManager<Unit, ThreatManager>
 {
-    Unit* iOwner;
-    std::recursive_mutex i_threat_lock;
 public:
-    explicit HostileRefManager(Unit* owner);
+    explicit HostileRefManager(Unit* owner) : iOwner(owner) { }
     ~HostileRefManager();
 
-    Unit* getOwner();
+    Unit* GetOwner() const { return iOwner; }
 
     void threatAssist(Unit* victim, float baseThreat, SpellInfo const* threatSpell = nullptr);
 
@@ -59,6 +57,10 @@ public:
     void deleteReference(Unit* creature);
 
     void UpdateVisibility();
+
+private:
+    Unit* iOwner;
+    std::recursive_mutex i_threat_lock;
 };
 
 #endif

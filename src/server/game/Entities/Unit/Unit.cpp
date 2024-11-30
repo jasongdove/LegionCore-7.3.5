@@ -1208,7 +1208,6 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
             if (victim != this && victim->IsPlayer() && (!spellProto || !(spellProto->HasAttribute(SPELL_ATTR7_NO_PUSHBACK_ON_DAMAGE) || spellProto->IsTargetingArea() || (cleanDamage ? cleanDamage->isAoe : false))))
             {
                 if (damagetype != DOT)
-                {
                     if (Spell* spell = victim->m_currentSpells[CURRENT_GENERIC_SPELL])
                         if (spell->getState() == SPELL_STATE_PREPARING)
                         {
@@ -1218,7 +1217,10 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
                             else if (interruptFlags & SPELL_INTERRUPT_FLAG_PUSH_BACK)
                                 spell->Delayed();
                         }
-                }
+
+                if (Spell* spell = victim->m_currentSpells[CURRENT_CHANNELED_SPELL])
+                    if (spell->getState() == SPELL_STATE_CASTING && spell->m_spellInfo->HasChannelInterruptFlag(CHANNEL_INTERRUPT_FLAG_FLAG_DELAY) && damagetype != DOT)
+                        spell->DelayedChannel();
             }
         }
 
@@ -11391,6 +11393,11 @@ bool Unit::Attack(Unit* victim, bool meleeAttack)
     if (IsPlayer() && IsMounted() && !HasFlag(UNIT_FIELD_FLAGS_3, UNIT_FLAG3_NOT_CHECK_MOUNT))
         return false;
 
+    Creature* creature = ToCreature();
+    // creatures cannot attack while evading
+    if (creature && creature->IsInEvadeMode())
+        return false;
+
     // nobody can attack GM in GM-mode
     if (victim->IsPlayer())
     {
@@ -15873,7 +15880,7 @@ void Unit::SetSpeed(UnitMoveType mtype, float rate, bool forced)
         }
     }
 
-    if (Player* playerMover = Unit::ToPlayer(GetUnitBeingMoved())) // unit controlled by a player.
+    if (Player* playerMover = GetPlayerMovingMe()) // unit controlled by a player.
     {
         // Send notification to self
         WorldPackets::Movement::MoveSetSpeed selfpacket(moveTypeToOpcode[mtype][1]);
@@ -16209,10 +16216,9 @@ Unit* Creature::SelectVictim()
 
     // last case when creature must not go to evade mode:
     // it in combat but attacker not make any damage and not enter to aggro radius to have record in threat list
-    // for example at owner command to pet attack some far away creature
     // Note: creature does not have targeted movement generator but has attacker in this case
     for (UnitSet::iterator itr = m_attackers.begin(); itr != m_attackers.end(); ++itr)
-        if ((*itr) && !canCreatureAttack(*itr) && !(*itr)->IsPlayer() && !(*itr)->ToCreature()->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN))
+        if ((*itr) && canCreatureAttack(*itr) && !(*itr)->IsPlayer() && !(*itr)->ToCreature()->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN))
             return nullptr;
 
     // TODO: a vehicle may eat some mob, so mob should not evade
@@ -17495,8 +17501,13 @@ void Unit::CleanupsBeforeDelete(bool finalCleanup)
 void Unit::SetMovedUnit(Unit* target)
 {
     m_unitMovedByMe->m_playerMovingMe = nullptr;
+    if (m_unitMovedByMe->GetTypeId() == TYPEID_UNIT)
+        m_unitMovedByMe->GetMotionMaster()->Initialize();
+
     m_unitMovedByMe = ASSERT_NOTNULL(target);
     m_unitMovedByMe->m_playerMovingMe = ASSERT_NOTNULL(ToPlayer());
+    if (m_unitMovedByMe->GetTypeId() == TYPEID_UNIT)
+        m_unitMovedByMe->GetMotionMaster()->Initialize();
 
     WorldPackets::Movement::MoveSetActiveMover packet;
     packet.MoverGUID = target->GetGUID();
@@ -25431,15 +25442,16 @@ void Unit::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* target)
                 }
 
                 // TOS: The Desolate Host
-                if (dynamicFlags & UNIT_DYNFLAG_NOT_SELECTABLE_MODEL)
-                {
-                    if (target == this
-                        || HasAura(235734) && target->HasAura(235734) || HasAura(235732) && target->HasAura(235732)
-                        || target->HasAura(235734) && HasAura(235113) || target->HasAura(235732) && HasAura(235620))
-                    {
-                        dynamicFlags &= ~UNIT_DYNFLAG_NOT_SELECTABLE_MODEL;
-                    }
-                }
+                // TODO: this dynflag doesn't seem to exist in any other cores
+//                if (dynamicFlags & UNIT_DYNFLAG_NOT_SELECTABLE_MODEL)
+//                {
+//                    if (target == this
+//                        || HasAura(235734) && target->HasAura(235734) || HasAura(235732) && target->HasAura(235732)
+//                        || target->HasAura(235734) && HasAura(235113) || target->HasAura(235732) && HasAura(235620))
+//                    {
+//                        dynamicFlags &= ~UNIT_DYNFLAG_NOT_SELECTABLE_MODEL;
+//                    }
+//                }
 
                 // unit UNIT_DYNFLAG_TRACK_UNIT should only be sent to caster of SPELL_AURA_MOD_STALKED auras
                 if (dynamicFlags & UNIT_DYNFLAG_TRACK_UNIT)

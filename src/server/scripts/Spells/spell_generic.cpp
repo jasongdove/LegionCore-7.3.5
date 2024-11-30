@@ -769,16 +769,23 @@ class spell_creature_permanent_feign_death : public SpellScriptLoader
             void HandleEffectApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
                 Unit* target = GetTarget();
+                target->SetFlag(OBJECT_FIELD_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
                 target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
+                target->SetFlag(UNIT_FIELD_FLAGS_3, UNIT_FLAG3_FEIGN_DEATH);
 
-                if (target->GetTypeId() == TYPEID_UNIT)
-                    target->ToCreature()->SetReactState(REACT_PASSIVE);
+                if (Creature* creature = target->ToCreature())
+                    creature->SetReactState(REACT_PASSIVE);
             }
 
             void HandleEffectRemove(AuraEffect const * /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
                 Unit* target = GetTarget();
+                target->RemoveFlag(OBJECT_FIELD_DYNAMIC_FLAGS, UNIT_DYNFLAG_DEAD);
                 target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
+                target->RemoveFlag(UNIT_FIELD_FLAGS_3, UNIT_FLAG3_FEIGN_DEATH);
+
+                if (Creature* creature = target->ToCreature())
+                    creature->InitializeReactState();
             }
 
             void Register() override

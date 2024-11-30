@@ -496,28 +496,15 @@ void SmartAI::RemoveAuras()
 
 void SmartAI::EnterEvadeMode()
 {
-    if (!me->IsAlive() || me->IsInEvadeMode())
-        return;
-
     if (mEvadeDisabled)
     {
         GetScript()->ProcessEventsFor(SMART_EVENT_EVADE);
         return;
     }
 
-    RemoveAuras();
-
+    if (!_EnterEvadeMode())
+        return;
     me->AddUnitState(UNIT_STATE_EVADE);
-    me->DeleteThreatList();
-    me->ClearSaveThreatTarget();
-    me->CombatStop(true);
-    me->LoadCreaturesAddon();
-    me->SetLootRecipient(nullptr);
-    me->ResetPlayerDamageReq();
-
-    //me->m_Events.AddEvent(new SetImuneDelayEvent(*me), me->m_Events.CalculateTime(8000));
-    //me->SetReactState(REACT_PASSIVE);
-    //me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
 
     GetScript()->ProcessEventsFor(SMART_EVENT_EVADE);//must be after aura clear so we can cast spells from db
 
@@ -527,15 +514,24 @@ void SmartAI::EnterEvadeMode()
         AddEscortState(SMART_ESCORT_RETURNING);
         ReturnToLastOOCPos();
     }
-    else if (!mFollowGuid.IsEmpty())
+    else if (Unit* target = !mFollowGuid.IsEmpty() ? ObjectAccessor::GetUnit(*me, mFollowGuid) : nullptr)
     {
-        if (Unit* target = me->GetUnit(*me, mFollowGuid))
-            me->GetMotionMaster()->MoveFollow(target, mFollowDist, mFollowAngle);
+        me->GetMotionMaster()->MoveFollow(target, mFollowDist, mFollowAngle);
+
+        // evade is not cleared in MoveFollow, so we can't keep it
+        me->ClearUnitState(UNIT_STATE_EVADE);
+        GetScript()->OnReset();
+    }
+    else if (Unit* owner = me->GetCharmerOrOwner())
+    {
+        me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE);
+        me->ClearUnitState(UNIT_STATE_EVADE);
     }
     else
         me->GetMotionMaster()->MoveTargetedHome();
 
-    Reset();
+    if (!me->HasUnitState(UNIT_STATE_EVADE))
+        GetScript()->OnReset();
 }
 
 void SmartAI::MoveInLineOfSight(Unit* who)
@@ -571,13 +567,6 @@ void SmartAI::MoveInLineOfSight(Unit* who)
             }
         }
     }
-}
-
-bool SmartAI::CanAIAttack(const Unit* /*who*/) const
-{
-    if (me->GetReactState() == REACT_PASSIVE)
-        return false;
-    return true;
 }
 
 uint32 SmartAI::GetWPCount()
