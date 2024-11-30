@@ -2050,15 +2050,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     if (!InBattleground() && mEntry->IsBattlegroundOrArena())
         return false;
 
-    SetGlobalTeleport(true);
-    AddDelayedEvent(100, [this, mapid, x, y, z, orientation, options, spellID]() -> void
-    {
-        if (!IsHasGlobalTeleport())
-            return;
-
-        SetGlobalTeleport(false);
-        SafeTeleport(mapid, x, y, z, orientation, options, spellID);
-    });
+    SafeTeleport(mapid, x, y, z, orientation, options, spellID);
 
     return true;
 }
