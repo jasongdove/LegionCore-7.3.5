@@ -1262,8 +1262,8 @@ enum SpellEffects
     SPELL_EFFECT_SUMMON_RAID_MARKER                 = 106,
     SPELL_EFFECT_LOOT_CORPSE                        = 107,
     SPELL_EFFECT_DISPEL_MECHANIC                    = 108,
-    SPELL_EFFECT_SUMMON_DEAD_PET                    = 109,
-    SPELL_EFFECT_110                 = 110,
+    SPELL_EFFECT_RESURRECT_PET                      = 109,
+    SPELL_EFFECT_110                                = 110,
     SPELL_EFFECT_DURABILITY_DAMAGE                  = 111,
     SPELL_EFFECT_112                                = 112, // only 72759
     SPELL_EFFECT_RESURRECT_NEW                      = 113,

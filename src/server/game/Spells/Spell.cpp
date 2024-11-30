@@ -7470,7 +7470,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 }
                 break;
             }
-            case SPELL_EFFECT_SUMMON_DEAD_PET:
+            case SPELL_EFFECT_RESURRECT_PET:
             {
                 Player* playerCaster = m_caster->ToPlayer();
                 if (!playerCaster || !playerCaster->GetPetStable())

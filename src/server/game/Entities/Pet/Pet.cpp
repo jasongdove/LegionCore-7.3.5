@@ -634,6 +634,10 @@ void Pet::setDeathState(DeathState s)                       // overwrite virtual
             SetUInt32Value(OBJECT_FIELD_DYNAMIC_FLAGS, UNIT_DYNFLAG_NONE);
             RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
             //SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
+
+            // update health so pet can be resurrected
+            if (Player* player = Unit::ToPlayer(GetOwner()))
+                player->GetPetStable()->GetCurrentPet()->Health = GetHealth();
         }
     }
     else if (getDeathState() == ALIVE)
