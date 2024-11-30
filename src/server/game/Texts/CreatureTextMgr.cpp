@@ -272,18 +272,22 @@ void CreatureTextMgr::SendText(Creature* source, CreatureTextEntry const* text, 
 
     uint32 fSound = [bct, sound, source, text]() -> uint32
     {
-        uint8 gender = GENDER_NONE;
-        if (CreatureDisplayInfoEntry const* creatureDisplay = sCreatureDisplayInfoStore.LookupEntry(source->GetDisplayId()))
-            gender = creatureDisplay->Gender;
-        if (gender == GENDER_NONE)
-            gender = source->getGender();
-
-        if (!sound && bct)
-            return gender == GENDER_FEMALE ? bct->SoundEntriesID[1] : bct->SoundEntriesID[0];
-
+        uint32 finalSound = text->sound;
         if (sound)
-            return sound;
-        return text->sound;
+            finalSound = sound;
+        else if (bct)
+        {
+            uint8 gender = GENDER_NONE;
+            if (CreatureDisplayInfoEntry const* creatureDisplay = sCreatureDisplayInfoStore.LookupEntry(source->GetDisplayId()))
+                gender = creatureDisplay->Gender;
+            if (gender == GENDER_NONE)
+                gender = source->getGender();
+
+            if (uint32 broadcastTextSoundId = bct->SoundEntriesID[gender == GENDER_FEMALE ? 1 : 0])
+                finalSound = broadcastTextSoundId;
+        }
+
+        return finalSound;
     }();
 
     if (fSound)
