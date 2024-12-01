@@ -285,6 +285,7 @@ class Aura
         void CallScriptEffectManaShieldHandlers(AuraEffect* aurEff, AuraApplication const* aurApp, DamageInfo & dmgInfo, float & absorbAmount, bool & defaultPrevented);
         void CallScriptEffectAfterManaShieldHandlers(AuraEffect* aurEff, AuraApplication const* aurApp, DamageInfo & dmgInfo, float & absorbAmount);
         void CallScriptEffectSplitDamageHandlers(AuraEffect* aurEff, AuraApplication const* aurApp, DamageInfo & dmgInfo, float & absorbAmount);
+        bool CallScriptCheckProcHandlers(AuraApplication const* aurApp, ProcEventInfo& eventInfo);
         void SetScriptData(uint32 type, uint32 data);
         void SetScriptGuid(uint32 type, ObjectGuid const& data);
         // Spell Proc Hooks

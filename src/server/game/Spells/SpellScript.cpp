@@ -1092,6 +1092,16 @@ void AuraScript::EffectManaShieldHandler::Call(AuraScript* auraScript, AuraEffec
     (auraScript->*pEffectHandlerScript)(aurEff, dmgInfo, absorbAmount);
 }
 
+AuraScript::CheckProcHandler::CheckProcHandler(AuraCheckProcFnType handlerScript)
+{
+    _HandlerScript = handlerScript;
+}
+
+bool AuraScript::CheckProcHandler::Call(AuraScript* auraScript, ProcEventInfo& eventInfo)
+{
+    return (auraScript->*_HandlerScript)(eventInfo);
+}
+
 AuraScript::EffectProcHandler::EffectProcHandler(AuraEffectProcFnType effectHandlerScript, uint8 effIndex, uint16 effName) : EffectBase(effIndex, effName)
 {
     _EffectHandlerScript = effectHandlerScript;

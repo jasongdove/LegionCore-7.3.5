@@ -17866,6 +17866,10 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* target, uint32 procFlag, u
         if (!sConditionMgr->IsObjectMeetToConditions(condInfo, conditions))
             continue;
 
+        // AuraScript Hook
+        if (!triggerData.aura->CallScriptCheckProcHandlers(itr->second.get(), eventInfo))
+            continue;
+
         // Triggered spells not triggering additional spells
         bool triggered = !(spellProto->HasAttribute(SPELL_ATTR3_CAN_PROC_WITH_TRIGGERED)) ? (procExtra & PROC_EX_INTERNAL_TRIGGERED && !(procFlag & PROC_FLAG_DONE_TRAP_ACTIVATION)) : false;
 

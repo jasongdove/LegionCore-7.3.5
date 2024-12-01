@@ -2895,6 +2895,11 @@ bool Aura::IsProcTriggeredOnEvent(AuraApplication* aurApp, ProcEventInfo& eventI
     if (!sConditionMgr->IsObjectMeetToConditions(condInfo, conditions))
         return false;
 
+    // AuraScript Hook
+    bool check = const_cast<Aura*>(this)->CallScriptCheckProcHandlers(aurApp, eventInfo);
+    if (!check)
+        return false;
+
     // TODO:
     // do allow additional requirements for procs
     // this is needed because this is the last moment in which you can prevent aura charge drop on proc
@@ -3398,6 +3403,20 @@ void Aura::CallScriptEffectSplitDamageHandlers(AuraEffect* aurEff, AuraApplicati
         }
         itr->_FinishScriptCall();
     }
+}
+
+bool Aura::CallScriptCheckProcHandlers(AuraApplication const* aurApp, ProcEventInfo& eventInfo)
+{
+    for (auto& itr : m_loadedScripts)
+    {
+        itr->_PrepareScriptCall(AURA_SCRIPT_HOOK_CHECK_PROC, aurApp);
+        auto hookItrEnd = itr->DoCheckProc.end(), hookItr = itr->DoCheckProc.begin();
+        for (; hookItr != hookItrEnd; ++hookItr)
+            if (!(*hookItr).Call(itr, eventInfo))
+                return false;
+        itr->_FinishScriptCall();
+    }
+    return true;
 }
 
 void Aura::SetScriptData(uint32 type, uint32 data)
