@@ -35,12 +35,18 @@ EndContentData */
 enum WestfallCreature
 {
     NPC_MERCENARY                     = 42656,
-    NPC_AGENT_KEARNEN                 = 7024
+    NPC_AGENT_KEARNEN                 = 7024,
+    NPC_SHADOWY_FIGURE                = 42680
 };
 
 enum WestfallSpell
 {
-    SPELL_KILL_SHOT_TRIGGERED        = 79525
+    SPELL_KILL_SHOT_TRIGGERED         = 79525
+};
+
+enum WestfallQuest
+{
+    QUEST_THE_DAWNING_OF_A_NEW_DAY    = 26297
 };
 
 /*######
@@ -535,6 +541,24 @@ class spell_westfall_sniper_fire : public SpellScript
     }
 };
 
+class areatrigger_westfall_dawning_of_a_new_day : public AreaTriggerScript
+{
+public:
+    areatrigger_westfall_dawning_of_a_new_day()
+      : AreaTriggerScript("areatrigger_westfall_dawning_of_a_new_day")
+    {
+    }
+
+    bool OnTrigger(Player* player, AreaTriggerEntry const* /*trigger*/, bool enter) override
+    {
+        if (enter && player->GetQuestStatus(QUEST_THE_DAWNING_OF_A_NEW_DAY) == QuestStatus::QUEST_STATUS_INCOMPLETE)
+            if (!player->FindNearestCreature(NPC_SHADOWY_FIGURE, 20))
+                player->SummonCreature(NPC_SHADOWY_FIGURE, -11016.6, 1479.32, 47.736, 2.478, TEMPSUMMON_MANUAL_DESPAWN);
+
+        return false;
+    }
+};
+
 void AddSC_westfall()
 {
     new npc_daphne_stilwell();
@@ -546,4 +570,5 @@ void AddSC_westfall()
     RegisterSpellScript(spell_westfall_wake_harvest_golem);
     RegisterAuraScript(spell_westfall_sniper_fire_proc);
     RegisterSpellScript(spell_westfall_sniper_fire);
+    new areatrigger_westfall_dawning_of_a_new_day();
 }
