@@ -749,12 +749,21 @@ void Spell::SelectImplicitNearbyTargets(SpellEffIndex effIndex, SpellImplicitTar
     if (!target)
     {
         TC_LOG_DEBUG("spells", "Spell::SelectImplicitNearbyTargets: cannot find nearby target for spell ID %u, effect %u", m_spellInfo->Id, effIndex);
+        SendCastResult(SPELL_FAILED_BAD_IMPLICIT_TARGETS);
+        finish(false);
         return;
     }
 
     TC_LOG_DEBUG("spells", "Spell::SelectImplicitNearbyTargets spell id %u caster %u target %u", m_spellInfo->Id, m_caster->GetGUIDLow(), target->GetGUIDLow());
 
     CallScriptObjectTargetSelectHandlers(target, effIndex);
+    if (!target)
+    {
+        TC_LOG_DEBUG("spells", "Spell::SelectImplicitNearbyTargets: OnObjectTargetSelect script hook for spell Id %u set NULL target, effect %u", m_spellInfo->Id, effIndex);
+        SendCastResult(SPELL_FAILED_BAD_IMPLICIT_TARGETS);
+        finish(false);
+        return;
+    }
 
     switch (targetType.GetObjectType())
     {
