@@ -73,7 +73,7 @@ public:
 
         if (player->GetQuestStatus(QUEST_THE_STORY_THUS_FAR) == QUEST_STATUS_INCOMPLETE)
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ARETE_ITEM1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
             player->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE1, creature->GetGUID());
             return true;
         }
@@ -88,27 +88,27 @@ public:
         switch (action)
         {
             case GOSSIP_ACTION_INFO_DEF+1:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ARETE_ITEM2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
                 player->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE2, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+2:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ARETE_ITEM3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
                 player->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE3, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+3:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ARETE_ITEM4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
                 player->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE4, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+4:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ARETE_ITEM5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
                 player->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE5, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+5:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ARETE_ITEM6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
                 player->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE6, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+6:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ARETE_ITEM7, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ARETE_ITEM7, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
                 player->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ARETE7, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+7:
@@ -148,8 +148,8 @@ public:
         if (player->GetQuestStatus(QUEST_THE_ASPIRANT_S_CHALLENGE_H) == QUEST_STATUS_INCOMPLETE ||
             player->GetQuestStatus(QUEST_THE_ASPIRANT_S_CHALLENGE_A) == QUEST_STATUS_INCOMPLETE)//We need more info about it.
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SQUIRE_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SQUIRE_ITEM_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SQUIRE_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SQUIRE_ITEM_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
         }
 
         player->SEND_GOSSIP_MENU(GOSSIP_TEXTID_SQUIRE, creature->GetGUID());
@@ -670,7 +670,7 @@ public:
     {
         player->TalkedToCreature(creature->GetEntry(), creature->GetGUID());
         player->PrepareGossipMenu(creature, 0);
-        player->ADD_GOSSIP_ITEM(0, "I am ready to fight!", GOSSIP_SENDER_MAIN, 90909090);
+        player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "I am ready to fight!", GOSSIP_SENDER_MAIN, 90909090);
         player->SendPreparedGossip(creature);
         return true;
     }
@@ -704,8 +704,8 @@ public:
 #define JERAN_DEFAULT_TEXTID 14453
 #define JERAN_QUEST_TEXTID 14431
 #define JERAN_RP_TEXTID 14434
-#define GOSSIP_HELLO_JERAN_1 "Montrez-moi comment m'entraA®ner sur une cible de mA?lA©e."
-#define GOSSIP_HELLO_JERAN_2 "Parlez-moi de la dA©fense et du coup de lance."
+#define GOSSIP_HELLO_JERAN_1 "Montrez-moi comment m'entraAï¿½ner sur une cible de mA?lAï¿½e."
+#define GOSSIP_HELLO_JERAN_2 "Parlez-moi de la dAï¿½fense et du coup de lance."
 #define SPELL_CREDIT_JERAN 64113
 
 class npc_jeran_lockwood : public CreatureScript
@@ -717,8 +717,8 @@ public:
     {
         if((pPlayer->GetQuestStatus(13828) == QUEST_STATUS_INCOMPLETE) || (pPlayer->GetQuestStatus(13829) == QUEST_STATUS_INCOMPLETE))
         {
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_JERAN_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_JERAN_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HELLO_JERAN_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HELLO_JERAN_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
         pPlayer->SEND_GOSSIP_MENU(JERAN_QUEST_TEXTID, pCreature->GetGUID());
         }
         else
@@ -737,7 +737,7 @@ public:
                 pPlayer->CLOSE_GOSSIP_MENU();
                 break;
             case GOSSIP_ACTION_INFO_DEF+2:
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_JERAN_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+                pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HELLO_JERAN_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
                 pPlayer->SEND_GOSSIP_MENU(JERAN_RP_TEXTID, pCreature->GetGUID());
                 break;
         }
@@ -752,7 +752,7 @@ public:
 #define RUGAN_DEFAULT_TEXTID 14453
 #define RUGAN_QUEST_TEXTID 14436
 #define RUGAN_RP_TEXTID 14437
-#define GOSSIP_HELLO_RUGAN_1 "Montrez-moi comment m'entraA®ner sur une cible de charge."
+#define GOSSIP_HELLO_RUGAN_1 "Montrez-moi comment m'entraAï¿½ner sur une cible de charge."
 #define GOSSIP_HELLO_RUGAN_2 "Parlez-moi de la charge"
 #define SPELL_CREDIT_RUGAN 64114
 
@@ -765,8 +765,8 @@ public:
     {
         if((pPlayer->GetQuestStatus(13837) == QUEST_STATUS_INCOMPLETE) || (pPlayer->GetQuestStatus(13839) == QUEST_STATUS_INCOMPLETE))
         {
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_RUGAN_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_RUGAN_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HELLO_RUGAN_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HELLO_RUGAN_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
         pPlayer->SEND_GOSSIP_MENU(RUGAN_QUEST_TEXTID, pCreature->GetGUID());
         }
         else
@@ -785,7 +785,7 @@ public:
                 pPlayer->CLOSE_GOSSIP_MENU();
                 break;
             case GOSSIP_ACTION_INFO_DEF+2:
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_RUGAN_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+                pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HELLO_RUGAN_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
                 pPlayer->SEND_GOSSIP_MENU(RUGAN_RP_TEXTID, pCreature->GetGUID());
                 break;
         }
@@ -800,7 +800,7 @@ public:
 #define VALIS_DEFAULT_TEXTID 14453
 #define VALIS_QUEST_TEXTID 14438
 #define VALIS_RP_TEXTID 14439
-#define GOSSIP_HELLO_VALIS_1 "Montrez-moi comment m'entraA®ner sur une cible A distance."
+#define GOSSIP_HELLO_VALIS_1 "Montrez-moi comment m'entraAï¿½ner sur une cible A distance."
 #define GOSSIP_HELLO_VALIS_2 "Expliquez-moi comment utiliser le brise-bouclier."
 #define SPELL_CREDIT_VALIS 64115
 class npc_valis_windchaser : public CreatureScript
@@ -814,8 +814,8 @@ public:
         if((pPlayer->GetQuestStatus(13835) == QUEST_STATUS_INCOMPLETE) || 
             (pPlayer->GetQuestStatus(13838) == QUEST_STATUS_INCOMPLETE))
         {
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_VALIS_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_VALIS_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HELLO_VALIS_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HELLO_VALIS_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
         pPlayer->SEND_GOSSIP_MENU(VALIS_QUEST_TEXTID, pCreature->GetGUID());
         }
         //Sinon Texte par defaut
@@ -834,7 +834,7 @@ public:
             break;
             case GOSSIP_ACTION_INFO_DEF+2:
                 //Raconte un blabla
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_VALIS_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+                pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HELLO_VALIS_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
             pPlayer->SEND_GOSSIP_MENU(VALIS_RP_TEXTID, pCreature->GetGUID());
             break;
         }
@@ -886,8 +886,8 @@ public:
         pPlayer->GetQuestStatus(QUEST_THE_VALIANT_S_CHALLENGE_8) == QUEST_STATUS_INCOMPLETE ||
         pPlayer->GetQuestStatus(QUEST_THE_VALIANT_S_CHALLENGE_9) == QUEST_STATUS_INCOMPLETE)
         {
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SQUIRE_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SQUIRE_ITEM_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+        pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SQUIRE_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SQUIRE_ITEM_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
         }
 
         pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_SQUIRE_DANNY, pCreature->GetGUID());
@@ -1905,7 +1905,7 @@ class npc_tg_tirion_fordring : public CreatureScript
                 player->PrepareQuestMenu(creature->GetGUID());
 
             if ((player->GetQuestStatus(QUEST_TIRION_GAMBIT_A) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_TIRION_GAMBIT_H) == QUEST_STATUS_INCOMPLETE) && player->HasAura(SPELL_CULTIST_HOOD))
-                    player->ADD_GOSSIP_ITEM(0, "Tirion, I'am ready!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Tirion, I'am ready!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
             player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
             return true;

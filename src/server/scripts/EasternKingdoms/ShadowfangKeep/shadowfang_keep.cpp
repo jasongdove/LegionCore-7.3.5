@@ -69,13 +69,13 @@ class npc_haunted_stable_hand_portal : public CreatureScript
             if (InstanceScript* instance = pCreature->GetInstanceScript())
             {
                 if (instance->GetBossState(DATA_VALDEN) == DONE)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Teleport to Lower Observatory." : "Teleport to Lower Observatory.", GOSSIP_SENDER_SHADOWFANG_PORT, 3);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Teleport to Lower Observatory." : "Teleport to Lower Observatory.", GOSSIP_SENDER_SHADOWFANG_PORT, 3);
                 else if (instance->GetBossState(DATA_SPRINGVALE) == DONE)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Teleport to The Courtyard." : "Teleport to The Courtyard.", GOSSIP_SENDER_SHADOWFANG_PORT, 2);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Teleport to The Courtyard." : "Teleport to The Courtyard.", GOSSIP_SENDER_SHADOWFANG_PORT, 2);
                 else if (instance->GetBossState(DATA_SILVERLAINE) == DONE)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Teleport to Dining Hall." : "Teleport to Dining Hall.", GOSSIP_SENDER_SHADOWFANG_PORT, 1);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Teleport to Dining Hall." : "Teleport to Dining Hall.", GOSSIP_SENDER_SHADOWFANG_PORT, 1);
                 else if (instance->GetBossState(DATA_ASHBURY) == DONE)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Teleport to The Courtyard." : "Teleport to The Courtyard.", GOSSIP_SENDER_SHADOWFANG_PORT, 0);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Teleport to The Courtyard." : "Teleport to The Courtyard.", GOSSIP_SENDER_SHADOWFANG_PORT, 0);
             }
 
             player->SEND_GOSSIP_MENU(player->GetGossipTextId(pCreature), pCreature->GetGUID());

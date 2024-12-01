@@ -46,7 +46,7 @@ public:
             player->PrepareQuestMenu(creature->GetGUID());
 
         if (!player->GetQuestRewardStatus(770))
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SW, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SW, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
 
         player->SEND_GOSSIP_MENU(522, creature->GetGUID());
 

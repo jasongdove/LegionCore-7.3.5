@@ -116,12 +116,11 @@ void WorldSession::SendTrainerList(ObjectGuid const& guid, std::string const& st
     if (GetPlayer()->HasUnitState(UNIT_STATE_DIED))
         GetPlayer()->RemoveAurasByType(SPELL_AURA_FEIGN_DEATH);
 
-    // trainer list loaded at check;
-    if (!unit->isCanTrainingOf(_player, true))
-        return;
+//    // trainer list loaded at check;
+//    if (!unit->isCanTrainingOf(_player, true))
+//        return;
 
     CreatureTemplate const* ci = unit->GetCreatureTemplate();
-
     if (!ci)
     {
         TC_LOG_DEBUG("network", "WORLD: SendTrainerList - (GUID: %u) NO CREATUREINFO!", guid.GetGUIDLow());
@@ -144,8 +143,7 @@ void WorldSession::SendTrainerList(ObjectGuid const& guid, std::string const& st
     // reputation discount
     float fDiscountMod = _player->GetReputationPriceDiscount(unit);
 
-    packet.Spells.resize(trainer_spells->spellList.size());
-    uint32 count = 0;
+    packet.Spells.reserve(trainer_spells->spellList.size());
     for (const auto & itr : trainer_spells->spellList)
     {
         TrainerSpell const* tSpell = &itr.second;
@@ -166,18 +164,9 @@ void WorldSession::SendTrainerList(ObjectGuid const& guid, std::string const& st
         if (!valid)
             continue;
 
-        // whats the fuck?
-        /*if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(tSpell->spell))
-        {
-            if (spellInfo->HasAttribute(SPELL_ATTR7_HORDE_ONLY) && GetPlayer()->GetTeam() != HORDE)
-                continue;
-            if (spellInfo->HasAttribute(SPELL_ATTR7_ALLIANCE_ONLY) && GetPlayer()->GetTeam() != ALLIANCE)
-                continue;
-        }*/
-
         TrainerSpellState state = _player->GetTrainerSpellState(tSpell);
 
-        WorldPackets::NPC::TrainerListSpell& spell = packet.Spells[count];
+        WorldPackets::NPC::TrainerListSpell spell;
         spell.SpellID = tSpell->spell;
         spell.MoneyCost = floor(tSpell->spellCost * fDiscountMod);
         spell.ReqSkillLine = tSpell->reqSkill;
@@ -203,11 +192,9 @@ void WorldSession::SendTrainerList(ObjectGuid const& guid, std::string const& st
             for (auto const& requirePair : sSpellMgr->GetSpellsRequiredForSpellBounds(i))
                 spell.ReqAbility[maxReq++] = requirePair.second;
         }
-        ++count;
-    }
 
-    // Shrink to actual data size
-    packet.Spells.resize(count);
+        packet.Spells.push_back(spell);
+    }
 
     SendPacket(packet.Write());
 }

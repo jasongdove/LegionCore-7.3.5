@@ -117,7 +117,7 @@ class npc_neptulon : public CreatureScript
                 if (instance->GetBossState(DATA_COMMANDER_ULTHOK) != DONE || instance->GetBossState(DATA_OZUMAT) == IN_PROGRESS || instance->GetBossState(DATA_OZUMAT) == DONE)
                     return false;
 
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_READY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_READY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
                 player->SEND_GOSSIP_MENU(1, creature->GetGUID());
             }
             return true;

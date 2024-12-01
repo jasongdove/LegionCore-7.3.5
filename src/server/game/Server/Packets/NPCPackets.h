@@ -22,6 +22,8 @@
 #include "ItemPackets.h"
 #include "Creature.h"
 
+enum class GossipOptionNpc : uint8;
+
 namespace WorldPackets
 {
     namespace NPC
@@ -47,7 +49,7 @@ namespace WorldPackets
             int32 OptionCost = 0;
             std::string Text;
             std::string Confirm;
-            uint8 OptionNPC = 0;
+            GossipOptionNpc OptionNPC = GossipOptionNpc(0);
             uint8 OptionFlags = 0;
         };
 

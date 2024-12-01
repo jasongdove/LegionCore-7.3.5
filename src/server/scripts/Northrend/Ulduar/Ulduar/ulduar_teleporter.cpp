@@ -98,26 +98,26 @@ public:
         if (!instance)
             return false;
 
-        pPlayer->ADD_GOSSIP_ITEM(0, "Expedition Base Camp", GOSSIP_SENDER_MAIN, BASE_CAMP);
-        //pPlayer->ADD_GOSSIP_ITEM(0, "Formation Grounds", GOSSIP_SENDER_MAIN, GROUNDS);
+        pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Expedition Base Camp", GOSSIP_SENDER_MAIN, BASE_CAMP);
+        //pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Formation Grounds", GOSSIP_SENDER_MAIN, GROUNDS);
         if (instance->GetBossState(BOSS_LEVIATHAN) == DONE || pPlayer->isGameMaster())
         {
-            pPlayer->ADD_GOSSIP_ITEM(0, "Colossal Forge", GOSSIP_SENDER_MAIN, FORGE);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Colossal Forge", GOSSIP_SENDER_MAIN, FORGE);
             if (instance->GetBossState(BOSS_XT002) == DONE || pPlayer->isGameMaster())
             {
-                pPlayer->ADD_GOSSIP_ITEM(0, "Scrapyard", GOSSIP_SENDER_MAIN, SCRAPYARD);
-                pPlayer->ADD_GOSSIP_ITEM(0, "Antechamber of Ulduar", GOSSIP_SENDER_MAIN, ANTECHAMBER);
+                pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Scrapyard", GOSSIP_SENDER_MAIN, SCRAPYARD);
+                pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Antechamber of Ulduar", GOSSIP_SENDER_MAIN, ANTECHAMBER);
                 if (instance->GetBossState(BOSS_KOLOGARN) == DONE || pPlayer->isGameMaster())
                 {
-                    pPlayer->ADD_GOSSIP_ITEM(0, "Shattered Walkway", GOSSIP_SENDER_MAIN, WALKWAY);
+                    pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Shattered Walkway", GOSSIP_SENDER_MAIN, WALKWAY);
                     if (instance->GetBossState(BOSS_AURIAYA) == DONE || pPlayer->isGameMaster())
                     {
-                        pPlayer->ADD_GOSSIP_ITEM(0, "Conservatory of Life", GOSSIP_SENDER_MAIN, CONSERVATORY);
+                        pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Conservatory of Life", GOSSIP_SENDER_MAIN, CONSERVATORY);
                         if (instance->GetBossState(BOSS_MIMIRON) == FAIL || instance->GetBossState(BOSS_MIMIRON) == DONE || pPlayer->isGameMaster())
                         {
-                            pPlayer->ADD_GOSSIP_ITEM(0, "Spark of Imagination", GOSSIP_SENDER_MAIN, SPARK_IMAGINATION);
+                            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Spark of Imagination", GOSSIP_SENDER_MAIN, SPARK_IMAGINATION);
                             if (instance->GetBossState(BOSS_VEZAX) == DONE || pPlayer->isGameMaster())
-                                pPlayer->ADD_GOSSIP_ITEM(0, "Descent into Madness", GOSSIP_SENDER_MAIN, DESCENT_MADNESS);
+                                pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Descent into Madness", GOSSIP_SENDER_MAIN, DESCENT_MADNESS);
                         }
                     }
                 }

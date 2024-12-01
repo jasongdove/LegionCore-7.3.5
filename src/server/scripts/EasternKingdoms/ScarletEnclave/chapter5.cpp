@@ -296,7 +296,7 @@ public:
             player->PrepareQuestMenu(creature->GetGUID());
 
         if (player->GetQuestStatus(12801) == QUEST_STATUS_INCOMPLETE && !creature->FindNearestCreature(NPC_HIGHLORD_TIRION_FORDRING, 30.0f))
-            player->ADD_GOSSIP_ITEM(0, "I am ready.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "I am ready.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
         player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
 

@@ -1,7 +1,7 @@
 #include"Spell.h"
 #include"blackwing_descent.h"
 
-//todo: реализовать reroure power, low health, корректный double attack
+//todo: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ reroure power, low health, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ double attack
 enum ScriptTexts
 {
     //chimaeron
@@ -322,19 +322,19 @@ public:
 
 #define GOSSIP_MENU_1 16565
 #define GOSSIP_OPTION_1 "I suppose you'll be needing a key for this cage? Wait, don't tell me. The horrific gibbering monster behind me ate it, right?"
-#define GOSSIP_OPTION_1_RU "Я полагаю, тебе нужен ключ от этой клетки? Погоди, ничего не говори. Невероятно ужасный монстр позади меня съел его, не так ли?"
+#define GOSSIP_OPTION_1_RU "пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ? пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ?"
 #define GOSSIP_MENU_2 16593
 #define GOSSIP_OPTION_2 "You were trapped, as I recall. This situation seems oddly similar."
-#define GOSSIP_OPTION_2_RU "Ты оказался в ловушке, как я понимаю. Эта ситуация кажется подозрительно похожей."
+#define GOSSIP_OPTION_2_RU "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ."
 #define GOSSIP_MENU_3 16594
 #define GOSSIP_OPTION_3 "Gnomes in Lava Suits, for example."
-#define GOSSIP_OPTION_3_RU "Гнома в лава-костюме, например."
+#define GOSSIP_OPTION_3_RU "пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ."
 #define GOSSIP_MENU_4 16595
 #define GOSSIP_OPTION_4 "No, I, uh, haven't seen it. You were saying?"
-#define GOSSIP_OPTION_4_RU "Нет, я, э-э, не видел его. Так что ты говорил?"
+#define GOSSIP_OPTION_4_RU "пїЅпїЅпїЅ, пїЅ, пїЅ-пїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ. пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ?"
 #define GOSSIP_MENU_5 16596
 #define GOSSIP_OPTION_5 "Restrictions? What restrictions?"
-#define GOSSIP_OPTION_5_RU "Условия? Что за условия?"
+#define GOSSIP_OPTION_5_RU "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ? пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ?"
 #define GOSSIP_MENU_6 16597
 
 class npc_finkle_einhorn : public CreatureScript
@@ -351,7 +351,7 @@ public:
             return false;
         if (instance->GetData(DATA_CHIMAERON) == IN_PROGRESS || instance->GetData(DATA_BILE_O_TRON_800) == 1)
             return false;
-        pPlayer->ADD_GOSSIP_ITEM(0, ru ? GOSSIP_OPTION_1_RU : GOSSIP_OPTION_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? GOSSIP_OPTION_1_RU : GOSSIP_OPTION_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
         pPlayer->SEND_GOSSIP_MENU(GOSSIP_MENU_1, pCreature->GetGUID());
         return true;
     }
@@ -367,19 +367,19 @@ public:
         switch (uiAction)
         {
         case GOSSIP_ACTION_INFO_DEF+1:
-            pPlayer->ADD_GOSSIP_ITEM(0, ru ? GOSSIP_OPTION_2_RU : GOSSIP_OPTION_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? GOSSIP_OPTION_2_RU : GOSSIP_OPTION_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
             pPlayer->SEND_GOSSIP_MENU(GOSSIP_MENU_2, pCreature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+2:
-            pPlayer->ADD_GOSSIP_ITEM(0, ru ? GOSSIP_OPTION_3_RU : GOSSIP_OPTION_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? GOSSIP_OPTION_3_RU : GOSSIP_OPTION_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
             pPlayer->SEND_GOSSIP_MENU(GOSSIP_MENU_3, pCreature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+3:
-            pPlayer->ADD_GOSSIP_ITEM(0, ru ? GOSSIP_OPTION_4_RU : GOSSIP_OPTION_4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? GOSSIP_OPTION_4_RU : GOSSIP_OPTION_4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
             pPlayer->SEND_GOSSIP_MENU(GOSSIP_MENU_4, pCreature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+4:
-            pPlayer->ADD_GOSSIP_ITEM(0, ru ? GOSSIP_OPTION_5_RU : GOSSIP_OPTION_5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? GOSSIP_OPTION_5_RU : GOSSIP_OPTION_5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
             pPlayer->SEND_GOSSIP_MENU(GOSSIP_MENU_5, pCreature->GetGUID());
             break;
         case GOSSIP_ACTION_INFO_DEF+5:

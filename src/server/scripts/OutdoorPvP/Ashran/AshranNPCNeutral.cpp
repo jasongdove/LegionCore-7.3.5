@@ -1608,7 +1608,7 @@ public:
         player->PrepareGossipMenu(creature, GossipMenuId, false);
         GossipMenuItem const* l_Item = player->PlayerTalkClass->GetGossipMenu().GetItem(FirstNpcTextID);
 
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, l_Item ? l_Item->Message : "Why are you here?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+        player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, l_Item ? l_Item->Message : "Why are you here?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
         player->SEND_GOSSIP_MENU(MiscDatas::FirstNpcTextID, creature->GetGUID());
 
         return true;

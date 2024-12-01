@@ -57,14 +57,14 @@ public:
                 case LOCALE_esES: localizedEntry = LOCALE_TRICK_OR_TREAT_6; break;
                 case LOCALE_enUS: default: localizedEntry = LOCALE_TRICK_OR_TREAT_0;
             }
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, localizedEntry, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+HALLOWEEN_EVENTID);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, localizedEntry, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+HALLOWEEN_EVENTID);
         }
 
         if (creature->isQuestGiver())
             player->PrepareQuestMenu(creature->GetGUID());
 
         if (creature->isVendor())
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::Vendor, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
 
         if (creature->isInnkeeper())
         {
@@ -74,7 +74,7 @@ public:
                 case LOCALE_deDE: localizedEntry = LOCALE_INNKEEPER_3; break;
                 case LOCALE_enUS: default: localizedEntry = LOCALE_INNKEEPER_0;
             }
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, localizedEntry, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INN);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::Binder, localizedEntry, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INN);
         }
 
         player->TalkedToCreature(creature->GetEntry(), creature->GetGUID());

@@ -456,36 +456,36 @@ public:
         switch (action)
         {
             case GOSSIP_ACTION_INFO_DEF+1:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KHARAN_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_KHARAN_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
                 player->SEND_GOSSIP_MENU(2475, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+2:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KHARAN_4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_KHARAN_4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
                 player->SEND_GOSSIP_MENU(2476, creature->GetGUID());
                 break;
 
             case GOSSIP_ACTION_INFO_DEF+3:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KHARAN_5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_KHARAN_5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
                 player->SEND_GOSSIP_MENU(2477, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+4:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KHARAN_6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_KHARAN_6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
                 player->SEND_GOSSIP_MENU(2478, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+5:
-                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KHARAN_7, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+6);
+                 player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_KHARAN_7, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+6);
                 player->SEND_GOSSIP_MENU(2479, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+6:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KHARAN_8, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+7);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_KHARAN_8, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+7);
                 player->SEND_GOSSIP_MENU(2480, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+7:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KHARAN_9, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+8);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_KHARAN_9, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+8);
                 player->SEND_GOSSIP_MENU(2481, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+8:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KHARAN_10, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+9);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_KHARAN_10, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+9);
                 player->SEND_GOSSIP_MENU(2482, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+9:
@@ -505,10 +505,10 @@ public:
             player->PrepareQuestMenu(creature->GetGUID());
 
         if (player->GetQuestStatus(QUEST_4001) == QUEST_STATUS_INCOMPLETE)
-             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KHARAN_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+             player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_KHARAN_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
         if (player->GetQuestStatus(4342) == QUEST_STATUS_INCOMPLETE)
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KHARAN_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_KHARAN_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
 
         if (player->GetTeam() == HORDE)
             player->SEND_GOSSIP_MENU(2473, creature->GetGUID());
@@ -564,13 +564,13 @@ public:
             player->PrepareQuestMenu(creature->GetGUID());
 
         if (creature->isVendor() && player->GetReputationRank(59) >= REP_FRIENDLY)
-              player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_ITEM_SHOW_ACCESS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
+              player->ADD_GOSSIP_ITEM(GossipOptionNpc::Vendor, GOSSIP_ITEM_SHOW_ACCESS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
 
         if (player->GetQuestRewardStatus(QUEST_A_BINDING_CONTRACT) != 1 &&
             !player->HasItemCount(ITEM_THRORIUM_BROTHERHOOD_CONTRACT, 1, true) &&
             player->HasItemCount(ITEM_SULFURON_INGOT))
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_GET_CONTRACT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_GET_CONTRACT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
         }
 
         if (player->GetReputationRank(59) < REP_FRIENDLY)
@@ -625,7 +625,7 @@ public:
     {
         if (player->GetQuestStatus(QUEST_JAIL_BREAK) == QUEST_STATUS_INCOMPLETE && instance->GetData(DATA_QUEST_JAIL_BREAK) == ENCOUNTER_STATE_IN_PROGRESS)
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_DUGHAL, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_DUGHAL, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
             player->SEND_GOSSIP_MENU(2846, creature->GetGUID());
         }
         return true;
@@ -1128,7 +1128,7 @@ public:
     {
         if (player->GetQuestStatus(QUEST_JAIL_BREAK) == QUEST_STATUS_INCOMPLETE && instance->GetData(DATA_QUEST_JAIL_BREAK) == ENCOUNTER_STATE_IN_PROGRESS)
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Get out of here, Tobias, you're free!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Get out of here, Tobias, you're free!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
             player->SEND_GOSSIP_MENU(2847, creature->GetGUID());
         }
         return true;

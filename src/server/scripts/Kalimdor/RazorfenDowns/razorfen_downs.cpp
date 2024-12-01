@@ -75,10 +75,10 @@ public:
     bool OnGossipHello(Player* player, Creature* creature)
     {
         if (player->GetBaseSkillValue(SKILL_COOKING) >= 175 && !player->HasSpell(SPELL_GOLDTHORN_TEA))
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_TEA, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_TEA, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
         if (player->GetBaseSkillValue(SKILL_ALCHEMY) >= 180 && !player->HasSpell(SPELL_MIGHT_TROLLS_BLOOD_POTION))
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_POTION, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_POTION, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
 
         player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
         return true;

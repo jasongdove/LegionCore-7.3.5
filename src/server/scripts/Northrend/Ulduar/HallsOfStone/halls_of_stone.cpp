@@ -287,7 +287,7 @@ public:
         if (creature->isQuestGiver())
             player->PrepareQuestMenu(creature->GetGUID());
 
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
         player->SEND_GOSSIP_MENU(TEXT_ID_START, creature->GetGUID());
 
         return true;

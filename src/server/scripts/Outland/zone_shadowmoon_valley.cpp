@@ -406,7 +406,7 @@ public:
     bool OnGossipHello(Player* player, Creature* creature) override
     {
         if (creature->isVendor() && player->GetReputationRank(1015) == REP_EXALTED)
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::Vendor, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
 
         player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
 
@@ -456,9 +456,9 @@ public:
     bool OnGossipHello(Player* player, Creature* creature) override
     {
         if (player->GetQuestStatus(10583) == QUEST_STATUS_INCOMPLETE && !player->HasItemCount(30658, 1, true))
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_HSK1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HSK1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
         if (player->GetQuestStatus(10601) == QUEST_STATUS_INCOMPLETE && !player->HasItemCount(30659, 1, true))
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_HSK2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HSK2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
 
         player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
 
@@ -491,27 +491,27 @@ public:
         switch (action)
         {
             case GOSSIP_ACTION_INFO_DEF + 1:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SMO1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SMO1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
                                                                 //correct id not known
                 player->SEND_GOSSIP_MENU(10940, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF + 2:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SMO2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SMO2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
                                                                 //correct id not known
                 player->SEND_GOSSIP_MENU(10940, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF + 3:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SMO3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SMO3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
                                                                 //correct id not known
                 player->SEND_GOSSIP_MENU(10940, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF + 4:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SMO4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SMO4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
                                                                 //correct id not known
                 player->SEND_GOSSIP_MENU(10940, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF + 5:
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SMO5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SMO5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
                                                                 //correct id not known
                 player->SEND_GOSSIP_MENU(10940, creature->GetGUID());
                 break;
@@ -528,7 +528,7 @@ public:
     bool OnGossipHello(Player* player, Creature* creature) override
     {
         if (player->GetQuestStatus(QUEST_11082) == QUEST_STATUS_INCOMPLETE)
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_HMO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HMO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
         player->SEND_GOSSIP_MENU(10940, creature->GetGUID());
         return true;
@@ -562,27 +562,27 @@ public:
                 player->GetSession()->SendListInventory(creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF:
-                player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ORONOK2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
                 player->SEND_GOSSIP_MENU(10313, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF + 1:
-                player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ORONOK3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
                 player->SEND_GOSSIP_MENU(10314, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF + 2:
-                player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ORONOK4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
                 player->SEND_GOSSIP_MENU(10315, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF + 3:
-                player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ORONOK5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
                 player->SEND_GOSSIP_MENU(10316, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF + 4:
-                player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ORONOK6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
                 player->SEND_GOSSIP_MENU(10317, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF + 5:
-                player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK7, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ORONOK7, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
                 player->SEND_GOSSIP_MENU(10318, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF + 6:
@@ -598,11 +598,11 @@ public:
         if (creature->isQuestGiver())
             player->PrepareQuestMenu(creature->GetGUID());
         if (creature->isVendor())
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::Vendor, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
 
         if (player->GetQuestStatus(10519) == QUEST_STATUS_INCOMPLETE)
         {
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ORONOK1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
             player->SEND_GOSSIP_MENU(10312, creature->GetGUID());
         }else
         player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());

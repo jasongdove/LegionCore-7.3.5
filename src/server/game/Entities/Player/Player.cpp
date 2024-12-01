@@ -17901,11 +17901,9 @@ void Player::PrepareGossipMenu(WorldObject* source, uint32 menuId /*= 0*/, bool 
         menuItemBounds = sGossipDataStore->GetGossipMenuItemsMapBounds(0);
 
     uint32 npcflags = 0;
-    uint32 npcflags2 = 0;
     if (source->IsCreature())
     {
         npcflags = source->GetUInt32Value(UNIT_FIELD_NPC_FLAGS);
-        npcflags2 = source->GetUInt32Value(UNIT_FIELD_NPC_FLAGS2);
 
         if (npcflags & UNIT_NPC_FLAG_QUESTGIVER && showQuests)
             PrepareQuestMenu(source->GetGUID());
@@ -17923,105 +17921,99 @@ void Player::PrepareGossipMenu(WorldObject* source, uint32 menuId /*= 0*/, bool 
 
         if (Creature* creature = source->ToCreature())
         {
-            if (!(itr->second.OptionNpcFlag & npcflags))
+            GossipOptionNpc optionNpc = itr->second.OptionNpc;
+            if (!(GossipMenu::GetRequiredNpcFlagForOption(optionNpc) & npcflags))
                 continue;
 
-            switch (itr->second.OptionType)
+            // HACK: disable dual spec
+            if (itr->second.OptionBroadcastTextID == 33765)
+                continue;
+
+            switch (optionNpc)
             {
-                case GOSSIP_OPTION_ARMORER:
-                    canTalk = false;                       // added in special mode
-                    break;
-                case GOSSIP_OPTION_SPIRITHEALER:
-                    if (!isDead())
-                        canTalk = false;
-                    break;
-                case GOSSIP_OPTION_VENDOR:
-                {
-                    VendorItemData const* vendorItems = creature->GetVendorItems();
-                    if (!vendorItems || vendorItems->Empty())
-                    {
-                        TC_LOG_ERROR("sql.sql", "Creature %u (Entry: %u) have UNIT_NPC_FLAG_VENDOR but have empty trading item list.", creature->GetGUIDLow(), creature->GetEntry());
-                        canTalk = false;
-                    }
-                    break;
-                }
-                case GOSSIP_OPTION_LEARNDUALSPEC:
-                    canTalk = false;
-                    break;
-                case GOSSIP_OPTION_TRAINER:
-                    if (!creature->isCanTrainingOf(this, false))
-                        canTalk = false;
-                    break;
-                case GOSSIP_OPTION_UNLEARNTALENTS:
-                    if (!creature->isCanTrainingAndResetTalentsOf(this))
-                        canTalk = false;
-                    break;
-                case GOSSIP_OPTION_TAXIVENDOR:
+                case GossipOptionNpc::TaxiNode:
                     if (GetSession()->SendLearnNewTaxiNode(creature))
                         return;
                     break;
-                case GOSSIP_OPTION_BATTLEFIELD:
+                case GossipOptionNpc::SpiritHealer:
+                    if (!isDead())
+                        canTalk = false;
+                    break;
+                case GossipOptionNpc::BattleMaster:
                     if (!creature->isCanInteractWithBattleMaster(this, false))
                         canTalk = false;
                     break;
-                case GOSSIP_OPTION_STABLEPET:
+                case GossipOptionNpc::TalentMaster:
+                case GossipOptionNpc::SpecializationMaster:
+                case GossipOptionNpc::GlyphMaster:
+                    if (!creature->isCanTrainingAndResetTalentsOf(this))
+                        canTalk = false;
+                    break;
+                case GossipOptionNpc::StableMaster:
+                case GossipOptionNpc::PetSpecializationMaster:
                     if (getClass() != CLASS_HUNTER)
                         canTalk = false;
                     break;
-                case GOSSIP_OPTION_QUESTGIVER:
-                    canTalk = false;
-                    break;
-                case GOSSIP_OPTION_GOSSIP:
-                case GOSSIP_OPTION_SPIRITGUIDE:
-                case GOSSIP_OPTION_INNKEEPER:
-                case GOSSIP_OPTION_BANKER:
-                case GOSSIP_OPTION_PETITIONER:
-                case GOSSIP_OPTION_TABARDDESIGNER:
-                case GOSSIP_OPTION_AUCTIONEER:
-                case GOSSIP_OPTION_SCENARIO:
-                case GOSSIP_OPTION_TRANSMOGRIFIER:
-                case GOSSIP_OPTION_MAILBOX:
-                    break;                                  // no checks
-                case GOSSIP_OPTION_OUTDOORPVP:
-                    if (!sOutdoorPvPMgr->CanTalkTo(this, creature, itr->second))
+                case GossipOptionNpc::DisableXPGain:
+                    if (HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN))
                         canTalk = false;
                     break;
-                case GOSSIP_OPTION_GARRISON_SHIPMENT:
+                case GossipOptionNpc::EnableXPGain:
+                    if (!HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN))
+                        canTalk = false;
+                    break;
+                case GossipOptionNpc::AdventureMap:
+                    canTalk = true;
+                    break;
+                case GossipOptionNpc::ShipmentCrafter:
                     canTalk = false;
                     if (Garrison* garr = GetGarrisonPtr())
                         canTalk = garr->canAddShipmentOrder(creature);
                     break;
-                case GOSSIP_OPTION_GARRISON_TRADESKILL:
+                case GossipOptionNpc::GarrisonTradeskill:
                     canTalk = creature->HasFlag(UNIT_FIELD_NPC_FLAGS2, UNIT_NPC_FLAG2_TRADESKILL_NPC);
                     break;
-                //! ToDo
-                case GOSSIP_OPTION_SHIPMENT_CRAFTER:
-                case GOSSIP_OPTION_CHOICE:
-                case GOSSIP_OPTION_ALLIED_RACE_DETAILS:
-                     canTalk = true;
-                    break;
-                case GOSSIP_OPTION_ARTIFACT_RESPEC:
+                case GossipOptionNpc::ArtifactRespec:
                     if (GetArtifactWeapon())
                         canTalk = true;
                     break;
-                //! ToDo
-                case GOSSIP_OPTION_CLASS_HALL_UPGRADE:
+                case GossipOptionNpc::WorldPVPQueue:
+                    // TODO: case GOSSIP_OPTION_OUTDOORPVP: (was GossipOptionNpc 0)
+                    if (!sOutdoorPvPMgr->CanTalkTo(this, creature, itr->second))
+                        canTalk = false;
+                    break;
+                case GossipOptionNpc::GarrisonTalent:
                     canTalk = false;
                     if (_garrison)
                         canTalk = _garrison->canStartUpgrade();
                     break;
+                case GossipOptionNpc::Trainer:
+                    // this seems to be needed to hide trainer options
+                    // on creatures that have no npc_trainer records
+                    if (!creature->isCanTrainingOf(this, false))
+                        canTalk = false;
+                    break;
+                case GossipOptionNpc::None:
+                case GossipOptionNpc::Vendor:
+                case GossipOptionNpc::Binder:
+                case GossipOptionNpc::Banker:
+                case GossipOptionNpc::PetitionVendor:
+                case GossipOptionNpc::TabardVendor:
+                case GossipOptionNpc::Auctioneer:
+                case GossipOptionNpc::Mailbox:
+                case GossipOptionNpc::Transmogrify:
+                    break;                                 // No checks
                 default:
-                    TC_LOG_ERROR("sql.sql", "Creature entry %u have unknown gossip option %u for menu %u", creature->GetEntry(), itr->second.OptionType, itr->second.MenuID);
+                    TC_LOG_ERROR("sql.sql", "Creature entry %u has an unknown gossip option icon %u for menu %u.", creature->GetEntry(), AsUnderlyingType(itr->second.OptionNpc), itr->second.MenuID);
                     canTalk = false;
                     break;
             }
         }
         else if (GameObject* go = source->ToGameObject())
         {
-            switch (itr->second.OptionType)
+            switch (itr->second.OptionNpc)
             {
-                case GOSSIP_OPTION_GOSSIP:
-                case GOSSIP_OPTION_SCENARIO:
+                case GossipOptionNpc::None:
                     if (go->GetGoType() != GAMEOBJECT_TYPE_QUESTGIVER && go->GetGoType() != GAMEOBJECT_TYPE_GOOBER)
                         canTalk = false;
                     break;
@@ -18053,7 +18045,7 @@ void Player::PrepareGossipMenu(WorldObject* source, uint32 menuId /*= 0*/, bool 
             else if (GossipMenuItemsLocale const* gossipMenuLocale = sGossipDataStore->GetGossipMenuItemsLocale(MAKE_PAIR32(menuId, itr->second.OptionIndex)))
                 ObjectMgr::GetLocaleString(gossipMenuLocale->BoxText, localeConstant, strBoxText);
 
-            menu->GetGossipMenu().AddMenuItem(itr->second.OptionIndex, itr->second.OptionIcon, strOptionText, 0, itr->second.OptionType, strBoxText, itr->second.BoxMoney, itr->second.BoxCoded);
+            menu->GetGossipMenu().AddMenuItem(itr->second.OptionIndex, itr->second.OptionNpc, strOptionText, 0, AsUnderlyingType(itr->second.OptionNpc), strBoxText, itr->second.BoxMoney, itr->second.BoxCoded);
             menu->GetGossipMenu().AddGossipMenuItemData(itr->second.OptionIndex, itr->second.ActionMenuID, itr->second.ActionPoiID);
         }
     }
@@ -18096,12 +18088,12 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
     GossipMenuItem const* item = gossipMenu.GetItem(gossipListId);
     if (!item)
         return;
-    uint32 gossipHandlerType = item->OptionType;
+    GossipOptionNpc gossipOptionNpc = item->OptionNpc;
     ObjectGuid guid = source->GetGUID();
 
     if (source->IsGameObject())
     {
-        if (gossipHandlerType > GOSSIP_OPTION_QUESTGIVER && gossipHandlerType != GOSSIP_OPTION_SCENARIO)
+        if (gossipOptionNpc != GossipOptionNpc::None)
         {
             TC_LOG_ERROR("entities.player", "Player guid %u request invalid gossip option for GameObject entry %u", GetGUIDLow(), source->GetEntry());
             return;
@@ -18120,9 +18112,9 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
         return;
     }
 
-    switch (gossipHandlerType)
+    switch (gossipOptionNpc)
     {
-        case GOSSIP_OPTION_GOSSIP:
+        case GossipOptionNpc::None:
         {
             // hack ArmyTraining
             if (menuItemData->GossipActionMenuId == 20187)
@@ -18146,6 +18138,36 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
                 break;
             }
 
+            // HACK GOSSIP_OPTION_CHOICE
+            else if ((menuId == 18501 || menuId == 19775 || menuId == 20537) && item->BoxMoney)
+            {
+                SendDisplayPlayerChoice(GetGUID(), cost);
+                return;
+            }
+
+            // HACK GOSSIP_OPTION_ALLIED_RACE_DETAILS
+            else if (menuId == 21937 || menuId == 21938 || menuId == 22081 || menuId == 22082)
+            {
+                GetSession()->SendOpenAlliedRaceDetails(guid, cost);
+                return;
+            }
+
+            // HACK GOSSIP_OPTION_SCENARIO:
+            else if ((menuId == 15257 || menuId == 21043) && item->BoxMoney)
+            {
+                std::set<uint32> ScenarioId;
+                ScenarioId.insert(cost);
+                sLFGMgr->JoinLfg(this, GetSpecializationRoleMaskForGroup(), ScenarioId);
+                break;
+            }
+
+            // HACK GOSSIP_OPTION_OUTDOORPVP
+            else if (item->Message == "GOSSIP_OPTION_OUTDOORPVP")
+            {
+                sOutdoorPvPMgr->HandleGossipOption(this, source->GetGUID(), gossipListId);
+                break;
+            }
+
             if (menuItemData->GossipActionPoi)
                 PlayerTalkClass->SendPointOfInterest(menuItemData->GossipActionPoi);
 
@@ -18157,59 +18179,45 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
                 PlayerTalkClass->SendCloseGossip();
             break;
         }
-        case GOSSIP_OPTION_OUTDOORPVP:
-            sOutdoorPvPMgr->HandleGossipOption(this, source->GetGUID(), gossipListId);
-            break;
-        case GOSSIP_OPTION_SPIRITHEALER:
+        case GossipOptionNpc::SpiritHealer:
             if (isDead())
                 source->ToCreature()->CastSpell(source->ToCreature(), 17251, true, NULL, NULL, GetGUID());
             break;
-        case GOSSIP_OPTION_QUESTGIVER:
-            PrepareQuestMenu(guid);
-            SendPreparedQuest(source);
-            break;
-        case GOSSIP_OPTION_VENDOR:
-        case GOSSIP_OPTION_ARMORER:
+        case GossipOptionNpc::Vendor:
             GetSession()->SendListInventory(guid);
             break;
-        case GOSSIP_OPTION_STABLEPET:
+        case GossipOptionNpc::StableMaster:
             GetSession()->SendStablePet(guid);
             break;
-        case GOSSIP_OPTION_TRAINER:
+        case GossipOptionNpc::Trainer:
             GetSession()->SendTrainerList(guid);
             break;
-        case GOSSIP_OPTION_LEARNDUALSPEC:
-            break;
-        case GOSSIP_OPTION_UNLEARNTALENTS:
+        case GossipOptionNpc::TalentMaster:
             PlayerTalkClass->SendCloseGossip();
             SendTalentWipeConfirm(guid, RESPEC_TYPE_TALENTS);
             break;
-        case GOSSIP_OPTION_TAXIVENDOR:
+        case GossipOptionNpc::TaxiNode:
             GetSession()->SendTaxiMenu(source->ToCreature());
             break;
-        case GOSSIP_OPTION_INNKEEPER:
+        case GossipOptionNpc::Binder:
             PlayerTalkClass->SendCloseGossip();
             SetBindPoint(guid);
             break;
-        case GOSSIP_OPTION_BANKER:
+        case GossipOptionNpc::Banker:
             GetSession()->SendShowBank(guid);
             break;
-        case GOSSIP_OPTION_PETITIONER:
+        case GossipOptionNpc::PetitionVendor:
             PlayerTalkClass->SendCloseGossip();
             GetSession()->SendPetitionShowList(guid);
             break;
-        case GOSSIP_OPTION_TABARDDESIGNER:
+        case GossipOptionNpc::TabardVendor:
             PlayerTalkClass->SendCloseGossip();
             GetSession()->SendTabardVendorActivate(guid);
             break;
-        case GOSSIP_OPTION_AUCTIONEER:
+        case GossipOptionNpc::Auctioneer:
             GetSession()->SendAuctionHello(guid, source->ToCreature());
             break;
-        case GOSSIP_OPTION_SPIRITGUIDE:
-            PrepareGossipMenu(source);
-            SendPreparedGossip(source);
-            break;
-        case GOSSIP_OPTION_BATTLEFIELD:
+        case GossipOptionNpc::BattleMaster:
         {
             uint16 bgTypeId = sBattlegroundMgr->GetBattleMasterBG(source->GetEntry());
 
@@ -18222,22 +18230,15 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
             sBattlegroundMgr->SendBattlegroundList(this, guid, bgTypeId);
             break;
         }
-        case GOSSIP_OPTION_GARRISON_SHIPMENT:
+        case GossipOptionNpc::ShipmentCrafter:
             if (Garrison* garr = GetGarrisonPtr())
                 garr->OnGossipSelect(source);
             break;
-        case GOSSIP_OPTION_GARRISON_TRADESKILL:
+        case GossipOptionNpc::GarrisonTradeskill:
             if (Garrison* garr = GetGarrisonPtr())
                 garr->OnGossipTradeSkill(source);
             break;
-        case GOSSIP_OPTION_SCENARIO:
-        {
-            std::set<uint32> ScenarioId;
-            ScenarioId.insert(cost);
-            sLFGMgr->JoinLfg(this, GetSpecializationRoleMaskForGroup(), ScenarioId);
-            break;
-        }
-        case GOSSIP_OPTION_SHIPMENT_CRAFTER:
+        case GossipOptionNpc::AdventureMap:
             //SMSG_ADVENTURE_JOURNAL_CLOSE
             //if (!getAdventureQuestID())
             {
@@ -18246,17 +18247,14 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
                 SendDirectMessage(packet.Write());
             }
             break;
-        case GOSSIP_OPTION_CLASS_HALL_UPGRADE:
+        case GossipOptionNpc::GarrisonTalent:
         {
             WorldPackets::Garrison::GarrisonOpenUpgradeNpcResponse packet;
             packet.NpcGUID = guid;
             SendDirectMessage(packet.Write());
             break;
         }
-        case GOSSIP_OPTION_CHOICE:
-            SendDisplayPlayerChoice(GetGUID(), cost);
-            return;
-        case GOSSIP_OPTION_ARTIFACT_RESPEC:
+        case GossipOptionNpc::ArtifactRespec:
         {
             if (Item* artifact = GetArtifactWeapon())
             {
@@ -18267,15 +18265,22 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
             }
             break;
         }
-        case GOSSIP_OPTION_TRANSMOGRIFIER:
+        case GossipOptionNpc::Transmogrify:
             GetSession()->SendOpenTransmogrifier(guid);
             break;
-        case GOSSIP_OPTION_MAILBOX:
+        case GossipOptionNpc::Mailbox:
             GetSession()->SendShowMailBox(guid);
             break;
-        case GOSSIP_OPTION_ALLIED_RACE_DETAILS:
-            GetSession()->SendOpenAlliedRaceDetails(guid, cost);
-            return;
+        case GossipOptionNpc::DisableXPGain:
+            PlayerTalkClass->SendCloseGossip();
+            SetFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN);
+            break;
+        case GossipOptionNpc::EnableXPGain:
+            PlayerTalkClass->SendCloseGossip();
+            RemoveFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN);
+            break;
+        default:
+            break;
     }
 
     ModifyMoney(-cost);

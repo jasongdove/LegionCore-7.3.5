@@ -70,7 +70,7 @@ public:
         {
             if (instance->GetData(EVENT_PYRAMID) == PYRAMID_KILLED_ALL_TROLLS)
             {
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_BLY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_BLY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
                 player->SEND_GOSSIP_MENU(1517, creature->GetGUID());
             }
             else
@@ -268,7 +268,7 @@ public:
             switch (instance->GetData(EVENT_PYRAMID))
             {
                 case PYRAMID_KILLED_ALL_TROLLS:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_WEEGLI, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_WEEGLI, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
                     player->SEND_GOSSIP_MENU(1514, creature->GetGUID());  //if event can proceed to end
                     break;
                 case PYRAMID_NOT_STARTED:

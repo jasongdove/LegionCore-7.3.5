@@ -36,7 +36,7 @@ WorldPacket const* WorldPackets::NPC::GossipMessage::Write()
     for (ClientGossipOptions const& options : GossipOptions)
     {
         _worldPacket << options.ClientOption;
-        _worldPacket << options.OptionNPC;
+        _worldPacket << uint8(options.OptionNPC);
         _worldPacket << options.OptionFlags;
         _worldPacket << options.OptionCost;
 

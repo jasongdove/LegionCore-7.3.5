@@ -1247,7 +1247,7 @@ public:
             case GOSSIP_ACTION_INFO_DEF+1:
                 pPlayer->PrepareGossipMenu(pCreature);
                 instance->instance->LoadGrid(364,-16); // make sure leviathan is loaded
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT,GOSSIP_ITEM_2,GOSSIP_SENDER_MAIN,GOSSIP_ACTION_INFO_DEF+2);
+                pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None,GOSSIP_ITEM_2,GOSSIP_SENDER_MAIN,GOSSIP_ACTION_INFO_DEF+2);
                 pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+2:
@@ -1281,7 +1281,7 @@ public:
             instance->GetBossState(BOSS_LEVIATHAN) != SPECIAL) || pPlayer->isGameMaster())
         {
             pPlayer->PrepareGossipMenu(pCreature);
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT,GOSSIP_ITEM_1,GOSSIP_SENDER_MAIN,GOSSIP_ACTION_INFO_DEF+1);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None,GOSSIP_ITEM_1,GOSSIP_SENDER_MAIN,GOSSIP_ACTION_INFO_DEF+1);
             pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         }
         return true;

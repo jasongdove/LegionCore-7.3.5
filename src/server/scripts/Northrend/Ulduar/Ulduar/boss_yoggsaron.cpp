@@ -1747,7 +1747,7 @@ class keeper_image : public CreatureScript
                 if (!pCreature->HasAura(SPELL_KEEPER_ACTIVE))
                 {
                     pPlayer->PrepareQuestMenu(pCreature->GetGUID());
-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_KEEPER_HELP, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+                    pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_KEEPER_HELP, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
                     pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
                 }
             }

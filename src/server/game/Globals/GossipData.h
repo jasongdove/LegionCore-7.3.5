@@ -2,6 +2,8 @@
 #ifndef GossipData_h
 #define GossipData_h
 
+enum class GossipOptionNpc : uint8;
+
 struct GossipMenuItems
 {
     ConditionList   Conditions;
@@ -9,14 +11,12 @@ struct GossipMenuItems
     uint32          OptionIndex;
     uint32          OptionBroadcastTextID;
     uint32          BoxBroadcastTextID;
-    uint32          OptionType;
-    uint32          OptionNpcFlag;
+    GossipOptionNpc OptionNpc;
     uint32          ActionMenuID;
     uint32          ActionPoiID;
     uint32          BoxMoney;
     std::string     OptionText;
     std::string     BoxText;
-    uint8           OptionIcon;
     bool            BoxCoded;
 };
 

@@ -28,69 +28,42 @@ class WorldSession;
 #define GOSSIP_MAX_MENU_ITEMS 64                            // client supported items unknown, but provided number must be enough
 #define DEFAULT_GOSSIP_MESSAGE              0xffffff
 
-enum Gossip_Option
+enum class GossipOptionNpc : uint8
 {
-    GOSSIP_OPTION_NONE                  = 0,                    //UNIT_NPC_FLAG_NONE                (0)
-    GOSSIP_OPTION_GOSSIP                = 1,                    //UNIT_NPC_FLAG_GOSSIP              (1)
-    GOSSIP_OPTION_QUESTGIVER            = 2,                    //UNIT_NPC_FLAG_QUESTGIVER          (2)
-    GOSSIP_OPTION_VENDOR                = 3,                    //UNIT_NPC_FLAG_VENDOR              (128)
-    GOSSIP_OPTION_TAXIVENDOR            = 4,                    //UNIT_NPC_FLAG_TAXIVENDOR          (8192)
-    GOSSIP_OPTION_TRAINER               = 5,                    //UNIT_NPC_FLAG_TRAINER             (16)
-    GOSSIP_OPTION_SPIRITHEALER          = 6,                    //UNIT_NPC_FLAG_SPIRITHEALER        (16384)
-    GOSSIP_OPTION_SPIRITGUIDE           = 7,                    //UNIT_NPC_FLAG_SPIRITGUIDE         (32768)
-    GOSSIP_OPTION_INNKEEPER             = 8,                    //UNIT_NPC_FLAG_INNKEEPER           (65536)
-    GOSSIP_OPTION_BANKER                = 9,                    //UNIT_NPC_FLAG_BANKER              (131072)
-    GOSSIP_OPTION_PETITIONER            = 10,                   //UNIT_NPC_FLAG_PETITIONER          (262144)
-    GOSSIP_OPTION_TABARDDESIGNER        = 11,                   //UNIT_NPC_FLAG_TABARDDESIGNER      (524288)
-    GOSSIP_OPTION_BATTLEFIELD           = 12,                   //UNIT_NPC_FLAG_BATTLEFIELDPERSON   (1048576)
-    GOSSIP_OPTION_AUCTIONEER            = 13,                   //UNIT_NPC_FLAG_AUCTIONEER          (2097152)
-    GOSSIP_OPTION_STABLEPET             = 14,                   //UNIT_NPC_FLAG_STABLE              (4194304)
-    GOSSIP_OPTION_ARMORER               = 15,                   //UNIT_NPC_FLAG_ARMORER             (4096)
-    GOSSIP_OPTION_UNLEARNTALENTS        = 16,                   //UNIT_NPC_FLAG_TRAINER             (16) (bonus option for GOSSIP_OPTION_TRAINER)
-    GOSSIP_OPTION_OUTDOORPVP            = 19,                   //added by code (option for outdoor pvp creatures)
-    GOSSIP_OPTION_LEARNDUALSPEC         = 18,                   //UNIT_NPC_FLAG_TRAINER             (16) (bonus option for GOSSIP_OPTION_TRAINER)
-    GOSSIP_OPTION_TRANSMOGRIFIER        = 20,                   //UNIT_NPC_FLAG_TRANSMOGRIFIER
-    GOSSIP_OPTION_SCENARIO              = 21,                   //UNIT_NPC_FLAG_GOSSIP
-    GOSSIP_OPTION_GARRISON_SHIPMENT     = 22,                   //UNIT_NPC_FLAG2_AI_OBSTACLE 
-    GOSSIP_OPTION_GARRISON_TRADESKILL   = 23,                   //UNIT_NPC_FLAG2_TRADESKILL_NPC
-    GOSSIP_OPTION_SHIPMENT_CRAFTER      = 24,                   //UNIT_NPC_FLAG2_SHIPMENT_CRAFTER
-    GOSSIP_OPTION_CLASS_HALL_UPGRADE    = 25,                   //UNIT_NPC_FLAG2_CLASS_HALL_UPGRADE
-    GOSSIP_OPTION_CHOICE                = 26,                   //UNIT_NPC_FLAG_GOSSIP
-    GOSSIP_OPTION_ARTIFACT_RESPEC       = 27,                   //UNIT_NPC_FLAG_ARTIFACT_POWER_RESPEC
-    GOSSIP_OPTION_ALLIED_RACE_DETAILS   = 28,                   // SMSG_OPEN_ALLIED_RACE_DETAILS
-    GOSSIP_OPTION_MAILBOX               = 29,                   //UNIT_NPC_FLAG_MAILBOX
-    GOSSIP_OPTION_MAX
-};
-
-enum GossipOptionIcon
-{
-    GOSSIP_ICON_CHAT                = 0,                    // white chat bubble
-    GOSSIP_ICON_VENDOR              = 1,                    // brown bag
-    GOSSIP_ICON_TAXI                = 2,                    // flightmarker (paperplane)
-    GOSSIP_ICON_TRAINER             = 3,                    // brown book (trainer)
-    GOSSIP_ICON_INTERACT_1          = 4,                    // golden interaction wheel
-    GOSSIP_ICON_INTERACT_2          = 5,                    // golden interaction wheel
-    GOSSIP_ICON_MONEY_BAG           = 6,                    // brown bag (with gold coin in lower corner)
-    GOSSIP_ICON_TALK                = 7,                    // white chat bubble (with "..." inside)
-    GOSSIP_ICON_TABARD              = 8,                    // white tabard
-    GOSSIP_ICON_BATTLE              = 9,                    // two crossed swords
-    GOSSIP_ICON_DOT                 = 10,                   // yellow dot/point
-    GOSSIP_ICON_CHAT_11             = 11,                   // white chat bubble
-    GOSSIP_ICON_CHAT_12             = 12,                   // white chat bubble
-    GOSSIP_ICON_CHAT_13             = 13,                   // white chat bubble
-    GOSSIP_ICON_UNK_14              = 14,                   // INVALID - DO NOT USE
-    GOSSIP_ICON_UNK_15              = 15,                   // INVALID - DO NOT USE
-    GOSSIP_ICON_CHAT_16             = 16,                   // white chat bubble
-    GOSSIP_ICON_CHAT_17             = 17,                   // white chat bubble
-    GOSSIP_ICON_CHAT_18             = 18,                   // white chat bubble
-    GOSSIP_ICON_CHAT_19             = 19,                   // white chat bubble
+    None                            = 0,                    // white chat bubble
+    Vendor                          = 1,                    // brown bag
+    TaxiNode                        = 2,                    // flightmarker (paperplane)
+    Trainer                         = 3,                    // brown book (trainer)
+    SpiritHealer                    = 4,                    // golden interaction wheel
+    Binder                          = 5,                    // golden interaction wheel
+    Banker                          = 6,                    // brown bag (with gold coin in lower corner)
+    PetitionVendor                  = 7,                    // white chat bubble (with "..." inside)
+    TabardVendor                    = 8,                    // white tabard
+    BattleMaster                    = 9,                    // two crossed swords
+    Auctioneer                      = 10,                   // yellow dot/point
+    TalentMaster                    = 11,                   // white chat bubble
+    StableMaster                    = 12,                   // white chat bubble
+    PetSpecializationMaster         = 13,                   /*DEPRECATED*/ // White chat bubble
+    GuildBanker                     = 14,                   /*NYI*/ // White chat bubble
+    SpellClick                      = 15,                   /*NYI*/ // White chat bubble
+    DisableXPGain                   = 16,                   // White chat bubble
+    EnableXPGain                    = 17,                   // White chat bubble
+    Mailbox                         = 18,                   // white chat bubble
+    WorldPVPQueue                   = 19,                   // white chat bubble
     GOSSIP_ICON_CHAT_20             = 20,                   // white chat bubble
-    GOSSIP_ICON_SHIPMENT            = 28,                   // auto-click?
-    GOSSIP_ICON_TRADESKILL          = 29,                   
-    GOSSIP_ICON_ADVENTURE_MAP       = 31,
-    GOSSIP_ICON_CLASS_HALL_UPGRADE  = 32,                   //UNIT_NPC_FLAG2_CLASS_HALL_UPGRADE
-    GOSSIP_ICON_TRANSMOGRIFIER      = 34,                   // transmogrifier
-    GOSSIP_ICON_MAX
+    ArtifactRespec                  = 21,
+    SpecializationMaster            = 23,                   /*DEPRECATED*/ // White chat bubble
+    GlyphMaster                     = 24,                   /*DEPRECATED*/ // White chat bubble
+    GarrisonArchitect               = 26,
+    GarrisonMission                 = 27,
+    ShipmentCrafter                 = 28,                   // auto-click?
+    GarrisonTradeskill              = 29,
+    GarrisonRecruitment             = 30,
+    AdventureMap                    = 31,
+    GarrisonTalent                  = 32,                   //UNIT_NPC_FLAG2_CLASS_HALL_UPGRADE
+    Transmogrify                    = 34,                   // transmogrifier
+
+    Count
 };
 
 //POI icons. Many more exist, list not complete.
@@ -141,9 +114,9 @@ enum Poi_Icon
 
 struct GossipMenuItem
 {
-    uint8 MenuItemIcon;
+    GossipOptionNpc OptionNpc;
     uint32 Sender;
-    uint32 OptionType;
+    uint32 Action;
     uint32 BoxMoney;
     std::string Message;
     std::string BoxMessage;
@@ -180,7 +153,7 @@ public:
     GossipMenu();
     ~GossipMenu();
 
-    void AddMenuItem(int32 menuItemId, uint8 icon, std::string const& message, uint32 sender, uint32 action, std::string const& boxMessage, uint32 boxMoney, bool coded = false);
+    void AddMenuItem(int32 menuItemId, GossipOptionNpc icon, std::string const& message, uint32 sender, uint32 action, std::string const& boxMessage, uint32 boxMoney, bool coded = false);
     void AddMenuItem(uint32 menuId, uint32 menuItemId, uint32 sender, uint32 action);
 
     void SetMenuId(uint32 menu_id);
@@ -201,6 +174,8 @@ public:
 
     void ClearMenu();
     GossipMenuItemContainer const& GetMenuItems() const;
+
+    static uint64 GetRequiredNpcFlagForOption(GossipOptionNpc optionNpc);
 };
 
 class QuestMenu

@@ -57,7 +57,7 @@ public:
 
         if (creature->isVendor() && player->GetQuestRewardStatus(9152))
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::Vendor, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
             player->SEND_GOSSIP_MENU(8432, creature->GetGUID());
         }
         else

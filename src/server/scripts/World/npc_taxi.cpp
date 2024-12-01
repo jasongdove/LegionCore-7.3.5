@@ -74,113 +74,113 @@ public:
         {
         case 17435: // Azuremyst Isle - Susurrus
             if (player->HasItemCount(23843, 1, true))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SUSURRUS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SUSURRUS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
             break;
         case 20903: // Netherstorm - Protectorate Nether Drake
             if (player->GetQuestStatus(10438) == QUEST_STATUS_INCOMPLETE && player->HasItemCount(29778))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_NETHER_DRAKE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_NETHER_DRAKE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
             break;
         case 18725: // Old Hillsbrad Foothills - Brazen
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_BRAZEN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_BRAZEN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
             break;
         case 29154: // Stormwind City - Thargold Ironwing
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_IRONWING, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_IRONWING, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
             break;
         case 19409: // Hellfire Peninsula - Wing Commander Dabir'ee
             //Mission: The Murketh and Shaadraz Gateways
             if (player->GetQuestStatus(10146) == QUEST_STATUS_INCOMPLETE)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_DABIREE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_DABIREE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
 
             //Shatter Point
             if (!player->GetQuestRewardStatus(10340))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_DABIREE2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_DABIREE2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
             break;
         case 20235: // Hellfire Peninsula - Gryphoneer Windbellow
             //Mission: The Abyssal Shelf || Return to the Abyssal Shelf
             if (player->GetQuestStatus(10163) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(10346) == QUEST_STATUS_INCOMPLETE)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_WINDBELLOW1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_WINDBELLOW1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
 
             //Go to the Front
             if (player->GetQuestStatus(10382) != QUEST_STATUS_NONE && !player->GetQuestRewardStatus(10382))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_WINDBELLOW2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_WINDBELLOW2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
             break;
         case 19401: // Hellfire Peninsula - Wing Commander Brack
             //Mission: The Murketh and Shaadraz Gateways
             if (player->GetQuestStatus(10129) == QUEST_STATUS_INCOMPLETE)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_BRACK1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_BRACK1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
 
             //Mission: The Abyssal Shelf || Return to the Abyssal Shelf
             if (player->GetQuestStatus(10162) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(10347) == QUEST_STATUS_INCOMPLETE)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_BRACK2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_BRACK2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
 
             //Spinebreaker Post
             if (player->GetQuestStatus(10242) == QUEST_STATUS_COMPLETE)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_BRACK3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_BRACK3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
             break;
         case 23413: // Blade's Edge Mountains - Skyguard Handler Irena
             if (player->GetReputationRank(1031) >= REP_HONORED)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_IRENA, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 11);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_IRENA, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 11);
             break;
         case 25059: // Isle of Quel'Danas - Ayren Cloudbreaker
             if (player->GetQuestStatus(11532) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(11533) == QUEST_STATUS_INCOMPLETE)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CLOUDBREAKER1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 12);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_CLOUDBREAKER1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 12);
 
             if (player->GetQuestStatus(11542) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(11543) == QUEST_STATUS_INCOMPLETE)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CLOUDBREAKER2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 13);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_CLOUDBREAKER2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 13);
             break;
         case 25236: // Isle of Quel'Danas - Unrestrained Dragonhawk
             if (player->GetQuestStatus(11542) == QUEST_STATUS_COMPLETE || player->GetQuestStatus(11543) == QUEST_STATUS_COMPLETE)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_DRAGONHAWK, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 14);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_DRAGONHAWK, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 14);
             break;
         case 20162: // Netherstorm - Veronia
             //Behind Enemy Lines
             if (player->GetQuestStatus(10652) != QUEST_STATUS_REWARDED)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_VERONIA, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 15);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_VERONIA, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 15);
             break;
         case 23415: // Terokkar Forest - Skyguard Handler Deesak
             if (player->GetReputationRank(1031) >= REP_HONORED)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_DEESAK, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 16);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_DEESAK, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 16);
             break;
         case 27575: // Dragonblight - Lord Afrasastrasz
             // middle -> ground
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_AFRASASTRASZ1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 17);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_AFRASASTRASZ1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 17);
             // middle -> top
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_AFRASASTRASZ2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 18);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_AFRASASTRASZ2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 18);
             break;
         case 26443: // Dragonblight - Tariolstrasz //need to check if quests are required before gossip available (12123, 12124)
             // ground -> top
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_TARIOLSTRASZ1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 19);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_TARIOLSTRASZ1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 19);
             // ground -> middle
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_TARIOLSTRASZ2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 20);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_TARIOLSTRASZ2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 20);
             break;
         case 26949: // Dragonblight - Torastrasza
             // top -> middle
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_TORASTRASZA1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_TORASTRASZA1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 21);
             // top -> ground
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_TORASTRASZA2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_TORASTRASZA2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 22);
             break;
         case 23816: // Howling Fjord - Bat Handler Camille
             if (!player->GetQuestRewardStatus(11229))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CAMILLE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 23);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_CAMILLE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 23);
             if (player->GetQuestStatus(11170) == QUEST_STATUS_INCOMPLETE)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CAMILLE2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 24);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_CAMILLE2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 24);
             break;
         case 23704: // Dustwallow Marsh - Cassa Crimsonwing
             if (player->GetQuestStatus(11142) == QUEST_STATUS_INCOMPLETE)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CRIMSONWING, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 25);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_CRIMSONWING, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 25);
             break;
         case 26602:
             if (creature->isTaxi())
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, GOSSIP_THRICESTAR1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 26);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::TaxiNode, GOSSIP_THRICESTAR1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 26);
 
             if (player->GetQuestStatus(11692) == QUEST_STATUS_COMPLETE)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_THRICESTAR2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 27);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_THRICESTAR2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 27);
             break;
         case 17209:
             player->SetTaxiCheater(true);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_WILLIAMKEILAR1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 28);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_WILLIAMKEILAR2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 29);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_WILLIAMKEILAR3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 30);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_WILLIAMKEILAR1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 28);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_WILLIAMKEILAR2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 29);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_WILLIAMKEILAR3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 30);
             break;
         }
 

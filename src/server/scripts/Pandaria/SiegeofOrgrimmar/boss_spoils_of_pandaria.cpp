@@ -1612,7 +1612,7 @@ public:
             if (instance->GetBossState(DATA_MALKOROK) == DONE && instance->GetBossState(DATA_SPOILS_OF_PANDARIA) == NOT_STARTED)
             {
                 pl->PrepareGossipMenu(go);
-                pl->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+                pl->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
                 pl->SEND_GOSSIP_MENU(pl->GetGossipTextId(go), go->GetGUID());
             }
         }

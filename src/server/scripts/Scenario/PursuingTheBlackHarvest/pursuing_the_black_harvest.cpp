@@ -67,7 +67,7 @@ public:
     {
         if (InstanceScript* instance = player->GetInstanceScript())
         {
-            player->ADD_GOSSIP_ITEM(1, "King Rynn is looking for members of the Grim Harvest Council who were recently here....", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "King Rynn is looking for members of the Grim Harvest Council who were recently here....", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
             player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
             return true;
         }
@@ -82,7 +82,7 @@ public:
             case GOSSIP_ACTION_INFO_DEF + 1:
                 if (IsNextStageAllowed(creature->GetInstanceScript(), STAGE_3))
                     player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 34543, 1); //< set stage 3
-                player->ADD_GOSSIP_ITEM(1, "Akama, show me the way!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Akama, show me the way!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
                 player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF + 2:

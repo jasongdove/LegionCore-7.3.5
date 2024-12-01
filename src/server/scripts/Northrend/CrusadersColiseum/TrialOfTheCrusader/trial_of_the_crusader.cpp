@@ -144,7 +144,7 @@ class npc_announcer_toc10 : public CreatureScript
                 if ((!_GossipMessage[i].state && instance->GetBossState(_GossipMessage[i].encounter) != DONE)
                     || (_GossipMessage[i].state && instance->GetBossState(_GossipMessage[i].encounter) == DONE))
                 {
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, _message, GOSSIP_SENDER_MAIN, _GossipMessage[i].id);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, _message, GOSSIP_SENDER_MAIN, _GossipMessage[i].id);
                     break;
                 }
             }

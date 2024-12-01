@@ -4381,7 +4381,7 @@ public:
 
         std::string text = sObjectMgr->GetTrinityString(teleData[index].nameStringId, locale);
 
-        player->ADD_GOSSIP_ITEM(5, text.c_str(), GOSSIP_SENDER_MAIN, teleData[index].action);
+        player->ADD_GOSSIP_ITEM(GossipOptionNpc::Binder, text.c_str(), GOSSIP_SENDER_MAIN, teleData[index].action);
     }
 
     void ActionLoad(Player* player, uint8 subAction)

@@ -458,7 +458,7 @@ class npc_halls_of_origination_brann_bronzebeard : public CreatureScript
             if (pCreature->isQuestGiver())
                 pPlayer->PrepareQuestMenu(pCreature->GetGUID());
 
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_BRANN_START_EVENT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_BRANN_START_EVENT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
             pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 
             return true;

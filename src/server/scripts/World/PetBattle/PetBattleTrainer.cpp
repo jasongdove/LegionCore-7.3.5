@@ -61,7 +61,7 @@ public:
                     }
                 if (check)
                     if (BroadcastTextEntry const* bct = sBroadcastTextStore.LookupEntry(62660))
-                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, DB2Manager::GetBroadcastTextValue(bct, player->GetSession()->GetSessionDbLocaleIndex()), GOSSIP_SENDER_MAIN, PetBattleTrainerFightActionID);
+                        player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, DB2Manager::GetBroadcastTextValue(bct, player->GetSession()->GetSessionDbLocaleIndex()), GOSSIP_SENDER_MAIN, PetBattleTrainerFightActionID);
             }
 
             player->TalkedToCreature(me->GetEntry(), me->GetGUID());

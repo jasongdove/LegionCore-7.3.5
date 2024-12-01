@@ -329,32 +329,32 @@ public:
                     if (creature->GetInstanceScript()->GetData(DATA_CRATE_COUNT) < 5)
                         return false;
 
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ARTHAS_0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_ARTHAS_0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
                     // If player already completed the instance can jump the Jaina/Uther intro
                     if (player->GetQuestStatus(QUEST_A_ROYAL_ESCORT) == QUEST_STATUS_COMPLETE || player->GetQuestStatus(QUEST_A_ROYAL_ESCORT) == QUEST_STATUS_REWARDED)
-                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ARTHAS_6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+6);
+                        player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_ARTHAS_6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+6);
 
                     player->SEND_GOSSIP_MENU(907, creature->GetGUID());
                     break;
                 }
                 case 1:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ARTHAS_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_ARTHAS_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
                     player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                     break;
                 case 2:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ARTHAS_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_ARTHAS_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
                     player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                     break;
                 case 3:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ARTHAS_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_ARTHAS_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
                     player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                     break;
                 case 4:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ARTHAS_4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_ARTHAS_4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
                     player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                     break;
                 case 5:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ARTHAS_5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_ARTHAS_5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
                     player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                     break;
                 default:
@@ -1385,11 +1385,11 @@ public:
             if (instance->GetData(DATA_CRATE_COUNT) < 5)
             {
                 if(!player->HasItemCount(ITEM_ARCANE_DISRUPTOR, 1))
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_CHROMIE_0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_CHROMIE_0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
                 player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
             } else
             {
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_CHROMIE_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_CHROMIE_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
                 player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
             }
         }

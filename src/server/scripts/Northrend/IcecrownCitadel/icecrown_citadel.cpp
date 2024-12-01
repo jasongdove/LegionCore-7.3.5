@@ -2157,7 +2157,7 @@ class npc_gunship_starter : public CreatureScript
         {
             if ((!player->GetGroup() || !player->GetGroup()->IsLeader(player->GetGUID())) && !player->isGameMaster())
             {
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "I'm not the raid leader...", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "I'm not the raid leader...", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());
                 return true;
             }
@@ -2168,7 +2168,7 @@ class npc_gunship_starter : public CreatureScript
                     return true;
                 }
 
-            player->ADD_GOSSIP_ITEM(0, "Are you ready to begin the battle on the ships?", 631, 1001);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Are you ready to begin the battle on the ships?", 631, 1001);
             player->SEND_GOSSIP_MENU(player->GetGossipTextId(pCreature), pCreature->GetGUID());
             return true;
         }

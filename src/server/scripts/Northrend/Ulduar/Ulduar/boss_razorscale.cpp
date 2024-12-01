@@ -457,7 +457,7 @@ public:
         {
             pPlayer->PrepareGossipMenu(pCreature);
 
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT,GOSSIP_ITEM_1,GOSSIP_SENDER_MAIN,GOSSIP_ACTION_INFO_DEF);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None,GOSSIP_ITEM_1,GOSSIP_SENDER_MAIN,GOSSIP_ACTION_INFO_DEF);
             pPlayer->SEND_GOSSIP_MENU(13853, pCreature->GetGUID());
         }
         else pPlayer->SEND_GOSSIP_MENU(13910, pCreature->GetGUID());

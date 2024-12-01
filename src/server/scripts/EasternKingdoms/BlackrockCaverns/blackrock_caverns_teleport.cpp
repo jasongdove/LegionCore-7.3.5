@@ -13,15 +13,15 @@ class bc_teleport : public GameObjectScript
 
         bool OnGossipHello(Player* player, GameObject* go)
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport Inicio", GOSSIP_SENDER_PORT, 1);
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Teleport Inicio", GOSSIP_SENDER_PORT, 1);
             if (InstanceScript* instance = go->GetInstanceScript())
             {
                 if (instance->GetData(DATA_ROMOGG) == DONE)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport Boss 1", GOSSIP_SENDER_PORT, 2);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Teleport Boss 1", GOSSIP_SENDER_PORT, 2);
                 if (instance->GetData(DATA_CORLA) == DONE)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport Boss 2", GOSSIP_SENDER_PORT, 3);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Teleport Boss 2", GOSSIP_SENDER_PORT, 3);
                 if (instance->GetData(DATA_KARSH) == DONE)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport Boss 3 y 4", GOSSIP_SENDER_PORT, 4);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Teleport Boss 3 y 4", GOSSIP_SENDER_PORT, 4);
 
              }
 

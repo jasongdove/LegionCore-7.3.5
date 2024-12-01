@@ -561,7 +561,7 @@ class npc_lunaclaw_spirit : public CreatureScript
         bool OnGossipHello(Player* player, Creature* creature) override
         {
             if (player->GetQuestStatus(QUEST_BODY_HEART_A) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_BODY_HEART_H) == QUEST_STATUS_INCOMPLETE)
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_GRANT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_GRANT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
             player->SEND_GOSSIP_MENU(TEXT_ID_DEFAULT, creature->GetGUID());
             return true;
@@ -2220,7 +2220,7 @@ class npc_mount_vendor : public CreatureScript
             if (canBuy)
             {
                 if (creature->isVendor())
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::Vendor, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
                 player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
             }
             return true;
@@ -2256,14 +2256,14 @@ class npc_rogue_trainer : public CreatureScript
                 player->PrepareQuestMenu(creature->GetGUID());
 
             if (creature->isTrainer())
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, GOSSIP_TEXT_TRAIN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRAIN);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::Trainer, GOSSIP_TEXT_TRAIN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRAIN);
 
             if (creature->isCanTrainingAndResetTalentsOf(player))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, GOSSIP_HELLO_ROGUE1, GOSSIP_SENDER_MAIN, GOSSIP_OPTION_UNLEARNTALENTS);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::Trainer, GOSSIP_HELLO_ROGUE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_UNLEARN);
 
             if (player->getClass() == CLASS_ROGUE && player->getLevel() >= 24 && !player->HasItemCount(17126) && !player->GetQuestRewardStatus(6681))
             {
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_ROGUE2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HELLO_ROGUE2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
                 player->SEND_GOSSIP_MENU(5996, creature->GetGUID());
             } else
                 player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
@@ -2283,7 +2283,7 @@ class npc_rogue_trainer : public CreatureScript
                 case GOSSIP_ACTION_TRAIN:
                     player->GetSession()->SendTrainerList(creature->GetGUID());
                     break;
-                case GOSSIP_OPTION_UNLEARNTALENTS:
+                case GOSSIP_ACTION_UNLEARN:
                     player->CLOSE_GOSSIP_MENU();
                     player->SendTalentWipeConfirm(creature->GetGUID(), RESPEC_TYPE_TALENTS);
                     break;
@@ -2346,7 +2346,7 @@ class npc_sayge : public CreatureScript
                 player->SEND_GOSSIP_MENU(7393, creature->GetGUID());
             else
             {
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_SAYGE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_HELLO_SAYGE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
                 player->SEND_GOSSIP_MENU(7339, creature->GetGUID());
             }
 
@@ -2358,38 +2358,38 @@ class npc_sayge : public CreatureScript
             switch (action)
             {
                 case GOSSIP_ACTION_INFO_DEF + 1:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE1,            GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE2,            GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE3,            GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE4,            GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE1,            GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE2,            GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE3,            GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE4,            GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
                     player->SEND_GOSSIP_MENU(7340, creature->GetGUID());
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 2:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE5,            GOSSIP_SENDER_MAIN + 1, GOSSIP_ACTION_INFO_DEF);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE6,            GOSSIP_SENDER_MAIN + 2, GOSSIP_ACTION_INFO_DEF);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE7,            GOSSIP_SENDER_MAIN + 3, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE5,            GOSSIP_SENDER_MAIN + 1, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE6,            GOSSIP_SENDER_MAIN + 2, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE7,            GOSSIP_SENDER_MAIN + 3, GOSSIP_ACTION_INFO_DEF);
                     player->SEND_GOSSIP_MENU(7341, creature->GetGUID());
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 3:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE8,            GOSSIP_SENDER_MAIN + 4, GOSSIP_ACTION_INFO_DEF);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE9,            GOSSIP_SENDER_MAIN + 5, GOSSIP_ACTION_INFO_DEF);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE10,           GOSSIP_SENDER_MAIN + 2, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE8,            GOSSIP_SENDER_MAIN + 4, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE9,            GOSSIP_SENDER_MAIN + 5, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE10,           GOSSIP_SENDER_MAIN + 2, GOSSIP_ACTION_INFO_DEF);
                     player->SEND_GOSSIP_MENU(7361, creature->GetGUID());
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 4:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE11,           GOSSIP_SENDER_MAIN + 6, GOSSIP_ACTION_INFO_DEF);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE12,           GOSSIP_SENDER_MAIN + 7, GOSSIP_ACTION_INFO_DEF);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE13,           GOSSIP_SENDER_MAIN + 8, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE11,           GOSSIP_SENDER_MAIN + 6, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE12,           GOSSIP_SENDER_MAIN + 7, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE13,           GOSSIP_SENDER_MAIN + 8, GOSSIP_ACTION_INFO_DEF);
                     player->SEND_GOSSIP_MENU(7362, creature->GetGUID());
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 5:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE14,           GOSSIP_SENDER_MAIN + 5, GOSSIP_ACTION_INFO_DEF);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE15,           GOSSIP_SENDER_MAIN + 4, GOSSIP_ACTION_INFO_DEF);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE16,           GOSSIP_SENDER_MAIN + 3, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE14,           GOSSIP_SENDER_MAIN + 5, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE15,           GOSSIP_SENDER_MAIN + 4, GOSSIP_ACTION_INFO_DEF);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE16,           GOSSIP_SENDER_MAIN + 3, GOSSIP_ACTION_INFO_DEF);
                     player->SEND_GOSSIP_MENU(7363, creature->GetGUID());
                     break;
                 case GOSSIP_ACTION_INFO_DEF:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SENDACTION_SAYGE17,           GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_SENDACTION_SAYGE17,           GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
                     player->SEND_GOSSIP_MENU(7364, creature->GetGUID());
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 6:
@@ -2751,12 +2751,12 @@ public:
             || (!pPlayer->HasSpellCooldown(SPELL_BREWFEST_SUMMON_RAM) && 
                 (pPlayer->GetQuestRewardStatus(QUEST_THERE_AND_BACK_AGAIN_A) 
                 || pPlayer->GetQuestRewardStatus(QUEST_THERE_AND_BACK_AGAIN_H))))))
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_RAM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_RAM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
             if ((pPlayer->GetQuestRewardStatus(QUEST_THERE_AND_BACK_AGAIN_A) 
                 || pPlayer->GetQuestRewardStatus(QUEST_THERE_AND_BACK_AGAIN_H))
                 && !pPlayer->HasItemCount(33306,1,true))
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_RAM_REINS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ITEM_RAM_REINS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
 
 
 
@@ -3573,14 +3573,14 @@ class npc_wormhole : public CreatureScript
             {
                 if (player == creature->ToTempSummon()->GetSummoner())
                 {
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ENGINEERING1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ENGINEERING2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ENGINEERING3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ENGINEERING4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ENGINEERING5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ENGINEERING1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ENGINEERING2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ENGINEERING3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ENGINEERING4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ENGINEERING5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
 
                     if (creature->AI()->GetData(DATA_SHOW_UNDERGROUND))
-                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ENGINEERING6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+                        player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_ENGINEERING6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
 
                     player->PlayerTalkClass->SendGossipMenu(TEXT_WORMHOLE, creature->GetGUID());
                 }
@@ -3658,9 +3658,9 @@ class npc_pet_trainer : public CreatureScript
 
             if (player->getClass() == CLASS_HUNTER)
             {
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_PET1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_PET1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
                 if (player->GetPet() && player->GetPet()->getPetType() == HUNTER_PET)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_PET2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_PET2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
 
                 player->PlayerTalkClass->SendGossipMenu(TEXT_ISHUNTER, creature->GetGUID());
                 return true;
@@ -3679,7 +3679,7 @@ class npc_pet_trainer : public CreatureScript
                     break;
                 case GOSSIP_ACTION_INFO_DEF + 2:
                     {
-                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_PET_CONFIRM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+                        player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_PET_CONFIRM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
                         player->PlayerTalkClass->SendGossipMenu(TEXT_CONFIRM, creature->GetGUID());
                     }
                     break;
@@ -3749,41 +3749,41 @@ class npc_locksmith : public CreatureScript
         {
             // Arcatraz Key
             if (player->GetQuestRewardStatus(QUEST_HOW_TO_BRAKE_IN_TO_THE_ARCATRAZ) && !player->HasItemCount(ITEM_ARCATRAZ_KEY, 1, true))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_ARCATRAZ_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_LOST_ARCATRAZ_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
             // Shadowforge Key
             if (player->GetQuestRewardStatus(QUEST_DARK_IRON_LEGACY) && !player->HasItemCount(ITEM_SHADOWFORGE_KEY, 1, true))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_SHADOWFORGE_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_LOST_SHADOWFORGE_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
 
             // Skeleton Key
             if ((player->GetQuestRewardStatus(QUEST_THE_KEY_TO_SCHOLOMANCE_A) || player->GetQuestRewardStatus(QUEST_THE_KEY_TO_SCHOLOMANCE_H)) &&
                 !player->HasItemCount(ITEM_SKELETON_KEY, 1, true))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_SKELETON_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_LOST_SKELETON_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
 
             // Shatered Halls Key
             if ((player->GetQuestRewardStatus(QUEST_HOTTER_THAN_HELL_A) || player->GetQuestRewardStatus(QUEST_HOTTER_THAN_HELL_H)) &&
                 !player->HasItemCount(ITEM_SHATTERED_HALLS_KEY, 1, true))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_SHATTERED_HALLS_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_LOST_SHATTERED_HALLS_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
 
             // Master's Key
             if (player->GetQuestRewardStatus(QUEST_RETURN_TO_KHAGDAR) && !player->HasItemCount(ITEM_THE_MASTERS_KEY, 1, true))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_THE_MASTERS_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_LOST_THE_MASTERS_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
 
             // Violet Hold Key
             if (player->GetQuestRewardStatus(QUEST_CONTAINMENT) && !player->HasItemCount(ITEM_VIOLET_HOLD_KEY, 1, true))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_VIOLET_HOLD_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_LOST_VIOLET_HOLD_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
 
             // Essence-Infused Moonstone
             if (player->GetQuestRewardStatus(QUEST_ETERNAL_VIGILANCE) && !player->HasItemCount(ITEM_ESSENCE_INFUSED_MOONSTONE, 1, true))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_ESSENCE_INFUSED_MOONSTONE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_LOST_ESSENCE_INFUSED_MOONSTONE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
 
             // Key to the Focusing Iris
             if (player->GetQuestRewardStatus(QUEST_KEY_TO_THE_FOCUSING_IRIS) && !player->HasItemCount(ITEM_KEY_TO_THE_FOCUSING_IRIS, 1, true))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_KEY_TO_THE_FOCUSING_IRIS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_LOST_KEY_TO_THE_FOCUSING_IRIS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
 
             // Heroic Key to the Focusing Iris
             if (player->GetQuestRewardStatus(QUEST_HC_KEY_TO_THE_FOCUSING_IRIS) && !player->HasItemCount(ITEM_HC_KEY_TO_THE_FOCUSING_IRIS, 1, true))
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_HC_KEY_TO_THE_FOCUSING_IRIS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
+                player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_LOST_HC_KEY_TO_THE_FOCUSING_IRIS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
 
             player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
 
@@ -3832,69 +3832,6 @@ class npc_locksmith : public CreatureScript
                     player->AddItem(ITEM_HC_KEY_TO_THE_FOCUSING_IRIS,1);
                     break;
             }
-            return true;
-        }
-};
-
-/*######
-## npc_experience
-######*/
-
-#define EXP_COST                100000 //10 00 00 copper (10golds)
-#define GOSSIP_TEXT_EXP         14736
-#define GOSSIP_XP_OFF           "I no longer wish to gain experience."
-#define GOSSIP_XP_ON            "I wish to start gaining experience again."
-
-class npc_experience : public CreatureScript
-{
-    public:
-        npc_experience() : CreatureScript("npc_experience") { }
-
-        bool OnGossipHello(Player* player, Creature* creature) override
-        {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_XP_OFF, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_XP_ON, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-            player->PlayerTalkClass->SendGossipMenu(GOSSIP_TEXT_EXP, creature->GetGUID());
-            return true;
-        }
-
-        bool OnGossipSelect(Player* player, Creature* /*creature*/, uint32 /*sender*/, uint32 action) override
-        {
-            player->PlayerTalkClass->ClearMenus();
-            bool noXPGain = player->HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN);
-            bool doSwitch = false;
-
-            switch (action)
-            {
-                case GOSSIP_ACTION_INFO_DEF + 1://xp off
-                    {
-                        if (!noXPGain)//does gain xp
-                            doSwitch = true;//switch to don't gain xp
-                    }
-                    break;
-                case GOSSIP_ACTION_INFO_DEF + 2://xp on
-                    {
-                        if (noXPGain)//doesn't gain xp
-                            doSwitch = true;//switch to gain xp
-                    }
-                    break;
-            }
-            if (doSwitch)
-            {
-                if (!player->HasEnoughMoney(uint64(EXP_COST)))
-                    player->SendBuyError(BUY_ERR_NOT_ENOUGHT_MONEY);
-                else if (noXPGain)
-                {
-                    player->ModifyMoney(-int64(EXP_COST));
-                    player->RemoveFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN);
-                }
-                else if (!noXPGain)
-                {
-                    player->ModifyMoney(-EXP_COST);
-                    player->SetFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN);
-                }
-            }
-            player->PlayerTalkClass->SendCloseGossip();
             return true;
         }
 };
@@ -6432,18 +6369,18 @@ public:
 
         char printinfo[500];
         sprintf(printinfo, "Current radius: %u", m_radius);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_INTERACT_1, printinfo, GOSSIP_SENDER_MAIN, 1, "", 0, true);
+        player->ADD_GOSSIP_ITEM_EXTENDED(GossipOptionNpc::SpiritHealer, printinfo, GOSSIP_SENDER_MAIN, 1, "", 0, true);
         
         sprintf(printinfo, "Count of npc: %u", m_count);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_INTERACT_1, printinfo, GOSSIP_SENDER_MAIN, 2, "", 0, true);
+        player->ADD_GOSSIP_ITEM_EXTENDED(GossipOptionNpc::SpiritHealer, printinfo, GOSSIP_SENDER_MAIN, 2, "", 0, true);
         
         sprintf(printinfo, "Time of despawn (in ms): %u", m_despawn);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_INTERACT_1, printinfo, GOSSIP_SENDER_MAIN, 3, "", 0, true);
+        player->ADD_GOSSIP_ITEM_EXTENDED(GossipOptionNpc::SpiritHealer, printinfo, GOSSIP_SENDER_MAIN, 3, "", 0, true);
 
         sprintf(printinfo, "NPC grouped by %u npc", m_grouped);
-        player->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_INTERACT_1, printinfo, GOSSIP_SENDER_MAIN, 4, "", 0, true);
+        player->ADD_GOSSIP_ITEM_EXTENDED(GossipOptionNpc::SpiritHealer, printinfo, GOSSIP_SENDER_MAIN, 4, "", 0, true);
 
-        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, "KAVABANGAAAA!!!", GOSSIP_SENDER_MAIN, 1);
+        player->ADD_GOSSIP_ITEM(GossipOptionNpc::BattleMaster, "KAVABANGAAAA!!!", GOSSIP_SENDER_MAIN, 1);
         player->SEND_GOSSIP_MENU(16777215, creature->GetGUID());
         return true;
     }
@@ -7570,7 +7507,6 @@ void AddSC_npcs_special()
     new npc_wormhole();
     new npc_pet_trainer();
     new npc_locksmith();
-    new npc_experience();
     new npc_firework();
     new npc_spring_rabbit();
     new npc_generic_harpoon_cannon();

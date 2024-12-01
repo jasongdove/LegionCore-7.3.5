@@ -40,7 +40,7 @@ public:
                     player->SEND_GOSSIP_MENU(28225, creature->GetGUID());
                     break;
                 case IN_PROGRESS: // Allow to teleport inside if event is in progress
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_I_WANT_IN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, GOSSIP_I_WANT_IN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
                     player->SEND_GOSSIP_MENU(28225, creature->GetGUID());
                     break;
                 default:

@@ -347,15 +347,15 @@ class go_end_time_teleport : public GameObjectScript
 
             if (InstanceScript* pInstance = pGo->GetInstanceScript())
             {
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Entryway of Time.":"Entryway of Time.", GOSSIP_SENDER_MAIN, START_TELEPORT);
+                pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Entryway of Time.":"Entryway of Time.", GOSSIP_SENDER_MAIN, START_TELEPORT);
 
                 if (pPlayer->isGameMaster())
                 {
-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Emerald Dragonshrine.":"Emerald Dragonshrine.", GOSSIP_SENDER_MAIN, TYRANDE_TELEPORT);
-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Azure Dragonshrine.":"Azure Dragonshrine.", GOSSIP_SENDER_MAIN, JAINA_TELEPORT);
-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Obsidian Dragonshrine.":"Obsidian Dragonshrine.", GOSSIP_SENDER_MAIN, BAINE_TELEPORT);
-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Ruby Dragonshine.":"Ruby Dragonshrine.", GOSSIP_SENDER_MAIN, SYLVANAS_TELEPORT);
-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Bronze Dragonshrine.":"Bronze Dragonshrine.", GOSSIP_SENDER_MAIN, MUROZOND_TELEPORT);
+                    pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Emerald Dragonshrine.":"Emerald Dragonshrine.", GOSSIP_SENDER_MAIN, TYRANDE_TELEPORT);
+                    pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Azure Dragonshrine.":"Azure Dragonshrine.", GOSSIP_SENDER_MAIN, JAINA_TELEPORT);
+                    pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Obsidian Dragonshrine.":"Obsidian Dragonshrine.", GOSSIP_SENDER_MAIN, BAINE_TELEPORT);
+                    pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Ruby Dragonshine.":"Ruby Dragonshrine.", GOSSIP_SENDER_MAIN, SYLVANAS_TELEPORT);
+                    pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Bronze Dragonshrine.":"Bronze Dragonshrine.", GOSSIP_SENDER_MAIN, MUROZOND_TELEPORT);
                 }
                 else
                 {
@@ -365,16 +365,16 @@ class go_end_time_teleport : public GameObjectScript
                     switch (echo1)
                     {
                         case DATA_ECHO_OF_JAINA:
-                            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Azure Dragonshrine.":"Azure Dragonshrine.", GOSSIP_SENDER_MAIN, JAINA_TELEPORT);
+                            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Azure Dragonshrine.":"Azure Dragonshrine.", GOSSIP_SENDER_MAIN, JAINA_TELEPORT);
                             break;
                         case DATA_ECHO_OF_BAINE:
-                            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Obsidian Dragonshrine.":"Obsidian Dragonshrine.", GOSSIP_SENDER_MAIN, BAINE_TELEPORT);
+                            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Obsidian Dragonshrine.":"Obsidian Dragonshrine.", GOSSIP_SENDER_MAIN, BAINE_TELEPORT);
                             break;
                         case DATA_ECHO_OF_TYRANDE:
-                            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Emerald Dragonshrine.":"Emerald Dragonshrine.", GOSSIP_SENDER_MAIN, TYRANDE_TELEPORT);
+                            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Emerald Dragonshrine.":"Emerald Dragonshrine.", GOSSIP_SENDER_MAIN, TYRANDE_TELEPORT);
                             break;
                         case DATA_ECHO_OF_SYLVANAS:
-                            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Ruby Dragonshine.":"Ruby Dragonshrine.", GOSSIP_SENDER_MAIN, SYLVANAS_TELEPORT);
+                            pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Ruby Dragonshine.":"Ruby Dragonshrine.", GOSSIP_SENDER_MAIN, SYLVANAS_TELEPORT);
                             break;
                     }
 
@@ -383,22 +383,22 @@ class go_end_time_teleport : public GameObjectScript
                         switch (echo2)
                         {
                             case DATA_ECHO_OF_JAINA:
-                                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Azure Dragonshrine.":"Azure Dragonshrine.", GOSSIP_SENDER_MAIN, JAINA_TELEPORT);
+                                pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Azure Dragonshrine.":"Azure Dragonshrine.", GOSSIP_SENDER_MAIN, JAINA_TELEPORT);
                                 break;
                             case DATA_ECHO_OF_BAINE:
-                                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Obsidian Dragonshrine.":"Obsidian Dragonshrine.", GOSSIP_SENDER_MAIN, BAINE_TELEPORT);
+                                pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Obsidian Dragonshrine.":"Obsidian Dragonshrine.", GOSSIP_SENDER_MAIN, BAINE_TELEPORT);
                                 break;
                             case DATA_ECHO_OF_TYRANDE:
-                                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Emerald Dragonshrine.":"Emerald Dragonshrine.", GOSSIP_SENDER_MAIN, TYRANDE_TELEPORT);
+                                pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Emerald Dragonshrine.":"Emerald Dragonshrine.", GOSSIP_SENDER_MAIN, TYRANDE_TELEPORT);
                                 break;
                             case DATA_ECHO_OF_SYLVANAS:
-                                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Ruby Dragonshine.":"Ruby Dragonshrine.", GOSSIP_SENDER_MAIN, SYLVANAS_TELEPORT);
+                                pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Ruby Dragonshine.":"Ruby Dragonshrine.", GOSSIP_SENDER_MAIN, SYLVANAS_TELEPORT);
                                 break;
                         }
                     }
 
                     if (pInstance->GetData(DATA_SECOND_ENCOUNTER) == DONE)
-                        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Bronze Dragonshrine.":"Bronze Dragonshrine.", GOSSIP_SENDER_MAIN, MUROZOND_TELEPORT);
+                        pPlayer->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Bronze Dragonshrine.":"Bronze Dragonshrine.", GOSSIP_SENDER_MAIN, MUROZOND_TELEPORT);
                 
                 }
             }

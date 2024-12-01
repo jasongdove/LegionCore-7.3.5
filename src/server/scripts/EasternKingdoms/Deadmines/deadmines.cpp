@@ -51,14 +51,14 @@ class deadmines_teleport : public GameObjectScript
             if (InstanceScript* instance = go->GetInstanceScript())
             {
                 if (instance->GetBossState(DATA_GLUBTOK) == DONE)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Teleport to entrance." : "Teleport to entrance.", GOSSIP_SENDER_DEADMINES_PORT, 0);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Teleport to entrance." : "Teleport to entrance.", GOSSIP_SENDER_DEADMINES_PORT, 0);
 
                 if (instance->GetBossState(DATA_ADMIRAL) == DONE)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Teleport to Ironclad Cove." : "Teleport to Ironclad Cove.", GOSSIP_SENDER_DEADMINES_PORT, 3);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Teleport to Ironclad Cove." : "Teleport to Ironclad Cove.", GOSSIP_SENDER_DEADMINES_PORT, 3);
                 else if (instance->GetBossState(DATA_FOEREAPER) == DONE)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Teleport to The Foundry." : "Teleport to The Foundry.", GOSSIP_SENDER_DEADMINES_PORT, 2);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Teleport to The Foundry." : "Teleport to The Foundry.", GOSSIP_SENDER_DEADMINES_PORT, 2);
                 else if (instance->GetBossState(DATA_HELIX) == DONE)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, ru ? "Teleport to The Mast Room." : "Teleport to The Mast Room.", GOSSIP_SENDER_DEADMINES_PORT, 1);
+                    player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, ru ? "Teleport to The Mast Room." : "Teleport to The Mast Room.", GOSSIP_SENDER_DEADMINES_PORT, 1);
             }
 
             player->SEND_GOSSIP_MENU(player->GetGossipTextId(go), go->GetGUID());
