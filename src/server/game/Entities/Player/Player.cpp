@@ -17881,6 +17881,14 @@ void Player::SendNewItem(Item* item, uint32 count, bool received, bool created, 
         CastSpell(this, 218892);
     if (item->GetEntry() == 136802)
         UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 54824);
+
+    uint32 startQuestId = item->GetTemplate()->GetStartQuestID();
+    Quest const* quest = startQuestId ? sQuestDataStore->GetQuestTemplate(startQuestId) : nullptr;
+    if (quest /*&& quest->IsAutoAccept()*/ && CanAddQuest(quest, false) && CanTakeQuest(quest, false))
+    {
+        AddQuestAndCheckCompletion(quest, item);
+        PlayerTalkClass->SendQuestGiverQuestDetails(quest, GetGUID(), true, true, false, item->GetEntry());
+    }
 }
 
 /*********************************************************/

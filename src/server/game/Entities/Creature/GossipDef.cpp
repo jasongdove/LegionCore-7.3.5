@@ -497,7 +497,7 @@ void PlayerMenu::SendQuestGiverStatus(QuestGiverStatus questStatus, ObjectGuid n
         player->SendDirectMessage(packet.Write());
 }
 
-void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, ObjectGuid npcGUID, bool autoLaunched, bool displayPopup, bool isAreaTrigger /*=false*/) const
+void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, ObjectGuid npcGUID, bool autoLaunched, bool displayPopup, bool isAreaTrigger /*=false*/, uint32 questStartItemId /*= 0*/) const
 {
     Player* player = _session->GetPlayer();
     if (!player)
@@ -547,7 +547,7 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, ObjectGuid npcGU
     if (quest->SourceSpellID)
         packet.LearnSpells.push_back(quest->SourceSpellID);
 
-    packet.QuestStartItemID = 0;
+    packet.QuestStartItemID = questStartItemId;
 
     quest->BuildQuestRewards(packet.Rewards, player);
 
