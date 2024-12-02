@@ -2267,42 +2267,12 @@ bool Creature::LoadCreatureFromDB(ObjectGuid::LowType guid, Map* map, bool addTo
                 curhealth = 1;
         }
 
-        switch (getClass())
-        {
-            case CLASS_WARRIOR:
-                SetPowerType(POWER_RAGE);
-                //SetMaxPower(POWER_RAGE, GetCreatePowers(POWER_RAGE));
-                //SetPower(POWER_RAGE, GetCreatePowers(POWER_RAGE));
-                break;
-            case CLASS_ROGUE:
-                SetPowerType(POWER_ENERGY);
-                SetMaxPower(POWER_ENERGY, GetCreatePowers(POWER_ENERGY));
-                SetPower(POWER_ENERGY, GetCreatePowers(POWER_ENERGY));
-                break;
-            default:
-                SetPower(POWER_MANA, data->curmana);
-                break;
-        }
+        SetPower(POWER_MANA, data->curmana);
     }
     else
     {
         curhealth = GetMaxHealth();
-        switch (getClass())
-        {
-            case CLASS_WARRIOR:
-                SetPowerType(POWER_RAGE);
-                //SetMaxPower(POWER_RAGE, GetCreatePowers(POWER_RAGE));
-                //SetPower(POWER_RAGE, GetCreatePowers(POWER_RAGE));
-                break;
-            case CLASS_ROGUE:
-                SetPowerType(POWER_ENERGY);
-                SetMaxPower(POWER_ENERGY, GetCreatePowers(POWER_ENERGY));
-                SetPower(POWER_ENERGY, GetCreatePowers(POWER_ENERGY));
-                break;
-            default:
-                SetFullPower(POWER_MANA);
-                break;
-        }
+        SetFullPower(POWER_MANA);
     }
 
     SetHealth(m_deathState == ALIVE ? curhealth : 0);

@@ -11167,6 +11167,7 @@ void Unit::SetPowerType(Powers power)
             break;
         case POWER_RAGE: // Reset to zero
             SetPower(POWER_RAGE, 0);
+            break;
         case POWER_FOCUS: // Make it full
             SetFullPower(new_powertype);
             break;
