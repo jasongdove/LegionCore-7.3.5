@@ -703,6 +703,18 @@ void WorldSession::HandleQuestgiverCompleteQuest(WorldPackets::Quest::QuestGiver
     }
 }
 
+void WorldSession::HandleQuestgiverCloseQuest(WorldPackets::Quest::QuestGiverCloseQuest& questGiverCloseQuest)
+{
+    if (_player->FindQuestSlot(questGiverCloseQuest.QuestID) >= MAX_QUEST_LOG_SIZE)
+        return;
+
+    Quest const* quest = sQuestDataStore->GetQuestTemplate(questGiverCloseQuest.QuestID);
+    if (!quest)
+        return;
+
+    //sScriptMgr->OnQuestAcknowledgeAutoAccept(_player, quest); // @TODO : QuestScript
+}
+
 void WorldSession::HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty& packet)
 {
     if (_player->GetQuestStatus(packet.QuestID) == QUEST_STATUS_NONE || _player->GetQuestStatus(packet.QuestID) == QUEST_STATUS_REWARDED)

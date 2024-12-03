@@ -454,6 +454,7 @@ namespace WorldPackets
         class QueryTreasurePicker;
         class QuestGiverChooseReward;
         class QuestGiverCompleteQuest;
+        class QuestGiverCloseQuest;
         class QuestGiverRequestReward;
         class QuestGiverQueryQuest;
         class QuestPushResult;
@@ -1595,6 +1596,7 @@ class WorldSession
         void HandleQuestLogRemoveQuest(WorldPackets::Quest::QuestLogRemoveQuest& packet);
         void HandleQuestConfirmAccept(WorldPackets::Quest::QuestConfirmAccept& packet);
         void HandleQuestgiverCompleteQuest(WorldPackets::Quest::QuestGiverCompleteQuest& packet);
+        void HandleQuestgiverCloseQuest(WorldPackets::Quest::QuestGiverCloseQuest& questGiverCloseQuest);
         void HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty& packet);
         void HandleQuestPushResult(WorldPackets::Quest::QuestPushResult& packet);
         void HandleRequestWorldQuestUpdate(WorldPackets::Quest::RequestWorldQuestUpdate& packet);

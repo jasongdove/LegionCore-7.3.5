@@ -363,6 +363,11 @@ void WorldPackets::Quest::QuestGiverCompleteQuest::Read()
     FromScript = _worldPacket.ReadBit();
 }
 
+void WorldPackets::Quest::QuestGiverCloseQuest::Read()
+{
+    _worldPacket >> QuestID;
+}
+
 WorldPacket const* WorldPackets::Quest::QuestGiverQuestDetails::Write()
 {
     _worldPacket << QuestGiverGUID;
