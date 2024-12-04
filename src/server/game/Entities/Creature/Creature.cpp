@@ -2521,10 +2521,6 @@ void Creature::setDeathState(DeathState s)
 
     if (s == JUST_DIED)
     {
-        // Disable hover after die
-        if (HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
-            SetHover(false);
-
         m_corpseRemoveTime = GameTime::GetGameTime() + m_corpseDelay;
         int32 _respawnDelay = m_respawnDelay;
 
@@ -2565,8 +2561,12 @@ void Creature::setDeathState(DeathState s)
         if (m_formation && m_formation->getLeader() == this)
             m_formation->FormationReset(true);
 
-        if (CanFly() || IsFlying() || (GetMiscStandValue() & UNIT_BYTE1_FLAG_HOVER))
-            i_motionMaster.MoveFall();
+        bool needsFalling = (IsFlying() || IsHovering()) && !IsUnderWater() && !HasUnitState(UNIT_STATE_ROOT);
+        SetHover(false);
+        SetDisableGravity(false, false);
+
+        if (needsFalling)
+            GetMotionMaster()->MoveFall();
 
         Unit::setDeathState(CORPSE);
     }

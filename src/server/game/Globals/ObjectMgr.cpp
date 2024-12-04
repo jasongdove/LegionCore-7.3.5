@@ -828,13 +828,17 @@ void ObjectMgr::LoadCreatureTemplates()
             creatureTemplate.Movement.Ground = static_cast<CreatureGroundMovementType>(fields[index].GetUInt8());
         index++;
 
-        creatureTemplate.Movement.Swim = fields[index++].GetBool();
+        if (!fields[index].IsNull())
+            creatureTemplate.Movement.Swim = fields[index].GetBool();
+        index++;
 
         if (!fields[index].IsNull())
             creatureTemplate.Movement.Flight = static_cast<CreatureFlightMovementType>(fields[index].GetUInt8());
         index++;
 
-        creatureTemplate.Movement.Rooted = fields[index++].GetBool();
+        if (!fields[index].IsNull())
+            creatureTemplate.Movement.Rooted = fields[index].GetBool();
+        index++;
 
         if (!fields[index].IsNull())
             creatureTemplate.Movement.Random = static_cast<CreatureRandomMovementType>(fields[index].GetUInt8());

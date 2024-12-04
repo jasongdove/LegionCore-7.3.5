@@ -25155,7 +25155,7 @@ bool Unit::SetHover(bool enable)
     {
         if (!IsPlayer())
             RemoveUnitMovementFlag(MOVEMENTFLAG_HOVER);
-        if (hoverHeight)
+        if (hoverHeight && (!isDying() || GetTypeId() != TYPEID_UNIT))
         {
             float newZ = GetPositionZ() - hoverHeight;
             UpdateAllowedPositionZ(GetPositionX(), GetPositionY(), newZ);
