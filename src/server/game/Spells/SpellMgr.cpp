@@ -1184,7 +1184,7 @@ bool SpellArea::IsFitToRequirements(Player const* player, uint32 newZone, uint32
                 return false;
 
         if (questEnd)                                // not in expected forbidden quest state
-            if ((questEndStatus & (1 << player->GetQuestStatus(questEnd))))
+            if ((questEndStatus & (1 << player->GetQuestStatus(questEnd))) == 0)
                 return false;
 
         if (auraSpell)                               // not have expected aura
