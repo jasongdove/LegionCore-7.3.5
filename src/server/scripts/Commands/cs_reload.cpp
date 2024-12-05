@@ -89,7 +89,6 @@ public:
             { "conditions",                   SEC_ADMINISTRATOR, true,  &HandleReloadConditions,                        ""},
             { "config",                       SEC_ADMINISTRATOR, true,  &HandleReloadConfigCommand,                     ""},
             { "conversation",                 SEC_ADMINISTRATOR, true,  &HandleReloadConversation,                      ""},
-            { "creature_area",                SEC_ADMINISTRATOR, true,  &HandleReloadCreatureArea,                      ""},
             { "creature_text",                SEC_ADMINISTRATOR, true,  &HandleReloadCreatureText,                      ""},
             { "creature_questender",          SEC_ADMINISTRATOR, true,  &HandleReloadCreatureQuestInvRelationsCommand,  ""},
             { "creature_linked_respawn",      SEC_GAMEMASTER,    true,  &HandleReloadLinkedRespawnCommand,              ""},
@@ -1301,52 +1300,6 @@ public:
         sObjectMgr->LoadPhaseDefinitions();    
         sWorld->UpdatePhaseDefinitions();    
         handler->SendGlobalGMSysMessage("Phase Definitions reloaded.");    
-        return true;
-    }
-
-    static bool HandleReloadCreatureArea(ChatHandler* handler, const char* args)
-    {
-        TC_LOG_INFO("misc", "Updating Creature Area...");
-
-        QueryResult result;
-
-        if (!*args)
-            return false;
-
-        char* mapIdStr = strtok((char*) args, " ");
-        uint32 mapId = uint32(atoi(mapIdStr));
-        result = WorldDatabase.PQuery("SELECT guid, map, position_x, position_y, position_z FROM creature WHERE map = %u", mapId);
-
-        if (!result)
-        {
-            TC_LOG_INFO("server.loading", "Updated 0 creature area.");
-            return true;
-        }
-
-        WorldDatabaseTransaction trans = WorldDatabase.BeginTransaction();
-
-        do
-        {
-            Field* fields = result->Fetch();
-
-            uint32 guid  = fields[0].GetUInt32();
-            uint32 mapId = fields[1].GetUInt32();
-            float  posX  = fields[2].GetFloat();
-            float  poxY  = fields[3].GetFloat();
-            float  posZ  = fields[4].GetFloat();
-
-            uint32 zoneId = 0, areaId = 0;
-            sMapMgr->GetZoneAndAreaId(zoneId, areaId, mapId, posX, poxY, posZ);
-
-            std::ostringstream outCreatureAreaStream;
-            outCreatureAreaStream << "REPLACE INTO creature_area (`guid`, `zone`, `area`) VALUES (" << guid << ", " << zoneId << ", " << areaId << ");";
-            trans->Append(outCreatureAreaStream.str().c_str());
-        }
-        while (result->NextRow());
-
-        WorldDatabase.CommitTransaction(trans);
-
-        handler->SendGlobalGMSysMessage("Creature Areas Updated.");
         return true;
     }
 
