@@ -816,7 +816,7 @@ public:
             instance = creature->GetInstanceScript();
             me->SetReactState(REACT_PASSIVE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-            me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
+            me->SetAnimTier(AnimTier::Fly);
             DoCast(me, SPELL_TOXIC_TORNADO_TR_AURA, true);
         }
 

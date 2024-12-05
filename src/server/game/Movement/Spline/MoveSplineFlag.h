@@ -31,8 +31,10 @@ namespace Movement
         enum eFlags
         {
             None                = 0x00000000,
-                                                        // x00-x07 used as animation Ids storage in pair with Animation flag
-            Unknown0            = 0x00000008,           // NOT VERIFIED - does someting related to falling/fixed orientation
+            Unknown_0x1         = 0x00000001,           // NOT VERIFIED
+            Unknown_0x2         = 0x00000002,           // NOT VERIFIED
+            Unknown_0x4         = 0x00000004,           // NOT VERIFIED
+            Unknown_0x8         = 0x00000008,           // NOT VERIFIED - does someting related to falling/fixed orientation
             FallingSlow         = 0x00000010,
             Done                = 0x00000020,
             Falling             = 0x00000040,           // Affects elevation computation, can't be combined with Parabolic flag
@@ -63,10 +65,9 @@ namespace Movement
             Unknown10           = 0x80000000,           // NOT VERIFIED
 
             // Masks
-            // animation ids stored here, see AnimType enum, used with Animation flag
-            Mask_Animations     = 0x7,
+
             // flags that shouldn't be appended into SMSG_MONSTER_MOVE\SMSG_MONSTER_MOVE_TRANSPORT packet, should be more probably
-            Mask_No_Monster_Move = Mask_Animations | Done,
+            Mask_No_Monster_Move = Done,
         };
 
         uint32& raw() { return reinterpret_cast<uint32&>(*this); }
@@ -82,7 +83,6 @@ namespace Movement
         bool isSmooth() const { return (raw() & Catmullrom) != 0; }
         bool isLinear() const { return !isSmooth(); }
 
-        uint8 getAnimationId() const { return animId; }
         bool hasAllFlags(uint32 f) const { return (raw() & f) == f; }
         bool hasFlag(uint32 f) const { return (raw() & f) != 0; }
         uint32 operator & (uint32 f) const { return (raw() & f); }
@@ -94,16 +94,18 @@ namespace Movement
         void operator &= (uint32 f) { raw() &= f; }
         void operator |= (uint32 f) { raw() |= f; }
 
-        void EnableAnimation(uint8 anim) { raw() = (raw() & ~(Mask_Animations | Falling | Parabolic | FallingSlow | FadeObject)) | Animation | (anim & Mask_Animations); }
-        void EnableParabolic() { raw() = (raw() & ~(Mask_Animations | Falling | Animation | FallingSlow | FadeObject)) | Parabolic; }
+        void EnableAnimation() { raw() = (raw() & ~(Falling | Parabolic | FallingSlow | FadeObject)) | Animation; }
+        void EnableParabolic() { raw() = (raw() & ~(Falling | Animation | FallingSlow | FadeObject)) | Parabolic; }
         void EnableFlying() { raw() = (raw() & ~(Falling)) | Flying; }
-        void EnableFalling() { raw() = (raw() & ~(Mask_Animations | Parabolic | Animation | Flying)) | Falling; }
+        void EnableFalling() { raw() = (raw() & ~(Parabolic | Animation | Flying)) | Falling; }
         void EnableCatmullRom() { raw() = (raw() & ~SmoothGroundPath) | Catmullrom; }
         void EnableTransportEnter() { raw() = (raw() & ~TransportExit) | TransportEnter; }
         void EnableTransportExit() { raw() = (raw() & ~TransportEnter) | TransportExit; }
 
-        uint8 animId             : 3;
-        bool unknown0            : 1;
+        bool unknown0x1          : 1;
+        bool unknown0x2          : 1;
+        bool unknown0x4          : 1;
+        bool unknown0x8          : 1;
         bool fallingSlow         : 1;
         bool done                : 1;
         bool falling             : 1;

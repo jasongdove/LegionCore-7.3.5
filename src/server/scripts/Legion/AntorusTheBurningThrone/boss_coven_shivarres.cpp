@@ -565,7 +565,7 @@ struct boss_coven_shivarres_generic : ScriptedAI
 
                 me->AddDelayedCombat(2000, [this] () -> void
                 {
-                    me->SetAnimTier(3);
+                    me->SetAnimTier(AnimTier::Fly);
                     me->SetDisableGravity(true);
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                     me->RemoveAurasAllDots();
@@ -590,7 +590,7 @@ struct boss_coven_shivarres_generic : ScriptedAI
             case 1:
             case 2:
             case 3:
-                me->SetAnimTier(0);
+                me->SetAnimTier(AnimTier::Ground);
                 me->CastSpellDelay(me, SPELL_SENSE_OF_DREAD, true, 500);
                 me->CastSpellDelay(me, tormentSpellId[id], false, 500);
                 //DEBUG!!!

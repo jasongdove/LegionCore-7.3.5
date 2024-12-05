@@ -6958,9 +6958,6 @@ void Player::BuildPlayerRepop()
     StopMirrorTimers();                                     //disable timers(bars)
 
     SetFloatValue(UNIT_FIELD_BOUNDING_RADIUS, float(1.0f));   //see radius of death player?
-
-    // set and clear other
-    SetMiscStandValue(UNIT_BYTE1_FLAG_ALWAYS_STAND);
 }
 
 void Player::ResurrectPlayer(float restore_percent, bool applySickness)
@@ -6974,7 +6971,6 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
     // speed change, land walk
 
     // remove death flag + set aura
-    SetMiscStandValue(0);
     if (getRace() == RACE_NIGHTELF)
         RemoveAurasDueToSpell(20584);                       // speed bonuses
 

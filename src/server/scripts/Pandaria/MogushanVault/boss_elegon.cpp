@@ -117,7 +117,7 @@ class boss_elegon : public CreatureScript
                 pInstance = creature->GetInstanceScript();
                 me->SetCanFly(true);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
-                me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
+                me->SetAnimTier(AnimTier::Fly);
             }
 
             InstanceScript* pInstance;

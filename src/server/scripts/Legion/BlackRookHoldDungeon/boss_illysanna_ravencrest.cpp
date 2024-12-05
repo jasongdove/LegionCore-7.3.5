@@ -129,7 +129,7 @@ struct boss_illysanna_ravencrest : public BossAI
         DoCast(me, SPELL_FURY_POWER_OVERRIDE, true);
         DoCast(me, SPELL_REGEN_POWER, true);
         me->SetReactState(REACT_AGGRESSIVE);
-        me->SetAnimTier(0);
+        me->SetAnimTier(AnimTier::Ground);
         SetFlyMode(false);
         phaseTwo = false;
         achievement = true;
@@ -193,14 +193,14 @@ struct boss_illysanna_ravencrest : public BossAI
                 Talk(SAY_EYE_BEAMS);
                 me->GetMotionMaster()->Clear(false);
                 me->SetFacingTo(4.05f);
-                me->SetAnimTier(3);
+                me->SetAnimTier(AnimTier::Fly);
                 events.RescheduleEvent(EVENT_SUMMON_ADDS, 1000);
                 events.RescheduleEvent(EVENT_EYE_BEAMS, 2000);
             }
             if (id == 1)
             {
                 SetFlyMode(false);
-                me->SetAnimTier(0);
+                me->SetAnimTier(AnimTier::Ground);
                 me->SetReactState(REACT_AGGRESSIVE, 500);
                 DoCast(me, SPELL_REGEN_POWER, true);
                 phaseTwo = false;

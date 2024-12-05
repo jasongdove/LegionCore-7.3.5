@@ -843,11 +843,6 @@ void SmartAI::SetFly(bool fly)
 {
     me->SetCanFly(fly);
     me->SetDisableGravity(fly);
-
-    if (fly)
-        me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
-    else
-        me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
 }
 
 void SmartAI::SetSwim(bool swim)

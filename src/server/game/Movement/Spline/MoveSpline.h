@@ -106,6 +106,7 @@ namespace Movement
 
         bool walk;
         float _velocity;
+        Optional<AnimTierTransition> anim_tier;
 
     public:
         const MySpline& _Spline() const { return spline; }
@@ -155,6 +156,8 @@ namespace Movement
         G3D::Vector3 FinalDestination() const { return Initialized() ? spline.getPoint(spline.last()) : G3D::Vector3(); }
         G3D::Vector3 CurrentDestination() const { return Initialized() ? spline.getPoint(point_Idx+1) : G3D::Vector3(); }
         int32 currentPathIdx() const;
+
+        Optional<AnimTier> GetAnimation() const { return anim_tier ? anim_tier->AnimTier : Optional<AnimTier>{}; }
 
         bool onTransport;
         bool splineIsFacingOnly;

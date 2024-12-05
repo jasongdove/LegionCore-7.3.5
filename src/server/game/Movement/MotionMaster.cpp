@@ -402,7 +402,7 @@ void MotionMaster::MoveLand(uint32 id, Position const& pos)
 
     Movement::MoveSplineInit init(*_owner);
     init.MoveTo(x, y, z);
-    init.SetAnimation(Movement::ToGround);
+    init.SetAnimation(AnimTier::Ground);
     init.Launch();
     Mutate(new EffectMovementGenerator(id), MOTION_SLOT_ACTIVE);
 }
@@ -413,7 +413,7 @@ void MotionMaster::MoveTakeoff(uint32 id, float x, float y, float z)
 
     Movement::MoveSplineInit init(*_owner);
     init.MoveTo(x, y, z);
-    init.SetAnimation(Movement::ToFly);
+    init.SetAnimation(AnimTier::Hover);
     init.Launch();
     Mutate(new EffectMovementGenerator(id), MOTION_SLOT_ACTIVE);
 }
@@ -620,7 +620,7 @@ void MotionMaster::MoveCirclePath(float x, float y, float z, float radius, bool 
     if (_owner->IsFlying())
     {
         init.SetFly();
-        init.SetAnimation(Movement::ToFly);
+        init.SetAnimation(AnimTier::Hover);
     }
     else
         init.SetWalk(true);

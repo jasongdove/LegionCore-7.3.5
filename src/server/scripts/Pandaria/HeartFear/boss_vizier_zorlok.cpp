@@ -87,7 +87,6 @@ class boss_vizier_zorlok : public CreatureScript
             {
                 me->SetCanFly(true);
                 me->SetDisableGravity(true);
-                me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
             }
 
             uint8 newindex, lastindex, flycount;
@@ -143,7 +142,6 @@ class boss_vizier_zorlok : public CreatureScript
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
                     me->SetCanFly(true);
                     me->SetDisableGravity(true);
-                    me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                 }
                 else
@@ -151,7 +149,6 @@ class boss_vizier_zorlok : public CreatureScript
                     flyMove = false;
                     me->SetCanFly(false);
                     me->SetDisableGravity(false);
-                    me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                 }
             }

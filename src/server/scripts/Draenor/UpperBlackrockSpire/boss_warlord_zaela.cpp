@@ -195,7 +195,7 @@ struct boss_warlord_zaela : public BossAI
                 summon->GetMotionMaster()->MovePath((NPC_EMBERSCALE_IRONFLIGHT * 100) + rand, false);
             }
             else
-                summon->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+                summon->SetAnimTier(AnimTier::Ground);
             break;
         }
         }
@@ -322,7 +322,7 @@ struct npc_emberscale_ironflight : public CreatureAI
     {
         if (action == ACTION_DRAKE_INTRO)
         {
-            me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+            me->SetAnimTier(AnimTier::Hover);
             me->GetMotionMaster()->MovePoint(1, drakePos[2]);
         }
     }
@@ -331,7 +331,7 @@ struct npc_emberscale_ironflight : public CreatureAI
     {
         if (me->GetEntry() == NPC_EMBERSCALE_IRONFLIGHT_2)
         {
-            me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+            me->SetAnimTier(AnimTier::Hover);
             me->GetMotionMaster()->MovePoint(1, drakePos[5]);
         }
     }
@@ -401,7 +401,7 @@ struct npc_emberscale_matron : public ScriptedAI
     {
         me->SetReactState(REACT_PASSIVE);
         me->SetCanFly(true);
-        me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+        me->SetAnimTier(AnimTier::Hover);
         me->SetSpeed(MOVE_FLIGHT, 4.0f);
     }
 

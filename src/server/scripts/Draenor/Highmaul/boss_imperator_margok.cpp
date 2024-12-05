@@ -350,7 +350,6 @@ struct boss_imperator_margok : public BossAI
                     me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_DISABLE_TURN);
 
                     me->SetAnimKitId(0);
-                    me->SetAnimTier(0);
                     me->SetDisableGravity(false);
                     me->SetHover(false);
                     me->SetReactState(REACT_AGGRESSIVE);
@@ -492,7 +491,6 @@ struct boss_imperator_margok : public BossAI
     void EnterEvadeMode() override
     {
         me->SetAnimKitId(0);
-        me->SetAnimTier(0);
         me->SetDisableGravity(false);
         me->SetHover(false);
         me->SetReactState(REACT_AGGRESSIVE);
@@ -1105,7 +1103,6 @@ struct boss_imperator_margok : public BossAI
             me->CastSpell(me, TransitionVisualPhase2, true);
             me->SetAnimKitId(AnimKitFlyingRune);
 
-            me->SetAnimTier(3);
             me->SetDisableGravity(true);
             me->SetHover(true);
 
@@ -1158,7 +1155,6 @@ struct boss_imperator_margok : public BossAI
 
             me->SetAnimKitId(AnimKitFlyingRune);
 
-            me->SetAnimTier(3);
             me->SetDisableGravity(true);
             me->SetHover(true);
 
@@ -1250,7 +1246,6 @@ struct boss_imperator_margok : public BossAI
 
             me->SetAnimKitId(AnimKitFlyingRune);
 
-            me->SetAnimTier(3);
             me->SetDisableGravity(true);
             me->SetHover(true);
 

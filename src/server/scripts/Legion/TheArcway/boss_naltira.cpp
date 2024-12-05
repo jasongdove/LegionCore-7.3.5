@@ -184,7 +184,6 @@ public:
             {
                 me->SetDisableGravity(false);
                 me->RemoveAurasDueToSpell(SPELL_WEB_BEAM_BOSS);
-                me->SetAnimTier(0);
                 me->SetReactState(REACT_AGGRESSIVE);
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
             }

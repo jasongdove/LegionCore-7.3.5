@@ -147,10 +147,10 @@ namespace Movement
 
     char const* SplineFlagNames[32] =
     {
-        STRINGIZE(AnimBit1           ), // 0x00000001
-        STRINGIZE(AnimBit2           ), // 0x00000002
-        STRINGIZE(AnimBit3           ), // 0x00000004
-        STRINGIZE(Unknown0           ), // 0x00000008
+        STRINGIZE(Unknown_0x1        ), // 0x00000001
+        STRINGIZE(Unknown_0x2        ), // 0x00000002
+        STRINGIZE(Unknown_0x3        ), // 0x00000004
+        STRINGIZE(Unknown_0x4        ), // 0x00000008
         STRINGIZE(FallingSlow        ), // 0x00000010
         STRINGIZE(Done               ), // 0x00000020
         STRINGIZE(Falling            ), // 0x00000040           // Not Compartible With Trajectory Movement

@@ -433,7 +433,6 @@ public:
                     case EVENT_INTRO:
                         me->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
                         me->SetDisableGravity(true);
-                        me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
                         me->SetCanFly(true);
                         me->GetMotionMaster()->Clear();
                         me->GetMotionMaster()->MovePoint(1, -126.518f, -233.342f, 36.358f); // Position on top of raid.
@@ -463,7 +462,6 @@ public:
 
                         me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
 
-                        me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         me->SetDisableGravity(false);
                         me->SetCanFly(false);
@@ -490,7 +488,6 @@ public:
 
                         me->GetMotionMaster()->Clear();
                         me->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
-                        me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
                         me->SetDisableGravity(true);
                         me->SetCanFly(true);
 
@@ -525,7 +522,6 @@ public:
                         me->GetMotionMaster()->Clear();
                         me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
                         me->SetDisableGravity(false);
-                        me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
                         me->SetCanFly(false);
                         events.RescheduleEvent(EVENT_RETURN, 1000);
                         events.RescheduleEvent(EVENT_GROUND, 1500);

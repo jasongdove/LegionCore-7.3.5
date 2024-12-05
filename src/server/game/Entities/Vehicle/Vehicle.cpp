@@ -1083,6 +1083,9 @@ bool VehicleJoinEvent::Execute(uint64, uint32)
             player->UnsummonPetTemporaryIfAny();
     }
 
+    if (veSeat->Flags & VEHICLE_SEAT_FLAG_DISABLE_GRAVITY)
+        Passenger->SetDisableGravity(true);
+
     if (veSeat->Flags & VEHICLE_SEAT_FLAG_HIDE_PASSENGER)
         if (!(Target->IsCreature() && Target->ToCreature()->GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_VEHICLE_ATTACKABLE_PASSENGERS))
         {
@@ -1128,7 +1131,6 @@ bool VehicleJoinEvent::Execute(uint64, uint32)
     }
 
     Passenger->SendBreakTarget(Target);                      // SMSG_BREAK_TARGET
-    Passenger->SetDisableGravity(true, true);
     Passenger->SetControlled(true, UNIT_STATE_ROOT);         // SMSG_FORCE_ROOT - In some cases we send SMSG_MOVE_SPLINE_ROOT here (for creatures)
 
     // also adds MOVEMENTFLAG_ROOT

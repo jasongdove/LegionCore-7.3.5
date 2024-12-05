@@ -1366,7 +1366,8 @@ class Unit : public WorldObject
 
         void SendDurabilityLoss(Player* receiver, uint32 percent);
 
-        void SetAnimTier(uint32 tier);
+        AnimTier GetAnimTier() const { return AnimTier(GetByteValue(UNIT_FIELD_BYTES_1, UNIT_BYTES_1_OFFSET_ANIM_TIER)); }
+        void SetAnimTier(AnimTier animTier, bool notifyClient = true);
         void PlayOneShotAnimKit(uint16 animKitID);
         void SetAnimKitId(uint16 animKitID);
         uint16 GetAIAnimKitId() const override { return _aiAnimKitId; }
@@ -1559,13 +1560,13 @@ class Unit : public WorldObject
         bool IsWalking() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING);}
         bool IsHovering() const { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_HOVER);}
         bool SetWalk(bool enable);
-        bool SetDisableGravity(bool disable, bool isPlayer = false);
-        bool SetFall(bool enable, bool isPlayer = false);
+        bool SetDisableGravity(bool disable, bool updateAnimationTier = true);
+        bool SetFall(bool enable);
         bool SetSwim(bool enable);
         bool SetCanFly(bool apply);
         bool SetWaterWalking(bool enable);
         bool SetFeatherFall(bool enable);
-        bool SetHover(bool enable);
+        bool SetHover(bool enable, bool updateAnimationTier = true);
         bool SetCollision(bool disable);
 
         void SetInFront(Unit const* target);

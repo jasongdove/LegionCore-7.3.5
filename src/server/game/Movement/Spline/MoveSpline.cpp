@@ -88,7 +88,7 @@ Location MoveSpline::ComputePosition() const
     }
     else
     {
-        if (!splineflags.hasFlag(MoveSplineFlag::OrientationFixed | MoveSplineFlag::Falling | MoveSplineFlag::Unknown0))
+        if (!splineflags.hasFlag(MoveSplineFlag::OrientationFixed | MoveSplineFlag::Falling | MoveSplineFlag::Unknown_0x8))
         {
             G3D::Vector3 hermite;
             spline.evaluate_derivative(point_Idx, u, hermite);
@@ -249,6 +249,7 @@ void MoveSpline::Initialize(const MoveSplineInitArgs& args)
     point_Idx_offset = args.path_Idx_offset;
     initialOrientation = args.initialOrientation;
     spell_effect_extra = args.spellEffectExtra;
+    anim_tier = args.animTier;
     splineIsFacingOnly = args.path.size() == 2 && args.facing.type != MONSTER_MOVE_NORMAL && ((args.path[1] - args.path[0]).length() < 0.1f);
 
     onTransport = false;

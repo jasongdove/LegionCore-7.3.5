@@ -203,13 +203,11 @@ class npc_iron_qon_maunt : public CreatureScript
                     {
                         maunt->SetCanFly(true);
                         maunt->SetDisableGravity(true);
-                        maunt->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
                     }
                     else
                     {
                         maunt->SetCanFly(false);
                         maunt->SetDisableGravity(false);
-                        maunt->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
                     }
                 }
             }

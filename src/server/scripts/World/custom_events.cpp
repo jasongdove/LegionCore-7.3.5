@@ -2658,7 +2658,7 @@ struct boss_new_year_2019_atray : public ScriptedAI
         events.RescheduleEvent(ATRAY_DEATHFROST, urand(25000, 30000));
         me->StopAttack(true);
         SetFlyMode(true);
-        me->SetAnimTier(3);
+        me->SetAnimTier(AnimTier::Fly);
         me->AddDelayedEvent(2000, [this]() -> void
         {
             me->GetMotionMaster()->MovePoint(1, AtrayFlyPhasePos[urand(0, 7)], false);
@@ -2809,7 +2809,7 @@ struct boss_new_year_2019_atray : public ScriptedAI
         case 20:
             me->SetFacingTo(0.8f);
             SetFlyMode(false);
-            me->SetAnimTier(0);
+            me->SetAnimTier(AnimTier::Ground);
             me->GetMotionMaster()->MoveFall();
             me->SetReactState(REACT_AGGRESSIVE, 2000);
             StartDefaultEvents(false, true);
@@ -2824,7 +2824,7 @@ struct boss_new_year_2019_atray : public ScriptedAI
         explodeCasted = 0;
         me->SetReactState(REACT_AGGRESSIVE);
         SetFlyMode(false);
-        me->SetAnimTier(0);
+        me->SetAnimTier(AnimTier::Ground);
         phase = false;
         me->RemoveAura(SPELL_ATRAY_FURY);
         ragephase = false;
@@ -3760,7 +3760,7 @@ struct npc_new_year_2019_evala_minion : public VehicleAI
     {
         me->StopAttack(true);
         SetFlyMode(true);
-        me->SetAnimTier(3);
+        me->SetAnimTier(AnimTier::Fly);
         me->SetSpeed(MOVE_FLIGHT, 0.2f);
         me->GetMotionMaster()->MovePoint(1, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 70.f);
         me->AddDelayedEvent(14000, [this]() -> void

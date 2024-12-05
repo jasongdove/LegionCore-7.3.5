@@ -235,7 +235,7 @@ struct boss_elerethe_renferal : public BossAI
 
     void JustDied(Unit* /*killer*/) override
     {
-        me->SetAnimTier(0);
+        me->SetAnimTier(AnimTier::Ground);
         RemoveEventTrash();
         _JustDied();
     }
@@ -245,7 +245,7 @@ struct boss_elerethe_renferal : public BossAI
         BossAI::EnterEvadeMode();
         RemoveEventTrash();
         me->RemoveAllAuras();
-        me->SetAnimTier(0);
+        me->SetAnimTier(AnimTier::Ground);
         me->NearTeleportTo(11405.6f, 11400.7f, -85.32f, 4.62f);
         me->GetMotionMaster()->MoveIdle();
     }
@@ -381,7 +381,6 @@ struct boss_elerethe_renferal : public BossAI
                     DoCast(me, SPELL_VILE_AMBUSH_FILTER, true);
                     break;
                 case SPELL_VILE_AMBUSH_JUMP:
-                    me->SetAnimTier(0);
                     me->SetDisableGravity(false);
                     me->SetReactState(REACT_AGGRESSIVE);
                     if (IsMythicRaid())

@@ -661,7 +661,7 @@ class boss_galakras : public CreatureScript
                             break;
                         case EVENT_GALAKRAS_EXECUTE_2:
                             me->SetReactState(REACT_AGGRESSIVE);
-                            me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+                            me->SetAnimTier(AnimTier::Ground);
                             me->RemoveAurasDueToSpell(SPELL_ANTIAIR_CANNON);
                             events.RescheduleEvent(EVENT_GALAKRAS_EXECUTE_3, 0);
                             events.RescheduleEvent(EVENT_GALAKRAS_EXECUTE_4, 20000);
@@ -1802,7 +1802,7 @@ class npc_dragonmaw_proto_drake : public CreatureScript
                             break;
                         case EVENT_PROTO_DRAKE_FLY:
                             me->SetCanFly(true);
-                            me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
+                            me->SetAnimTier(AnimTier::Fly);
                             me->GetMotionMaster()->MoveRandom(5.0f);
                             DoZoneInCombat(me, 180.0f);
                             events.RescheduleEvent(EVENT_DRAKE_DRAKEFIRE, 7000);

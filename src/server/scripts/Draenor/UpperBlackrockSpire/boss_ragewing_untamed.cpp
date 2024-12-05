@@ -186,7 +186,6 @@ struct boss_ragewing_untamed : public BossAI
             {
                 me->SetCanFly(false);
                 me->SetDisableGravity(false);
-                me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
                 me->SetReactState(REACT_AGGRESSIVE);
                 me->SetOrientation(4.696021f);
                 me->SetFacingTo(4.696021f);

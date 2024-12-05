@@ -346,7 +346,7 @@ struct npc_ironbarb_skyreaver : public ScriptedAI
                 tharbek->CastSpell(me, SPELL_RIDE_VEHICLE, true);
             break;
         case 6:
-            me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+            me->SetAnimTier(AnimTier::Ground);
             me->SetReactState(REACT_AGGRESSIVE);
 
             if (auto tharbek = me->GetAnyOwner())

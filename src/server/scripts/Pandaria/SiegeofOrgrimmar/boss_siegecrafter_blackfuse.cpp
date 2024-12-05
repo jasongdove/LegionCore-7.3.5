@@ -1501,7 +1501,7 @@ public:
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             if (me->GetEntry() == NPC_LASER_ARRAY && !me->ToTempSummon())
             {
-                me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
+                me->SetAnimTier(AnimTier::Fly);
                 me->AddAura(SPELL_CONVEYOR_DEATH_BEAM_V, me);
                 DoCast(me, SPELL_CONVEYOR_DEATH_BEAM_AT, true);
             }

@@ -35,7 +35,6 @@ public:
             me->GetMotionMaster()->MovePath(439156, true);
             me->SetCanFly(true);
             me->SetDisableGravity(true);
-            me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
             me->SetReactState(REACT_AGGRESSIVE);
 
             events.Reset();
@@ -46,7 +45,6 @@ public:
         void EnterCombat(Unit* unit)
         {
             me->SetDisableGravity(false);
-            me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3,  UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
             me->CastSpell(me, SPELL_SOLAR_RADIATION);
             events.RescheduleEvent(EVENT_1, 12000, EVENT_GROUP_GROUND);
             events.RescheduleEvent(EVENT_2, 29000, EVENT_GROUP_GROUND);
@@ -89,7 +87,6 @@ public:
             {
                 me->SetCanFly(false);
                 me->SetDisableGravity(false);
-                me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
                 me->SetReactState(REACT_AGGRESSIVE);
 
                 events.RescheduleEvent(EVENT_1, 12000, EVENT_GROUP_GROUND);
@@ -124,7 +121,6 @@ public:
 
 					me->SetCanFly(true);
 					me->SetDisableGravity(true);
-					me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
 					me->SetReactState(REACT_PASSIVE);
 					me->AttackStop();
 					Position pos;

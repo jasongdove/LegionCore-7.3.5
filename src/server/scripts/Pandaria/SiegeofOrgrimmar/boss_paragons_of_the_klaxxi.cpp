@@ -494,7 +494,7 @@ public:
             summons.DespawnAll();
             for (uint8 n = 0; n < 4; n++)
                 me->RemoveAurasDueToSpell(removeaurasentry[n]);
-            me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
+            me->SetAnimTier(AnimTier::Ground);
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
             me->SetReactState(REACT_PASSIVE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -592,7 +592,7 @@ public:
             case ACTION_KLAXXI_IN_PROGRESS:
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
                 me->GetMotionMaster()->MoveJump(1582.4f, -5684.9f, -313.635f, 15.0f, 15.0f, 1);
-                me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
+                me->SetAnimTier(AnimTier::Fly);
                 break;
             case ACTION_RE_ATTACK:
                 me->SetFullHealth();
@@ -601,7 +601,7 @@ public:
                 DoZoneInCombat(me, 150.0f);
                 break;
             case ACTION_RE_ATTACK_KILRUK:
-                me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
+                me->SetAnimTier(AnimTier::Ground);
                 me->SetReactState(REACT_AGGRESSIVE);
                 events.RescheduleEvent(EVENT_DEATH_FROM_ABOVE, 34000);
                 break;
@@ -628,7 +628,7 @@ public:
                 case 1:
                     if (Player* pl = me->FindNearestPlayer(250.0f, true))
                     {
-                        me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
+                        me->SetAnimTier(AnimTier::Ground);
                         me->RemoveAurasDueToSpell(SPELL_READY_TO_FIGHT);
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                         if (me->GetEntry() != NPC_HISEK)
@@ -650,7 +650,7 @@ public:
                     DoCast(me, SPELL_HURL_AMBER);
                     break;
                 case 3:
-                    me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
+                    me->SetAnimTier(AnimTier::Ground);
                     me->SetReactState(REACT_AGGRESSIVE);
                     events.RescheduleEvent(EVENT_FLASH, 10000);
                     break;
@@ -953,7 +953,7 @@ public:
                         dfatargetGuid = pl->GetGUID();
                         events.DelayEvents(6000);
                         me->StopAttack();
-                        me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
+                        me->SetAnimTier(AnimTier::Fly);
                         me->GetMotionMaster()->MoveJump(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 10.0f, 15.0f, 15.0f, 4);
                     }
                     else
@@ -1036,7 +1036,7 @@ public:
                     //Karoz
                 case EVENT_HURL_AMBER:
                     me->StopAttack();
-                    me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
+                    me->SetAnimTier(AnimTier::Fly);
                     if (Creature* ab = me->FindNearestCreature(NPC_AMBER_BOMB, 110.0f, true))
                         me->GetMotionMaster()->MoveJump(ab->GetPositionX(), ab->GetPositionY(), ab->GetPositionZ() + 5.0f, 15.0f, 15.0f, 2);
                     break;

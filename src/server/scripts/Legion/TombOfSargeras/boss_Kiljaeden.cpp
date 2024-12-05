@@ -474,7 +474,7 @@ struct boss_tos_kiljaeden : BossAI
         else if (id == 4)
         {
             SetFlyMode(false);
-            me->SetAnimTier(0);
+            me->SetAnimTier(AnimTier::Ground);
             me->GetMotionMaster()->MoveFall();
             me->RemoveAurasDueToSpell(SPELL_NETHER_GALE);
             me->SetReactState(REACT_AGGRESSIVE, 3000);
@@ -499,7 +499,6 @@ struct boss_tos_kiljaeden : BossAI
                 DefaultEvents();
                 me->StopAttack(true);
                 SetFlyMode(true);
-                me->SetAnimTier(3);
                 me->SetSpeed(MOVE_FLIGHT, 3.0f, true);
                 me->GetMotionMaster()->MovePoint(1, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 10.0f, false);
                 DoCast(me, SPELL_WINGSPAN_SOUND, true);
