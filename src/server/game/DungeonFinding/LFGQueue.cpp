@@ -189,14 +189,12 @@ void LFGQueue::RemoveFromCompatibles(ObjectGuid guid)
     out << guid;
     std::string strGuid = out.str();
 
-    std::lock_guard<std::recursive_mutex> _lock(m_lock);
-
-    TC_LOG_DEBUG("lfg", "LFGQueue::RemoveFromCompatibles: Removing %s", guid.ToString().c_str());
-    for (LfgCompatibleContainer::iterator iter = CompatibleMapStore.begin(); iter != CompatibleMapStore.end(); ++iter)
+    TC_LOG_DEBUG("lfg.queue.data.compatibles.remove", "Removing %s", guid.ToString().c_str());
+    for (LfgCompatibleContainer::iterator itNext = CompatibleMapStore.begin(); itNext != CompatibleMapStore.end();)
     {
-        std::string key = iter->first;
-        if (std::string::npos != key.find(strGuid))
-            CompatibleMapStore.erase(key);
+        LfgCompatibleContainer::iterator it = itNext++;
+        if (std::string::npos != it->first.find(strGuid))
+            CompatibleMapStore.erase(it);
     }
 }
 
@@ -208,22 +206,13 @@ void LFGQueue::RemoveFromCompatibles(ObjectGuid guid)
 */
 void LFGQueue::SetCompatibles(std::string const& key, LfgCompatibility compatibles)
 {
-    std::lock_guard<std::recursive_mutex> _lock(m_lock);
-    CompatibleMapStore.update(key, [compatibles](LfgCompatibleContainer::value_type& item, LfgCompatibleContainer::value_type* old)
-    {
-        if (old)
-            item.second.roles = old->second.roles;
-        item.second.compatibility = compatibles;
-    });
+    LfgCompatibilityData& data = CompatibleMapStore[key];
+    data.compatibility = compatibles;
 }
 
 void LFGQueue::SetCompatibilityData(std::string const& key, LfgCompatibilityData const& data)
 {
-    std::lock_guard<std::recursive_mutex> _lock(m_lock);
-    CompatibleMapStore.insert_with(key, [data](LfgCompatibleContainer::value_type& item)
-    {
-        item.second.compatibility = data.compatibility; item.second.roles = data.roles;
-    });
+    CompatibleMapStore[key] = data;
 }
 
 /**
@@ -234,20 +223,18 @@ void LFGQueue::SetCompatibilityData(std::string const& key, LfgCompatibilityData
 */
 LfgCompatibility LFGQueue::GetCompatibles(std::string const& key)
 {
-    std::lock_guard<std::recursive_mutex> _lock(m_lock);
-    LfgCompatibleContainer::guarded_ptr ptr = CompatibleMapStore.get(key);
-    if (ptr)
-        return ptr->second.compatibility;
+    LfgCompatibleContainer::iterator itr = CompatibleMapStore.find(key);
+    if (itr != CompatibleMapStore.end())
+        return itr->second.compatibility;
 
     return LFG_COMPATIBILITY_PENDING;
 }
 
 LfgCompatibilityData* LFGQueue::GetCompatibilityData(std::string const& key)
 {
-    std::lock_guard<std::recursive_mutex> _lock(m_lock);
-    LfgCompatibleContainer::guarded_ptr ptr = CompatibleMapStore.get(key);
-    if (ptr)
-        return &ptr->second;
+    LfgCompatibleContainer::iterator itr = CompatibleMapStore.find(key);
+    if (itr != CompatibleMapStore.end())
+        return &(itr->second);
 
     return nullptr;
 }
@@ -759,16 +746,17 @@ std::string LFGQueue::DumpCompatibleInfo(bool full /* = false */) const
 
 void LFGQueue::FindBestCompatibleInQueue(LfgQueueDataContainer::iterator itrQueue)
 {
-    std::lock_guard<std::recursive_mutex> _lock(m_lock);
-
     TC_LOG_DEBUG("lfg", "LFGQueue::FindBestCompatibleInQueue: %s", itrQueue->first.ToString().c_str());
     std::ostringstream o;
     o << itrQueue->first;
     std::string sguid = o.str();
 
-    for (LfgCompatibleContainer::iterator itr = CompatibleMapStore.begin(); itr != CompatibleMapStore.end(); ++itr)
-        if (itr->second.compatibility == LFG_COMPATIBLES_WITH_LESS_PLAYERS && std::string::npos != itr->first.find(sguid))
+    for (LfgCompatibleContainer::const_iterator itr = CompatibleMapStore.begin(); itr != CompatibleMapStore.end(); ++itr)
+        if (itr->second.compatibility == LFG_COMPATIBLES_WITH_LESS_PLAYERS &&
+            std::string::npos != itr->first.find(sguid))
+        {
             UpdateBestCompatibleInQueue(itrQueue, itr->first, itr->second.roles);
+        }
 }
 
 void LFGQueue::UpdateBestCompatibleInQueue(LfgQueueDataContainer::iterator itrQueue, std::string const& key, LfgRolesMap const& roles)

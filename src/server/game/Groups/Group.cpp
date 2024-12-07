@@ -466,8 +466,7 @@ void Group::RemoveInvite(Player* player)
 {
     if (player)
     {
-        if (!m_invitees.empty())
-            m_invitees.erase(PlayerHashGen(player));
+        m_invitees.erase(player);
         player->SetGroupInvite(nullptr);
     }
 }

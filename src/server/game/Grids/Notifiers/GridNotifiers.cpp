@@ -76,7 +76,7 @@ void VisibleNotifier::SendToSelf()
     Transport* transport = i_player.GetTransport();
     if (transport && transport->GetMap() == i_player.GetMap())
     {
-        for (WorldObjectSet::iterator itr = transport->GetPassengers().begin(); itr != transport->GetPassengers().end(); ++itr)
+        for (Transport::PassengerSet::const_iterator itr = transport->GetPassengers().begin(); itr != transport->GetPassengers().end(); ++itr)
         {
             WorldObject* obj = (*itr);
             if (!obj || !obj->IsInWorld())

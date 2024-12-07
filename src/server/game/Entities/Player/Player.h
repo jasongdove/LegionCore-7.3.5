@@ -31,7 +31,6 @@
 #include "GameTime.h"
 #include "GridObject.h"
 #include "GroupReference.h"
-#include "HashFuctor.h"
 #include "Item.h"
 #include "ItemTemplate.h"
 #include "LogsSystem.h"
@@ -270,7 +269,7 @@ enum SceneEventStatus
 
 typedef std::unordered_map<uint32, PlayerSpellState> PlayerTalentMap;
 typedef std::unordered_map<uint32, PlayerSpellState> PlayerPvPTalentMap;
-typedef cds::container::FeldmanHashMap< cds::gc::HP, uint32, PlayerSpell, uint32Traits > PlayerSpellMap;
+typedef std::unordered_map<uint32, PlayerSpell> PlayerSpellMap;
 typedef std::list<SpellModifier*> SpellModList;
 typedef std::list<uint32> ItemSpellList;
 typedef std::list<uint32> ExcludeCasterSpellList;

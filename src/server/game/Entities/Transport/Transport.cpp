@@ -261,7 +261,7 @@ void Transport::AddPassenger(WorldObject* passenger)
     if (!IsInWorld())
         return;
 
-    if (_passengers.insert(passenger))
+    if (_passengers.insert(passenger).second)
     {
         passenger->SetTransport(this);
         passenger->m_movementInfo.transport.Guid = GetGUID();
@@ -281,8 +281,8 @@ void Transport::AddPassenger(WorldObject* passenger)
 
 void Transport::RemovePassenger(WorldObject* passenger)
 {
-    bool erased = _passengers.erase(worldObjectHashGen(passenger));
-    if (erased || _staticPassengers.erase(worldObjectHashGen(passenger))) // static passenger can remove itself in case of grid unload
+    bool erased = _passengers.erase(passenger);
+    if (erased || _staticPassengers.erase(passenger)) // static passenger can remove itself in case of grid unload
     {
         passenger->SetTransport(nullptr);
         passenger->m_movementInfo.transport.Reset();
@@ -616,7 +616,7 @@ bool Transport::TeleportTransport(uint32 newMapid, float x, float y, float z, fl
         Relocate(x, y, z, o);
         oldMap->RemoveFromMap<Transport>(this, false);
 
-        for (WorldObjectSet::iterator itr = _passengers.begin(); itr != _passengers.end(); ++itr)
+        for (PassengerSet::iterator itr = _passengers.begin(); itr != _passengers.end(); ++itr)
         {
             WorldObject* obj = *itr;
             if (!obj)
@@ -654,7 +654,7 @@ bool Transport::TeleportTransport(uint32 newMapid, float x, float y, float z, fl
     else
     {
         // Teleport players, they need to know it
-        for (WorldObjectSet::iterator itr = _passengers.begin(); itr != _passengers.end(); ++itr)
+        for (PassengerSet::iterator itr = _passengers.begin(); itr != _passengers.end(); ++itr)
         {
             if ((*itr)->IsPlayer())
             {
@@ -676,9 +676,9 @@ bool Transport::TeleportTransport(uint32 newMapid, float x, float y, float z, fl
     }
 }
 
-void Transport::UpdatePassengerPositions(WorldObjectSet& passengers)
+void Transport::UpdatePassengerPositions(PassengerSet& passengers)
 {
-    for (WorldObjectSet::iterator itr = passengers.begin(); itr != passengers.end(); ++itr)
+    for (PassengerSet::iterator itr = passengers.begin(); itr != passengers.end(); ++itr)
     {
         WorldObject* passenger = *itr;
         // transport teleported but passenger not yet (can happen for players)

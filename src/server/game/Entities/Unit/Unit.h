@@ -39,7 +39,6 @@
 #include "WorldSession.h"
 #include <safe_ptr.h>
 #include "../DynamicObject/DynamicObject.h"
-#include <cds/container/iterable_list_hp.h>
 #include <boost/container/flat_set.hpp>
 
 struct CharmInfo;
@@ -345,10 +344,7 @@ struct MirrorImageData
     std::array<uint8, 3> CustomDisplay;
 };
 
-// typedef std::list<SpellImmune> SpellImmuneList;
-typedef cds::container::IterableList< cds::gc::HP, SpellImmune,
-    cds::container::iterable_list::make_traits<cds::container::opt::compare< ComparatorSpellImmune >     // item comparator option
-    >::type> SpellImmuneList;
+typedef std::list<SpellImmune> SpellImmuneList;
 
 enum UnitModifierType
 {
@@ -1087,7 +1083,7 @@ enum class DisplayToastMethod : uint8
     DISPLAY_TOAST_SPECIAL_UNK            = 16, // honor points frame displays only with this, but not display other frames, used on retail for quests, internal?
 };
 
-typedef cds::container::FeldmanHashSet< cds::gc::HP, Unit*, UnitHashAccessor > UnitSet;
+typedef std::set<Unit*> UnitSet;
 typedef std::set<AuraEffect*> AuraEffectSet;
 
 class Unit : public WorldObject
@@ -1103,11 +1099,7 @@ class Unit : public WorldObject
         typedef std::multimap<uint32, Aura*> AuraMap;
         typedef std::multimap<uint32, AuraApplicationPtr> AuraApplicationMap;
         typedef std::multimap<AuraStateType,  AuraApplication*> AuraStateAurasMap;
-        typedef cds::container::IterableList< cds::gc::HP, AuraEffect*,
-                                              cds::container::iterable_list::make_traits<
-                cds::container::opt::compare< ComparatorAuraEffect >     // item comparator option
-            >::type
-         > AuraEffectList;
+        typedef std::list<AuraEffect*> AuraEffectList;
         typedef std::map<uint32, AuraEffectList*> AuraEffectListMap;
         typedef std::list<Aura*> AuraList;
         typedef std::map<uint32, AuraList> AuraMyMap;
@@ -1117,6 +1109,8 @@ class Unit : public WorldObject
         typedef std::vector<AuraApplication*> VisibleAuraVector;
         struct VisibleAuraSlotCompare { bool operator()(AuraApplication* left, AuraApplication* right) const; };
         typedef std::set<AuraApplication*, VisibleAuraSlotCompare> VisibleAuraContainer;
+
+        static std::vector<AuraEffect*> CopyAuraEffectList(AuraEffectList const& list);
 
         virtual ~Unit();
 
@@ -1743,10 +1737,9 @@ class Unit : public WorldObject
         void _RemoveAllAuraStatMods();
         void _ApplyAllAuraStatMods();
 
-        AuraEffectList const* GetAuraEffectsByType(AuraType type) const { return m_modAuras[type]; }
+        AuraEffectList const& GetAuraEffectsByType(AuraType type) const { return m_modAuras[type]; }
         void GetAuraEffectsByMechanic(uint32 mechanic_mask, AuraList& auraList, ObjectGuid casterGUID = ObjectGuid::Empty);
         void GetTotalNotStuckAuraEffectByType(AuraType auratype, AuraEffectList& EffectList, std::vector<uint32>& ExcludeAuraList);
-        AuraEffectList* GetAuraEffectsByType(AuraType type) { return m_modAuras[type]; }
         void GetAuraEffectsByListType(std::list<AuraType> *auratypelist, AuraEffectList& EffectList);
 
         AuraList& GetSingleCastAuras() { return m_scAuras; }
@@ -2538,9 +2531,8 @@ class Unit : public WorldObject
         AuraMap::iterator m_auraUpdateIterator;
         uint32 m_removedAurasCount;
 
-        AuraEffectList* m_modAuras[TOTAL_AURAS];
+        AuraEffectList m_modAuras[TOTAL_AURAS];
         AuraEffectListMap m_modMapAuras;
-        uint8 m_auraTypeCount[TOTAL_AURAS];
         AuraList m_scAuras;                        // casted singlecast auras
         AuraList m_gbAuras;                        // casted singlecast auras
         AuraApplicationList m_interruptableAuras;             // auras which have interrupt mask applied on unit

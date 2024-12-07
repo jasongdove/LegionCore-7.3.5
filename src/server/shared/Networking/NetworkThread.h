@@ -29,9 +29,6 @@
 #include <mutex>
 #include <thread>
 
-#include <cds/init.h>
-#include <cds/gc/hp.h>
-
 template<class SocketType>
 class NetworkThread
 {
@@ -120,8 +117,6 @@ protected:
     {
         TC_LOG_DEBUG("misc", "Network Thread Starting");
 
-        cds::threading::Manager::attachThread();
-
         _updateTimer.expires_from_now(boost::posix_time::milliseconds(1));
         _updateTimer.async_wait([this](boost::system::error_code const&) { Update(); });
         _ioContext.run();
@@ -129,7 +124,6 @@ protected:
         TC_LOG_DEBUG("misc", "Network Thread exits");
         _newSockets.clear();
         _sockets.clear();
-        cds::threading::Manager::detachThread();
     }
 
     void Update()

@@ -394,7 +394,7 @@ Transport* TransportMgr::CreateTransport(uint32 entry, ObjectGuid::LowType guid 
     float o = tInfo->keyFrames.begin()->InitialOrientation;
 
     // initialize the gameobject base
-    ObjectGuid::LowType guidLow = guid ? guid : sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate();
+    ObjectGuid::LowType guidLow = guid ? guid : sObjectMgr->GetGenerator<HighGuid::Transport>()->Generate();
     if (!trans->CreateTransport(guidLow, entry, mapId, x, y, z, o, 255))
     {
         delete trans;
@@ -464,14 +464,13 @@ void TransportMgr::CreateInstanceTransports(Map* map)
             transport->EnableMovement(false);
 }
 
-Transport* TransportMgr::GetTransport(Map* map, uint32 entry)
+Transport* TransportMgr::GetTransport(Map* map, ObjectGuid const& guid)
 {
-    for (TransportHashSet::iterator i = map->m_Transports.begin(); i != map->m_Transports.end(); ++i)
-        if (Transport* transport = *i)
-            if (entry == transport->GetEntry())
-                return transport;
+    if (!guid.IsMOTransport())
+        return nullptr;
 
-    return nullptr;
+    GameObject* go = map->GetGameObject(guid);
+    return go ? go->ToTransport() : nullptr;
 }
 
 bool TransportAnimation::GetAnimNode(uint32 time, TransportAnimationEntry const* &curr, TransportAnimationEntry const* &next, float &percPos) const

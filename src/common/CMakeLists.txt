@@ -61,7 +61,6 @@ target_link_libraries(common
     trinity-core-interface
   PUBLIC
     mysql
-    cds
     boost
     fmt
     g3dlib

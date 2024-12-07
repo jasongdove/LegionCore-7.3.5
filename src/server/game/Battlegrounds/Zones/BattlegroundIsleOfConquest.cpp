@@ -455,8 +455,8 @@ bool BattlegroundIsleOfConquest::SetupBattleground()
         return false;
     }
 
-    gunshipHorde = sTransportMgr->GetTransport(GetBgMap(), GO_HORDE_GUNSHIP);
-    gunshipAlliance = sTransportMgr->GetTransport(GetBgMap(), GO_ALLIANCE_GUNSHIP);
+    gunshipHorde = sTransportMgr->CreateTransport(GO_HORDE_GUNSHIP, UI64LIT(0), GetBgMap());
+    gunshipAlliance = sTransportMgr->CreateTransport(GO_ALLIANCE_GUNSHIP, UI64LIT(0), GetBgMap());
 
     if (!gunshipAlliance || !gunshipHorde)
     {

@@ -22,7 +22,6 @@
 #include "ItemEnchantmentMgr.h"
 #include "SharedDefines.h"
 #include "ConditionMgr.h"
-#include "HashFuctor.h"
 
 namespace WorldPackets
 {
@@ -39,8 +38,6 @@ namespace WorldPackets
 
 struct Loot;
 class Challenge;
-
-typedef cds::container::FeldmanHashSet< cds::gc::HP, ObjectGuid, ObjectGuidHashAccessor > GuidHashSet;
 
 enum RollType
 {
@@ -446,7 +443,7 @@ private:
     QuestItemList* FillQuestLoot(Player* player);
     QuestItemList* FillNonQuestNonFFAConditionalLoot(Player* player, bool presentAtLooting);
 
-    GuidHashSet PlayersLooting;
+    GuidSet PlayersLooting;
     QuestItemMap PlayerCurrencies;
     QuestItemMap PlayerQuestItems;
     QuestItemMap PlayerFFAItems;

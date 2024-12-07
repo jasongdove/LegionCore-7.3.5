@@ -1315,15 +1315,15 @@ float AuraEffect::CalculateAmount(Unit* caster)
                     if (Player* modOwner = caster->GetSpellModOwner())
                         amount += CalculatePct(amount, modOwner->GetFloatValue(PLAYER_FIELD_VERSATILITY) + modOwner->GetFloatValue(PLAYER_FIELD_VERSATILITY_BONUS));
 
-                    if (Unit::AuraEffectList const* mAbsorbAmount = caster->GetAuraEffectsByType(SPELL_AURA_MOD_ABSORB_AMOUNT))
-                        for (Unit::AuraEffectList::const_iterator i = mAbsorbAmount->begin(); i != mAbsorbAmount->end(); ++i)
-                            AddPct(amount, (*i)->GetAmount());
+                    Unit::AuraEffectList const& mAbsorbAmount = caster->GetAuraEffectsByType(SPELL_AURA_MOD_ABSORB_AMOUNT);
+                    for (Unit::AuraEffectList::const_iterator i = mAbsorbAmount.begin(); i != mAbsorbAmount.end(); ++i)
+                        AddPct(amount, (*i)->GetAmount());
 
                     if (target)
                     {
-                        if (Unit::AuraEffectList const* mAbsorbtionPercent = target->GetAuraEffectsByType(SPELL_AURA_MOD_ABSORBTION_PERCENT))
-                            for (Unit::AuraEffectList::const_iterator i = mAbsorbtionPercent->begin(); i != mAbsorbtionPercent->end(); ++i)
-                                AddPct(amount, (*i)->GetAmount());
+                        Unit::AuraEffectList const& mAbsorbtionPercent = target->GetAuraEffectsByType(SPELL_AURA_MOD_ABSORBTION_PERCENT);
+                        for (Unit::AuraEffectList::const_iterator i = mAbsorbtionPercent.begin(); i != mAbsorbtionPercent.end(); ++i)
+                            AddPct(amount, (*i)->GetAmount());
                     }
                 }
 
@@ -2424,17 +2424,16 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
 
         AuraEffect* newAura = nullptr;
         // Iterate through all the shapeshift auras that the target has, if there is another aura with SPELL_AURA_MOD_SHAPESHIFT, then this aura is being removed due to that one being applied
-        if (Unit::AuraEffectList* shapeshifts = target->GetAuraEffectsByType(SPELL_AURA_MOD_SHAPESHIFT))
+        Unit::AuraEffectList shapeshifts = target->GetAuraEffectsByType(SPELL_AURA_MOD_SHAPESHIFT);
+        for (Unit::AuraEffectList::iterator itr = shapeshifts.begin(); itr != shapeshifts.end(); ++itr)
         {
-            for (Unit::AuraEffectList::iterator itr = shapeshifts->begin(); itr != shapeshifts->end(); ++itr)
+            if ((*itr) != this)
             {
-                if ((*itr) != this)
-                {
-                    newAura = *itr;
-                    break;
-                }
+                newAura = *itr;
+                break;
             }
         }
+
         Unit::AuraApplicationMap& tAuras = target->GetAppliedAuras();
         for (auto itr = tAuras.begin(); itr != tAuras.end();)
         {
@@ -2516,17 +2515,16 @@ void AuraEffect::HandleModInvisibility(AuraApplication const* aurApp, uint8 mode
         else
         {
             bool found = false;
-            if (Unit::AuraEffectList const* invisAuras = target->GetAuraEffectsByType(SPELL_AURA_MOD_INVISIBILITY))
+            Unit::AuraEffectList const& invisAuras = target->GetAuraEffectsByType(SPELL_AURA_MOD_INVISIBILITY);
+            for (Unit::AuraEffectList::const_iterator i = invisAuras.begin(); i != invisAuras.end(); ++i)
             {
-                for (Unit::AuraEffectList::const_iterator i = invisAuras->begin(); i != invisAuras->end(); ++i)
+                if (GetMiscValue() == (*i)->GetMiscValue())
                 {
-                    if (GetMiscValue() == (*i)->GetMiscValue())
-                    {
-                        found = true;
-                        break;
-                    }
+                    found = true;
+                    break;
                 }
             }
+
             if (!found)
                 target->m_invisibility.DelFlag(type);
         }
@@ -2744,13 +2742,13 @@ void AuraEffect::HandlePhase(AuraApplication const* aurApp, uint8 mode, bool app
     else
     {
         uint32 newPhase = 0;
-        if (Unit::AuraEffectList const* phases = target->GetAuraEffectsByType(SPELL_AURA_PHASE))
-            for (Unit::AuraEffectList::const_iterator itr = phases->begin(); itr != phases->end(); ++itr)    
-                newPhase |= (*itr)->GetMiscValue();
+        Unit::AuraEffectList const& phases = target->GetAuraEffectsByType(SPELL_AURA_PHASE);
+        for (Unit::AuraEffectList::const_iterator itr = phases.begin(); itr != phases.end(); ++itr)
+            newPhase |= (*itr)->GetMiscValue();
 
-        if (Unit::AuraEffectList const* phases2 = target->GetAuraEffectsByType(SPELL_AURA_PHASE_2))
-            for (Unit::AuraEffectList::const_iterator itr = phases2->begin(); itr != phases2->end(); ++itr)    
-                newPhase |= (*itr)->GetMiscValue();
+        Unit::AuraEffectList const& phases2 = target->GetAuraEffectsByType(SPELL_AURA_PHASE_2);
+        for (Unit::AuraEffectList::const_iterator itr = phases2.begin(); itr != phases2.end(); ++itr)
+            newPhase |= (*itr)->GetMiscValue();
 
         if (!newPhase)
         {
@@ -3242,10 +3240,10 @@ void AuraEffect::HandleAuraTransform(AuraApplication const* aurApp, uint8 mode, 
         // Dragonmaw Illusion (restore mount model)
         if (GetId() == 42016 && target->GetMountID() == 16314)
         {
-            Unit::AuraEffectList const* mountAuras = target->GetAuraEffectsByType(SPELL_AURA_MOUNTED);
-            if (mountAuras && mountAuras->begin() != mountAuras->end())
+            Unit::AuraEffectList const& mountAuras = target->GetAuraEffectsByType(SPELL_AURA_MOUNTED);
+            if (mountAuras.begin() != mountAuras.end())
             {
-                uint32 cr_id = (*mountAuras->begin())->GetMiscValue();
+                uint32 cr_id = (*mountAuras.begin())->GetMiscValue();
                 if (CreatureTemplate const* ci = sObjectMgr->GetCreatureTemplate(cr_id))
                 {
                     uint32 team = 0;
@@ -4692,13 +4690,13 @@ void AuraEffect::HandleAuraModSchoolImmunity(AuraApplication const* aurApp, uint
         else
         {
             bool banishFound = false;
-            if (Unit::AuraEffectList const* banishAuras = target->GetAuraEffectsByType(GetAuraType()))
-                for (Unit::AuraEffectList::const_iterator i = banishAuras->begin(); i != banishAuras->end(); ++i)
-                    if ((*i)->GetSpellInfo()->Categories.Mechanic == MECHANIC_BANISH)
-                    {
-                        banishFound = true;
-                        break;
-                    }
+            Unit::AuraEffectList const& banishAuras = target->GetAuraEffectsByType(GetAuraType());
+            for (Unit::AuraEffectList::const_iterator i = banishAuras.begin(); i != banishAuras.end(); ++i)
+                if ((*i)->GetSpellInfo()->Categories.Mechanic == MECHANIC_BANISH)
+                {
+                    banishFound = true;
+                    break;
+                }
             if (!banishFound)
                 target->ClearUnitState(UNIT_STATE_ISOLATED);
         }
@@ -6302,9 +6300,9 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                         }
                         else
                         {
-                            if (Unit::AuraEffectList const* mountAuras = target->GetAuraEffectsByType(SPELL_AURA_MOUNTED))
-                                if (mountAuras->begin() != mountAuras->end())
-                                    creatureEntry = (*mountAuras->begin())->GetMiscValue();
+                            Unit::AuraEffectList const& mountAuras = target->GetAuraEffectsByType(SPELL_AURA_MOUNTED);
+                            if (mountAuras.begin() != mountAuras.end())
+                                creatureEntry = (*mountAuras.begin())->GetMiscValue();
                         }
 
                         if (CreatureTemplate const* creatureInfo = sObjectMgr->GetCreatureTemplate(creatureEntry))
@@ -6648,13 +6646,11 @@ void AuraEffect::HandleAuraOverrideSpells(AuraApplication const* aurApp, uint8 m
 
     if (apply)
     {
-        if (auto const* overrideList = target->GetAuraEffectsByType(SPELL_AURA_OVERRIDE_SPELLS))
+        auto const& overrideList = target->GetAuraEffectsByType(SPELL_AURA_OVERRIDE_SPELLS);
+        for (auto const& over : overrideList)
         {
-            for (auto const& over : *overrideList)
-            {
-                if (over->GetId() != GetId())
-                    over->GetBase()->Remove();
-            }
+            if (over->GetId() != GetId())
+                over->GetBase()->Remove();
         }
         target->SetUInt16Value(PLAYER_FIELD_BYTES_5, PLAYER_BYTES_2_OVERRIDE_SPELLS_UINT16_OFFSET, overrideId);
         if (OverrideSpellDataEntry const* overrideSpells = sOverrideSpellDataStore.LookupEntry(overrideId))
@@ -7174,10 +7170,10 @@ void AuraEffect::HandlePeriodicDummyAuraTick(Unit* target, Unit* caster, SpellEf
                         uint32 modMaxCount = 9;
                         if (AuraEffect* eff = aura->GetEffect(EFFECT_0))
                             modDif = eff->GetAmount();
-                        if (Unit::AuraEffectList const* mPeriodic = target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL))
-                            for (Unit::AuraEffectList::const_iterator i = mPeriodic->begin(); i != mPeriodic->end(); ++i)
-                                if ((*i)->GetCasterGUID() == caster->GetGUID())
-                                    modCount++;
+                        Unit::AuraEffectList const& mPeriodic = target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL);
+                        for (Unit::AuraEffectList::const_iterator i = mPeriodic.begin(); i != mPeriodic.end(); ++i)
+                            if ((*i)->GetCasterGUID() == caster->GetGUID())
+                                modCount++;
 
                         if (modCount >= modMaxCount)
                             modCount = modMaxCount;
@@ -8364,10 +8360,10 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster, SpellEf
                 uint32 modMaxCount = 9;
                 if (AuraEffect* eff = aura->GetEffect(EFFECT_0))
                     modDif = eff->GetAmount();
-                if (Unit::AuraEffectList const* mPeriodic = target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL))
-                    for (Unit::AuraEffectList::const_iterator i = mPeriodic->begin(); i != mPeriodic->end(); ++i)
-                        if ((*i)->GetCasterGUID() == caster->GetGUID())
-                            modCount++;
+                Unit::AuraEffectList const& mPeriodic = target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL);
+                for (Unit::AuraEffectList::const_iterator i = mPeriodic.begin(); i != mPeriodic.end(); ++i)
+                    if ((*i)->GetCasterGUID() == caster->GetGUID())
+                        modCount++;
 
                 if (modCount >= modMaxCount)
                     modCount = modMaxCount;
@@ -9652,26 +9648,24 @@ void AuraEffect::HandleExpedite(AuraApplication const* auraApp, uint8 mode, bool
     if (type != SPELL_AURA_NONE)
     {
         std::set<Aura*> auraList;
-        if (Unit::AuraEffectList* mTotalAuraList = target->GetAuraEffectsByType(type))
+        Unit::AuraEffectList mTotalAuraList = target->GetAuraEffectsByType(type);
+        for (Unit::AuraEffectList::iterator i = mTotalAuraList.begin(); i != mTotalAuraList.end(); ++i)
         {
-            for (Unit::AuraEffectList::iterator i = mTotalAuraList->begin(); i != mTotalAuraList->end(); ++i)
+            AuraEffect* eff = (*i);
+            if (eff->GetCasterGUID() == GetCasterGUID())
             {
-                AuraEffect* eff = (*i);
-                if (eff->GetCasterGUID() == GetCasterGUID())
+                auraList.insert(eff->GetBase());
+                if (apply)
                 {
-                    auraList.insert(eff->GetBase());
-                    if (apply)
-                    {
-                        int32 period = eff->GetPeriod() / perc;
-                        eff->SetPeriodMod(eff->GetPeriodMod() - (eff->GetPeriod() - period));
-                        eff->SetAmplitude(period);
-                        eff->SetPeriodicTimer(eff->GetPeriodicTimer() / perc);
-                    }
-                    else
-                    {
-                        eff->SetPeriodMod(0.0f);
-                        eff->RecalculateTickPeriod(caster);
-                    }
+                    int32 period = eff->GetPeriod() / perc;
+                    eff->SetPeriodMod(eff->GetPeriodMod() - (eff->GetPeriod() - period));
+                    eff->SetAmplitude(period);
+                    eff->SetPeriodicTimer(eff->GetPeriodicTimer() / perc);
+                }
+                else
+                {
+                    eff->SetPeriodMod(0.0f);
+                    eff->RecalculateTickPeriod(caster);
                 }
             }
         }

@@ -11,9 +11,6 @@
 
 #include <cstddef>
 
-#include <cds/init.h>
-#include <cds/gc/hp.h>
-
 namespace Trinity {
 
 class AchievPoolMgr final

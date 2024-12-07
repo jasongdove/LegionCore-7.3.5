@@ -222,7 +222,7 @@ void BattlegroundSeethingShore::PostUpdateImpl(uint32 diff)
 void BattlegroundSeethingShore::TeleportToStart(Player * player)
 {
     float x = 0, y = 0, z = 0;
-    if (auto gunship = sTransportMgr->GetTransport(GetBgMap(), player->GetBGTeamId() == TEAM_HORDE ? 279254 : 278407))
+    if (auto gunship = sTransportMgr->CreateTransport(player->GetBGTeamId() == TEAM_HORDE ? 279254 : 278407, UI64LIT(0), GetBgMap()))
     {
         gunship->CalculatePassengerPosition(x, y, z);
         player->TeleportTo(1803, x, y, z + (player->GetBGTeamId() == TEAM_ALLIANCE ? 25.0f : 40.0f), 0.f);
@@ -410,8 +410,8 @@ bool BattlegroundSeethingShore::SetupBattleground()
             return false;
     }
 
-    _gunship[TEAM_HORDE] = sTransportMgr->GetTransport(GetBgMap(), GameObjects::HordeTransport);
-    _gunship[TEAM_ALLIANCE] = sTransportMgr->GetTransport(GetBgMap(), GameObjects::AllianceTransport);
+    _gunship[TEAM_HORDE] = sTransportMgr->CreateTransport(GameObjects::HordeTransport, UI64LIT(0), GetBgMap());
+    _gunship[TEAM_ALLIANCE] = sTransportMgr->CreateTransport(GameObjects::AllianceTransport, UI64LIT(0), GetBgMap());
 
     for (auto gunship : _gunship)
         if (!gunship)

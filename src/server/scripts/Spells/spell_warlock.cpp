@@ -1069,9 +1069,9 @@ class spell_warl_demon_skin : public SpellScriptLoader
                     float addAbsorb = CalculatePct(caster->GetMaxHealth(), perc);
                     float maxPerc = 20.f;
 
-                    if (Unit::AuraEffectList const* mAbsorbtionPercent = caster->GetAuraEffectsByType(SPELL_AURA_MOD_ABSORB_AMOUNT))
-                        for (Unit::AuraEffectList::const_iterator i = mAbsorbtionPercent->begin(); i != mAbsorbtionPercent->end(); ++i)
-                            AddPct(addAbsorb, (*i)->GetAmount());
+                    Unit::AuraEffectList const& mAbsorbtionPercent = caster->GetAuraEffectsByType(SPELL_AURA_MOD_ABSORB_AMOUNT);
+                    for (Unit::AuraEffectList::const_iterator i = mAbsorbtionPercent.begin(); i != mAbsorbtionPercent.end(); ++i)
+                        AddPct(addAbsorb, (*i)->GetAmount());
 
                     if (Aura* aura = GetAura())
                     {

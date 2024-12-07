@@ -24,8 +24,6 @@
 #include <boost/bind/bind.hpp>
 #include <boost/program_options.hpp>
 #include <boost/dll/runtime_symbol_info.hpp>
-#include <cds/gc/hp.h>
-#include <cds/init.h>
 #include <google/protobuf/stubs/common.h>
 #include <openssl/crypto.h>
 #include <openssl/opensslv.h>
@@ -173,12 +171,6 @@ extern int main(int argc, char **argv)
     OpenSSLCrypto::threadsSetup(boost::dll::program_location().remove_filename());
 
     std::shared_ptr<void> opensslHandle(nullptr, [](void*) { OpenSSLCrypto::threadsCleanup(); });
-
-    cds::Initialize();
-    cds::gc::HP hpGC;
-    cds::threading::Manager::attachThread();
-
-    std::shared_ptr<void> cdsHandle(nullptr, [](void*) { cds::threading::Manager::detachThread(); cds::Terminate(); });
 
     // Seed the OpenSSL's PRNG here.
     // That way it won't auto-seed when calling BigNumber::SetRand and slow down the first world login

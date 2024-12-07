@@ -23,7 +23,6 @@
 #include "SpellInfo.h"
 #include "Unit.h"
 #include "Containers.h"
-#include "HashFuctor.h"
 
 class Unit;
 class SpellInfo;
@@ -103,7 +102,7 @@ class Aura
     friend Aura* Unit::_TryStackingOrRefreshingExistingAura(SpellInfo const* newAura, uint32 effMask, Unit* caster, float *baseAmount, Item* castItem, ObjectGuid casterGUID);
     public:
         void SetAuraTimer(int32 time, ObjectGuid guid = ObjectGuid::Empty);
-        typedef cds::container::FeldmanHashMap< cds::gc::HP, ObjectGuid, AuraApplicationPtr, guidTraits > ApplicationMap;
+        typedef std::map<ObjectGuid, AuraApplicationPtr> ApplicationMap;
 
         static uint32 BuildEffectMaskForOwner(SpellInfo const* spellProto, uint32 avalibleEffectMask, WorldObject* owner);
         static Aura* TryRefreshStackOrCreate(SpellInfo const* spellproto, uint32 tryEffMask, WorldObject* owner, Unit* caster, float* baseAmount = nullptr, Item* castItem = nullptr, ObjectGuid casterGUID = ObjectGuid::Empty, bool* refresh = nullptr, uint16 stackAmount = 0, Spell* spell = nullptr);

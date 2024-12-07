@@ -21,7 +21,6 @@ add_subdirectory(mysql)
 add_subdirectory(readline)
 add_subdirectory(gsoap)
 add_subdirectory(rapidjson)
-add_subdirectory(cds)
 add_subdirectory(protobuf)
 
 if(TOOLS)

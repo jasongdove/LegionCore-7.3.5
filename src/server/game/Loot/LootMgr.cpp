@@ -1265,24 +1265,30 @@ void Loot::NotifyItemRemoved(uint8 lootIndex)
 {
     // notify all players that are looting this that the item was removed
     // convert the index to the slot the player sees
-    for (GuidHashSet::iterator i = PlayersLooting.begin(); i != PlayersLooting.end(); ++i)
+    GuidSet::iterator i_next;
+    for (GuidSet::iterator i = PlayersLooting.begin(); i != PlayersLooting.end(); i = i_next)
     {
+        i_next = i;
+        ++i_next;
         if (Player* player = ObjectAccessor::FindPlayer(*i))
             player->SendNotifyLootItemRemoved(lootIndex, this);
         else
-            PlayersLooting.erase_at(i);
+            PlayersLooting.erase(i);
     }
 }
 
 void Loot::NotifyMoneyRemoved(uint64 gold)
 {
     // notify all players that are looting this that the money was removed
-    for (GuidHashSet::iterator i = PlayersLooting.begin(); i != PlayersLooting.end(); ++i)
+    GuidSet::iterator i_next;
+    for (GuidSet::iterator i = PlayersLooting.begin(); i != PlayersLooting.end(); i = i_next)
     {
+        i_next = i;
+        ++i_next;
         if (Player* player = ObjectAccessor::FindPlayer(*i))
             player->SendNotifyLootMoneyRemoved(this);
         else
-            PlayersLooting.erase_at(i);
+            PlayersLooting.erase(i);
     }
 }
 
@@ -1293,8 +1299,11 @@ void Loot::NotifyQuestItemRemoved(uint8 questIndex)
     // (other questitems can be looted by each group member)
     // bit inefficient but isn't called often
 
-    for (GuidHashSet::iterator i = PlayersLooting.begin(); i != PlayersLooting.end(); ++i)
+    GuidSet::iterator i_next;
+    for (GuidSet::iterator i = PlayersLooting.begin(); i != PlayersLooting.end(); i = i_next)
     {
+        i_next = i;
+        ++i_next;
         if (Player* player = ObjectAccessor::FindPlayer(*i))
         {
             QuestItemMap::const_iterator pq = PlayerQuestItems.find(player->GetGUIDLow());
@@ -1313,7 +1322,7 @@ void Loot::NotifyQuestItemRemoved(uint8 questIndex)
             }
         }
         else
-            PlayersLooting.erase_at(i);
+            PlayersLooting.erase(i);
     }
 }
 
@@ -1324,7 +1333,7 @@ void Loot::AddLooter(ObjectGuid GUID)
 
 void Loot::RemoveLooter(ObjectGuid GUID)
 {
-    PlayersLooting.erase(ObjectGuidHashGen(GUID));
+    PlayersLooting.erase(GUID);
 }
 
 void Loot::generateMoneyLoot(uint32 minAmount, uint32 maxAmount, bool isDungeon /*=false*/)

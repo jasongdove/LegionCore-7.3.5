@@ -2844,10 +2844,10 @@ void SpellInfo::CalcPowerCost(Unit const* caster, SpellSchoolMask schoolMask, Sp
             if (power->OptionalCost)
             {
                 int32 powerCostAdditional = power->OptionalCost;
-                if (Unit::AuraEffectList const* mModPowerCost = caster->GetAuraEffectsByType(SPELL_AURA_MOD_ADDITIONAL_POWER_COST))
-                    for (Unit::AuraEffectList::const_iterator i = mModPowerCost->begin(); i != mModPowerCost->end(); ++i)
-                        if (PowerType == (*i)->GetMiscValue() && (*i)->IsAffectingSpell(this))
-                            powerCostAdditional += (*i)->GetAmount();
+                Unit::AuraEffectList const& mModPowerCost = caster->GetAuraEffectsByType(SPELL_AURA_MOD_ADDITIONAL_POWER_COST);
+                for (Unit::AuraEffectList::const_iterator i = mModPowerCost.begin(); i != mModPowerCost.end(); ++i)
+                    if (PowerType == (*i)->GetMiscValue() && (*i)->IsAffectingSpell(this))
+                        powerCostAdditional += (*i)->GetAmount();
 
                 int32 addCost = caster->GetPower(PowerType) - powerCost;
                 if (addCost > 0)
@@ -3688,15 +3688,14 @@ uint32 SpellInfo::GetSpellXSpellVisualId(Unit* caster, Unit* target) const
     SpellInfo const* spellInfo = this;
     if (caster)
     {
-        auto const* visualOverrides = caster->GetAuraEffectsByType(SPELL_AURA_OVERRIDE_SPELL_VISUAL);
-        if (visualOverrides && !visualOverrides->empty())
-            for (auto effect : *visualOverrides)
-                if (uint32(effect->GetMiscValue()) == Id)
-                    if (auto visualSpell = sSpellMgr->GetSpellInfo(effect->GetMiscValueB()))
-                    {
-                        spellInfo = visualSpell;
-                        break;
-                    }
+        auto const& visualOverrides = caster->GetAuraEffectsByType(SPELL_AURA_OVERRIDE_SPELL_VISUAL);
+        for (auto effect : visualOverrides)
+            if (uint32(effect->GetMiscValue()) == Id)
+                if (auto visualSpell = sSpellMgr->GetSpellInfo(effect->GetMiscValueB()))
+                {
+                    spellInfo = visualSpell;
+                    break;
+                }
     }
 
     return [spellInfo, caster, target]() -> uint32
@@ -4261,29 +4260,27 @@ bool SpellInfo::CanAutoCast(Unit* m_caster, Unit* target) const
         if (!CanAutoCastEffect(m_caster, target, Effects[j]->Effect) || !CanAutoCastAura(m_caster, target, Effects[j]->ApplyAuraName))
             return false;
 
-        if (Unit::AuraEffectList const* auras = target->GetAuraEffectsByType(AuraType(Effects[j]->ApplyAuraName)))
+        Unit::AuraEffectList const& auras = target->GetAuraEffectsByType(AuraType(Effects[j]->ApplyAuraName));
+        for (Unit::AuraEffectList::const_iterator auraIt = auras.begin(); auraIt != auras.end(); ++auraIt)
         {
-            for (Unit::AuraEffectList::const_iterator auraIt = auras->begin(); auraIt != auras->end(); ++auraIt)
-            {
-                if (Id == (*auraIt)->GetSpellInfo()->Id)
-                    return false;
+            if (Id == (*auraIt)->GetSpellInfo()->Id)
+                return false;
 
-                switch (sSpellMgr->CheckSpellGroupStackRules(this, (*auraIt)->GetSpellInfo()))
-                {
-                    case SPELL_GROUP_STACK_RULE_EXCLUSIVE:
+            switch (sSpellMgr->CheckSpellGroupStackRules(this, (*auraIt)->GetSpellInfo()))
+            {
+                case SPELL_GROUP_STACK_RULE_EXCLUSIVE:
+                    return false;
+                case SPELL_GROUP_STACK_RULE_EXCLUSIVE_FROM_SAME_CASTER:
+                    if (m_caster == (*auraIt)->GetCaster())
                         return false;
-                    case SPELL_GROUP_STACK_RULE_EXCLUSIVE_FROM_SAME_CASTER:
-                        if (m_caster == (*auraIt)->GetCaster())
-                            return false;
-                        break;
-                    case SPELL_GROUP_STACK_RULE_EXCLUSIVE_SAME_EFFECT: // this one has further checks, but i don't think they're necessary for autocast logic
-                    case SPELL_GROUP_STACK_RULE_EXCLUSIVE_HIGHEST:
-                        if (abs(Effects[j]->BasePoints) <= abs((*auraIt)->GetAmount()))
-                            return false;
-                        break;
-                    default:
-                        break;
-                }
+                    break;
+                case SPELL_GROUP_STACK_RULE_EXCLUSIVE_SAME_EFFECT: // this one has further checks, but i don't think they're necessary for autocast logic
+                case SPELL_GROUP_STACK_RULE_EXCLUSIVE_HIGHEST:
+                    if (abs(Effects[j]->BasePoints) <= abs((*auraIt)->GetAmount()))
+                        return false;
+                    break;
+                default:
+                    break;
             }
         }
 

@@ -3802,9 +3802,9 @@ void Guild::RewardReputation(Player* player, uint32 amount)
     if (GetMember(player->GetGUID()))
     {
         // Guild Champion Tabard
-        if (Unit::AuraEffectList const* auras = player->GetAuraEffectsByType(SPELL_AURA_MOD_REPUTATION_GAIN_PCT))
-            for (Unit::AuraEffectList::const_iterator i = auras->begin(); i != auras->end(); ++i)
-                AddPct(amount, (*i)->GetAmount());
+        Unit::AuraEffectList const& auras = player->GetAuraEffectsByType(SPELL_AURA_MOD_REPUTATION_GAIN_PCT);
+        for (Unit::AuraEffectList::const_iterator i = auras.begin(); i != auras.end(); ++i)
+            AddPct(amount, (*i)->GetAmount());
 
         if (amount)
         {

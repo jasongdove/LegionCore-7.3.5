@@ -2327,21 +2327,22 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
                         transferPending.Ship.emplace();
                         transferPending.Ship->OriginMapID = -1;
 
-                        switch (GetBGTeamId())
-                        {
-                        case TEAM_ALLIANCE:
-                            transferPending.Ship->ID = 278407;
-                            if (auto gunship = sTransportMgr->GetTransport(bg->GetBgMap(), 278407))
-                                gunship->CalculatePassengerPosition(x, y, z);
-                            break;
-                        case TEAM_HORDE:
-                            transferPending.Ship->ID = 279254;
-                            if (auto gunship = sTransportMgr->GetTransport(bg->GetBgMap(), 279254))
-                                gunship->CalculatePassengerPosition(x, y, z);
-                            break;
-                        default:
-                            break;
-                        }
+                        // TODO: fix this
+//                        switch (GetBGTeamId())
+//                        {
+//                        case TEAM_ALLIANCE:
+//                            transferPending.Ship->ID = 278407;
+//                            if (auto gunship = sTransportMgr->GetTransport(bg->GetBgMap(), 278407))
+//                                gunship->CalculatePassengerPosition(x, y, z);
+//                            break;
+//                        case TEAM_HORDE:
+//                            transferPending.Ship->ID = 279254;
+//                            if (auto gunship = sTransportMgr->GetTransport(bg->GetBgMap(), 279254))
+//                                gunship->CalculatePassengerPosition(x, y, z);
+//                            break;
+//                        default:
+//                            break;
+//                        }
                         break;
                     }
                     default:
@@ -3957,13 +3958,11 @@ void Player::RemoveTalent(TalentEntry const* talent, bool isDelete, bool sendMes
     if (!spellInfo)
         return;
 
-    if (auto const* mTotalAuraList = GetAuraEffectsByType(SPELL_AURA_ENABLE_EXTRA_TALENT))
+    auto const& mTotalAuraList = GetAuraEffectsByType(SPELL_AURA_ENABLE_EXTRA_TALENT);
+    for (auto const& auraEffect : mTotalAuraList)
     {
-        for (auto const& auraEffect : *mTotalAuraList)
-        {
-            if (auraEffect->GetMiscValue() == talent->ID)
-                goto setRemoved;
-        }
+        if (auraEffect->GetMiscValue() == talent->ID)
+            goto setRemoved;
     }
 
     removeSpell(talent->SpellID, true, true, sendMessage);
@@ -4866,18 +4865,16 @@ bool Player::addSpell(uint32 spellId, bool active, bool learning, bool dependent
     bool disabled_case = false;
     bool superceded_old = false;
 
-    PlayerSpellMap::guarded_ptr itr = m_spells.get(spellId);
+    PlayerSpellMap::iterator itr = m_spells.find(spellId);
 
     // Remove temporary spell if found to prevent conflicts
-    if (itr && itr->second.state == PLAYERSPELL_TEMPORARY)
+    if (itr != m_spells.end() && itr->second.state == PLAYERSPELL_TEMPORARY)
     {
-        itr.release();
         RemoveTemporarySpell(spellId);
     }
-    else if (itr)
+    else if (itr != m_spells.end())
     {
         PlayerSpell* spellPtr = &itr->second;
-        itr.release();
 
         uint32 next_active_spell_id = 0;
         // fix activate state for non-stackable low rank (and find next spell for !active case)
@@ -5048,12 +5045,8 @@ bool Player::addSpell(uint32 spellId, bool active, bool learning, bool dependent
         }
 
         bool _disable = newspell.disabled;
-        uint8 __state = newspell.state;
-        bool __active = newspell.active;
-        bool __dependent = newspell.dependent;
-        bool __disabled = newspell.disabled;
         m_spells.erase(spellId);
-        m_spells.emplace(spellId, __state, __active, __dependent, __disabled);
+        m_spells.emplace(spellId, newspell);
         HandleExcludeCasterSpellList(spellId, true);
         HandleCasterAuraStateSpellList(spellId, true);
 
@@ -5186,16 +5179,16 @@ void Player::AddTemporarySpell(uint32 spellId)
     // spell already added - do not do anything
     if (m_spells.contains(spellId))
         return;
-    m_spells.emplace(spellId, PLAYERSPELL_TEMPORARY, true, false, false);
+    m_spells.emplace(spellId, PlayerSpell(PLAYERSPELL_TEMPORARY, true, false, false));
     HandleExcludeCasterSpellList(spellId, true);
     HandleCasterAuraStateSpellList(spellId, true);
 }
 
 void Player::RemoveTemporarySpell(uint32 spellId)
 {
-    PlayerSpellMap::guarded_ptr itr = m_spells.get(spellId);
+    PlayerSpellMap::iterator itr = m_spells.find(spellId);
     // spell already not in list - do not do anything
-    if (!itr)
+    if (itr == m_spells.end())
         return;
     // spell has other state than temporary - do not change it
     if (itr->second.state != PLAYERSPELL_TEMPORARY)
@@ -5219,12 +5212,11 @@ bool Player::IsNeedCastPassiveSpellAtLearn(SpellInfo const* spellInfo) const
 
 void Player::learnSpell(uint32 spell_id, bool dependent, uint32 fromSkill, bool sendMessage)
 {
-    PlayerSpellMap::guarded_ptr itr = m_spells.get(spell_id);
+    PlayerSpellMap::iterator itr = m_spells.find(spell_id);
 
-    bool disabled = itr ? (itr->second.disabled) : false;
+    bool disabled = (itr != m_spells.end()) ? itr->second.disabled : false;
     bool active = disabled ? (itr->second.active) : true;
 
-    itr.release();
     bool learning = addSpell(spell_id, active, true, dependent, false);
 
     // prevent duplicated entires in spell book, also not send if not in world (loading)
@@ -5245,15 +5237,15 @@ void Player::learnSpell(uint32 spell_id, bool dependent, uint32 fromSkill, bool 
     {
         if (uint32 nextSpell = sSpellMgr->GetNextSpellInChain(spell_id))
         {
-            PlayerSpellMap::guarded_ptr iter = m_spells.get(nextSpell);
-            if (iter && iter->second.disabled)
+            PlayerSpellMap::iterator iter = m_spells.find(nextSpell);
+            if (iter != m_spells.end() && iter->second.disabled)
                 learnSpell(nextSpell, false, fromSkill);
         }
 
         for (auto const& pair : sSpellMgr->GetSpellsRequiringSpellBounds(spell_id))
         {
-            PlayerSpellMap::guarded_ptr iter2 = m_spells.get(pair.second);
-            if (iter2 && iter2->second.disabled)
+            PlayerSpellMap::iterator iter2 = m_spells.find(pair.second);
+            if (iter2 != m_spells.end() && iter2->second.disabled)
                 learnSpell(pair.second, false, fromSkill);
         }
     }
@@ -5342,11 +5334,10 @@ void Player::learnSpell(uint32 spell_id, bool dependent, uint32 fromSkill, bool 
 
 void Player::removeSpell(uint32 spell_id, bool disabled, bool learn_low_rank, bool sendMessage)
 {
-    PlayerSpellMap::guarded_ptr itr = m_spells.get(spell_id);
-    if (!itr)
+    PlayerSpellMap::iterator itr = m_spells.find(spell_id);
+    if (itr == m_spells.end())
         return;
     PlayerSpell* removeSpellPtr = &itr->second;
-    itr.release();
 
     if (removeSpellPtr->state == PLAYERSPELL_REMOVED || (disabled && removeSpellPtr->disabled) || removeSpellPtr->state == PLAYERSPELL_TEMPORARY)
         return;
@@ -5521,11 +5512,10 @@ void Player::removeSpell(uint32 spell_id, bool disabled, bool learn_low_rank, bo
         if (cur_active && spellInfo->IsRanked())
         {
             // need manually update dependence state (learn spell ignore like attempts)
-            PlayerSpellMap::guarded_ptr prev_itr = m_spells.get(prev_id);
-            if (prev_itr)
+            PlayerSpellMap::iterator prev_itr = m_spells.find(prev_id);
+            if (prev_itr != m_spells.end())
             {
                 PlayerSpell* prevRemoveSpellPtr = &prev_itr->second;
-                prev_itr.release();
                 if (prevRemoveSpellPtr->dependent != cur_dependent)
                 {
                     prevRemoveSpellPtr->dependent = cur_dependent;
@@ -6385,12 +6375,11 @@ bool Player::HasSpell(uint32 spell)
     if (!m_spells.contains(spell))
         return false;
 
-    PlayerSpellMap::guarded_ptr itr = m_spells.get(spell);
-    if (!itr)
+    PlayerSpellMap::const_iterator itr = m_spells.find(spell);
+    if (itr == m_spells.end())
         return false;
 
-    PlayerSpell* spellPtr = &itr->second;
-    itr.release();
+    PlayerSpell const* spellPtr = &itr->second;
 
     return (spellPtr && spellPtr->state != PLAYERSPELL_REMOVED && !spellPtr->disabled);
 }
@@ -6418,12 +6407,11 @@ bool Player::HasActiveSpell(uint32 spell)
     if (!m_spells.contains(spell))
         return false;
 
-    PlayerSpellMap::guarded_ptr itr = m_spells.get(spell);
-    if (!itr)
+    PlayerSpellMap::const_iterator itr = m_spells.find(spell);
+    if (itr == m_spells.end())
         return false;
 
-    PlayerSpell* spellPtr = &itr->second;
-    itr.release();
+    PlayerSpell const* spellPtr = &itr->second;
 
     return (spellPtr && spellPtr->state != PLAYERSPELL_REMOVED && spellPtr->active && !spellPtr->disabled);
 }
@@ -8212,22 +8200,22 @@ void Player::SetSkill(uint16 id, uint16 step /*= 0*/, uint16 newVal /*= 0*/, uin
                 SetUInt16Value(PLAYER_FIELD_SKILL + SKILL_PERM_BONUS_OFFSET + field, offset, 0);
 
                 // temporary bonuses
-                if (AuraEffectList const* mModSkill = GetAuraEffectsByType(SPELL_AURA_MOD_SKILL))
-                    for (AuraEffectList::const_iterator j = mModSkill->begin(); j != mModSkill->end(); ++j)
-                        if ((*j)->GetMiscValue() == int32(id))
-                            (*j)->HandleEffect(this, AURA_EFFECT_HANDLE_SKILL, true);
+                AuraEffectList const& mModSkill = GetAuraEffectsByType(SPELL_AURA_MOD_SKILL);
+                for (AuraEffectList::const_iterator j = mModSkill.begin(); j != mModSkill.end(); ++j)
+                    if ((*j)->GetMiscValue() == int32(id))
+                        (*j)->HandleEffect(this, AURA_EFFECT_HANDLE_SKILL, true);
 
                 // temporary bonuses
-                if (AuraEffectList const* mModSkill2 = GetAuraEffectsByType(SPELL_AURA_MOD_SKILL_2))
-                    for (AuraEffectList::const_iterator j = mModSkill2->begin(); j != mModSkill2->end(); ++j)
-                        if ((*j)->GetMiscValue() == int32(id))
-                            (*j)->HandleEffect(this, AURA_EFFECT_HANDLE_SKILL, true);
+                AuraEffectList const& mModSkill2 = GetAuraEffectsByType(SPELL_AURA_MOD_SKILL_2);
+                for (AuraEffectList::const_iterator j = mModSkill2.begin(); j != mModSkill2.end(); ++j)
+                    if ((*j)->GetMiscValue() == int32(id))
+                        (*j)->HandleEffect(this, AURA_EFFECT_HANDLE_SKILL, true);
 
                 // permanent bonuses
-                if (AuraEffectList const* mModSkillTalent = GetAuraEffectsByType(SPELL_AURA_MOD_SKILL_TALENT))
-                    for (AuraEffectList::const_iterator j = mModSkillTalent->begin(); j != mModSkillTalent->end(); ++j)
-                        if ((*j)->GetMiscValue() == int32(id))
-                            (*j)->HandleEffect(this, AURA_EFFECT_HANDLE_SKILL, true);
+                AuraEffectList const& mModSkillTalent = GetAuraEffectsByType(SPELL_AURA_MOD_SKILL_TALENT);
+                for (AuraEffectList::const_iterator j = mModSkillTalent.begin(); j != mModSkillTalent.end(); ++j)
+                    if ((*j)->GetMiscValue() == int32(id))
+                        (*j)->HandleEffect(this, AURA_EFFECT_HANDLE_SKILL, true);
 
                 // Learn all spells for skill
                 learnSkillRewardedSpells(id, newVal);
@@ -26001,7 +25989,7 @@ void Player::_SaveSpells(CharacterDatabaseTransaction& trans)
         }
 
         if (itr->second.state == PLAYERSPELL_REMOVED)
-            m_spells.erase_at(itr);
+            m_spells.erase(itr);
         else
             itr->second.state = PLAYERSPELL_UNCHANGED;
     }
@@ -28706,11 +28694,8 @@ float Player::SpellCooldownModByRate(SpellInfo const* spellInfo, bool sendSpeedR
 {
     float amount = 0.0f;
     float Multiplier = 1.0f;
-    AuraEffectList const* spellCooldownByHaste = GetAuraEffectsByType(SPELL_AURA_MOD_COOLDOWN_SPEED_RATE);
-    if (!spellCooldownByHaste)
-        return Multiplier;
-
-    for (AuraEffectList::const_iterator itr = spellCooldownByHaste->begin(); itr != spellCooldownByHaste->end(); ++itr)
+    AuraEffectList const& spellCooldownByHaste = GetAuraEffectsByType(SPELL_AURA_MOD_COOLDOWN_SPEED_RATE);
+    for (AuraEffectList::const_iterator itr = spellCooldownByHaste.begin(); itr != spellCooldownByHaste.end(); ++itr)
     {
         switch ((*itr)->GetId())
         {
@@ -29087,9 +29072,9 @@ void Player::SetBattlegroundEntryPoint()
         // Mount spell id storing
         if (IsMounted())
         {
-            if (AuraEffectList const* auras = GetAuraEffectsByType(SPELL_AURA_MOUNTED))
-                if (auras->begin() != auras->end())
-                    m_bgData.MountSpellID = (*auras->begin())->GetId();
+            AuraEffectList const& auras = GetAuraEffectsByType(SPELL_AURA_MOUNTED);
+            if (auras.begin() != auras.end())
+                m_bgData.MountSpellID = (*auras.begin())->GetId();
         }
         else
             m_bgData.MountSpellID = 0;
@@ -29806,9 +29791,9 @@ void Player::SendInitialPacketsAfterAddToMap(bool login)
     };
     for (AuraType const* itr = &auratypes[0]; itr && itr[0] != SPELL_AURA_NONE; ++itr)
     {
-        if (Unit::AuraEffectList const* auraList = GetAuraEffectsByType(*itr))
-            if (auraList->begin() != auraList->end())
-                (*auraList->begin())->HandleEffect(this, AURA_EFFECT_HANDLE_SEND_FOR_CLIENT, true);
+        Unit::AuraEffectList const& auraList = GetAuraEffectsByType(*itr);
+        if (auraList.begin() != auraList.end())
+            (*auraList.begin())->HandleEffect(this, AURA_EFFECT_HANDLE_SEND_FOR_CLIENT, true);
     }
 
     if (HasAuraType(SPELL_AURA_MOD_STUN) || HasAuraType(SPELL_AURA_STRANGULATE))
@@ -31040,16 +31025,14 @@ void Player::InitializeSelfResurrectionSpells()
     ClearDynamicValue(PLAYER_DYNAMIC_FIELD_SELF_RES_SPELLS);
     uint32 spells[3] = {};
 
-    if (AuraEffectList const* dummyAuras = GetAuraEffectsByType(SPELL_AURA_DUMMY))
+    AuraEffectList const& dummyAuras = GetAuraEffectsByType(SPELL_AURA_DUMMY);
+    for (auto itr = dummyAuras.cbegin(); itr != dummyAuras.cend(); ++itr)
     {
-        for (auto itr = dummyAuras->cbegin(); itr != dummyAuras->cend(); ++itr)
-        {
-            if ((*itr)->GetId() == 20707) // Soulstone Resurrection  // prio: 3 (max, non death persistent)
-                spells[0] = 3026;
-            
-            if ((*itr)->GetId() == 23701 && roll_chance_i(10)) // Twisting Nether  // prio: 2 (max)
-                spells[1] = 23700;
-        }
+        if ((*itr)->GetId() == 20707) // Soulstone Resurrection  // prio: 3 (max, non death persistent)
+            spells[0] = 3026;
+
+        if ((*itr)->GetId() == 23701 && roll_chance_i(10)) // Twisting Nether  // prio: 2 (max)
+            spells[1] = 23700;
     }
 
 
@@ -32036,12 +32019,9 @@ uint32 Player::GetBarberShopCost(BarberShopStyleEntry const* newHairStyle, uint8
 
 bool Player::isTotalImmune()
 {
-    AuraEffectList const* immune = GetAuraEffectsByType(SPELL_AURA_SCHOOL_IMMUNITY);
-    if (!immune)
-        return false;
-
+    AuraEffectList const& immune = GetAuraEffectsByType(SPELL_AURA_SCHOOL_IMMUNITY);
     uint32 immuneMask = 0;
-    for (AuraEffectList::const_iterator iter = immune->begin(); iter != immune->end(); ++iter)
+    for (AuraEffectList::const_iterator iter = immune.begin(); iter != immune.end(); ++iter)
     {
         if(AuraEffect* const eff = *iter)
             immuneMask |= eff->GetMiscValue();
@@ -32158,15 +32138,13 @@ void Player::UpdateCharmedAI()
     //kill self if charm aura has infinite duration
     if (charmer->IsInEvadeMode())
     {
-        if (AuraEffectList const* auras = GetAuraEffectsByType(SPELL_AURA_MOD_CHARM))
-        {
-            for (AuraEffectList::const_iterator iter = auras->begin(); iter != auras->end(); ++iter)
-                if ((*iter)->GetCasterGUID() == charmer->GetGUID() && (*iter)->GetBase()->IsPermanent())
-                {
-                    charmer->DealDamage(this, GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                    return;
-                }
-        }
+        AuraEffectList const& auras = GetAuraEffectsByType(SPELL_AURA_MOD_CHARM);
+        for (AuraEffectList::const_iterator iter = auras.begin(); iter != auras.end(); ++iter)
+            if ((*iter)->GetCasterGUID() == charmer->GetGUID() && (*iter)->GetBase()->IsPermanent())
+            {
+                charmer->DealDamage(this, GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                return;
+            }
     }
 
     if (!charmer->isInCombat())
@@ -35228,21 +35206,19 @@ void Player::SendCategoryCooldownMods()
 {
     WorldPackets::Spells::CategoryCooldown cooldowns;
 
-    if (AuraEffectList const* categoryCooldownAuras = GetAuraEffectsByType(SPELL_AURA_MOD_SPELL_CATEGORY_COOLDOWN))
+    AuraEffectList const& categoryCooldownAuras = GetAuraEffectsByType(SPELL_AURA_MOD_SPELL_CATEGORY_COOLDOWN);
+    for (auto aurEff : categoryCooldownAuras)
     {
-        for (auto aurEff : *categoryCooldownAuras)
+        uint32 categoryId = aurEff->GetMiscValue();
+        auto cItr = std::find_if(cooldowns.CategoryCooldowns.begin(), cooldowns.CategoryCooldowns.end(), [categoryId](WorldPackets::Spells::CategoryCooldown::CategoryCooldownInfo const& cooldown)
         {
-            uint32 categoryId = aurEff->GetMiscValue();
-            auto cItr = std::find_if(cooldowns.CategoryCooldowns.begin(), cooldowns.CategoryCooldowns.end(), [categoryId](WorldPackets::Spells::CategoryCooldown::CategoryCooldownInfo const& cooldown)
-            {
-                return cooldown.Category == categoryId;
-            });
+            return cooldown.Category == categoryId;
+        });
 
-            if (cItr == cooldowns.CategoryCooldowns.end())
-                cooldowns.CategoryCooldowns.emplace_back(aurEff->GetMiscValue(), -aurEff->GetAmount());
-            else
-                cItr->ModCooldown -= aurEff->GetAmount();
-        }
+        if (cItr == cooldowns.CategoryCooldowns.end())
+            cooldowns.CategoryCooldowns.emplace_back(aurEff->GetMiscValue(), -aurEff->GetAmount());
+        else
+            cItr->ModCooldown -= aurEff->GetAmount();
     }
 
     SendDirectMessage(cooldowns.Write());
@@ -35774,10 +35750,10 @@ bool Player::CanSpeakLanguage(uint32 lang_id) const
     if (langDesc->skill_id != 0 && !const_cast<Player*>(this)->HasSkill(langDesc->skill_id))
     {
         // also check SPELL_AURA_COMPREHEND_LANGUAGE (client offers option to speak in that language)
-        if (Unit::AuraEffectList const* langAuras = GetAuraEffectsByType(SPELL_AURA_COMPREHEND_LANGUAGE))
-            for (Unit::AuraEffectList::const_iterator i = langAuras->begin(); i != langAuras->end(); ++i)
-                if ((*i)->GetMiscValue() == int32(langDesc->lang_id))
-                    return true;
+        Unit::AuraEffectList const& langAuras = GetAuraEffectsByType(SPELL_AURA_COMPREHEND_LANGUAGE);
+        for (Unit::AuraEffectList::const_iterator i = langAuras.begin(); i != langAuras.end(); ++i)
+            if ((*i)->GetMiscValue() == int32(langDesc->lang_id))
+                return true;
 
         return false;
     }
@@ -36110,15 +36086,13 @@ void Player::SceneCompleted(uint32 instance)
         GetPhaseMgr().RemoveUpdateFlag(PHASE_UPDATE_FLAG_ZONE_UPDATE);
     });
 
-    if (AuraEffectList const* periodicAuras = GetAuraEffectsByType(SPELL_AURA_ACTIVATE_SCENE))
+    AuraEffectList const& periodicAuras = GetAuraEffectsByType(SPELL_AURA_ACTIVATE_SCENE);
+    for (AuraEffectList::const_iterator i = periodicAuras.begin(); i != periodicAuras.end(); ++i)
     {
-        for (AuraEffectList::const_iterator i = periodicAuras->begin(); i != periodicAuras->end(); ++i)
+        if ((*i)->GetMiscValue() == data->second)
         {
-            if ((*i)->GetMiscValue() == data->second)
-            {
-                RemoveAurasDueToSpell((*i)->GetId());
-                break;
-            }
+            RemoveAurasDueToSpell((*i)->GetId());
+            break;
         }
     }
 }

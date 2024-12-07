@@ -42,7 +42,6 @@ target_link_libraries(shared
     trinity-core-interface
   PUBLIC
     database
-    cds
     boost
     fmt
     g3dlib

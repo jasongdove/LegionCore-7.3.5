@@ -1055,9 +1055,7 @@ void AchievementMgr<Player>::LoadFromDB(PreparedQueryResult achievementResult, P
             if (criteria->Entry->StartTimer && time_t(date + criteria->Entry->StartTimer) < now)
                 continue;
 
-            _criteriaProgress.insert(char_criteria_id);
-            CriteriaProgressMap::guarded_ptr itr = _criteriaProgress.get(char_criteria_id);
-            CriteriaProgress& progress = itr->second;
+            CriteriaProgress& progress = _criteriaProgress[char_criteria_id];
             _criteriaProgressArr[char_criteria_id] = &progress;
             progress.Counter = fields[1].GetUInt32();
             progress.date = date;
@@ -1143,9 +1141,7 @@ void AchievementMgr<Player>::LoadFromDB(PreparedQueryResult achievementResult, P
                 TC_LOG_ERROR("criteria.achievement", "Achievement '%u' in both account & characters achievement_progress", acc_criteria_id);
                 continue;
             }
-            _criteriaProgress.insert(acc_criteria_id);
-            CriteriaProgressMap::guarded_ptr itr = _criteriaProgress.get(acc_criteria_id);
-            CriteriaProgress& progress = itr->second;
+            CriteriaProgress& progress = _criteriaProgress[acc_criteria_id];
             _criteriaProgressArr[acc_criteria_id] = &progress;
             progress.Counter = fields[1].GetUInt32();
             progress.date = date;
@@ -1253,9 +1249,7 @@ void AchievementMgr<Guild>::LoadFromDB(PreparedQueryResult achievementResult, Pr
             if (criteria->Entry->StartTimer && time_t(date + criteria->Entry->StartTimer) < now)
                 continue;
 
-            _criteriaProgress.insert(guild_criteriaTree_id);
-            CriteriaProgressMap::guarded_ptr itr = _criteriaProgress.get(guild_criteriaTree_id);
-            CriteriaProgress& progress = itr->second;
+            CriteriaProgress& progress = _criteriaProgress[guild_criteriaTree_id];
             _criteriaProgressArr[guild_criteriaTree_id] = &progress;
             progress.Counter = fields[1].GetUInt32();
             progress.date = date;
@@ -2392,14 +2386,7 @@ CriteriaProgress* AchievementMgr<T>::GetCriteriaProgress(uint32 entry, bool crea
         return progress;
 
     if (create)
-    {
-        _criteriaProgress.insert(entry);
-        if (CriteriaProgressMap::guarded_ptr ptr = _criteriaProgress.get(entry))
-        {
-            _criteriaProgressArr[entry] = &ptr->second;
-            return &ptr->second;
-        }
-    }
+        _criteriaProgressArr[entry] = &_criteriaProgress[entry];
 
     return nullptr;
 }
@@ -2430,10 +2417,7 @@ bool AchievementMgr<T>::SetCriteriaProgress(CriteriaTree const* tree, uint32 cha
     CriteriaProgress* progress = _criteriaProgressArr[tree->ID];
     if (!progress)
     {
-        _criteriaProgress.insert(tree->ID);
-        CriteriaProgressMap::guarded_ptr ptr = _criteriaProgress.get(tree->ID);
-        progress = &ptr->second;
-        _criteriaProgressArr[tree->ID] = progress;
+        progress = _criteriaProgressArr[tree->ID] = &_criteriaProgress[tree->ID];
         // not create record for 0 counter but allow it for timed achievements
         // we will need to send 0 progress to client to start the timer
         if (changeValue == 0 && !criteria->Entry->StartTimer)

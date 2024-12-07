@@ -118,12 +118,6 @@ int main(int argc, char** argv)
     }
     );
 
-    cds::Initialize();
-    cds::gc::HP hpGC;
-    cds::threading::Manager::attachThread();
-
-    std::shared_ptr<void> cdsHandle(nullptr, [](void*) { cds::threading::Manager::detachThread(); cds::Terminate(); });
-
     // Seed the OpenSSL's PRNG here.
     // That way it won't auto-seed when calling BigNumber::SetRand and slow down the first world login
     BigNumber seed;

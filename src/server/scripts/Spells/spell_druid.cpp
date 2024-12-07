@@ -1474,14 +1474,12 @@ class spell_druid_flourish : public SpellScriptLoader
                     if (Unit* unitTarget = GetHitUnit())
                     {
                         int32 dur = GetSpellInfo()->Effects[EFFECT_0]->CalcValue(caster) * 1000;
-                        if (Unit::AuraEffectList const* mPeriodic = unitTarget->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL))
+                        Unit::AuraEffectList const& mPeriodic = unitTarget->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL);
+                        for (Unit::AuraEffectList::const_iterator i = mPeriodic.begin(); i != mPeriodic.end(); ++i)
                         {
-                            for (Unit::AuraEffectList::const_iterator i = mPeriodic->begin(); i != mPeriodic->end(); ++i)
-                            {
-                                if ((*i)->GetCasterGUID() == caster->GetGUID())
-                                    if(Aura* aura = (*i)->GetBase())
-                                        aura->SetDuration(aura->GetDuration() + dur);
-                            }
+                            if ((*i)->GetCasterGUID() == caster->GetGUID())
+                                if(Aura* aura = (*i)->GetBase())
+                                    aura->SetDuration(aura->GetDuration() + dur);
                         }
                     }
                 }

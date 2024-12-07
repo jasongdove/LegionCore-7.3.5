@@ -96,13 +96,13 @@ void WorldState::AddClient(ObjectGuid const& guid)
 
 bool WorldState::HasClient(ObjectGuid const& guid)
 {
-    return ClientGuids.contains(ObjectGuidHashGen(guid));
+    return ClientGuids.contains(guid);
 }
 
 void WorldState::RemoveClient(ObjectGuid const& guid)
 {
     if (guid.IsPlayer())
-        ClientGuids.erase(ObjectGuidHashGen(guid));
+        ClientGuids.erase(guid);
 }
 
 void WorldState::SetValue(uint32 value, bool hidden)
@@ -121,19 +121,20 @@ void WorldState::SetValue(uint32 value, bool hidden)
     packet.Value = value;
     packet.Hidden = hidden;
 
-    for (GuidHashSet::iterator i = ClientGuids.begin(); i != ClientGuids.end(); ++i)
+    for (GuidUnorderedSet::iterator i = ClientGuids.begin(); i != ClientGuids.end();)
     {
         if (Player* player = ObjectAccessor::FindPlayer(*i))
         {
             // Send update only if in instance
             if (InstanceID && InstanceID != (player->InInstance() ? player->GetInstanceId() : 0))
             {
-                ClientGuids.erase_at(i);
+                i = ClientGuids.erase(i);
                 continue;
             }
             player->SendDirectMessage(packet.Write());
+            ++i;
         }
         else
-            ClientGuids.erase_at(i);
+            i = ClientGuids.erase(i);
     }
 }

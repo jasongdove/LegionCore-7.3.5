@@ -11,9 +11,6 @@
 
 #include <cstddef>
 
-#include <cds/init.h>
-#include <cds/gc/hp.h>
-
 class ThreadPoolMap final
 {
     typedef std::mutex LockType;

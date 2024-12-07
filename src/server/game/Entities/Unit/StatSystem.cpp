@@ -546,20 +546,18 @@ bool Player::GetCustomPvPMods(float& val, uint32 type, uint32 specID) const
 
 void Player::CalcPvPTemplate(AuraType auratype, float & templateMod, float & otherMod, std::function<bool(AuraEffect const*)> const& predicate)
 {
-    if (auto const* mTotalAuraList = GetAuraEffectsByType(auratype))
+    auto const& mTotalAuraList = GetAuraEffectsByType(auratype);
+    for (auto const& auraEffect : mTotalAuraList)
     {
-        for (auto const& auraEffect : *mTotalAuraList)
+        if (predicate(auraEffect))
         {
-            if (predicate(auraEffect))
+            if (auraEffect->GetId() == SPELL_PVP_STATS_TEMPLATE)
             {
-                if (auraEffect->GetId() == SPELL_PVP_STATS_TEMPLATE)
-                {
-                    templateMod += auraEffect->GetAmount();
-                }
-                else
-                {
-                    otherMod += auraEffect->GetAmount();
-                }
+                templateMod += auraEffect->GetAmount();
+            }
+            else
+            {
+                otherMod += auraEffect->GetAmount();
             }
         }
     }
@@ -569,10 +567,10 @@ void Player::UpdateSpellDamageAndHealingBonus()
 {
     int32 amount = m_baseSpellPower;
 
-    AuraEffectList const* mOverrideSpellPowerAuras = GetAuraEffectsByType(SPELL_AURA_OVERRIDE_SPELL_POWER_BY_AP_PCT);
-    if (mOverrideSpellPowerAuras && mOverrideSpellPowerAuras->begin() != mOverrideSpellPowerAuras->end())
+    AuraEffectList const& mOverrideSpellPowerAuras = GetAuraEffectsByType(SPELL_AURA_OVERRIDE_SPELL_POWER_BY_AP_PCT);
+    if (mOverrideSpellPowerAuras.begin() != mOverrideSpellPowerAuras.end())
     {
-        for (AuraEffectList::const_iterator itr = mOverrideSpellPowerAuras->begin(); itr != mOverrideSpellPowerAuras->end(); ++itr)
+        for (AuraEffectList::const_iterator itr = mOverrideSpellPowerAuras.begin(); itr != mOverrideSpellPowerAuras.end(); ++itr)
             amount = int32(GetTotalAttackPowerValue(BASE_ATTACK) * (*itr)->GetAmount() / 100.0f);
 
         SetStatFloatValue(PLAYER_FIELD_OVERRIDE_SPELL_POWER_BY_APPERCENT, GetTotalAuraModifier(SPELL_AURA_OVERRIDE_SPELL_POWER_BY_AP_PCT));
@@ -1295,29 +1293,25 @@ void Player::UpdateHastRegen(float auraMods)
 
     SetFloatValue(UNIT_FIELD_MOD_HASTE_REGEN, std::min(1.0f, val));
 
-    if (AuraEffectList const* CooldownByMeleeHaste = GetAuraEffectsByType(SPELL_AURA_MOD_COOLDOWN_BY_HASTE_REGEN))
+    AuraEffectList const& CooldownByMeleeHaste = GetAuraEffectsByType(SPELL_AURA_MOD_COOLDOWN_BY_HASTE_REGEN);
+    for (AuraEffectList::const_iterator itr = CooldownByMeleeHaste.begin(); itr != CooldownByMeleeHaste.end(); ++itr)
     {
-        for (AuraEffectList::const_iterator itr = CooldownByMeleeHaste->begin(); itr != CooldownByMeleeHaste->end(); ++itr)
-        {
-            (*itr)->SetCanBeRecalculated(true);
-            (*itr)->RecalculateAmount(this);
-        }
+        (*itr)->SetCanBeRecalculated(true);
+        (*itr)->RecalculateAmount(this);
     }
-    if (AuraEffectList const* GcdByMeleeHaste = GetAuraEffectsByType(SPELL_AURA_MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN))
+
+    AuraEffectList const& GcdByMeleeHaste = GetAuraEffectsByType(SPELL_AURA_MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN);
+    for (AuraEffectList::const_iterator itr = GcdByMeleeHaste.begin(); itr != GcdByMeleeHaste.end(); ++itr)
     {
-        for (AuraEffectList::const_iterator itr = GcdByMeleeHaste->begin(); itr != GcdByMeleeHaste->end(); ++itr)
-        {
-            (*itr)->SetCanBeRecalculated(true);
-            (*itr)->RecalculateAmount(this);
-        }
+        (*itr)->SetCanBeRecalculated(true);
+        (*itr)->RecalculateAmount(this);
     }
-    if (AuraEffectList const* RecHasteReg = GetAuraEffectsByType(SPELL_AURA_CHARGE_RECOVERY_AFFECTED_BY_HASTE_REGEN))
+
+    AuraEffectList const& RecHasteReg = GetAuraEffectsByType(SPELL_AURA_CHARGE_RECOVERY_AFFECTED_BY_HASTE_REGEN);
+    for (AuraEffectList::const_iterator itr = RecHasteReg.begin(); itr != RecHasteReg.end(); ++itr)
     {
-        for (AuraEffectList::const_iterator itr = RecHasteReg->begin(); itr != RecHasteReg->end(); ++itr)
-        {
-            (*itr)->SetCanBeRecalculated(true);
-            (*itr)->RecalculateAmount(this);
-        }
+        (*itr)->SetCanBeRecalculated(true);
+        (*itr)->RecalculateAmount(this);
     }
 }
 
@@ -1634,23 +1628,21 @@ void Unit::UpdateManaRegen()
     // manaMod% of base mana every 5 seconds is base for all classes
     float baseRegen = CalculatePct(float(GetCreateMana()), manaMod) / 5.0f;
     float auraMp5regen = 0.0f;
-    if (AuraEffectList const* ModPowerRegenAuras = GetAuraEffectsByType(SPELL_AURA_MOD_POWER_REGEN))
+    AuraEffectList const& ModPowerRegenAuras = GetAuraEffectsByType(SPELL_AURA_MOD_POWER_REGEN);
+    for (AuraEffectList::const_iterator i = ModPowerRegenAuras.begin(); i != ModPowerRegenAuras.end(); ++i)
     {
-        for (AuraEffectList::const_iterator i = ModPowerRegenAuras->begin(); i != ModPowerRegenAuras->end(); ++i)
+        if (Powers((*i)->GetMiscValue()) == POWER_MANA)
         {
-            if (Powers((*i)->GetMiscValue()) == POWER_MANA)
-            {
-                bool periodic = false;
-                if (Aura* aur = (*i)->GetBase())
-                    if (AuraEffect const* aurEff = aur->GetEffect(1))
-                        if (aurEff->GetAuraType() == SPELL_AURA_PERIODIC_DUMMY)
-                        {
-                            periodic = true;
-                            auraMp5regen += aurEff->GetAmount() / 5.0f;
-                        }
-                if (!periodic)
-                    auraMp5regen += (*i)->GetAmount() / 5.0f;
-            }
+            bool periodic = false;
+            if (Aura* aur = (*i)->GetBase())
+                if (AuraEffect const* aurEff = aur->GetEffect(1))
+                    if (aurEff->GetAuraType() == SPELL_AURA_PERIODIC_DUMMY)
+                    {
+                        periodic = true;
+                        auraMp5regen += aurEff->GetAmount() / 5.0f;
+                    }
+            if (!periodic)
+                auraMp5regen += (*i)->GetAmount() / 5.0f;
         }
     }
 

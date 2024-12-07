@@ -16,8 +16,6 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cds/gc/hp.h>
-
 #include "BattlefieldMgr.h"
 #include "BattlegroundMgr.h"
 #include "BrawlersGuild.h"
@@ -544,7 +542,7 @@ void Map::LoadMapAndVMap(int gx, int gy)
 
 Map::Map(uint32 id, time_t expiry, uint32 InstanceId, Difficulty difficulty, Map* _parent) :
 m_updateTime(0), m_sessionTime(0), m_mapLoopCounter(0),
-m_activeNonPlayersIter(m_activeNonPlayers.end()), i_grids(), GridMaps()
+m_activeNonPlayersIter(m_activeNonPlayers.end()), i_grids(), GridMaps(), _transportsUpdateIter(_transports.end())
 {
     i_mapEntry = sMapStore.LookupEntry(id);
     i_difficulty = difficulty;
@@ -598,8 +596,6 @@ m_activeNonPlayersIter(m_activeNonPlayers.end()), i_grids(), GridMaps()
     MMAP::MMapFactory::createOrGetMMapManager()->loadMapInstance(sWorld->GetDataPath(), GetId(), GetInstanceId());
 
     sScriptMgr->OnCreateMap(this);
-
-    m_Transports.clear();
 
     if(float _distMap = GetVisibleDistance(TYPE_VISIBLE_MAP, id))
         m_VisibleDistance = _distMap;
@@ -1012,7 +1008,7 @@ bool Map::AddToMap(Transport* obj)
     }
 
     obj->AddToWorld();
-    AddTransport(obj);
+    _transports.insert(obj);
 
     // Broadcast creation to players
     ApplyOnEveryPlayer([&](Player* player)
@@ -1433,7 +1429,18 @@ void Map::RemoveFromMap(Transport* obj, bool remove)
         });
     }
 
-    RemoveTransport(obj);
+    if (_transportsUpdateIter != _transports.end())
+    {
+        TransportsContainer::iterator itr = _transports.find(obj);
+        if (itr == _transports.end())
+            return;
+        if (itr == _transportsUpdateIter)
+            ++_transportsUpdateIter;
+        _transports.erase(itr);
+    }
+    else
+        _transports.erase(obj);
+
     obj->ResetMap();
 
     if (remove)
@@ -2838,9 +2845,9 @@ void Map::SendInitSelf(Player* player)
 
     // build other passengers at transport also (they always visible and marked as visible and will not send at visibility update at add to map
     if (Transport* transport = player->GetTransport())
-        for (WorldObjectSet::iterator itr = transport->GetPassengers().begin(); itr != transport->GetPassengers().end(); ++itr)
-            if (player != (*itr) && player->HaveAtClient(*itr))
-                (*itr)->BuildCreateUpdateBlockForPlayer(&data, player);
+        for (WorldObject* passenger : transport->GetPassengers())
+            if (player != passenger && player->HaveAtClient(passenger))
+                passenger->BuildCreateUpdateBlockForPlayer(&data, player);
 
     WorldPacket packet;
     if (data.BuildPacket(&packet))
@@ -2849,14 +2856,11 @@ void Map::SendInitSelf(Player* player)
 
 void Map::SendInitTransports(Player* player)
 {
-    if (m_Transports.empty())
-        return;
-
     UpdateData transData(player->GetMapId());
-    for (TransportHashSet::iterator i = m_Transports.begin(); i != m_Transports.end(); ++i)
+    for (Transport* transport : _transports)
         // send data for current transport in other place
-        if ((*i) != player->GetTransport() && (*i)->GetMapId() == GetId() && player->InSamePhaseId(*i)/* && (player->GetDistance(*i) <= MAX_VISIBILITY_DISTANCE || IsBattlegroundOrArena())*/)
-            (*i)->BuildCreateUpdateBlockForPlayer(&transData, player);
+        if (transport != player->GetTransport() && transport->GetMapId() == GetId() && player->InSamePhaseId(transport)/* && (player->GetDistance(*i) <= MAX_VISIBILITY_DISTANCE || IsBattlegroundOrArena())*/)
+            transport->BuildCreateUpdateBlockForPlayer(&transData, player);
 
     WorldPacket packet;
     if (transData.BuildPacket(&packet))
@@ -2865,14 +2869,11 @@ void Map::SendInitTransports(Player* player)
 
 void Map::SendRemoveTransports(Player* player)
 {
-    if (m_Transports.empty())
-        return;
-
     UpdateData transData(player->GetMapId());
     // except used transport
-    for (TransportHashSet::iterator i = m_Transports.begin(); i != m_Transports.end(); ++i)
-        if ((*i) != player->GetTransport() || (*i)->GetMapId() != GetId())
-            (*i)->BuildOutOfRangeUpdateBlock(&transData);
+    for (Transport* transport : _transports)
+        if (transport != player->GetTransport() || transport->GetMapId() != GetId())
+            transport->BuildOutOfRangeUpdateBlock(&transData);
 
     WorldPacket packet;
     if (transData.BuildPacket(&packet))
@@ -2883,15 +2884,15 @@ void Map::SendUpdateTransportVisibility(Player* player, std::set<uint32> const& 
 {
     // Hack to send out transports
     UpdateData transData(player->GetMapId());
-    for (TransportHashSet::iterator i = m_Transports.begin(); i != m_Transports.end(); ++i)
+    for (Transport* transport : _transports)
     {
-        if (*i == player->GetTransport())
+        if (transport == player->GetTransport())
             continue;
 
-        if (player->InSamePhaseId(*i) && !player->HaveAtClient(*i))
-            (*i)->BuildCreateUpdateBlockForPlayer(&transData, player);
-        else if (!player->InSamePhaseId(*i) && player->HaveAtClient(*i))
-            (*i)->BuildOutOfRangeUpdateBlock(&transData);
+        if (player->InSamePhaseId(transport) && !player->HaveAtClient(transport))
+            (transport)->BuildCreateUpdateBlockForPlayer(&transData, player);
+        else if (!player->InSamePhaseId(transport) && player->HaveAtClient(transport))
+            (transport)->BuildOutOfRangeUpdateBlock(&transData);
     }
 
     WorldPacket packet;
@@ -3256,17 +3257,7 @@ void Map::AddWorldObject(WorldObject* obj)
 
 void Map::RemoveWorldObject(WorldObject* obj)
 {
-    i_worldObjects.erase(worldObjectHashGen(obj));
-}
-
-WorldObjectSet& Map::GetAllWorldObjectOnMap()
-{
-    return i_worldObjects;
-}
-
-WorldObjectSet const& Map::GetAllWorldObjectOnMap() const
-{
-    return i_worldObjects;
+    i_worldObjects.erase(obj);
 }
 
 void Map::AddToActive(Creature* c)
@@ -4672,8 +4663,6 @@ void Map::AddToMapWait(Object* obj)
 
 void Map::UpdateLoop(uint32 _mapID)
 {
-    cds::threading::Manager::attachThread();
-
     uint32 realCurrTime = 0;
     uint32 realPrevTime = getMSTime();
 
@@ -4685,7 +4674,7 @@ void Map::UpdateLoop(uint32 _mapID)
     {
         if (m_worldCrashChecker) // Crashing detected, need stop map
         {
-            m_Transports.clear();
+            _transports.clear();
             UnloadAll();
             b_isMapStop = true;
             TC_LOG_ERROR("server", "Map::UpdateLoop Crash _mapID %u thread %zu", _mapID, std::hash<std::thread::id>()(std::this_thread::get_id()));
@@ -4762,8 +4751,6 @@ void Map::UpdateLoop(uint32 _mapID)
     }
 
     //TC_LOG_ERROR(LOG_FILTER_WORLDSERVER, "Map::UpdateLoop Stop _mapID %u thread %u", _mapID, std::this_thread::get_id());
-
-    cds::threading::Manager::detachThread();
 }
 
 void Map::SetMapUpdateInterval()
@@ -4840,16 +4827,6 @@ WorldSessionPtr Map::FindSession(uint32 id) const
     return nullptr;
 }
 
-void Map::AddTransport(Transport* t)
-{
-    m_Transports.insert(t);
-}
-
-void Map::RemoveTransport(Transport* t)
-{
-    m_Transports.erase(transportHashGen(t));
-}
-
 void Map::AddStaticTransport(StaticTransport* t)
 {
     m_StaticTransports[t->GetGUID()] = t;
@@ -4865,9 +4842,16 @@ void Map::UpdateTransport(uint32 diff)
     if (b_isMapUnload)
         return;
 
-    for (TransportHashSet::iterator i = m_Transports.begin(); i != m_Transports.end(); ++i)
-        if (Transport* t = *i)
-            t->Update(diff);
+    for (_transportsUpdateIter = _transports.begin(); _transportsUpdateIter != _transports.end();)
+    {
+        WorldObject* obj = *_transportsUpdateIter;
+        ++_transportsUpdateIter;
+
+        if (!obj->IsInWorld())
+            continue;
+
+        obj->Update(diff);
+    }
 }
 
 bool Map::CanCreatedZone() const

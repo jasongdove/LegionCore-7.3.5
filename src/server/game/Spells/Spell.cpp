@@ -4888,11 +4888,11 @@ void Spell::_handle_immediate_phase()
 
             for (auto& auratype : auralist)
             {
-                if (Unit::AuraEffectList const* mModCastingSpeedNotStack = m_caster->GetAuraEffectsByType(auratype))
-                    for (Unit::AuraEffectList::const_iterator i = mModCastingSpeedNotStack->begin(); i != mModCastingSpeedNotStack->end(); ++i)
-                        if (SpellInfo const* sinfo = (*i)->GetSpellInfo())
-                            if (sinfo->GetAuraOptions(m_diffMode)->ProcCharges && !(*i)->HasSpellClassMask())
-                                spellId.push_back(sinfo->Id);
+                Unit::AuraEffectList const& mModCastingSpeedNotStack = m_caster->GetAuraEffectsByType(auratype);
+                for (Unit::AuraEffectList::const_iterator i = mModCastingSpeedNotStack.begin(); i != mModCastingSpeedNotStack.end(); ++i)
+                    if (SpellInfo const* sinfo = (*i)->GetSpellInfo())
+                        if (sinfo->GetAuraOptions(m_diffMode)->ProcCharges && !(*i)->HasSpellClassMask())
+                            spellId.push_back(sinfo->Id);
             }
 
             for (std::vector<uint32>::iterator itr = spellId.begin(); itr != spellId.end(); ++itr)
@@ -6675,15 +6675,13 @@ SpellCastResult Spell::CheckCast(bool strict)
         if (!(_triggeredCastFlags & TRIGGERED_IGNORE_CASTER_AURASTATE) && m_caster->HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_ALLOW_ONLY_ABILITY))
         {
             bool allow = false;
-            if (Unit::AuraEffectList const* auras = m_caster->GetAuraEffectsByType(SPELL_AURA_ALLOW_ONLY_ABILITY))
+            Unit::AuraEffectList const& auras = m_caster->GetAuraEffectsByType(SPELL_AURA_ALLOW_ONLY_ABILITY);
+            for (Unit::AuraEffectList::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
             {
-                for (Unit::AuraEffectList::const_iterator itr = auras->begin(); itr != auras->end(); ++itr)
+                if ((*itr)->IsAffectingSpell(m_spellInfo))
                 {
-                    if ((*itr)->IsAffectingSpell(m_spellInfo))
-                    {
-                        allow = true;
-                        break;
-                    }
+                    allow = true;
+                    break;
                 }
             }
 
@@ -6755,15 +6753,13 @@ SpellCastResult Spell::CheckCast(bool strict)
     {
         bool checkForm = true;
         // Ignore form req aura
-        if (Unit::AuraEffectList const* ignore = m_caster->GetAuraEffectsByType(SPELL_AURA_MOD_IGNORE_SHAPESHIFT))
+        Unit::AuraEffectList const& ignore = m_caster->GetAuraEffectsByType(SPELL_AURA_MOD_IGNORE_SHAPESHIFT);
+        for (Unit::AuraEffectList::const_iterator i = ignore.begin(); i != ignore.end(); ++i)
         {
-            for (Unit::AuraEffectList::const_iterator i = ignore->begin(); i != ignore->end(); ++i)
-            {
-                if (!(*i)->IsAffectingSpell(m_spellInfo))
-                    continue;
-                checkForm = false;
-                break;
-            }
+            if (!(*i)->IsAffectingSpell(m_spellInfo))
+                continue;
+            checkForm = false;
+            break;
         }
 
         if (checkForm)
@@ -6778,23 +6774,21 @@ SpellCastResult Spell::CheckCast(bool strict)
         }
     }
 
-    if (Unit::AuraEffectList const* blockSpells = m_caster->GetAuraEffectsByType(SPELL_AURA_BLOCK_SPELL_FAMILY))
-        for (Unit::AuraEffectList::const_iterator blockItr = blockSpells->begin(); blockItr != blockSpells->end(); ++blockItr)
-            if (uint32((*blockItr)->GetMiscValue()) == m_spellInfo->ClassOptions.SpellClassSet && (*blockItr)->GetSpellInfo()->Effects[(*blockItr)->GetEffIndex()]->TriggerSpell != m_spellInfo->Id)
-                return SPELL_FAILED_SPELL_UNAVAILABLE;
+    Unit::AuraEffectList const& blockSpells = m_caster->GetAuraEffectsByType(SPELL_AURA_BLOCK_SPELL_FAMILY);
+    for (Unit::AuraEffectList::const_iterator blockItr = blockSpells.begin(); blockItr != blockSpells.end(); ++blockItr)
+        if (uint32((*blockItr)->GetMiscValue()) == m_spellInfo->ClassOptions.SpellClassSet && (*blockItr)->GetSpellInfo()->Effects[(*blockItr)->GetEffIndex()]->TriggerSpell != m_spellInfo->Id)
+            return SPELL_FAILED_SPELL_UNAVAILABLE;
 
     bool reqCombat = true;
-    if (Unit::AuraEffectList const* stateAuras = m_caster->GetAuraEffectsByType(SPELL_AURA_ABILITY_IGNORE_AURASTATE))
+    Unit::AuraEffectList const& stateAuras = m_caster->GetAuraEffectsByType(SPELL_AURA_ABILITY_IGNORE_AURASTATE);
+    for (Unit::AuraEffectList::const_iterator j = stateAuras.begin(); j != stateAuras.end(); ++j)
     {
-        for (Unit::AuraEffectList::const_iterator j = stateAuras->begin(); j != stateAuras->end(); ++j)
+        if ((*j)->IsAffectingSpell(m_spellInfo))
         {
-            if ((*j)->IsAffectingSpell(m_spellInfo))
+            if ((*j)->GetMiscValue() == 1)
             {
-                if ((*j)->GetMiscValue() == 1)
-                {
-                    reqCombat=false;
-                    break;
-                }
+                reqCombat=false;
+                break;
             }
         }
     }
@@ -8126,16 +8120,14 @@ SpellCastResult Spell::CheckCasterAuras() const
             static uint32 constexpr allowedStunMask = 1 << MECHANIC_STUN | 1 << MECHANIC_FREEZE | 1 << MECHANIC_SAPPED | 1 << MECHANIC_SLEEP;
 
             bool foundNotStun = false;
-            if (Unit::AuraEffectList const* stunAuras = m_caster->GetAuraEffectsByType(SPELL_AURA_MOD_STUN))
+            Unit::AuraEffectList const& stunAuras = m_caster->GetAuraEffectsByType(SPELL_AURA_MOD_STUN);
+            for (Unit::AuraEffectList::const_iterator i = stunAuras.begin(); i != stunAuras.end(); ++i)
             {
-                for (Unit::AuraEffectList::const_iterator i = stunAuras->begin(); i != stunAuras->end(); ++i)
+                uint32 mechanicMask = (*i)->GetSpellInfo()->GetAllEffectsMechanicMask();
+                if (mechanicMask && !(mechanicMask & allowedStunMask))
                 {
-                    uint32 mechanicMask = (*i)->GetSpellInfo()->GetAllEffectsMechanicMask();
-                    if (mechanicMask && !(mechanicMask & allowedStunMask))
-                    {
-                        foundNotStun = true;
-                        break;
-                    }
+                    foundNotStun = true;
+                    break;
                 }
             }
             if (foundNotStun)
@@ -10464,11 +10456,8 @@ void Spell::PrepareTriggersExecutedOnHit()
     // handle SPELL_AURA_ADD_TARGET_TRIGGER auras:
     // save auras which were present on spell caster on cast, to prevent triggered auras from affecting caster
     // and to correctly calculate proc chance when combopoints are present
-    Unit::AuraEffectList const* targetTriggers = m_caster->GetAuraEffectsByType(SPELL_AURA_ADD_TARGET_TRIGGER);
-    if (!targetTriggers)
-        return;
-
-    for (Unit::AuraEffectList::const_iterator i = targetTriggers->begin(); i != targetTriggers->end(); ++i)
+    Unit::AuraEffectList const& targetTriggers = m_caster->GetAuraEffectsByType(SPELL_AURA_ADD_TARGET_TRIGGER);
+    for (Unit::AuraEffectList::const_iterator i = targetTriggers.begin(); i != targetTriggers.end(); ++i)
     {
         if (!(*i)->IsAffectingSpell(m_spellInfo))
             continue;

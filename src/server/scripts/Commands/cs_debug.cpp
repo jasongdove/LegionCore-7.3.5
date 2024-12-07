@@ -143,7 +143,7 @@ public:
             { "freeze",         SEC_ADMINISTRATOR,  false, &HandleDebugFreeze,                 ""},
             { "combat",         SEC_ADMINISTRATOR,  false, &HandleDebugPlayerCombat,           ""},
             { "garrison",       SEC_ADMINISTRATOR,  false, nullptr,                             "", debugGarrisonCommandTable },
-            { "transport",      SEC_ADMINISTRATOR,  false, &HandleDebugStartTransport,         ""},
+            { "transport",      SEC_ADMINISTRATOR,  false, &HandleDebugTransportCommand,       ""},
             { "setelevel",      SEC_ADMINISTRATOR,  false, &HandleDebugSetEffectiveLevel,      ""},
             { "pvelogs",        SEC_ADMINISTRATOR,  false, &HandleDebugPvELogsCommand,         ""},
             { "setkillpoints",  SEC_GAMEMASTER,     false, &HandleDebugKillPointsCommand,      ""},
@@ -2225,16 +2225,29 @@ public:
         return true;
     }
 
-    static bool HandleDebugStartTransport(ChatHandler* handler, char const* args)
+    static bool HandleDebugTransportCommand(ChatHandler* handler, char const* args)
     {
-        char* centry = strtok((char*)args, " ");
-        uint32 entry = centry ? (int32)atoi(centry) : 0;
+        Transport* transport = handler->GetSession()->GetPlayer()->GetTransport();
+        if (!transport)
+            return false;
 
-        if (auto player = handler->GetSession()->GetPlayer())
-            if (Transport* transport = sTransportMgr->GetTransport(player->GetMap(), entry))
-                transport->EnableMovement(true);
+        bool start = false;
+        if (!stricmp(args, "stop"))
+            transport->EnableMovement(false);
+        else if (!stricmp(args, "start"))
+        {
+            transport->EnableMovement(true);
+            start = true;
+        }
+        else
+        {
+            Position pos = transport->GetPosition();
+            handler->PSendSysMessage("Transport %s is %s", transport->GetName(), transport->GetGoState() == GO_STATE_READY ? "stopped" : "moving");
+            handler->PSendSysMessage("Transport position: %s", pos.ToString().c_str());
+            return true;
+        }
 
-        handler->PSendSysMessage("Start shio %u", entry);
+        handler->PSendSysMessage("Transport %s %s", transport->GetName(), start ? "started" : "stopped");
         return true;
     }
 
