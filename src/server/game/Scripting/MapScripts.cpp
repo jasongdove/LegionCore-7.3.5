@@ -63,7 +63,7 @@ void Map::ScriptsStart(ScriptMapMap const& scripts, uint32 id, Object* source, O
         if (iter->first == 0)
             immedScript = true;
 
-        sScriptMgr->IncreaseScheduledScriptsCount();
+        sMapMgr->IncreaseScheduledScriptsCount();
     }
     ///- If one of the effects should be immediate, launch the script execution
     if (/*start &&*/ immedScript && !i_scriptLock)
@@ -94,7 +94,7 @@ void Map::ScriptCommandStart(ScriptInfo const& script, uint32 delay, Object* sou
         m_scriptSchedule.insert(std::make_pair(time_t(GameTime::GetGameTime() + delay), sa));
     }
 
-    sScriptMgr->IncreaseScheduledScriptsCount();
+    sMapMgr->IncreaseScheduledScriptsCount();
 
     ///- If effects should be immediate, launch the script execution
     if (delay == 0 && !i_scriptLock)
@@ -999,6 +999,6 @@ void Map::ScriptsProcess()
             m_scriptSchedule.erase(iter);
         }
         iter = m_scriptSchedule.begin();
-        sScriptMgr->DecreaseScheduledScriptCount();
+        sMapMgr->DecreaseScheduledScriptCount();
     }
 }

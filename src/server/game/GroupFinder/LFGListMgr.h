@@ -2,7 +2,7 @@
 
 #include "LFGList.h"
 
-class LFGListMgr
+class TC_GAME_API LFGListMgr
 {
 public:
     static LFGListMgr* instance();

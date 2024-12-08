@@ -118,7 +118,7 @@ namespace WorldPackets
             WorldPacket const* Write() override { return &_worldPacket; }
         };
 
-        class ArtifactTraitsRefunded final : public ServerPacket
+        class TC_GAME_API ArtifactTraitsRefunded final : public ServerPacket
         {
         public:
             ArtifactTraitsRefunded() : ServerPacket(SMSG_ARTIFACT_TRAITS_REFUNDED, 16 + 8) { }

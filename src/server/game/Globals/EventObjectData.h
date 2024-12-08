@@ -23,7 +23,7 @@
 
 typedef std::unordered_map<ObjectGuid::LowType, EventObjectData> EventObjectDataContainer;
 
-class EventObjectDataStoreMgr
+class TC_GAME_API EventObjectDataStoreMgr
 {
     EventObjectDataStoreMgr();
     ~EventObjectDataStoreMgr();

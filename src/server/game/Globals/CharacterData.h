@@ -82,7 +82,7 @@ struct CharacterTemplate
 typedef std::unordered_map<uint32, CharacterTemplate> CharacterTemplateContainer;
 typedef std::map<uint32, uint32> CharacterConversionMap;
 
-class CharacterDataStoreMgr
+class TC_GAME_API CharacterDataStoreMgr
 {
     CharacterDataStoreMgr();
     ~CharacterDataStoreMgr();

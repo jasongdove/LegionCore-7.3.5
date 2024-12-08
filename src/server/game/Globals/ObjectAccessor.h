@@ -41,7 +41,7 @@ class EventObject;
 static uint32 const INCREMENT_COUNTER = 5000000;
 
 template <class T>
-class HashMapHolder
+class TC_GAME_API HashMapHolder
 {
 public:
     typedef std::unordered_map<ObjectGuid, T*> MapType;
@@ -132,7 +132,7 @@ public:
 
     static MapType& GetContainer() { return _objectMap; }
 
-    static sf::contention_free_shared_mutex< >& GetLock() { return i_lock; }
+    static sf::contention_free_shared_mutex< >& GetLock();
 
     static uint32 _size;
 
@@ -149,7 +149,7 @@ private:
     static std::atomic<bool> _checkLock;
 };
 
-class ObjectAccessor
+class TC_GAME_API ObjectAccessor
 {
     ObjectAccessor();
     ~ObjectAccessor();

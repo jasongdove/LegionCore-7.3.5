@@ -40,12 +40,12 @@ struct ItemRandomEnchantmentId
     uint32 Id = 0;
 };
 
-void LoadRandomEnchantmentsTable();
-ItemRandomEnchantmentId GetItemEnchantMod(int32 entry, ItemRandomEnchantmentType type, uint32 ItemID, uint32 spec_id);
-uint32 GetItemThirdStat(uint32 ItemID, bool& sosketSlot1, bool& sosketSlot2, bool& sosketSlot3);
-uint32 GenerateEnchSuffixFactor(ItemTemplate const* proto, uint32 level = 0);
-uint32 GetRandomPropertyPoints(uint32 itemLevel, uint32 quality, uint32 inventoryType, uint32 subclass);
-bool CheckSpecProp(uint32 ench, ItemRandomEnchantmentType type, uint32 SpecID);
-bool CheckStatsSpec(uint32 StatType, uint32 SpecID);
+TC_GAME_API void LoadRandomEnchantmentsTable();
+TC_GAME_API ItemRandomEnchantmentId GetItemEnchantMod(int32 entry, ItemRandomEnchantmentType type, uint32 ItemID, uint32 spec_id);
+TC_GAME_API uint32 GetItemThirdStat(uint32 ItemID, bool& sosketSlot1, bool& sosketSlot2, bool& sosketSlot3);
+TC_GAME_API uint32 GenerateEnchSuffixFactor(ItemTemplate const* proto, uint32 level = 0);
+TC_GAME_API uint32 GetRandomPropertyPoints(uint32 itemLevel, uint32 quality, uint32 inventoryType, uint32 subclass);
+TC_GAME_API bool CheckSpecProp(uint32 ench, ItemRandomEnchantmentType type, uint32 SpecID);
+TC_GAME_API bool CheckStatsSpec(uint32 StatType, uint32 SpecID);
 #endif
 

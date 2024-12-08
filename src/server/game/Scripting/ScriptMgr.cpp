@@ -51,138 +51,974 @@
 #include "Weather.h"
 #include "WorldPacket.h"
 
-UnusedScriptNamesContainer UnusedScriptNames;
+// Trait which indicates whether this script type
+// must be assigned in the database.
+template<typename>
+struct is_script_database_bound
+    : std::false_type { };
+
+template<>
+struct is_script_database_bound<SpellScriptLoader>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<BattlePayProductScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<InstanceMapScript>
+  : std::true_type { };
+
+template<>
+struct is_script_database_bound<ItemScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<CreatureScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<GameObjectScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<AreaTriggerScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<SceneTriggerScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<EventObjectScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<BattlegroundScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<OutdoorPvPScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<WeatherScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<ConditionScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<VehicleScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<TransportScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<AchievementCriteriaScript>
+    : std::true_type { };
+
+template<>
+struct is_script_database_bound<AchievementRewardScript>
+  : std::true_type { };
+
+template<>
+struct is_script_database_bound<GuildScript>
+  : std::true_type { };
+
+template<>
+struct is_script_database_bound<GroupScript>
+  : std::true_type { };
+
+template<>
+struct is_script_database_bound<WorldStateScript>
+  : std::true_type { };
+
+enum Spells
+{
+    SPELL_HOTSWAP_VISUAL_SPELL_EFFECT = 40162 // 59084
+};
+
+class ScriptRegistryInterface
+{
+public:
+    ScriptRegistryInterface() { }
+    virtual ~ScriptRegistryInterface() { }
+
+    ScriptRegistryInterface(ScriptRegistryInterface const&) = delete;
+    ScriptRegistryInterface(ScriptRegistryInterface&&) = delete;
+
+    ScriptRegistryInterface& operator= (ScriptRegistryInterface const&) = delete;
+    ScriptRegistryInterface& operator= (ScriptRegistryInterface&&) = delete;
+
+    /// Removes all scripts associated with the given script context.
+    /// Requires ScriptRegistryBase::SwapContext to be called after all transfers have finished.
+    virtual void ReleaseContext(std::string const& context) = 0;
+
+    /// Injects and updates the changed script objects.
+    virtual void SwapContext(bool initialize) = 0;
+
+    /// Removes the scripts used by this registry from the given container.
+    /// Used to find unused script names.
+    virtual void RemoveUsedScriptsFromContainer(std::unordered_set<std::string>& scripts) = 0;
+
+    /// Unloads the script registry.
+    virtual void Unload() = 0;
+};
+
+template<class>
+class ScriptRegistry;
+
+class ScriptRegistryCompositum
+    : public ScriptRegistryInterface
+{
+    ScriptRegistryCompositum() { }
+
+    template<class>
+    friend class ScriptRegistry;
+
+    /// Type erasure wrapper for objects
+    class DeleteableObjectBase
+    {
+    public:
+        DeleteableObjectBase() { }
+        virtual ~DeleteableObjectBase() { }
+
+        DeleteableObjectBase(DeleteableObjectBase const&) = delete;
+        DeleteableObjectBase& operator= (DeleteableObjectBase const&) = delete;
+    };
+
+    template<typename T>
+    class DeleteableObject
+        : public DeleteableObjectBase
+    {
+    public:
+        DeleteableObject(T&& object)
+            : _object(std::forward<T>(object)) { }
+
+    private:
+        T _object;
+    };
+
+public:
+    void SetScriptNameInContext(std::string const& scriptname, std::string const& context)
+    {
+        ASSERT(_scriptnames_to_context.find(scriptname) == _scriptnames_to_context.end(),
+               "Scriptname was assigned to this context already!");
+        _scriptnames_to_context.insert(std::make_pair(scriptname, context));
+    }
+
+    std::string const& GetScriptContextOfScriptName(std::string const& scriptname) const
+    {
+        auto itr = _scriptnames_to_context.find(scriptname);
+        ASSERT(itr != _scriptnames_to_context.end() &&
+               "Given scriptname doesn't exist!");
+        return itr->second;
+    }
+
+    void ReleaseContext(std::string const& context) final override
+    {
+        for (auto const registry : _registries)
+            registry->ReleaseContext(context);
+
+        // Clear the script names in context after calling the release hooks
+        // since it's possible that new references to a shared library
+        // are acquired when releasing.
+        for (auto itr = _scriptnames_to_context.begin();
+                        itr != _scriptnames_to_context.end();)
+            if (itr->second == context)
+                itr = _scriptnames_to_context.erase(itr);
+            else
+                ++itr;
+    }
+
+    void SwapContext(bool initialize) final override
+    {
+        for (auto const registry : _registries)
+            registry->SwapContext(initialize);
+
+        DoDelayedDelete();
+    }
+
+    void RemoveUsedScriptsFromContainer(std::unordered_set<std::string>& scripts) final override
+    {
+        for (auto const registry : _registries)
+            registry->RemoveUsedScriptsFromContainer(scripts);
+    }
+
+    void Unload() final override
+    {
+        for (auto const registry : _registries)
+            registry->Unload();
+    }
+
+    template<typename T>
+    void QueueForDelayedDelete(T&& any)
+    {
+        _delayed_delete_queue.push_back(
+            Trinity::make_unique<
+                DeleteableObject<typename std::decay<T>::type>
+            >(std::forward<T>(any))
+        );
+    }
+
+    static ScriptRegistryCompositum* Instance()
+    {
+        static ScriptRegistryCompositum instance;
+        return &instance;
+    }
+
+private:
+    void Register(ScriptRegistryInterface* registry)
+    {
+        _registries.insert(registry);
+    }
+
+    void DoDelayedDelete()
+    {
+        _delayed_delete_queue.clear();
+    }
+
+    std::unordered_set<ScriptRegistryInterface*> _registries;
+
+    std::vector<std::unique_ptr<DeleteableObjectBase>> _delayed_delete_queue;
+
+    std::unordered_map<
+        std::string /*script name*/,
+        std::string /*context*/
+    > _scriptnames_to_context;
+};
+
+#define sScriptRegistryCompositum ScriptRegistryCompositum::Instance()
+
+template<typename /*ScriptType*/, bool /*IsDatabaseBound*/>
+class SpecializedScriptRegistry;
 
 // This is the global static registry of scripts.
-template<class TScript>
-class ScriptRegistry
+template<class ScriptType>
+class ScriptRegistry final : public SpecializedScriptRegistry<ScriptType, is_script_database_bound<ScriptType>::value>
 {
+    ScriptRegistry()
+    {
+        sScriptRegistryCompositum->Register(this);
+    }
+
+public:
+    static ScriptRegistry* Instance()
+    {
+        static ScriptRegistry instance;
+        return &instance;
+    }
+
+    void LogDuplicatedScriptPointerError(ScriptType const* first, ScriptType const* second)
+    {
+        // See if the script is using the same memory as another script. If this happens, it means that
+        // someone forgot to allocate new memory for a script.
+        TC_LOG_ERROR("scripts", "Script '%s' has same memory pointer as '%s'.",
+                     first->GetName().c_str(), second->GetName().c_str());
+    }
+};
+
+class ScriptRegistrySwapHookBase
+{
+public:
+    ScriptRegistrySwapHookBase() { }
+    virtual ~ScriptRegistrySwapHookBase() { }
+
+    ScriptRegistrySwapHookBase(ScriptRegistrySwapHookBase const&) = delete;
+    ScriptRegistrySwapHookBase(ScriptRegistrySwapHookBase&&) = delete;
+
+    ScriptRegistrySwapHookBase& operator= (ScriptRegistrySwapHookBase const&) = delete;
+    ScriptRegistrySwapHookBase& operator= (ScriptRegistrySwapHookBase&&) = delete;
+
+    /// Called before the actual context release happens
+    virtual void BeforeReleaseContext(std::string const& /*context*/) { }
+
+    /// Called before SwapContext
+    virtual void BeforeSwapContext(bool /*initialize*/) { }
+
+    /// Called before Unload
+    virtual void BeforeUnload() { }
+};
+
+template<typename ScriptType, typename Base>
+class ScriptRegistrySwapHooks
+    : public ScriptRegistrySwapHookBase
+{
+};
+
+/// This hook is responsible for swapping OutdoorPvP's
+template<typename Base>
+class UnsupportedScriptRegistrySwapHooks
+    : public ScriptRegistrySwapHookBase
+{
+public:
+    void BeforeReleaseContext(std::string const& context) final override
+    {
+        auto const bounds = static_cast<Base*>(this)->_ids_of_contexts.equal_range(context);
+        ASSERT(bounds.first == bounds.second);
+    }
+};
+
+/// This hook is responsible for swapping Creature and GameObject AI's
+template<typename ObjectType, typename ScriptType, typename Base>
+class CreatureGameObjectScriptRegistrySwapHooks
+    : public ScriptRegistrySwapHookBase
+{
+    template<typename W>
+    class AIFunctionMapWorker
+    {
     public:
+        template<typename T>
+        AIFunctionMapWorker(T&& worker)
+            : _worker(std::forward<T>(worker)) { }
 
-        typedef std::unordered_map<uint32, TScript*> ScriptMap;
-        typedef typename ScriptMap::iterator ScriptMapIterator;
-
-        // The actual list of scripts. This will be accessed concurrently, so it must not be modified
-        // after server startup.
-        static ScriptMap ScriptPointerList;
-
-        static void AddScript(TScript* const script)
+        void Visit(std::unordered_map<ObjectGuid, ObjectType*>& objects)
         {
-            ASSERT(script);
+            _worker(objects);
+        }
 
-            // See if the script is using the same memory as another script. If this happens, it means that
-            // someone forgot to allocate new memory for a script.
-            for (ScriptMapIterator it = ScriptPointerList.begin(); it != ScriptPointerList.end(); ++it)
+        template<typename O>
+        void Visit(std::unordered_map<ObjectGuid, O*>&) { }
+
+    private:
+        W _worker;
+    };
+
+    class AsyncCastHotswapEffectEvent : public BasicEvent
+    {
+    public:
+        explicit AsyncCastHotswapEffectEvent(Unit* owner) : owner_(owner) { }
+
+        bool Execute(uint64 /*e_time*/, uint32 /*p_time*/) override
+        {
+            owner_->CastSpell(owner_, SPELL_HOTSWAP_VISUAL_SPELL_EFFECT, true);
+            return true;
+        }
+
+    private:
+        Unit* owner_;
+    };
+
+    // Hook which is called before a creature is swapped
+    static void UnloadResetScript(Creature* creature)
+    {
+        // Remove deletable events only,
+        // otherwise it causes crashes with non-deletable spell events.
+        creature->m_Events.KillAllEvents(false);
+
+        if (creature->isCharmed())
+            creature->RemoveCharmedBy(nullptr);
+
+        ASSERT(!creature->isCharmed(),
+               "There is a disabled AI which is still loaded.");
+
+        if (creature->IsAlive())
+            creature->AI()->EnterEvadeMode();
+    }
+
+    static void UnloadDestroyScript(Creature* creature)
+    {
+        bool const destroyed = creature->AIM_Destroy();
+        ASSERT(destroyed,
+               "Destroying the AI should never fail here!");
+        (void)destroyed;
+
+        ASSERT(!creature->AI(),
+               "The AI should be null here!");
+    }
+
+    // Hook which is called before a gameobject is swapped
+    static void UnloadResetScript(GameObject* gameobject)
+    {
+        gameobject->AI()->Reset();
+    }
+
+    static void UnloadDestroyScript(GameObject* gameobject)
+    {
+        gameobject->AIM_Destroy();
+
+        ASSERT(!gameobject->AI(),
+               "The AI should be null here!");
+    }
+
+    // Hook which is called after a creature was swapped
+    static void LoadInitializeScript(Creature* creature)
+    {
+        ASSERT(!creature->AI(),
+               "The AI should be null here!");
+
+        if (creature->IsAlive())
+            creature->ClearUnitState(UNIT_STATE_EVADE);
+
+        bool const created = creature->AIM_Initialize();
+        ASSERT(created,
+               "Creating the AI should never fail here!");
+        (void)created;
+    }
+
+    static void LoadResetScript(Creature* creature)
+    {
+        if (!creature->IsAlive())
+            return;
+
+        creature->AI()->EnterEvadeMode();
+
+        // Cast a dummy visual spell asynchronously here to signal
+        // that the AI was hot swapped
+        creature->m_Events.AddEvent(new AsyncCastHotswapEffectEvent(creature),
+            creature->m_Events.CalculateTime(0));
+    }
+
+    // Hook which is called after a gameobject was swapped
+    static void LoadInitializeScript(GameObject* gameobject)
+    {
+        ASSERT(!gameobject->AI(),
+               "The AI should be null here!");
+
+        gameobject->AIM_Initialize();
+    }
+
+    static void LoadResetScript(GameObject* gameobject)
+    {
+        gameobject->AI()->Reset();
+    }
+
+    static Creature* GetEntityFromMap(std::common_type<Creature>, Map* map, ObjectGuid const& guid)
+    {
+        return map->GetCreature(guid);
+    }
+
+    static GameObject* GetEntityFromMap(std::common_type<GameObject>, Map* map, ObjectGuid const& guid)
+    {
+        return map->GetGameObject(guid);
+    }
+
+    template<typename T>
+    static void VisitObjectsToSwapOnMap(Map* map, std::unordered_set<uint32> const& idsToRemove, T visitor)
+    {
+        // TODO: need to rework maps to support this
+//        auto evaluator = [&](std::unordered_map<ObjectGuid, ObjectType*>& objects)
+//        {
+//            for (auto object : objects)
+//            {
+//                // When the script Id of the script isn't removed in this
+//                // context change, do nothing.
+//                if (idsToRemove.find(object.second->GetScriptId()) != idsToRemove.end())
+//                    visitor(object.second);
+//            }
+//        };
+//
+//        AIFunctionMapWorker<typename std::decay<decltype(evaluator)>::type> worker(std::move(evaluator));
+//        TypeContainerVisitor<decltype(worker), MapStoredObjectTypesContainer> containerVisitor(worker);
+//
+//        containerVisitor.Visit(map->GetObjectsStore());
+    }
+
+    static void DestroyScriptIdsFromSet(std::unordered_set<uint32> const& idsToRemove)
+    {
+        // TODO: need to rework maps to support this
+
+        // First reset all swapped scripts safe by guid
+        // Skip creatures and gameobjects with an empty guid
+        // (that were not added to the world as of now)
+//        sMapMgr->DoForAllMaps([&](Map* map)
+//        {
+//            std::vector<ObjectGuid> guidsToReset;
+//
+//            VisitObjectsToSwapOnMap(map, idsToRemove, [&](ObjectType* object)
+//            {
+//                if (object->AI() && !object->GetGUID().IsEmpty())
+//                    guidsToReset.push_back(object->GetGUID());
+//            });
+//
+//            for (ObjectGuid const& guid : guidsToReset)
+//            {
+//                if (auto entity = GetEntityFromMap(std::common_type<ObjectType>{}, map, guid))
+//                    UnloadResetScript(entity);
+//            }
+//
+//            VisitObjectsToSwapOnMap(map, idsToRemove, [&](ObjectType* object)
+//            {
+//                // Destroy the scripts instantly
+//                UnloadDestroyScript(object);
+//            });
+//        });
+    }
+
+    static void InitializeScriptIdsFromSet(std::unordered_set<uint32> const& idsToRemove)
+    {
+        // TODO: need to rework maps to support this
+
+//        sMapMgr->DoForAllMaps([&](Map* map)
+//        {
+//            std::vector<ObjectGuid> guidsToReset;
+//
+//            VisitObjectsToSwapOnMap(map, idsToRemove, [&](ObjectType* object)
+//            {
+//                if (!object->AI() && !object->GetGUID().IsEmpty())
+//                {
+//                    // Initialize the script
+//                    LoadInitializeScript(object);
+//                    guidsToReset.push_back(object->GetGUID());
+//                }
+//            });
+//
+//            for (ObjectGuid const& guid : guidsToReset)
+//            {
+//                // Reset the script
+//                if (auto entity = GetEntityFromMap(std::common_type<ObjectType>{}, map, guid))
+//                {
+//                    if (!entity->AI())
+//                        LoadInitializeScript(entity);
+//
+//                    LoadResetScript(entity);
+//                }
+//            }
+//        });
+    }
+
+public:
+    void BeforeReleaseContext(std::string const& context) final override
+    {
+        auto idsToRemove = static_cast<Base*>(this)->GetScriptIDsToRemove(context);
+        DestroyScriptIdsFromSet(idsToRemove);
+
+        // Add the new ids which are removed to the global ids to remove set
+        ids_removed_.insert(idsToRemove.begin(), idsToRemove.end());
+    }
+
+    void BeforeSwapContext(bool initialize) final override
+    {
+        // Never swap creature or gameobject scripts when initializing
+        if (initialize)
+            return;
+
+        // Add the recently added scripts to the deleted scripts to replace
+        // default AI's with recently added core scripts.
+        ids_removed_.insert(static_cast<Base*>(this)->GetRecentlyAddedScriptIDs().begin(),
+                            static_cast<Base*>(this)->GetRecentlyAddedScriptIDs().end());
+
+        DestroyScriptIdsFromSet(ids_removed_);
+        InitializeScriptIdsFromSet(ids_removed_);
+
+        ids_removed_.clear();
+    }
+
+    void BeforeUnload() final override
+    {
+        ASSERT(ids_removed_.empty());
+    }
+
+private:
+    std::unordered_set<uint32> ids_removed_;
+};
+
+// This hook is responsible for swapping CreatureAI's
+template<typename Base>
+class ScriptRegistrySwapHooks<CreatureScript, Base>
+    : public CreatureGameObjectScriptRegistrySwapHooks<
+        Creature, CreatureScript, Base
+      > { };
+
+// This hook is responsible for swapping GameObjectAI's
+template<typename Base>
+class ScriptRegistrySwapHooks<GameObjectScript, Base>
+    : public CreatureGameObjectScriptRegistrySwapHooks<
+        GameObject, GameObjectScript, Base
+      > { };
+
+/// This hook is responsible for swapping BattlegroundScript's
+template<typename Base>
+class ScriptRegistrySwapHooks<BattlegroundScript, Base>
+    : public UnsupportedScriptRegistrySwapHooks<Base> { };
+
+/// This hook is responsible for swapping OutdoorPvP's
+template<typename Base>
+class ScriptRegistrySwapHooks<OutdoorPvPScript, Base>
+    : public ScriptRegistrySwapHookBase
+{
+public:
+    ScriptRegistrySwapHooks() : swapped(false) { }
+
+    void BeforeReleaseContext(std::string const& context) final override
+    {
+        auto const bounds = static_cast<Base*>(this)->_ids_of_contexts.equal_range(context);
+
+        if ((!swapped) && (bounds.first != bounds.second))
+        {
+            swapped = true;
+            sOutdoorPvPMgr->Die();
+        }
+    }
+
+    void BeforeSwapContext(bool initialize) final override
+    {
+        // Never swap outdoor pvp scripts when initializing
+        if ((!initialize) && swapped)
+        {
+            sOutdoorPvPMgr->InitOutdoorPvP();
+            swapped = false;
+        }
+    }
+
+    void BeforeUnload() final override
+    {
+        ASSERT(!swapped);
+    }
+
+private:
+    bool swapped;
+};
+
+/// This hook is responsible for swapping InstanceMapScript's
+template<typename Base>
+class ScriptRegistrySwapHooks<InstanceMapScript, Base>
+    : public ScriptRegistrySwapHookBase
+{
+public:
+    ScriptRegistrySwapHooks()  : swapped(false) { }
+
+    void BeforeReleaseContext(std::string const& context) final override
+    {
+        auto const bounds = static_cast<Base*>(this)->_ids_of_contexts.equal_range(context);
+        if (bounds.first != bounds.second)
+            swapped = true;
+    }
+
+    void BeforeSwapContext(bool /*initialize*/) final override
+    {
+        swapped = false;
+    }
+
+    void BeforeUnload() final override
+    {
+        ASSERT(!swapped);
+    }
+
+private:
+    bool swapped;
+};
+
+/// This hook is responsible for swapping SpellScriptLoader's
+template<typename Base>
+class ScriptRegistrySwapHooks<SpellScriptLoader, Base>
+    : public ScriptRegistrySwapHookBase
+{
+public:
+    ScriptRegistrySwapHooks() : swapped(false) { }
+
+    void BeforeReleaseContext(std::string const& context) final override
+    {
+        auto const bounds = static_cast<Base*>(this)->_ids_of_contexts.equal_range(context);
+
+        if (bounds.first != bounds.second)
+            swapped = true;
+    }
+
+    void BeforeSwapContext(bool /*initialize*/) final override
+    {
+        if (swapped)
+        {
+            sScriptDataStore->ValidateSpellScripts();
+            swapped = false;
+        }
+    }
+
+    void BeforeUnload() final override
+    {
+        ASSERT(!swapped);
+    }
+
+private:
+    bool swapped;
+};
+
+// Database bound script registry
+template<typename ScriptType>
+class SpecializedScriptRegistry<ScriptType, true>
+    : public ScriptRegistryInterface,
+      public ScriptRegistrySwapHooks<ScriptType, ScriptRegistry<ScriptType>>
+{
+    template<typename>
+    friend class UnsupportedScriptRegistrySwapHooks;
+
+    template<typename, typename>
+    friend class ScriptRegistrySwapHooks;
+
+    template<typename, typename, typename>
+    friend class CreatureGameObjectScriptRegistrySwapHooks;
+
+public:
+    SpecializedScriptRegistry() { }
+
+    typedef std::unordered_map<
+        uint32 /*script id*/,
+        std::unique_ptr<ScriptType>
+    > ScriptStoreType;
+
+    typedef typename ScriptStoreType::iterator ScriptStoreIteratorType;
+
+    void ReleaseContext(std::string const& context) final override
+    {
+        this->BeforeReleaseContext(context);
+
+        auto const bounds = _ids_of_contexts.equal_range(context);
+        for (auto itr = bounds.first; itr != bounds.second; ++itr)
+            _scripts.erase(itr->second);
+    }
+
+    void SwapContext(bool initialize) final override
+    {
+      this->BeforeSwapContext(initialize);
+
+      _recently_added_ids.clear();
+    }
+
+    void RemoveUsedScriptsFromContainer(std::unordered_set<std::string>& scripts) final override
+    {
+        for (auto const& script : _scripts)
+            scripts.erase(script.second->GetName());
+    }
+
+    void Unload() final override
+    {
+        this->BeforeUnload();
+
+        ASSERT(_recently_added_ids.empty(),
+               "Recently added script ids should be empty here!");
+
+        _scripts.clear();
+        _ids_of_contexts.clear();
+    }
+
+    // Adds a database bound script
+    void AddScript(ScriptType* script)
+    {
+        ASSERT(script,
+               "Tried to call AddScript with a nullpointer!");
+        ASSERT(!sScriptMgr->GetCurrentScriptContext().empty(),
+               "Tried to register a script without being in a valid script context!");
+
+        std::unique_ptr<ScriptType> script_ptr(script);
+
+        // Get an ID for the script. An ID only exists if it's a script that is assigned in the database
+        // through a script name (or similar).
+        if (uint32 const id = sObjectMgr->GetScriptId(script->GetName().c_str()))
+        {
+            // Try to find an existing script.
+            for (auto const& stored_script : _scripts)
             {
-                if (it->second == script)
+                // If the script names match...
+                if (stored_script.second->GetName() == script->GetName())
                 {
-                    TC_LOG_ERROR("scripts", "Script '%s' has same memory pointer as '%s'.",
-                        script->GetName().c_str(), it->second->GetName().c_str());
+                    // If the script is already assigned -> delete it!
+                    TC_LOG_ERROR("scripts", "Script '%s' already assigned with the same script name, "
+                        "so the script can't work.", script->GetName().c_str());
 
+                    // Error that should be fixed ASAP.
+                    sScriptRegistryCompositum->QueueForDelayedDelete(std::move(script_ptr));
+                    ABORT();
                     return;
                 }
             }
 
-            if (script->IsDatabaseBound())
-            {
-                // Get an ID for the script. An ID only exists if it's a script that is assigned in the database
-                // through a script name (or similar).
-                uint32 id = sObjectMgr->GetScriptId(script->GetName().c_str());
-                if (id)
-                {
-                    // Try to find an existing script.
-                    bool existing = false;
-                    for (ScriptMapIterator it = ScriptPointerList.begin(); it != ScriptPointerList.end(); ++it)
-                    {
-                        // If the script names match...
-                        if (it->second->GetName() == script->GetName())
-                        {
-                            // ... It exists.
-                            existing = true;
-                            break;
-                        }
-                    }
+            // If the script isn't assigned -> assign it!
+            _scripts.insert(std::make_pair(id, std::move(script_ptr)));
+            _ids_of_contexts.insert(std::make_pair(sScriptMgr->GetCurrentScriptContext(), id));
+            _recently_added_ids.insert(id);
 
-                    // If the script isn't assigned -> assign it!
-                    if (!existing)
-                    {
-                        ScriptPointerList[id] = script;
-                        sScriptMgr->IncrementScriptCount();
-
-#ifdef SCRIPTS
-                        auto itr = std::lower_bound(UnusedScriptNames.begin(), UnusedScriptNames.end(), script->GetName());
-                        if (itr != UnusedScriptNames.end() && *itr == script->GetName())
-                            UnusedScriptNames.erase(itr);
-#endif
-                    }
-                    else
-                    {
-                        // If the script is already assigned -> delete it!
-                        TC_LOG_ERROR("scripts", "Script '%s' already assigned with the same script name, so the script can't work.", script->GetName().c_str());
-                        ASSERT(false); // Error that should be fixed ASAP.
-                    }
-                }
-                else
-                {
-                    // The script uses a script name from database, but isn't assigned to anything.
-                    TC_LOG_ERROR("sql.sql", "Script named '%s' does not have a script name assigned in database.", script->GetName().c_str());
-                }
-            }
-            else
-            {
-                // We're dealing with a code-only script; just add it.
-                ScriptPointerList[_scriptIdCounter++] = script;
-                sScriptMgr->IncrementScriptCount();
-            }
+            sScriptRegistryCompositum->SetScriptNameInContext(script->GetName(),
+                sScriptMgr->GetCurrentScriptContext());
         }
-
-        // Gets a script by its ID (assigned by ObjectMgr).
-        static TScript* GetScriptById(uint32 id)
+        else
         {
-            ScriptMapIterator it = ScriptPointerList.find(id);
-            if (it != ScriptPointerList.end())
-                return it->second;
+            // The script uses a script name from database, but isn't assigned to anything.
+            TC_LOG_ERROR("sql.sql", "Script named '%s' does not have a script name assigned in database.",
+                script->GetName().c_str());
 
-            return nullptr;
+            // Avoid calling "delete script;" because we are currently in the script constructor
+            // In a valid scenario this will not happen because every script has a name assigned in the database
+            sScriptRegistryCompositum->QueueForDelayedDelete(std::move(script_ptr));
+            return;
         }
+    }
 
-    private:
+    // Gets a script by its ID (assigned by ObjectMgr).
+    ScriptType* GetScriptById(uint32 id)
+    {
+        auto const itr = _scripts.find(id);
+        if (itr != _scripts.end())
+            return itr->second.get();
 
-        // Counter used for code-only scripts.
-        static uint32 _scriptIdCounter;
+        return nullptr;
+    }
+
+    ScriptStoreType& GetScripts()
+    {
+        return _scripts;
+    }
+
+protected:
+    // Returns the script id's which are registered to a certain context
+    std::unordered_set<uint32> GetScriptIDsToRemove(std::string const& context) const
+    {
+        // Create a set of all ids which are removed
+        std::unordered_set<uint32> scripts_to_remove;
+
+        auto const bounds = _ids_of_contexts.equal_range(context);
+        for (auto itr = bounds.first; itr != bounds.second; ++itr)
+            scripts_to_remove.insert(itr->second);
+
+        return scripts_to_remove;
+    }
+
+    std::unordered_set<uint32> const& GetRecentlyAddedScriptIDs() const
+    {
+        return _recently_added_ids;
+    }
+
+private:
+    ScriptStoreType _scripts;
+
+    // Scripts of a specific context
+    std::unordered_multimap<std::string /*context*/, uint32 /*id*/> _ids_of_contexts;
+
+    // Script id's which were registered recently
+    std::unordered_set<uint32> _recently_added_ids;
+};
+
+/// This hook is responsible for swapping CommandScript's
+template<typename Base>
+class ScriptRegistrySwapHooks<CommandScript, Base>
+    : public ScriptRegistrySwapHookBase
+{
+public:
+    void BeforeReleaseContext(std::string const& /*context*/) final override
+    {
+        ChatHandler::invalidateCommandTable();
+    }
+
+    void BeforeSwapContext(bool /*initialize*/) final override
+    {
+        ChatHandler::invalidateCommandTable();
+    }
+
+    void BeforeUnload() final override
+    {
+        ChatHandler::invalidateCommandTable();
+    }
+};
+
+// Database unbound script registry
+template<typename ScriptType>
+class SpecializedScriptRegistry<ScriptType, false>
+    : public ScriptRegistryInterface,
+      public ScriptRegistrySwapHooks<ScriptType, ScriptRegistry<ScriptType>>
+{
+    template<typename, typename>
+    friend class ScriptRegistrySwapHooks;
+
+public:
+    typedef std::unordered_multimap<std::string /*context*/, std::unique_ptr<ScriptType>> ScriptStoreType;
+    typedef typename ScriptStoreType::iterator ScriptStoreIteratorType;
+
+    SpecializedScriptRegistry() { }
+
+    void ReleaseContext(std::string const& context) final override
+    {
+        this->BeforeReleaseContext(context);
+
+        _scripts.erase(context);
+    }
+
+    void SwapContext(bool initialize) final override
+    {
+        this->BeforeSwapContext(initialize);
+    }
+
+    void RemoveUsedScriptsFromContainer(std::unordered_set<std::string>& scripts) final override
+    {
+        for (auto const& script : _scripts)
+            scripts.erase(script.second->GetName());
+    }
+
+    void Unload() final override
+    {
+        this->BeforeUnload();
+
+        _scripts.clear();
+    }
+
+    // Adds a non database bound script
+    void AddScript(ScriptType* script)
+    {
+        ASSERT(script,
+               "Tried to call AddScript with a nullpointer!");
+        ASSERT(!sScriptMgr->GetCurrentScriptContext().empty(),
+               "Tried to register a script without being in a valid script context!");
+
+        std::unique_ptr<ScriptType> script_ptr(script);
+
+        for (auto const& entry : _scripts)
+            if (entry.second.get() == script)
+            {
+                static_cast<ScriptRegistry<ScriptType>*>(this)->
+                    LogDuplicatedScriptPointerError(script, entry.second.get());
+
+                sScriptRegistryCompositum->QueueForDelayedDelete(std::move(script_ptr));
+                return;
+            }
+
+        // We're dealing with a code-only script, just add it.
+        _scripts.insert(std::make_pair(sScriptMgr->GetCurrentScriptContext(), std::move(script_ptr)));
+    }
+
+    ScriptStoreType& GetScripts()
+    {
+        return _scripts;
+    }
+
+private:
+    ScriptStoreType _scripts;
 };
 
 // Utility macros to refer to the script registry.
-#define SCR_REG_MAP(T) ScriptRegistry<T>::ScriptMap
-#define SCR_REG_ITR(T) ScriptRegistry<T>::ScriptMapIterator
-#define SCR_REG_LST(T) ScriptRegistry<T>::ScriptPointerList
+#define SCR_REG_MAP(T) ScriptRegistry<T>::ScriptStoreType
+#define SCR_REG_ITR(T) ScriptRegistry<T>::ScriptStoreIteratorType
+#define SCR_REG_LST(T) ScriptRegistry<T>::Instance()->GetScripts()
 
 // Utility macros for looping over scripts.
 #define FOR_SCRIPTS(T, C, E) \
-    if (SCR_REG_LST(T).empty()) \
-        return; \
-    for (SCR_REG_ITR(T) C = SCR_REG_LST(T).begin(); \
-        C != SCR_REG_LST(T).end(); ++C)
+    if (!SCR_REG_LST(T).empty()) \
+        for (SCR_REG_ITR(T) C = SCR_REG_LST(T).begin(); \
+            C != SCR_REG_LST(T).end(); ++C)
+
 #define FOR_SCRIPTS_RET(T, C, E, R) \
     if (SCR_REG_LST(T).empty()) \
         return R; \
+    \
     for (SCR_REG_ITR(T) C = SCR_REG_LST(T).begin(); \
         C != SCR_REG_LST(T).end(); ++C)
+
 #define FOREACH_SCRIPT(T) \
     FOR_SCRIPTS(T, itr, end) \
-    itr->second
+        itr->second
 
 // Utility macros for finding specific scripts.
 #define GET_SCRIPT_NO_RET(T, I, V) \
-    T* V = ScriptRegistry<T>::GetScriptById(I);
+    T* V = ScriptRegistry<T>::Instance()->GetScriptById(I);
 
 #define GET_SCRIPT(T, I, V) \
-    T* V = ScriptRegistry<T>::GetScriptById(I); \
+    T* V = ScriptRegistry<T>::Instance()->GetScriptById(I); \
     if (!V) \
         return;
 
 #define GET_SCRIPT_RET(T, I, V, R) \
-    T* V = ScriptRegistry<T>::GetScriptById(I); \
+    T* V = ScriptRegistry<T>::Instance()->GetScriptById(I); \
     if (!V) \
         return R;
 
@@ -264,10 +1100,18 @@ struct TSpellSummary
     uint8 Effects;                                          // set of enum SelectEffect
 } *SpellSummary;
 
-ScriptMgr::ScriptMgr() : _scriptCount(0)
+ScriptObject::ScriptObject(std::string name) : _name(name)
 {
-    _scheduledScripts = 0;
-    _script_loader_callback = nullptr;
+    sScriptMgr->IncreaseScriptCount();
+}
+
+ScriptObject::~ScriptObject()
+{
+    sScriptMgr->DecreaseScriptCount();
+}
+
+ScriptMgr::ScriptMgr() : _scriptCount(0), _script_loader_callback(nullptr)
+{
 }
 
 ScriptMgr::~ScriptMgr() = default;
@@ -280,6 +1124,9 @@ ScriptMgr* ScriptMgr::instance()
 
 void ScriptMgr::Initialize()
 {
+    ASSERT(sSpellMgr->GetSpellInfo(SPELL_HOTSWAP_VISUAL_SPELL_EFFECT)
+           && "Reload hotswap spell effect for creatures isn't valid!");
+
     uint32 oldMSTime = getMSTime();
 
     LoadDatabase();
@@ -287,59 +1134,91 @@ void ScriptMgr::Initialize()
     TC_LOG_INFO("server.loading", "Loading C++ scripts");
 
     FillSpellSummary();
-    AddSC_SmartSCripts();
 
-    ASSERT(_script_loader_callback, "Script loader callback wasn't registered!");
+    // Load core scripts
+    SetScriptContext(GetNameOfStaticContext());
+
+    // SmartAI
+    AddSC_SmartScripts();
+
+    // LFGScripts
+    lfg::AddSC_LFGScripts();
+
+    // Load all static linked scripts through the script loader function.
+    ASSERT(_script_loader_callback,
+           "Script loader callback wasn't registered!");
     _script_loader_callback();
 
-#ifdef SCRIPTS
-    for (auto const& scriptName : UnusedScriptNames)
-    {
-        TC_LOG_ERROR("sql.sql", "ScriptName '%s' exists in database, but no core script found!", scriptName.c_str());
-    }
-#endif
+    // Initialize all dynamic scripts
+    // and finishes the context switch to do
+    // bulk loading
+    sScriptReloadMgr->Initialize();
 
-    TC_LOG_INFO("server.loading", ">> Loaded %u C++ scripts in %u ms", GetScriptCount(), GetMSTimeDiffToNow(oldMSTime));
+    // Loads all scripts from the current context
+    sScriptMgr->SwapScriptContext(true);
+
+    // Print unused script names.
+    std::unordered_set<std::string> unusedScriptNames(
+        sObjectMgr->GetAllScriptNames().begin(),
+        sObjectMgr->GetAllScriptNames().end());
+
+    // Remove the used scripts from the given container.
+    sScriptRegistryCompositum->RemoveUsedScriptsFromContainer(unusedScriptNames);
+
+    for (std::string const& scriptName : unusedScriptNames)
+    {
+        // Avoid complaining about empty script names since the
+        // script name container contains a placeholder as the 0 element.
+        if (scriptName.empty())
+            continue;
+
+        TC_LOG_ERROR("sql.sql", "ScriptName '%s' is referenced by the database, but does not exist in the core!", scriptName.c_str());
+    }
+
+    TC_LOG_INFO("server.loading", ">> Loaded %u C++ scripts in %u ms",
+        GetScriptCount(), GetMSTimeDiffToNow(oldMSTime));
+}
+
+void ScriptMgr::SetScriptContext(std::string const& context)
+{
+    _currentContext = context;
+}
+
+void ScriptMgr::SwapScriptContext(bool initialize)
+{
+    sScriptRegistryCompositum->SwapContext(initialize);
+    _currentContext.clear();
+}
+
+std::string const& ScriptMgr::GetNameOfStaticContext()
+{
+    static std::string const name = "___static___";
+    return name;
+}
+
+void ScriptMgr::ReleaseScriptContext(std::string const& context)
+{
+    sScriptRegistryCompositum->ReleaseContext(context);
+}
+
+std::shared_ptr<ModuleReference>
+    ScriptMgr::AcquireModuleReferenceOfScriptName(std::string const& scriptname) const
+{
+#ifdef TRINITY_API_USE_DYNAMIC_LINKING
+    // Returns the reference to the module of the given scriptname
+    return ScriptReloadMgr::AcquireModuleReferenceOfContext(
+        sScriptRegistryCompositum->GetScriptContextOfScriptName(scriptname));
+#else
+    (void)scriptname;
+    // Something went wrong when this function is used in
+    // a static linked context.
+    WPAbort();
+#endif // #ifndef TRINITY_API_USE_DYNAMIC_LINKING
 }
 
 void ScriptMgr::Unload()
 {
-    #define SCR_CLEAR(T) \
-        for (SCR_REG_ITR(T) itr = SCR_REG_LST(T).begin(); itr != SCR_REG_LST(T).end(); ++itr) \
-            delete itr->second; \
-        SCR_REG_LST(T).clear();
-
-    // Clear scripts for every script type.
-    SCR_CLEAR(SpellScriptLoader);
-    SCR_CLEAR(WorldScript);
-    SCR_CLEAR(FormulaScript);
-    SCR_CLEAR(WorldMapScript);
-    SCR_CLEAR(InstanceMapScript);
-    SCR_CLEAR(BattlegroundMapScript);
-    SCR_CLEAR(ItemScript);
-    SCR_CLEAR(CreatureScript);
-    SCR_CLEAR(GameObjectScript);
-    SCR_CLEAR(AreaTriggerScript);
-    SCR_CLEAR(SceneTriggerScript);
-    SCR_CLEAR(BattlegroundScript);
-    SCR_CLEAR(OutdoorPvPScript);
-    SCR_CLEAR(CommandScript);
-    SCR_CLEAR(WeatherScript);
-    SCR_CLEAR(AuctionHouseScript);
-    SCR_CLEAR(ConditionScript);
-    SCR_CLEAR(VehicleScript);
-    SCR_CLEAR(DynamicObjectScript);
-    SCR_CLEAR(TransportScript);
-    SCR_CLEAR(AchievementCriteriaScript);
-    SCR_CLEAR(AchievementRewardScript);
-    SCR_CLEAR(PlayerScript);
-    SCR_CLEAR(SessionScript);
-    SCR_CLEAR(GuildScript);
-    SCR_CLEAR(GroupScript);
-    SCR_CLEAR(EventObjectScript);
-    SCR_CLEAR(WorldStateScript);
-
-    #undef SCR_CLEAR
+    sScriptRegistryCompositum->Unload();
 
     delete[] SpellSummary;
     delete[] UnitAI::AISpellInfo;
@@ -445,10 +1324,11 @@ void CreateSpellOrAuraScripts(uint32 spellId, std::vector<T*>& scriptVector, F&&
     auto bounds = sScriptDataStore->GetSpellScriptsBounds(spellId);
     for (auto itr = bounds.first; itr != bounds.second; ++itr)
     {
+        // When the script is disabled continue with the next one
         if (!itr->second.second)
             continue;
 
-        auto tmpscript = sScriptMgr->GetSpellScriptLoader(itr->second.first);
+        SpellScriptLoader* tmpscript = sScriptMgr->GetSpellScriptLoader(itr->second.first);
         if (!tmpscript)
             continue;
 
@@ -479,7 +1359,7 @@ void ScriptMgr::CreateAuraScripts(uint32 spellId, std::vector<AuraScript*>& scri
 
 SpellScriptLoader* ScriptMgr::GetSpellScriptLoader(uint32 scriptId)
 {
-    return ScriptRegistry<SpellScriptLoader>::GetScriptById(scriptId);
+    return ScriptRegistry<SpellScriptLoader>::Instance()->GetScriptById(scriptId);
 }
 
 void ScriptMgr::OnOpenStateChange(bool open)
@@ -1478,22 +2358,22 @@ void ScriptMgr::OnWorldStateDelete(uint32 variableID, uint8 type)
 
 SpellScriptLoader::SpellScriptLoader(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<SpellScriptLoader>::AddScript(this);
+    ScriptRegistry<SpellScriptLoader>::Instance()->AddScript(this);
 }
 
 WorldScript::WorldScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<WorldScript>::AddScript(this);
+    ScriptRegistry<WorldScript>::Instance()->AddScript(this);
 }
 
 FormulaScript::FormulaScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<FormulaScript>::AddScript(this);
+    ScriptRegistry<FormulaScript>::Instance()->AddScript(this);
 }
 
 BattlePayProductScript::BattlePayProductScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<BattlePayProductScript>::AddScript(this);
+    ScriptRegistry<BattlePayProductScript>::Instance()->AddScript(this);
 }
 
 void ScriptMgr::OnBattlePayProductDelivery(WorldSession* session, Battlepay::Product const* product)
@@ -1518,55 +2398,64 @@ std::string ScriptMgr::BattlePayGetCustomData(Battlepay::Product const& product)
     return tmpscript->GetCustomData(product);
 }
 
-WorldMapScript::WorldMapScript(std::string name, uint32 mapId) : ScriptObject(name), MapScript<Map>(mapId)
+WorldMapScript::WorldMapScript(std::string name, uint32 mapId) : ScriptObject(name), MapScript<Map>(sMapStore.LookupEntry(mapId))
 {
+    if (!GetEntry())
+        TC_LOG_ERROR("scripts", "Invalid WorldMapScript for %u; no such map ID.", mapId);
+
     if (GetEntry() && !GetEntry()->IsWorldMap())
         TC_LOG_ERROR("scripts", "WorldMapScript for map %u is invalid.", mapId);
 
-    ScriptRegistry<WorldMapScript>::AddScript(this);
+    ScriptRegistry<WorldMapScript>::Instance()->AddScript(this);
 }
 
-InstanceMapScript::InstanceMapScript(std::string name, uint32 mapId) : ScriptObject(name), MapScript<InstanceMap>(mapId)
+InstanceMapScript::InstanceMapScript(std::string name, uint32 mapId) : ScriptObject(name), MapScript<InstanceMap>(sMapStore.LookupEntry(mapId))
 {
+    if (!GetEntry())
+        TC_LOG_ERROR("scripts", "Invalid InstanceMapScript for %u; no such map ID.", mapId);
+
     if (GetEntry() && !GetEntry()->IsDungeon())
         TC_LOG_ERROR("scripts", "InstanceMapScript for map %u is invalid.", mapId);
 
-    ScriptRegistry<InstanceMapScript>::AddScript(this);
+    ScriptRegistry<InstanceMapScript>::Instance()->AddScript(this);
 }
 
-BattlegroundMapScript::BattlegroundMapScript(std::string name, uint32 mapId) : ScriptObject(name), MapScript<BattlegroundMap>(mapId)
+BattlegroundMapScript::BattlegroundMapScript(std::string name, uint32 mapId) : ScriptObject(name), MapScript<BattlegroundMap>(sMapStore.LookupEntry(mapId))
 {
+    if (!GetEntry())
+        TC_LOG_ERROR("scripts", "Invalid BattlegroundMapScript for %u; no such map ID.", mapId);
+
     if (GetEntry() && !GetEntry()->IsBattleground())
         TC_LOG_ERROR("scripts", "BattlegroundMapScript for map %u is invalid.", mapId);
 
-    ScriptRegistry<BattlegroundMapScript>::AddScript(this);
+    ScriptRegistry<BattlegroundMapScript>::Instance()->AddScript(this);
 }
 
 ItemScript::ItemScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<ItemScript>::AddScript(this);
+    ScriptRegistry<ItemScript>::Instance()->AddScript(this);
 }
 
 CreatureScript::CreatureScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<CreatureScript>::AddScript(this);
+    ScriptRegistry<CreatureScript>::Instance()->AddScript(this);
 }
 
 GameObjectScript::GameObjectScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<GameObjectScript>::AddScript(this);
+    ScriptRegistry<GameObjectScript>::Instance()->AddScript(this);
 }
 
 WorldStateScript::WorldStateScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<WorldStateScript>::AddScript(this);
+    ScriptRegistry<WorldStateScript>::Instance()->AddScript(this);
 }
 
 AreaTriggerScript::~AreaTriggerScript() = default;
 
 AreaTriggerScript::AreaTriggerScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<AreaTriggerScript>::AddScript(this);
+    ScriptRegistry<AreaTriggerScript>::Instance()->AddScript(this);
 }
 
 OnlyOnceAreaTriggerScript::~OnlyOnceAreaTriggerScript() = default;
@@ -1588,87 +2477,87 @@ void OnlyOnceAreaTriggerScript::ResetAreaTriggerDone(Player const* player, AreaT
 
 SceneTriggerScript::SceneTriggerScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<SceneTriggerScript>::AddScript(this);
+    ScriptRegistry<SceneTriggerScript>::Instance()->AddScript(this);
 }
 
 EventObjectScript::EventObjectScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<EventObjectScript>::AddScript(this);
+    ScriptRegistry<EventObjectScript>::Instance()->AddScript(this);
 }
 
 BattlegroundScript::BattlegroundScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<BattlegroundScript>::AddScript(this);
+    ScriptRegistry<BattlegroundScript>::Instance()->AddScript(this);
 }
 
 OutdoorPvPScript::OutdoorPvPScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<OutdoorPvPScript>::AddScript(this);
+    ScriptRegistry<OutdoorPvPScript>::Instance()->AddScript(this);
 }
 
 CommandScript::CommandScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<CommandScript>::AddScript(this);
+    ScriptRegistry<CommandScript>::Instance()->AddScript(this);
 }
 
 WeatherScript::WeatherScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<WeatherScript>::AddScript(this);
+    ScriptRegistry<WeatherScript>::Instance()->AddScript(this);
 }
 
 AuctionHouseScript::AuctionHouseScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<AuctionHouseScript>::AddScript(this);
+    ScriptRegistry<AuctionHouseScript>::Instance()->AddScript(this);
 }
 
 ConditionScript::ConditionScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<ConditionScript>::AddScript(this);
+    ScriptRegistry<ConditionScript>::Instance()->AddScript(this);
 }
 
 VehicleScript::VehicleScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<VehicleScript>::AddScript(this);
+    ScriptRegistry<VehicleScript>::Instance()->AddScript(this);
 }
 
 DynamicObjectScript::DynamicObjectScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<DynamicObjectScript>::AddScript(this);
+    ScriptRegistry<DynamicObjectScript>::Instance()->AddScript(this);
 }
 
 TransportScript::TransportScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<TransportScript>::AddScript(this);
+    ScriptRegistry<TransportScript>::Instance()->AddScript(this);
 }
 
 AchievementCriteriaScript::AchievementCriteriaScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<AchievementCriteriaScript>::AddScript(this);
+    ScriptRegistry<AchievementCriteriaScript>::Instance()->AddScript(this);
 }
 
 AchievementRewardScript::AchievementRewardScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<AchievementRewardScript>::AddScript(this);
+    ScriptRegistry<AchievementRewardScript>::Instance()->AddScript(this);
 }
 
 PlayerScript::PlayerScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<PlayerScript>::AddScript(this);
+    ScriptRegistry<PlayerScript>::Instance()->AddScript(this);
 }
 
 SessionScript::SessionScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<SessionScript>::AddScript(this);
+    ScriptRegistry<SessionScript>::Instance()->AddScript(this);
 }
 
 GuildScript::GuildScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<GuildScript>::AddScript(this);
+    ScriptRegistry<GuildScript>::Instance()->AddScript(this);
 }
 
 GroupScript::GroupScript(std::string name) : ScriptObject(name)
 {
-    ScriptRegistry<GroupScript>::AddScript(this);
+    ScriptRegistry<GroupScript>::Instance()->AddScript(this);
 }
 
 void ScriptMgr::OnLootItem(Player* player, Item* item, uint32 count)
@@ -1686,47 +2575,33 @@ void ScriptMgr::OnQuestRewardItem(Player* player, Item* item, uint32 count)
     FOREACH_SCRIPT(PlayerScript)->OnQuestRewardItem(player, item, count);
 }
 
-// Instantiate static members of ScriptRegistry.
-template<class TScript> std::unordered_map<uint32, TScript*> ScriptRegistry<TScript>::ScriptPointerList;
-template<class TScript> uint32 ScriptRegistry<TScript>::_scriptIdCounter = 0;
-
 // Specialize for each script type class like so:
-template class ScriptRegistry<AchievementCriteriaScript>;
-template class ScriptRegistry<AchievementRewardScript>;
-template class ScriptRegistry<AreaTriggerScript>;
-template class ScriptRegistry<AuctionHouseScript>;
-template class ScriptRegistry<BattlegroundMapScript>;
-template class ScriptRegistry<BattlegroundScript>;
-template class ScriptRegistry<BattlePayProductScript>;
-template class ScriptRegistry<CommandScript>;
-template class ScriptRegistry<ConditionScript>;
-template class ScriptRegistry<CreatureScript>;
-template class ScriptRegistry<DynamicObjectScript>;
-template class ScriptRegistry<EventObjectScript>;
-template class ScriptRegistry<FormulaScript>;
-template class ScriptRegistry<GameObjectScript>;
-template class ScriptRegistry<GroupScript>;
-template class ScriptRegistry<GuildScript>;
-template class ScriptRegistry<InstanceMapScript>;
-template class ScriptRegistry<ItemScript>;
-template class ScriptRegistry<OutdoorPvPScript>;
-template class ScriptRegistry<PlayerScript>;
-template class ScriptRegistry<SceneTriggerScript>;
-template class ScriptRegistry<SessionScript>;
-template class ScriptRegistry<SpellScriptLoader>;
-template class ScriptRegistry<TransportScript>;
-template class ScriptRegistry<VehicleScript>;
-template class ScriptRegistry<WeatherScript>;
-template class ScriptRegistry<WorldMapScript>;
-template class ScriptRegistry<WorldScript>;
-template class ScriptRegistry<WorldStateScript>;
-
-// Undefine utility macros.
-#undef GET_SCRIPT_RET
-#undef GET_SCRIPT
-#undef FOREACH_SCRIPT
-#undef FOR_SCRIPTS_RET
-#undef FOR_SCRIPTS
-#undef SCR_REG_LST
-#undef SCR_REG_ITR
-#undef SCR_REG_MAP
+template class TC_GAME_API ScriptRegistry<AchievementCriteriaScript>;
+template class TC_GAME_API ScriptRegistry<AchievementRewardScript>;
+template class TC_GAME_API ScriptRegistry<AreaTriggerScript>;
+template class TC_GAME_API ScriptRegistry<AuctionHouseScript>;
+template class TC_GAME_API ScriptRegistry<BattlegroundMapScript>;
+template class TC_GAME_API ScriptRegistry<BattlegroundScript>;
+template class TC_GAME_API ScriptRegistry<BattlePayProductScript>;
+template class TC_GAME_API ScriptRegistry<CommandScript>;
+template class TC_GAME_API ScriptRegistry<ConditionScript>;
+template class TC_GAME_API ScriptRegistry<CreatureScript>;
+template class TC_GAME_API ScriptRegistry<DynamicObjectScript>;
+template class TC_GAME_API ScriptRegistry<EventObjectScript>;
+template class TC_GAME_API ScriptRegistry<FormulaScript>;
+template class TC_GAME_API ScriptRegistry<GameObjectScript>;
+template class TC_GAME_API ScriptRegistry<GroupScript>;
+template class TC_GAME_API ScriptRegistry<GuildScript>;
+template class TC_GAME_API ScriptRegistry<InstanceMapScript>;
+template class TC_GAME_API ScriptRegistry<ItemScript>;
+template class TC_GAME_API ScriptRegistry<OutdoorPvPScript>;
+template class TC_GAME_API ScriptRegistry<PlayerScript>;
+template class TC_GAME_API ScriptRegistry<SceneTriggerScript>;
+template class TC_GAME_API ScriptRegistry<SessionScript>;
+template class TC_GAME_API ScriptRegistry<SpellScriptLoader>;
+template class TC_GAME_API ScriptRegistry<TransportScript>;
+template class TC_GAME_API ScriptRegistry<VehicleScript>;
+template class TC_GAME_API ScriptRegistry<WeatherScript>;
+template class TC_GAME_API ScriptRegistry<WorldMapScript>;
+template class TC_GAME_API ScriptRegistry<WorldScript>;
+template class TC_GAME_API ScriptRegistry<WorldStateScript>;

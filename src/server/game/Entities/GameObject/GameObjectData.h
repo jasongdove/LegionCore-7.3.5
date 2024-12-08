@@ -36,7 +36,7 @@ struct GoVisual
     uint32  StateWorldEffectID = 0;
 };
 
-struct GameObjectTemplate
+struct TC_GAME_API GameObjectTemplate
 {
     GoVisual visualData[2];                                 // 0 - befor complete VisualQuest, 1 - after complete VisualQuest
     uint32 entry;

@@ -975,19 +975,9 @@ bool MapEntry::IsBattleArena() const
     return InstanceType == MAP_ARENA;
 }
 
-bool MapEntry::IsBattlegroundOrArena() const
-{
-    return InstanceType == MAP_BATTLEGROUND || InstanceType == MAP_ARENA;
-}
-
 bool MapEntry::IsWorldMap() const
 {
     return InstanceType == MAP_COMMON;
-}
-
-bool MapEntry::IsScenario() const
-{
-    return InstanceType == MAP_SCENARIO;
 }
 
 bool MapEntry::Is5pplDungeonOrRaid() const

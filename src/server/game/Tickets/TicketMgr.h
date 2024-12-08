@@ -77,7 +77,7 @@ enum LagReportType
     LAG_REPORT_TYPE_SPELL = 6
 };
 
-class GmTicket
+class TC_GAME_API GmTicket
 {
 public:
     GmTicket();
@@ -159,7 +159,7 @@ private:
 };
 typedef std::map<uint32, GmTicket*> GmTicketList;
 
-class TicketMgr
+class TC_GAME_API TicketMgr
 {
 private:
     TicketMgr();

@@ -26,5 +26,5 @@ class Player;
 // returns true and sets the appropriate info if the player can create extra items with the given spellId
 bool canCreateExtraItems(Player* player, uint32 spellId, float &additionalChance, uint8 &additionalMax);
 // function to load the extra item creation info from DB
-void LoadSkillExtraItemTable();
+TC_GAME_API void LoadSkillExtraItemTable();
 #endif

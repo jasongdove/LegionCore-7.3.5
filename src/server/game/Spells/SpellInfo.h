@@ -386,7 +386,7 @@ private:
     static StaticData _data[TOTAL_SPELL_TARGETS];
 };
 
-class SpellEffectInfo
+class TC_GAME_API SpellEffectInfo
 {
     SpellInfo const* _spellInfo;
 public:
@@ -520,7 +520,7 @@ struct AuraInterruptFlagIndex<SpellAuraInterruptFlags2>
     static std::size_t constexpr value = 1;
 };
 
-class SpellInfo
+class TC_GAME_API SpellInfo
 {
 public:
     uint32 Id;

@@ -38,7 +38,7 @@ namespace WorldPackets
             uint32 SceneInstanceID = 0;
         };
 
-        class CancelScene final : public ServerPacket
+        class TC_GAME_API CancelScene final : public ServerPacket
         {
         public:
             CancelScene(uint32 ID) : ServerPacket(SMSG_CANCEL_SCENE, 4), SceneInstanceID(ID) { }

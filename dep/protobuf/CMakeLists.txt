@@ -56,7 +56,14 @@ else()
   )
 endif()
 
-add_library(protobuf STATIC ${protobuf_STAT_SRCS})
+if (UNIX)
+  # Enable the default unix export behaviour for protobuf so we don't
+  # need to patch it's sources.
+  string(REPLACE "-fvisibility=hidden" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+  string(REPLACE "-fvisibility=hidden" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+endif()
+
+add_library(protobuf ${protobuf_STAT_SRCS})
 
 target_include_directories(protobuf
   PUBLIC
@@ -70,6 +77,16 @@ target_link_libraries(protobuf
     trinity-no-warning-interface
   PUBLIC
     threads)
+
+if (BUILD_SHARED_LIBS)
+  target_compile_definitions(protobuf
+    PRIVATE
+      -DLIBPROTOBUF_EXPORTS
+      -DLIBPROTOC_EXPORTS
+    PUBLIC
+      -DPROTOBUF_USE_DLLS)
+endif()
+
 
 if (MSVC)
   target_compile_options(protobuf
@@ -85,3 +102,15 @@ set_target_properties(protobuf
     PROPERTIES
       FOLDER
         "dep")
+
+if (BUILD_SHARED_LIBS)
+  if (UNIX)
+    install(TARGETS protobuf
+      LIBRARY
+        DESTINATION lib)
+  elseif (WIN32)
+    install(TARGETS protobuf
+      RUNTIME
+        DESTINATION "${CMAKE_INSTALL_PREFIX}")
+  endif()
+endif()

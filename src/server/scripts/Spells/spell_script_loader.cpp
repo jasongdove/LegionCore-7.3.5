@@ -17,7 +17,7 @@ void AddSC_quest_spell_scripts();
 void AddSC_item_spell_scripts();
 void AddSC_holiday_spell_scripts();
 
-void AddSpellScripts()
+void AddSpellsScripts()
 {
     AddSC_demonhunter_spell_scripts();
     AddSC_deathknight_spell_scripts();

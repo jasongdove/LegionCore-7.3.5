@@ -41,7 +41,7 @@ struct DynamicTreeCallback
 
 typedef std::lock_guard<std::recursive_mutex> RecursiveGuard;
 
-class DynamicMapTree
+class TC_COMMON_API DynamicMapTree
 {
     DynTreeImpl *impl;
 

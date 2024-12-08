@@ -52,7 +52,7 @@ struct GameEventQuestToEventConditionNum
 
 typedef std::map<uint32 /*condition id*/, GameEventFinishCondition> GameEventConditionMap;
 
-struct GameEventData
+struct TC_GAME_API GameEventData
 {
     GameEventData();
     time_t start;           // occurs after this time
@@ -99,7 +99,7 @@ class Player;
 class Creature;
 class Quest;
 
-class GameEventMgr
+class TC_GAME_API GameEventMgr
 {
     GameEventMgr();
     ~GameEventMgr() {};
@@ -196,8 +196,8 @@ public:
 
 #define sGameEventMgr GameEventMgr::instance()
 
-bool IsHolidayActive(HolidayIds id);
-bool IsEventActive(uint16 event_id);
+TC_GAME_API bool IsHolidayActive(HolidayIds id);
+TC_GAME_API bool IsEventActive(uint16 event_id);
 
 #endif
 

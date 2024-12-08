@@ -46,7 +46,7 @@ typedef std::unordered_map<uint32, uint32> AreaTriggerScriptContainer;
 typedef std::unordered_map<uint32, std::unordered_set<uint32>> QuestAreaTriggerContainer;
 typedef std::set<uint32> TavernAreaTriggerContainer;
 
-class AreaTriggerDataStoreMgr
+class TC_GAME_API AreaTriggerDataStoreMgr
 {
     AreaTriggerDataStoreMgr();
     ~AreaTriggerDataStoreMgr();

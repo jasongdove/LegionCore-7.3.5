@@ -28,7 +28,7 @@ class Creature;
 
 typedef std::map<ObjectGuid, EventMap> PlayerEventMap;
 
-class AggressorAI : public CreatureAI
+class TC_GAME_API AggressorAI : public CreatureAI
 {
     public:
         explicit AggressorAI(Creature* c) : CreatureAI(c), m_checkTimer(0), CreatureTexts(nullptr), CreatureCombatTexts(nullptr) {}
@@ -55,7 +55,7 @@ class AggressorAI : public CreatureAI
         CreatureTextGroup const* CreatureCombatTexts;
 };
 
-class AnyPetAI : public CreatureAI
+class TC_GAME_API AnyPetAI : public CreatureAI
 {
     public:
         explicit AnyPetAI(Creature* c) : CreatureAI(c), m_updateAlliesTimer(0) {}
@@ -71,7 +71,7 @@ class AnyPetAI : public CreatureAI
 
 typedef std::vector<uint32> SpellVct;
 
-class CombatAI : public CreatureAI
+class TC_GAME_API CombatAI : public CreatureAI
 {
     public:
         explicit CombatAI(Creature* c) : CreatureAI(c) {}
@@ -87,7 +87,7 @@ class CombatAI : public CreatureAI
         SpellVct spells;
 };
 
-class CasterAI : public CombatAI
+class TC_GAME_API CasterAI : public CombatAI
 {
     public:
         explicit CasterAI(Creature* c) : CombatAI(c) { m_attackDist = MELEE_RANGE; }
@@ -99,7 +99,7 @@ class CasterAI : public CombatAI
         float m_attackDist;
 };
 
-struct ArcherAI : public CreatureAI
+struct TC_GAME_API ArcherAI : public CreatureAI
 {
     public:
         explicit ArcherAI(Creature* c);
@@ -111,7 +111,7 @@ struct ArcherAI : public CreatureAI
         float m_minRange;
 };
 
-struct TurretAI : public CreatureAI
+struct TC_GAME_API TurretAI : public CreatureAI
 {
     public:
         explicit TurretAI(Creature* c);
@@ -126,7 +126,7 @@ struct TurretAI : public CreatureAI
 
 #define VEHICLE_CONDITION_CHECK_TIME 1000
 #define VEHICLE_DISMISS_TIME 5000
-struct VehicleAI : public CreatureAI
+struct TC_GAME_API VehicleAI : public CreatureAI
 {
     public:
         explicit VehicleAI(Creature* c);

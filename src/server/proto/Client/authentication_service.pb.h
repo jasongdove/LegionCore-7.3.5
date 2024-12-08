@@ -40,7 +40,7 @@ namespace authentication {
 namespace v1 {
 
 // Internal implementation detail -- do not call these.
-void protobuf_AddDesc_authentication_5fservice_2eproto();
+void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
 void protobuf_AssignDesc_authentication_5fservice_2eproto();
 void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -67,7 +67,7 @@ class VerifyWebCredentialsRequest;
 
 // ===================================================================
 
-class ModuleLoadRequest : public ::google::protobuf::Message {
+class TC_PROTO_API ModuleLoadRequest : public ::google::protobuf::Message {
  public:
   ModuleLoadRequest();
   virtual ~ModuleLoadRequest();
@@ -154,7 +154,7 @@ class ModuleLoadRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::ContentHandle* module_handle_;
   ::std::string* message_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -163,7 +163,7 @@ class ModuleLoadRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ModuleNotification : public ::google::protobuf::Message {
+class TC_PROTO_API ModuleNotification : public ::google::protobuf::Message {
  public:
   ModuleNotification();
   virtual ~ModuleNotification();
@@ -243,7 +243,7 @@ class ModuleNotification : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::int32 module_id_;
   ::google::protobuf::uint32 result_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -252,7 +252,7 @@ class ModuleNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ModuleMessageRequest : public ::google::protobuf::Message {
+class TC_PROTO_API ModuleMessageRequest : public ::google::protobuf::Message {
  public:
   ModuleMessageRequest();
   virtual ~ModuleMessageRequest();
@@ -337,7 +337,7 @@ class ModuleMessageRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::std::string* message_;
   ::google::protobuf::int32 module_id_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -346,7 +346,7 @@ class ModuleMessageRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class LogonRequest : public ::google::protobuf::Message {
+class TC_PROTO_API LogonRequest : public ::google::protobuf::Message {
  public:
   LogonRequest();
   virtual ~LogonRequest();
@@ -591,7 +591,7 @@ class LogonRequest : public ::google::protobuf::Message {
   ::std::string* cached_web_credentials_;
   ::std::string* user_agent_;
   ::std::string* device_id_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -600,7 +600,7 @@ class LogonRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class LogonResult : public ::google::protobuf::Message {
+class TC_PROTO_API LogonResult : public ::google::protobuf::Message {
  public:
   LogonResult();
   virtual ~LogonResult();
@@ -788,7 +788,7 @@ class LogonResult : public ::google::protobuf::Message {
   ::std::string* geoip_country_;
   ::std::string* session_key_;
   bool restricted_mode_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -797,7 +797,7 @@ class LogonResult : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GenerateSSOTokenRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GenerateSSOTokenRequest : public ::google::protobuf::Message {
  public:
   GenerateSSOTokenRequest();
   virtual ~GenerateSSOTokenRequest();
@@ -867,7 +867,7 @@ class GenerateSSOTokenRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::uint32 program_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -876,7 +876,7 @@ class GenerateSSOTokenRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GenerateSSOTokenResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GenerateSSOTokenResponse : public ::google::protobuf::Message {
  public:
   GenerateSSOTokenResponse();
   virtual ~GenerateSSOTokenResponse();
@@ -966,7 +966,7 @@ class GenerateSSOTokenResponse : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::std::string* sso_id_;
   ::std::string* sso_secret_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -975,7 +975,7 @@ class GenerateSSOTokenResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class LogonUpdateRequest : public ::google::protobuf::Message {
+class TC_PROTO_API LogonUpdateRequest : public ::google::protobuf::Message {
  public:
   LogonUpdateRequest();
   virtual ~LogonUpdateRequest();
@@ -1045,7 +1045,7 @@ class LogonUpdateRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::uint32 error_code_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -1054,7 +1054,7 @@ class LogonUpdateRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class LogonQueueUpdateRequest : public ::google::protobuf::Message {
+class TC_PROTO_API LogonQueueUpdateRequest : public ::google::protobuf::Message {
  public:
   LogonQueueUpdateRequest();
   virtual ~LogonQueueUpdateRequest();
@@ -1144,7 +1144,7 @@ class LogonQueueUpdateRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint64 estimated_time_;
   ::google::protobuf::uint64 eta_deviation_in_sec_;
   ::google::protobuf::uint32 position_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -1153,7 +1153,7 @@ class LogonQueueUpdateRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class AccountSettingsNotification : public ::google::protobuf::Message {
+class TC_PROTO_API AccountSettingsNotification : public ::google::protobuf::Message {
  public:
   AccountSettingsNotification();
   virtual ~AccountSettingsNotification();
@@ -1266,7 +1266,7 @@ class AccountSettingsNotification : public ::google::protobuf::Message {
   bool is_playing_from_igr_;
   bool can_receive_voice_;
   bool can_send_voice_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -1275,7 +1275,7 @@ class AccountSettingsNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ServerStateChangeRequest : public ::google::protobuf::Message {
+class TC_PROTO_API ServerStateChangeRequest : public ::google::protobuf::Message {
  public:
   ServerStateChangeRequest();
   virtual ~ServerStateChangeRequest();
@@ -1355,7 +1355,7 @@ class ServerStateChangeRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::uint64 event_time_;
   ::google::protobuf::uint32 state_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -1364,7 +1364,7 @@ class ServerStateChangeRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class VersionInfo : public ::google::protobuf::Message {
+class TC_PROTO_API VersionInfo : public ::google::protobuf::Message {
  public:
   VersionInfo();
   virtual ~VersionInfo();
@@ -1469,7 +1469,7 @@ class VersionInfo : public ::google::protobuf::Message {
   ::google::protobuf::uint32 number_;
   bool is_optional_;
   ::google::protobuf::uint64 kick_time_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -1478,7 +1478,7 @@ class VersionInfo : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class VersionInfoNotification : public ::google::protobuf::Message {
+class TC_PROTO_API VersionInfoNotification : public ::google::protobuf::Message {
  public:
   VersionInfoNotification();
   virtual ~VersionInfoNotification();
@@ -1550,7 +1550,7 @@ class VersionInfoNotification : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::authentication::v1::VersionInfo* version_info_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -1559,7 +1559,7 @@ class VersionInfoNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class MemModuleLoadRequest : public ::google::protobuf::Message {
+class TC_PROTO_API MemModuleLoadRequest : public ::google::protobuf::Message {
  public:
   MemModuleLoadRequest();
   virtual ~MemModuleLoadRequest();
@@ -1661,7 +1661,7 @@ class MemModuleLoadRequest : public ::google::protobuf::Message {
   ::bgs::protocol::ContentHandle* handle_;
   ::std::string* key_;
   ::std::string* input_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -1670,7 +1670,7 @@ class MemModuleLoadRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class MemModuleLoadResponse : public ::google::protobuf::Message {
+class TC_PROTO_API MemModuleLoadResponse : public ::google::protobuf::Message {
  public:
   MemModuleLoadResponse();
   virtual ~MemModuleLoadResponse();
@@ -1745,7 +1745,7 @@ class MemModuleLoadResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::std::string* data_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -1754,7 +1754,7 @@ class MemModuleLoadResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class SelectGameAccountRequest : public ::google::protobuf::Message {
+class TC_PROTO_API SelectGameAccountRequest : public ::google::protobuf::Message {
  public:
   SelectGameAccountRequest();
   virtual ~SelectGameAccountRequest();
@@ -1826,7 +1826,7 @@ class SelectGameAccountRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::EntityId* game_account_id_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -1835,7 +1835,7 @@ class SelectGameAccountRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GameAccountSelectedRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GameAccountSelectedRequest : public ::google::protobuf::Message {
  public:
   GameAccountSelectedRequest();
   virtual ~GameAccountSelectedRequest();
@@ -1917,7 +1917,7 @@ class GameAccountSelectedRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::EntityId* game_account_id_;
   ::google::protobuf::uint32 result_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -1926,7 +1926,7 @@ class GameAccountSelectedRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GenerateWebCredentialsRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GenerateWebCredentialsRequest : public ::google::protobuf::Message {
  public:
   GenerateWebCredentialsRequest();
   virtual ~GenerateWebCredentialsRequest();
@@ -1996,7 +1996,7 @@ class GenerateWebCredentialsRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::uint32 program_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -2005,7 +2005,7 @@ class GenerateWebCredentialsRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GenerateWebCredentialsResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GenerateWebCredentialsResponse : public ::google::protobuf::Message {
  public:
   GenerateWebCredentialsResponse();
   virtual ~GenerateWebCredentialsResponse();
@@ -2080,7 +2080,7 @@ class GenerateWebCredentialsResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::std::string* web_credentials_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -2089,7 +2089,7 @@ class GenerateWebCredentialsResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class VerifyWebCredentialsRequest : public ::google::protobuf::Message {
+class TC_PROTO_API VerifyWebCredentialsRequest : public ::google::protobuf::Message {
  public:
   VerifyWebCredentialsRequest();
   virtual ~VerifyWebCredentialsRequest();
@@ -2164,7 +2164,7 @@ class VerifyWebCredentialsRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::std::string* web_credentials_;
-  friend void protobuf_AddDesc_authentication_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_authentication_5fservice_2eproto();
   friend void protobuf_AssignDesc_authentication_5fservice_2eproto();
   friend void protobuf_ShutdownFile_authentication_5fservice_2eproto();
 
@@ -2173,7 +2173,7 @@ class VerifyWebCredentialsRequest : public ::google::protobuf::Message {
 };
 // ===================================================================
 
-class AuthenticationListener : public ServiceBase
+class TC_PROTO_API AuthenticationListener : public ServiceBase
 {
  public:
 
@@ -2203,10 +2203,10 @@ class AuthenticationListener : public ServiceBase
 
  protected:
   virtual uint32 HandleOnModuleLoad(::bgs::protocol::authentication::v1::ModuleLoadRequest const* request);
-  virtual uint32 HandleOnModuleMessage(::bgs::protocol::authentication::v1::ModuleMessageRequest const* request, ::bgs::protocol::NoData* response);
+  virtual uint32 HandleOnModuleMessage(::bgs::protocol::authentication::v1::ModuleMessageRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
   virtual uint32 HandleOnServerStateChange(::bgs::protocol::authentication::v1::ServerStateChangeRequest const* request);
   virtual uint32 HandleOnLogonComplete(::bgs::protocol::authentication::v1::LogonResult const* request);
-  virtual uint32 HandleOnMemModuleLoad(::bgs::protocol::authentication::v1::MemModuleLoadRequest const* request, ::bgs::protocol::authentication::v1::MemModuleLoadResponse* response);
+  virtual uint32 HandleOnMemModuleLoad(::bgs::protocol::authentication::v1::MemModuleLoadRequest const* request, ::bgs::protocol::authentication::v1::MemModuleLoadResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
   virtual uint32 HandleOnLogonUpdate(::bgs::protocol::authentication::v1::LogonUpdateRequest const* request);
   virtual uint32 HandleOnVersionInfoUpdated(::bgs::protocol::authentication::v1::VersionInfoNotification const* request);
   virtual uint32 HandleOnLogonQueueUpdate(::bgs::protocol::authentication::v1::LogonQueueUpdateRequest const* request);
@@ -2221,7 +2221,7 @@ class AuthenticationListener : public ServiceBase
 
 // -------------------------------------------------------------------
 
-class AuthenticationService : public ServiceBase
+class TC_PROTO_API AuthenticationService : public ServiceBase
 {
  public:
 
@@ -2248,14 +2248,14 @@ class AuthenticationService : public ServiceBase
   void CallServerMethod(uint32 token, uint32 methodId, MessageBuffer buffer) override final;
 
  protected:
-  virtual uint32 HandleLogon(::bgs::protocol::authentication::v1::LogonRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleModuleNotify(::bgs::protocol::authentication::v1::ModuleNotification const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleModuleMessage(::bgs::protocol::authentication::v1::ModuleMessageRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleSelectGameAccount_DEPRECATED(::bgs::protocol::EntityId const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleGenerateSSOToken(::bgs::protocol::authentication::v1::GenerateSSOTokenRequest const* request, ::bgs::protocol::authentication::v1::GenerateSSOTokenResponse* response);
-  virtual uint32 HandleSelectGameAccount(::bgs::protocol::authentication::v1::SelectGameAccountRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleVerifyWebCredentials(::bgs::protocol::authentication::v1::VerifyWebCredentialsRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleGenerateWebCredentials(::bgs::protocol::authentication::v1::GenerateWebCredentialsRequest const* request, ::bgs::protocol::authentication::v1::GenerateWebCredentialsResponse* response);
+  virtual uint32 HandleLogon(::bgs::protocol::authentication::v1::LogonRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleModuleNotify(::bgs::protocol::authentication::v1::ModuleNotification const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleModuleMessage(::bgs::protocol::authentication::v1::ModuleMessageRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleSelectGameAccount_DEPRECATED(::bgs::protocol::EntityId const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleGenerateSSOToken(::bgs::protocol::authentication::v1::GenerateSSOTokenRequest const* request, ::bgs::protocol::authentication::v1::GenerateSSOTokenResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleSelectGameAccount(::bgs::protocol::authentication::v1::SelectGameAccountRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleVerifyWebCredentials(::bgs::protocol::authentication::v1::VerifyWebCredentialsRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleGenerateWebCredentials(::bgs::protocol::authentication::v1::GenerateWebCredentialsRequest const* request, ::bgs::protocol::authentication::v1::GenerateWebCredentialsResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
 
  private:
   uint32 service_hash_;

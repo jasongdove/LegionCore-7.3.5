@@ -353,7 +353,7 @@ typedef std::set <uint8> SlotIds;
 #define KNOW_RECIPES_MASK_SIZE 300
 #define MAX_GUILD_NEWS_ENTRIES 100
 
-class Guild
+class TC_GAME_API Guild
 {
     struct KnownRecipes
     {

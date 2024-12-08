@@ -60,7 +60,7 @@ enum ScenarioStepState
     SCENARIO_STEP_DONE          = 3
 };
 
-class Scenario
+class TC_GAME_API Scenario
 {
 public:
     Scenario(Map* map, lfg::LFGDungeonData const* _dungeonData, Player* player, bool find);

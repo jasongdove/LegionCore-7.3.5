@@ -38,6 +38,11 @@
 #include "MapInstanced.h"
 #include "World.h"
 
+template<class T>
+sf::contention_free_shared_mutex<>& HashMapHolder<T>::GetLock()
+{
+    return i_lock;
+}
 
 ObjectAccessor::ObjectAccessor()
 {
@@ -488,16 +493,16 @@ template <class T> std::atomic<bool> HashMapHolder<T>::_checkLock;
 
 /// Global definitions for the hashmap storage
 
-template class HashMapHolder<Player>;
-template class HashMapHolder<Pet>;
-template class HashMapHolder<GameObject>;
-template class HashMapHolder<DynamicObject>;
-template class HashMapHolder<Creature>;
-template class HashMapHolder<Corpse>;
-template class HashMapHolder<Transport>;
-template class HashMapHolder<AreaTrigger>;
-template class HashMapHolder<Conversation>;
-template class HashMapHolder<EventObject>;
+template class TC_GAME_API HashMapHolder<Player>;
+template class TC_GAME_API HashMapHolder<Pet>;
+template class TC_GAME_API HashMapHolder<GameObject>;
+template class TC_GAME_API HashMapHolder<DynamicObject>;
+template class TC_GAME_API HashMapHolder<Creature>;
+template class TC_GAME_API HashMapHolder<Corpse>;
+template class TC_GAME_API HashMapHolder<Transport>;
+template class TC_GAME_API HashMapHolder<AreaTrigger>;
+template class TC_GAME_API HashMapHolder<Conversation>;
+template class TC_GAME_API HashMapHolder<EventObject>;
 
 template Player* ObjectAccessor::GetObjectInWorld<Player>(uint32 mapid, float x, float y, ObjectGuid guid, Player* /*fake*/);
 template Pet* ObjectAccessor::GetObjectInWorld<Pet>(uint32 mapid, float x, float y, ObjectGuid guid, Pet* /*fake*/);

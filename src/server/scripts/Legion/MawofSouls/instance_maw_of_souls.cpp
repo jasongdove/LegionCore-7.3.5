@@ -3,7 +3,7 @@
 */
 
 #include "maw_of_souls.h"
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptPCH.h"
 #include "WorldPacket.h"
 #include "InstancePackets.h"
 

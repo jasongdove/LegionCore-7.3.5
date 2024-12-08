@@ -37,7 +37,7 @@ enum GridState
     MAX_GRID_STATE
 };
 
-class NGrid final
+class TC_GAME_API NGrid final
 {
 public:
     NGrid(int32 x, int32 y, time_t expiry, bool unload = true);

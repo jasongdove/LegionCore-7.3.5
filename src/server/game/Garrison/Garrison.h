@@ -208,7 +208,7 @@ typedef std::list<WorldPackets::Garrison::Shipment> ShipmentSet;
 typedef std::unordered_map<uint32/*buildingType*/, ObjectGuid /*guid*/> ShipmentConteinerSpawn;
 typedef std::unordered_map<uint16/*buildingType*/, std::unordered_map<uint16, uint32>> buildingData;
 
-class Garrison
+class TC_GAME_API Garrison
 {
 public:
     explicit Garrison(Player* owner);

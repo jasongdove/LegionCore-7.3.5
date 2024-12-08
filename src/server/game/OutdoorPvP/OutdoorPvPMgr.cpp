@@ -32,8 +32,14 @@ void OutdoorPvPMgr::Die()
     for (auto v : m_OutdoorPvPSet)
         delete v;
 
+    m_OutdoorPvPSet.clear();
+
     for (auto v : m_OutdoorPvPDatas)
         delete v.second;
+
+    m_OutdoorPvPDatas.clear();
+
+    m_OutdoorPvPMap.clear();
 }
 
 OutdoorPvPMgr* OutdoorPvPMgr::instance()

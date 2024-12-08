@@ -30,7 +30,7 @@
 #include "entity_types.pb.h"
 #include "invitation_types.pb.h"
 #include "rpc_types.pb.h"
-#include "Define.h"
+#include "Define.h" // for TC_PROTO_API
 // @@protoc_insertion_point(includes)
 
 namespace bgs {
@@ -39,7 +39,7 @@ namespace channel {
 namespace v1 {
 
 // Internal implementation detail -- do not call these.
-void protobuf_AddDesc_channel_5ftypes_2eproto();
+void TC_PROTO_API protobuf_AddDesc_channel_5ftypes_2eproto();
 void protobuf_AssignDesc_channel_5ftypes_2eproto();
 void protobuf_ShutdownFile_channel_5ftypes_2eproto();
 
@@ -58,12 +58,12 @@ enum ChannelState_PrivacyLevel {
   ChannelState_PrivacyLevel_PRIVACY_LEVEL_OPEN_INVITATION = 3,
   ChannelState_PrivacyLevel_PRIVACY_LEVEL_CLOSED = 4
 };
-bool ChannelState_PrivacyLevel_IsValid(int value);
+TC_PROTO_API bool ChannelState_PrivacyLevel_IsValid(int value);
 const ChannelState_PrivacyLevel ChannelState_PrivacyLevel_PrivacyLevel_MIN = ChannelState_PrivacyLevel_PRIVACY_LEVEL_OPEN;
 const ChannelState_PrivacyLevel ChannelState_PrivacyLevel_PrivacyLevel_MAX = ChannelState_PrivacyLevel_PRIVACY_LEVEL_CLOSED;
 const int ChannelState_PrivacyLevel_PrivacyLevel_ARRAYSIZE = ChannelState_PrivacyLevel_PrivacyLevel_MAX + 1;
 
-const ::google::protobuf::EnumDescriptor* ChannelState_PrivacyLevel_descriptor();
+TC_PROTO_API const ::google::protobuf::EnumDescriptor* ChannelState_PrivacyLevel_descriptor();
 inline const ::std::string& ChannelState_PrivacyLevel_Name(ChannelState_PrivacyLevel value) {
   return ::google::protobuf::internal::NameOfEnum(
     ChannelState_PrivacyLevel_descriptor(), value);
@@ -75,7 +75,7 @@ inline bool ChannelState_PrivacyLevel_Parse(
 }
 // ===================================================================
 
-class Message : public ::google::protobuf::Message {
+class TC_PROTO_API Message : public ::google::protobuf::Message {
  public:
   Message();
   virtual ~Message();
@@ -151,7 +151,7 @@ class Message : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::Attribute > attribute_;
-  friend void protobuf_AddDesc_channel_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5ftypes_2eproto();
   friend void protobuf_AssignDesc_channel_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_channel_5ftypes_2eproto();
 
@@ -160,7 +160,7 @@ class Message : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ListChannelsOptions : public ::google::protobuf::Message {
+class TC_PROTO_API ListChannelsOptions : public ::google::protobuf::Message {
  public:
   ListChannelsOptions();
   virtual ~ListChannelsOptions();
@@ -312,7 +312,7 @@ class ListChannelsOptions : public ::google::protobuf::Message {
   ::bgs::protocol::AttributeFilter* attribute_filter_;
   ::std::string* channel_type_;
   ::google::protobuf::uint32 capacity_full_;
-  friend void protobuf_AddDesc_channel_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5ftypes_2eproto();
   friend void protobuf_AssignDesc_channel_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_channel_5ftypes_2eproto();
 
@@ -321,7 +321,7 @@ class ListChannelsOptions : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ChannelDescription : public ::google::protobuf::Message {
+class TC_PROTO_API ChannelDescription : public ::google::protobuf::Message {
  public:
   ChannelDescription();
   virtual ~ChannelDescription();
@@ -415,7 +415,7 @@ class ChannelDescription : public ::google::protobuf::Message {
   ::bgs::protocol::EntityId* channel_id_;
   ::bgs::protocol::channel::v1::ChannelState* state_;
   ::google::protobuf::uint32 current_members_;
-  friend void protobuf_AddDesc_channel_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5ftypes_2eproto();
   friend void protobuf_AssignDesc_channel_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_channel_5ftypes_2eproto();
 
@@ -424,7 +424,7 @@ class ChannelDescription : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ChannelInfo : public ::google::protobuf::Message {
+class TC_PROTO_API ChannelInfo : public ::google::protobuf::Message {
  public:
   ChannelInfo();
   virtual ~ChannelInfo();
@@ -509,7 +509,7 @@ class ChannelInfo : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::channel::v1::ChannelDescription* description_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::channel::v1::Member > member_;
-  friend void protobuf_AddDesc_channel_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5ftypes_2eproto();
   friend void protobuf_AssignDesc_channel_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_channel_5ftypes_2eproto();
 
@@ -518,7 +518,7 @@ class ChannelInfo : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ChannelState : public ::google::protobuf::Message {
+class TC_PROTO_API ChannelState : public ::google::protobuf::Message {
  public:
   ChannelState();
   virtual ~ChannelState();
@@ -724,7 +724,7 @@ class ChannelState : public ::google::protobuf::Message {
   ::std::string* channel_type_;
   ::google::protobuf::uint32 program_;
   bool subscribe_to_presence_;
-  friend void protobuf_AddDesc_channel_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5ftypes_2eproto();
   friend void protobuf_AssignDesc_channel_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_channel_5ftypes_2eproto();
 
@@ -733,7 +733,7 @@ class ChannelState : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class MemberAccountInfo : public ::google::protobuf::Message {
+class TC_PROTO_API MemberAccountInfo : public ::google::protobuf::Message {
  public:
   MemberAccountInfo();
   virtual ~MemberAccountInfo();
@@ -808,7 +808,7 @@ class MemberAccountInfo : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::std::string* battle_tag_;
-  friend void protobuf_AddDesc_channel_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5ftypes_2eproto();
   friend void protobuf_AssignDesc_channel_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_channel_5ftypes_2eproto();
 
@@ -817,7 +817,7 @@ class MemberAccountInfo : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class MemberState : public ::google::protobuf::Message {
+class TC_PROTO_API MemberState : public ::google::protobuf::Message {
  public:
   MemberState();
   virtual ~MemberState();
@@ -926,7 +926,7 @@ class MemberState : public ::google::protobuf::Message {
   mutable int _role_cached_byte_size_;
   ::google::protobuf::uint64 privileges_;
   ::bgs::protocol::channel::v1::MemberAccountInfo* info_;
-  friend void protobuf_AddDesc_channel_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5ftypes_2eproto();
   friend void protobuf_AssignDesc_channel_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_channel_5ftypes_2eproto();
 
@@ -935,7 +935,7 @@ class MemberState : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Member : public ::google::protobuf::Message {
+class TC_PROTO_API Member : public ::google::protobuf::Message {
  public:
   Member();
   virtual ~Member();
@@ -1019,7 +1019,7 @@ class Member : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::Identity* identity_;
   ::bgs::protocol::channel::v1::MemberState* state_;
-  friend void protobuf_AddDesc_channel_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5ftypes_2eproto();
   friend void protobuf_AssignDesc_channel_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_channel_5ftypes_2eproto();
 

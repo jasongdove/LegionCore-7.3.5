@@ -22,7 +22,7 @@
 #include "Object.h"
 #include "GridObject.h"
 
-struct EventObjectData
+struct TC_GAME_API EventObjectData
 {
     explicit EventObjectData() { }
 
@@ -38,7 +38,7 @@ struct EventObjectData
     bool dbData = true;
 };
 
-struct EventObjectTemplate
+struct TC_GAME_API EventObjectTemplate
 {
     uint32 Entry;
     uint32 SpellID = 0;
@@ -57,7 +57,7 @@ enum EventObjectFlags
 
 typedef std::unordered_map<uint32, EventObjectTemplate> EventObjectTemplateContainer;
 
-class EventObject : public WorldObject, public GridObject<EventObject>
+class TC_GAME_API EventObject : public WorldObject, public GridObject<EventObject>
 {
     public:
         EventObject();

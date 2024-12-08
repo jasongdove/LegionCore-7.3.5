@@ -27,7 +27,7 @@ struct VehicleEntry;
 class Unit;
 class VehicleJoinEvent;
 
-class Vehicle : public TransportBase
+class TC_GAME_API Vehicle : public TransportBase
 {
     protected:
         friend bool Unit::CreateVehicleKit(uint32 id, uint32 creatureEntry, uint32 RecAura, bool);

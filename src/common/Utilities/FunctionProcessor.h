@@ -25,7 +25,7 @@
 
 typedef std::multimap<uint64, std::function<void()>> FunctionList;
 
-class FunctionProcessor
+class TC_COMMON_API FunctionProcessor
 {
     public:
         FunctionProcessor();

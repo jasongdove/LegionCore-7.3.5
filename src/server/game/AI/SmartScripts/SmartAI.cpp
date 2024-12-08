@@ -1121,7 +1121,7 @@ public:
     }
 };
 
-void AddSC_SmartSCripts()
+void AddSC_SmartScripts()
 {
     new SmartTrigger();
     new SmartEventObject();

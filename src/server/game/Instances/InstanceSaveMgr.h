@@ -134,7 +134,7 @@ class InstanceSave
         sf::contention_free_shared_mutex< > _groupListLock;
 };
 
-class InstanceSaveManager
+class TC_GAME_API InstanceSaveManager
 {
     friend class InstanceSave;
 

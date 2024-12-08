@@ -39,7 +39,7 @@ namespace account {
 namespace v1 {
 
 // Internal implementation detail -- do not call these.
-void protobuf_AddDesc_account_5fservice_2eproto();
+void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
 void protobuf_AssignDesc_account_5fservice_2eproto();
 void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -83,7 +83,7 @@ class GameAccountSessionNotification;
 
 // ===================================================================
 
-class GetAccountRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GetAccountRequest : public ::google::protobuf::Message {
  public:
   GetAccountRequest();
   virtual ~GetAccountRequest();
@@ -255,7 +255,7 @@ class GetAccountRequest : public ::google::protobuf::Message {
   bool fetch_links_;
   bool fetch_parental_controls_;
   bool fetch_cais_id_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -264,7 +264,7 @@ class GetAccountRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetAccountResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GetAccountResponse : public ::google::protobuf::Message {
  public:
   GetAccountResponse();
   virtual ~GetAccountResponse();
@@ -435,7 +435,7 @@ class GetAccountResponse : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::account::v1::GameAccountLink > links_;
   ::bgs::protocol::account::v1::ParentalControlInfo* parental_control_info_;
   ::std::string* cais_id_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -444,7 +444,7 @@ class GetAccountResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class CreateGameAccountRequest : public ::google::protobuf::Message {
+class TC_PROTO_API CreateGameAccountRequest : public ::google::protobuf::Message {
  public:
   CreateGameAccountRequest();
   virtual ~CreateGameAccountRequest();
@@ -566,7 +566,7 @@ class CreateGameAccountRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 realm_permissions_;
   ::google::protobuf::uint32 account_region_;
   ::google::protobuf::uint32 platform_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -575,7 +575,7 @@ class CreateGameAccountRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class CreateGameAccountResponse : public ::google::protobuf::Message {
+class TC_PROTO_API CreateGameAccountResponse : public ::google::protobuf::Message {
  public:
   CreateGameAccountResponse();
   virtual ~CreateGameAccountResponse();
@@ -647,7 +647,7 @@ class CreateGameAccountResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameAccountHandle* game_account_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -656,7 +656,7 @@ class CreateGameAccountResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class CacheExpireRequest : public ::google::protobuf::Message {
+class TC_PROTO_API CacheExpireRequest : public ::google::protobuf::Message {
  public:
   CacheExpireRequest();
   virtual ~CacheExpireRequest();
@@ -759,7 +759,7 @@ class CacheExpireRequest : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::account::v1::AccountId > account_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::account::v1::GameAccountHandle > game_account_;
   ::google::protobuf::RepeatedPtrField< ::std::string> email_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -768,7 +768,7 @@ class CacheExpireRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class CredentialUpdateRequest : public ::google::protobuf::Message {
+class TC_PROTO_API CredentialUpdateRequest : public ::google::protobuf::Message {
  public:
   CredentialUpdateRequest();
   virtual ~CredentialUpdateRequest();
@@ -876,7 +876,7 @@ class CredentialUpdateRequest : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::account::v1::AccountCredential > old_credentials_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::account::v1::AccountCredential > new_credentials_;
   ::google::protobuf::uint32 region_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -885,7 +885,7 @@ class CredentialUpdateRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class CredentialUpdateResponse : public ::google::protobuf::Message {
+class TC_PROTO_API CredentialUpdateResponse : public ::google::protobuf::Message {
  public:
   CredentialUpdateResponse();
   virtual ~CredentialUpdateResponse();
@@ -945,7 +945,7 @@ class CredentialUpdateResponse : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -954,7 +954,7 @@ class CredentialUpdateResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class AccountFlagUpdateRequest : public ::google::protobuf::Message {
+class TC_PROTO_API AccountFlagUpdateRequest : public ::google::protobuf::Message {
  public:
   AccountFlagUpdateRequest();
   virtual ~AccountFlagUpdateRequest();
@@ -1056,7 +1056,7 @@ class AccountFlagUpdateRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint64 flag_;
   ::google::protobuf::uint32 region_;
   bool active_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -1065,7 +1065,7 @@ class AccountFlagUpdateRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GameAccountFlagUpdateRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GameAccountFlagUpdateRequest : public ::google::protobuf::Message {
  public:
   GameAccountFlagUpdateRequest();
   virtual ~GameAccountFlagUpdateRequest();
@@ -1157,7 +1157,7 @@ class GameAccountFlagUpdateRequest : public ::google::protobuf::Message {
   ::bgs::protocol::account::v1::GameAccountHandle* game_account_;
   ::google::protobuf::uint64 flag_;
   bool active_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -1166,7 +1166,7 @@ class GameAccountFlagUpdateRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class SubscriptionUpdateRequest : public ::google::protobuf::Message {
+class TC_PROTO_API SubscriptionUpdateRequest : public ::google::protobuf::Message {
  public:
   SubscriptionUpdateRequest();
   virtual ~SubscriptionUpdateRequest();
@@ -1239,7 +1239,7 @@ class SubscriptionUpdateRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::account::v1::SubscriberReference > ref_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -1248,7 +1248,7 @@ class SubscriptionUpdateRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class SubscriptionUpdateResponse : public ::google::protobuf::Message {
+class TC_PROTO_API SubscriptionUpdateResponse : public ::google::protobuf::Message {
  public:
   SubscriptionUpdateResponse();
   virtual ~SubscriptionUpdateResponse();
@@ -1321,7 +1321,7 @@ class SubscriptionUpdateResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::account::v1::SubscriberReference > ref_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -1330,7 +1330,7 @@ class SubscriptionUpdateResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class IsIgrAddressRequest : public ::google::protobuf::Message {
+class TC_PROTO_API IsIgrAddressRequest : public ::google::protobuf::Message {
  public:
   IsIgrAddressRequest();
   virtual ~IsIgrAddressRequest();
@@ -1415,7 +1415,7 @@ class IsIgrAddressRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::std::string* client_address_;
   ::google::protobuf::uint32 region_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -1424,7 +1424,7 @@ class IsIgrAddressRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class AccountServiceRegion : public ::google::protobuf::Message {
+class TC_PROTO_API AccountServiceRegion : public ::google::protobuf::Message {
  public:
   AccountServiceRegion();
   virtual ~AccountServiceRegion();
@@ -1509,7 +1509,7 @@ class AccountServiceRegion : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::std::string* shard_;
   ::google::protobuf::uint32 id_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -1518,7 +1518,7 @@ class AccountServiceRegion : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class AccountServiceConfig : public ::google::protobuf::Message {
+class TC_PROTO_API AccountServiceConfig : public ::google::protobuf::Message {
  public:
   AccountServiceConfig();
   virtual ~AccountServiceConfig();
@@ -1591,7 +1591,7 @@ class AccountServiceConfig : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::account::v1::AccountServiceRegion > region_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -1600,7 +1600,7 @@ class AccountServiceConfig : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetAccountStateRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GetAccountStateRequest : public ::google::protobuf::Message {
  public:
   GetAccountStateRequest();
   virtual ~GetAccountStateRequest();
@@ -1716,7 +1716,7 @@ class GetAccountStateRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 region_;
   ::bgs::protocol::account::v1::AccountFieldOptions* options_;
   ::bgs::protocol::account::v1::AccountFieldTags* tags_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -1725,7 +1725,7 @@ class GetAccountStateRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetAccountStateResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GetAccountStateResponse : public ::google::protobuf::Message {
  public:
   GetAccountStateResponse();
   virtual ~GetAccountStateResponse();
@@ -1809,7 +1809,7 @@ class GetAccountStateResponse : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::AccountState* state_;
   ::bgs::protocol::account::v1::AccountFieldTags* tags_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -1818,7 +1818,7 @@ class GetAccountStateResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetGameAccountStateRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GetGameAccountStateRequest : public ::google::protobuf::Message {
  public:
   GetGameAccountStateRequest();
   virtual ~GetGameAccountStateRequest();
@@ -1926,7 +1926,7 @@ class GetGameAccountStateRequest : public ::google::protobuf::Message {
   ::bgs::protocol::EntityId* game_account_id_;
   ::bgs::protocol::account::v1::GameAccountFieldOptions* options_;
   ::bgs::protocol::account::v1::GameAccountFieldTags* tags_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -1935,7 +1935,7 @@ class GetGameAccountStateRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetGameAccountStateResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GetGameAccountStateResponse : public ::google::protobuf::Message {
  public:
   GetGameAccountStateResponse();
   virtual ~GetGameAccountStateResponse();
@@ -2019,7 +2019,7 @@ class GetGameAccountStateResponse : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameAccountState* state_;
   ::bgs::protocol::account::v1::GameAccountFieldTags* tags_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -2028,7 +2028,7 @@ class GetGameAccountStateResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetLicensesRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GetLicensesRequest : public ::google::protobuf::Message {
  public:
   GetLicensesRequest();
   virtual ~GetLicensesRequest();
@@ -2150,7 +2150,7 @@ class GetLicensesRequest : public ::google::protobuf::Message {
   bool fetch_dynamic_account_licenses_;
   bool exclude_unknown_program_;
   ::google::protobuf::uint32 program_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -2159,7 +2159,7 @@ class GetLicensesRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetLicensesResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GetLicensesResponse : public ::google::protobuf::Message {
  public:
   GetLicensesResponse();
   virtual ~GetLicensesResponse();
@@ -2232,7 +2232,7 @@ class GetLicensesResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::account::v1::AccountLicense > licenses_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -2241,7 +2241,7 @@ class GetLicensesResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetGameSessionInfoRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GetGameSessionInfoRequest : public ::google::protobuf::Message {
  public:
   GetGameSessionInfoRequest();
   virtual ~GetGameSessionInfoRequest();
@@ -2313,7 +2313,7 @@ class GetGameSessionInfoRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::EntityId* entity_id_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -2322,7 +2322,7 @@ class GetGameSessionInfoRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetGameSessionInfoResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GetGameSessionInfoResponse : public ::google::protobuf::Message {
  public:
   GetGameSessionInfoResponse();
   virtual ~GetGameSessionInfoResponse();
@@ -2394,7 +2394,7 @@ class GetGameSessionInfoResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameSessionInfo* session_info_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -2403,7 +2403,7 @@ class GetGameSessionInfoResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetGameTimeRemainingInfoRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GetGameTimeRemainingInfoRequest : public ::google::protobuf::Message {
  public:
   GetGameTimeRemainingInfoRequest();
   virtual ~GetGameTimeRemainingInfoRequest();
@@ -2487,7 +2487,7 @@ class GetGameTimeRemainingInfoRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::EntityId* game_account_id_;
   ::bgs::protocol::EntityId* account_id_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -2496,7 +2496,7 @@ class GetGameTimeRemainingInfoRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetGameTimeRemainingInfoResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GetGameTimeRemainingInfoResponse : public ::google::protobuf::Message {
  public:
   GetGameTimeRemainingInfoResponse();
   virtual ~GetGameTimeRemainingInfoResponse();
@@ -2568,7 +2568,7 @@ class GetGameTimeRemainingInfoResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameTimeRemainingInfo* game_time_remaining_info_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -2577,7 +2577,7 @@ class GetGameTimeRemainingInfoResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetCAISInfoRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GetCAISInfoRequest : public ::google::protobuf::Message {
  public:
   GetCAISInfoRequest();
   virtual ~GetCAISInfoRequest();
@@ -2649,7 +2649,7 @@ class GetCAISInfoRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::EntityId* entity_id_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -2658,7 +2658,7 @@ class GetCAISInfoRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetCAISInfoResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GetCAISInfoResponse : public ::google::protobuf::Message {
  public:
   GetCAISInfoResponse();
   virtual ~GetCAISInfoResponse();
@@ -2730,7 +2730,7 @@ class GetCAISInfoResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::CAIS* cais_info_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -2739,7 +2739,7 @@ class GetCAISInfoResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ForwardCacheExpireRequest : public ::google::protobuf::Message {
+class TC_PROTO_API ForwardCacheExpireRequest : public ::google::protobuf::Message {
  public:
   ForwardCacheExpireRequest();
   virtual ~ForwardCacheExpireRequest();
@@ -2811,7 +2811,7 @@ class ForwardCacheExpireRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::EntityId* entity_id_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -2820,7 +2820,7 @@ class ForwardCacheExpireRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetAuthorizedDataRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GetAuthorizedDataRequest : public ::google::protobuf::Message {
  public:
   GetAuthorizedDataRequest();
   virtual ~GetAuthorizedDataRequest();
@@ -2919,7 +2919,7 @@ class GetAuthorizedDataRequest : public ::google::protobuf::Message {
   ::bgs::protocol::EntityId* entity_id_;
   ::google::protobuf::RepeatedPtrField< ::std::string> tag_;
   bool privileged_network_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -2928,7 +2928,7 @@ class GetAuthorizedDataRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetAuthorizedDataResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GetAuthorizedDataResponse : public ::google::protobuf::Message {
  public:
   GetAuthorizedDataResponse();
   virtual ~GetAuthorizedDataResponse();
@@ -3001,7 +3001,7 @@ class GetAuthorizedDataResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::account::v1::AuthorizedData > data_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -3010,7 +3010,7 @@ class GetAuthorizedDataResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class UpdateParentalControlsAndCAISRequest : public ::google::protobuf::Message {
+class TC_PROTO_API UpdateParentalControlsAndCAISRequest : public ::google::protobuf::Message {
  public:
   UpdateParentalControlsAndCAISRequest();
   virtual ~UpdateParentalControlsAndCAISRequest();
@@ -3139,7 +3139,7 @@ class UpdateParentalControlsAndCAISRequest : public ::google::protobuf::Message 
   ::google::protobuf::uint64 session_start_time_;
   ::google::protobuf::uint64 start_time_;
   ::google::protobuf::uint64 end_time_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -3148,7 +3148,7 @@ class UpdateParentalControlsAndCAISRequest : public ::google::protobuf::Message 
 };
 // -------------------------------------------------------------------
 
-class QueueDeductRecordRequest : public ::google::protobuf::Message {
+class TC_PROTO_API QueueDeductRecordRequest : public ::google::protobuf::Message {
  public:
   QueueDeductRecordRequest();
   virtual ~QueueDeductRecordRequest();
@@ -3220,7 +3220,7 @@ class QueueDeductRecordRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::DeductRecord* deduct_record_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -3229,7 +3229,7 @@ class QueueDeductRecordRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetGameAccountRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GetGameAccountRequest : public ::google::protobuf::Message {
  public:
   GetGameAccountRequest();
   virtual ~GetGameAccountRequest();
@@ -3311,7 +3311,7 @@ class GetGameAccountRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameAccountHandle* game_account_;
   bool reload_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -3320,7 +3320,7 @@ class GetGameAccountRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetGameAccountResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GetGameAccountResponse : public ::google::protobuf::Message {
  public:
   GetGameAccountResponse();
   virtual ~GetGameAccountResponse();
@@ -3392,7 +3392,7 @@ class GetGameAccountResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameAccountBlob* blob_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -3401,7 +3401,7 @@ class GetGameAccountResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class AccountStateNotification : public ::google::protobuf::Message {
+class TC_PROTO_API AccountStateNotification : public ::google::protobuf::Message {
  public:
   AccountStateNotification();
   virtual ~AccountStateNotification();
@@ -3505,7 +3505,7 @@ class AccountStateNotification : public ::google::protobuf::Message {
   ::google::protobuf::uint64 subscriber_id_;
   ::bgs::protocol::account::v1::AccountFieldTags* account_tags_;
   bool subscription_completed_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -3514,7 +3514,7 @@ class AccountStateNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GameAccountStateNotification : public ::google::protobuf::Message {
+class TC_PROTO_API GameAccountStateNotification : public ::google::protobuf::Message {
  public:
   GameAccountStateNotification();
   virtual ~GameAccountStateNotification();
@@ -3618,7 +3618,7 @@ class GameAccountStateNotification : public ::google::protobuf::Message {
   ::google::protobuf::uint64 subscriber_id_;
   ::bgs::protocol::account::v1::GameAccountFieldTags* game_account_tags_;
   bool subscription_completed_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -3627,7 +3627,7 @@ class GameAccountStateNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GameAccountNotification : public ::google::protobuf::Message {
+class TC_PROTO_API GameAccountNotification : public ::google::protobuf::Message {
  public:
   GameAccountNotification();
   virtual ~GameAccountNotification();
@@ -3722,7 +3722,7 @@ class GameAccountNotification : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::account::v1::GameAccountList > game_accounts_;
   ::google::protobuf::uint64 subscriber_id_;
   ::bgs::protocol::account::v1::AccountFieldTags* account_tags_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -3731,7 +3731,7 @@ class GameAccountNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GameAccountSessionNotification : public ::google::protobuf::Message {
+class TC_PROTO_API GameAccountSessionNotification : public ::google::protobuf::Message {
  public:
   GameAccountSessionNotification();
   virtual ~GameAccountSessionNotification();
@@ -3815,7 +3815,7 @@ class GameAccountSessionNotification : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameAccountHandle* game_account_;
   ::bgs::protocol::account::v1::GameSessionUpdateInfo* session_info_;
-  friend void protobuf_AddDesc_account_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_account_5fservice_2eproto();
   friend void protobuf_AssignDesc_account_5fservice_2eproto();
   friend void protobuf_ShutdownFile_account_5fservice_2eproto();
 
@@ -3824,7 +3824,7 @@ class GameAccountSessionNotification : public ::google::protobuf::Message {
 };
 // ===================================================================
 
-class AccountService : public ServiceBase
+class TC_PROTO_API AccountService : public ServiceBase
 {
  public:
 
@@ -3865,28 +3865,28 @@ class AccountService : public ServiceBase
   void CallServerMethod(uint32 token, uint32 methodId, MessageBuffer buffer) override final;
 
  protected:
-  virtual uint32 HandleGetGameAccountBlob(::bgs::protocol::account::v1::GameAccountHandle const* request, ::bgs::protocol::account::v1::GameAccountBlob* response);
-  virtual uint32 HandleGetAccount(::bgs::protocol::account::v1::GetAccountRequest const* request, ::bgs::protocol::account::v1::GetAccountResponse* response);
-  virtual uint32 HandleCreateGameAccount(::bgs::protocol::account::v1::CreateGameAccountRequest const* request, ::bgs::protocol::account::v1::GameAccountHandle* response);
-  virtual uint32 HandleIsIgrAddress(::bgs::protocol::account::v1::IsIgrAddressRequest const* request, ::bgs::protocol::NoData* response);
+  virtual uint32 HandleGetGameAccountBlob(::bgs::protocol::account::v1::GameAccountHandle const* request, ::bgs::protocol::account::v1::GameAccountBlob* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleGetAccount(::bgs::protocol::account::v1::GetAccountRequest const* request, ::bgs::protocol::account::v1::GetAccountResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleCreateGameAccount(::bgs::protocol::account::v1::CreateGameAccountRequest const* request, ::bgs::protocol::account::v1::GameAccountHandle* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleIsIgrAddress(::bgs::protocol::account::v1::IsIgrAddressRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
   virtual uint32 HandleCacheExpire(::bgs::protocol::account::v1::CacheExpireRequest const* request);
-  virtual uint32 HandleCredentialUpdate(::bgs::protocol::account::v1::CredentialUpdateRequest const* request, ::bgs::protocol::account::v1::CredentialUpdateResponse* response);
-  virtual uint32 HandleSubscribe(::bgs::protocol::account::v1::SubscriptionUpdateRequest const* request, ::bgs::protocol::account::v1::SubscriptionUpdateResponse* response);
-  virtual uint32 HandleUnsubscribe(::bgs::protocol::account::v1::SubscriptionUpdateRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleGetAccountState(::bgs::protocol::account::v1::GetAccountStateRequest const* request, ::bgs::protocol::account::v1::GetAccountStateResponse* response);
-  virtual uint32 HandleGetGameAccountState(::bgs::protocol::account::v1::GetGameAccountStateRequest const* request, ::bgs::protocol::account::v1::GetGameAccountStateResponse* response);
-  virtual uint32 HandleGetLicenses(::bgs::protocol::account::v1::GetLicensesRequest const* request, ::bgs::protocol::account::v1::GetLicensesResponse* response);
-  virtual uint32 HandleGetGameTimeRemainingInfo(::bgs::protocol::account::v1::GetGameTimeRemainingInfoRequest const* request, ::bgs::protocol::account::v1::GetGameTimeRemainingInfoResponse* response);
-  virtual uint32 HandleGetGameSessionInfo(::bgs::protocol::account::v1::GetGameSessionInfoRequest const* request, ::bgs::protocol::account::v1::GetGameSessionInfoResponse* response);
-  virtual uint32 HandleGetCAISInfo(::bgs::protocol::account::v1::GetCAISInfoRequest const* request, ::bgs::protocol::account::v1::GetCAISInfoResponse* response);
-  virtual uint32 HandleForwardCacheExpire(::bgs::protocol::account::v1::ForwardCacheExpireRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleGetAuthorizedData(::bgs::protocol::account::v1::GetAuthorizedDataRequest const* request, ::bgs::protocol::account::v1::GetAuthorizedDataResponse* response);
+  virtual uint32 HandleCredentialUpdate(::bgs::protocol::account::v1::CredentialUpdateRequest const* request, ::bgs::protocol::account::v1::CredentialUpdateResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleSubscribe(::bgs::protocol::account::v1::SubscriptionUpdateRequest const* request, ::bgs::protocol::account::v1::SubscriptionUpdateResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleUnsubscribe(::bgs::protocol::account::v1::SubscriptionUpdateRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleGetAccountState(::bgs::protocol::account::v1::GetAccountStateRequest const* request, ::bgs::protocol::account::v1::GetAccountStateResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleGetGameAccountState(::bgs::protocol::account::v1::GetGameAccountStateRequest const* request, ::bgs::protocol::account::v1::GetGameAccountStateResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleGetLicenses(::bgs::protocol::account::v1::GetLicensesRequest const* request, ::bgs::protocol::account::v1::GetLicensesResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleGetGameTimeRemainingInfo(::bgs::protocol::account::v1::GetGameTimeRemainingInfoRequest const* request, ::bgs::protocol::account::v1::GetGameTimeRemainingInfoResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleGetGameSessionInfo(::bgs::protocol::account::v1::GetGameSessionInfoRequest const* request, ::bgs::protocol::account::v1::GetGameSessionInfoResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleGetCAISInfo(::bgs::protocol::account::v1::GetCAISInfoRequest const* request, ::bgs::protocol::account::v1::GetCAISInfoResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleForwardCacheExpire(::bgs::protocol::account::v1::ForwardCacheExpireRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleGetAuthorizedData(::bgs::protocol::account::v1::GetAuthorizedDataRequest const* request, ::bgs::protocol::account::v1::GetAuthorizedDataResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
   virtual uint32 HandleAccountFlagUpdate(::bgs::protocol::account::v1::AccountFlagUpdateRequest const* request);
   virtual uint32 HandleGameAccountFlagUpdate(::bgs::protocol::account::v1::GameAccountFlagUpdateRequest const* request);
-  virtual uint32 HandleUpdateParentalControlsAndCAIS(::bgs::protocol::account::v1::UpdateParentalControlsAndCAISRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleCreateGameAccount2(::bgs::protocol::account::v1::CreateGameAccountRequest const* request, ::bgs::protocol::account::v1::CreateGameAccountResponse* response);
-  virtual uint32 HandleGetGameAccount(::bgs::protocol::account::v1::GetGameAccountRequest const* request, ::bgs::protocol::account::v1::GetGameAccountResponse* response);
-  virtual uint32 HandleQueueDeductRecord(::bgs::protocol::account::v1::QueueDeductRecordRequest const* request, ::bgs::protocol::NoData* response);
+  virtual uint32 HandleUpdateParentalControlsAndCAIS(::bgs::protocol::account::v1::UpdateParentalControlsAndCAISRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleCreateGameAccount2(::bgs::protocol::account::v1::CreateGameAccountRequest const* request, ::bgs::protocol::account::v1::CreateGameAccountResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleGetGameAccount(::bgs::protocol::account::v1::GetGameAccountRequest const* request, ::bgs::protocol::account::v1::GetGameAccountResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleQueueDeductRecord(::bgs::protocol::account::v1::QueueDeductRecordRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
 
  private:
   uint32 service_hash_;
@@ -3896,7 +3896,7 @@ class AccountService : public ServiceBase
 
 // -------------------------------------------------------------------
 
-class AccountListener : public ServiceBase
+class TC_PROTO_API AccountListener : public ServiceBase
 {
  public:
 

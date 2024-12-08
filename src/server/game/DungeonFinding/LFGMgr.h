@@ -311,7 +311,7 @@ struct LFGDungeonData
     bool seasonal;
 };
 
-class LFGMgr
+class TC_GAME_API LFGMgr
 {
     LFGMgr();
     ~LFGMgr();

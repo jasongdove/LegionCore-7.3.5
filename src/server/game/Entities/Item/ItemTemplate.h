@@ -688,7 +688,7 @@ template<class T> class DB2Storage;
 struct ItemEffectEntry;
 struct ChrSpecializationEntry;
 
-struct ItemTemplate
+struct TC_GAME_API ItemTemplate
 {
     ItemEntry const* BasicData;
     ItemSparseEntry const* ExtendedData;

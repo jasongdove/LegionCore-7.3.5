@@ -1049,7 +1049,7 @@ struct CharacterTemplateData
 typedef std::map<uint32, CharacterTemplateData> CharacterTemplateDataMap;
 
 /// Player session in the World
-class WorldSession
+class TC_GAME_API WorldSession
 {
     public:
         WorldSession(uint32 id, std::string&& name, const std::shared_ptr<WorldSocket>& sock, AccountTypes sec, uint8 expansion, time_t mute_time, std::string os, LocaleConstant locale, uint32 recruiter, bool isARecruiter, AuthFlags flag, std::unordered_map<uint8, int64>&& accountTokenMap);

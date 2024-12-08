@@ -27,7 +27,7 @@ class Creature;
 class ZoneScript;
 struct GossipMenuItems;
 
-class BattlefieldMgr
+class TC_GAME_API BattlefieldMgr
 {
   private:
     BattlefieldMgr();

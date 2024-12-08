@@ -38,7 +38,7 @@ namespace connection {
 namespace v1 {
 
 // Internal implementation detail -- do not call these.
-void protobuf_AddDesc_connection_5fservice_2eproto();
+void TC_PROTO_API protobuf_AddDesc_connection_5fservice_2eproto();
 void protobuf_AssignDesc_connection_5fservice_2eproto();
 void protobuf_ShutdownFile_connection_5fservice_2eproto();
 
@@ -56,7 +56,7 @@ class EncryptRequest;
 
 // ===================================================================
 
-class ConnectRequest : public ::google::protobuf::Message {
+class TC_PROTO_API ConnectRequest : public ::google::protobuf::Message {
  public:
   ConnectRequest();
   virtual ~ConnectRequest();
@@ -150,7 +150,7 @@ class ConnectRequest : public ::google::protobuf::Message {
   ::bgs::protocol::ProcessId* client_id_;
   ::bgs::protocol::connection::v1::BindRequest* bind_request_;
   bool use_bindless_rpc_;
-  friend void protobuf_AddDesc_connection_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_connection_5fservice_2eproto();
   friend void protobuf_AssignDesc_connection_5fservice_2eproto();
   friend void protobuf_ShutdownFile_connection_5fservice_2eproto();
 
@@ -159,7 +159,7 @@ class ConnectRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ConnectionMeteringContentHandles : public ::google::protobuf::Message {
+class TC_PROTO_API ConnectionMeteringContentHandles : public ::google::protobuf::Message {
  public:
   ConnectionMeteringContentHandles();
   virtual ~ConnectionMeteringContentHandles();
@@ -232,7 +232,7 @@ class ConnectionMeteringContentHandles : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::ContentHandle > content_handle_;
-  friend void protobuf_AddDesc_connection_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_connection_5fservice_2eproto();
   friend void protobuf_AssignDesc_connection_5fservice_2eproto();
   friend void protobuf_ShutdownFile_connection_5fservice_2eproto();
 
@@ -241,7 +241,7 @@ class ConnectionMeteringContentHandles : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ConnectResponse : public ::google::protobuf::Message {
+class TC_PROTO_API ConnectResponse : public ::google::protobuf::Message {
  public:
   ConnectResponse();
   virtual ~ConnectResponse();
@@ -391,7 +391,7 @@ class ConnectResponse : public ::google::protobuf::Message {
   bool use_bindless_rpc_;
   ::google::protobuf::uint64 server_time_;
   ::bgs::protocol::connection::v1::ConnectionMeteringContentHandles* binary_content_handle_array_;
-  friend void protobuf_AddDesc_connection_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_connection_5fservice_2eproto();
   friend void protobuf_AssignDesc_connection_5fservice_2eproto();
   friend void protobuf_ShutdownFile_connection_5fservice_2eproto();
 
@@ -400,7 +400,7 @@ class ConnectResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class BoundService : public ::google::protobuf::Message {
+class TC_PROTO_API BoundService : public ::google::protobuf::Message {
  public:
   BoundService();
   virtual ~BoundService();
@@ -480,7 +480,7 @@ class BoundService : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::uint32 hash_;
   ::google::protobuf::uint32 id_;
-  friend void protobuf_AddDesc_connection_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_connection_5fservice_2eproto();
   friend void protobuf_AssignDesc_connection_5fservice_2eproto();
   friend void protobuf_ShutdownFile_connection_5fservice_2eproto();
 
@@ -489,7 +489,7 @@ class BoundService : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class BindRequest : public ::google::protobuf::Message {
+class TC_PROTO_API BindRequest : public ::google::protobuf::Message {
  public:
   BindRequest();
   virtual ~BindRequest();
@@ -602,7 +602,7 @@ class BindRequest : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::connection::v1::BoundService > deprecated_exported_service_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::connection::v1::BoundService > exported_service_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::connection::v1::BoundService > imported_service_;
-  friend void protobuf_AddDesc_connection_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_connection_5fservice_2eproto();
   friend void protobuf_AssignDesc_connection_5fservice_2eproto();
   friend void protobuf_ShutdownFile_connection_5fservice_2eproto();
 
@@ -611,7 +611,7 @@ class BindRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class BindResponse : public ::google::protobuf::Message {
+class TC_PROTO_API BindResponse : public ::google::protobuf::Message {
  public:
   BindResponse();
   virtual ~BindResponse();
@@ -685,7 +685,7 @@ class BindResponse : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > imported_service_id_;
   mutable int _imported_service_id_cached_byte_size_;
-  friend void protobuf_AddDesc_connection_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_connection_5fservice_2eproto();
   friend void protobuf_AssignDesc_connection_5fservice_2eproto();
   friend void protobuf_ShutdownFile_connection_5fservice_2eproto();
 
@@ -694,7 +694,7 @@ class BindResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class EchoRequest : public ::google::protobuf::Message {
+class TC_PROTO_API EchoRequest : public ::google::protobuf::Message {
  public:
   EchoRequest();
   virtual ~EchoRequest();
@@ -789,7 +789,7 @@ class EchoRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint64 time_;
   ::std::string* payload_;
   bool network_only_;
-  friend void protobuf_AddDesc_connection_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_connection_5fservice_2eproto();
   friend void protobuf_AssignDesc_connection_5fservice_2eproto();
   friend void protobuf_ShutdownFile_connection_5fservice_2eproto();
 
@@ -798,7 +798,7 @@ class EchoRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class EchoResponse : public ::google::protobuf::Message {
+class TC_PROTO_API EchoResponse : public ::google::protobuf::Message {
  public:
   EchoResponse();
   virtual ~EchoResponse();
@@ -883,7 +883,7 @@ class EchoResponse : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::uint64 time_;
   ::std::string* payload_;
-  friend void protobuf_AddDesc_connection_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_connection_5fservice_2eproto();
   friend void protobuf_AssignDesc_connection_5fservice_2eproto();
   friend void protobuf_ShutdownFile_connection_5fservice_2eproto();
 
@@ -892,7 +892,7 @@ class EchoResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class DisconnectRequest : public ::google::protobuf::Message {
+class TC_PROTO_API DisconnectRequest : public ::google::protobuf::Message {
  public:
   DisconnectRequest();
   virtual ~DisconnectRequest();
@@ -962,7 +962,7 @@ class DisconnectRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::uint32 error_code_;
-  friend void protobuf_AddDesc_connection_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_connection_5fservice_2eproto();
   friend void protobuf_AssignDesc_connection_5fservice_2eproto();
   friend void protobuf_ShutdownFile_connection_5fservice_2eproto();
 
@@ -971,7 +971,7 @@ class DisconnectRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class DisconnectNotification : public ::google::protobuf::Message {
+class TC_PROTO_API DisconnectNotification : public ::google::protobuf::Message {
  public:
   DisconnectNotification();
   virtual ~DisconnectNotification();
@@ -1056,7 +1056,7 @@ class DisconnectNotification : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::std::string* reason_;
   ::google::protobuf::uint32 error_code_;
-  friend void protobuf_AddDesc_connection_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_connection_5fservice_2eproto();
   friend void protobuf_AssignDesc_connection_5fservice_2eproto();
   friend void protobuf_ShutdownFile_connection_5fservice_2eproto();
 
@@ -1065,7 +1065,7 @@ class DisconnectNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class EncryptRequest : public ::google::protobuf::Message {
+class TC_PROTO_API EncryptRequest : public ::google::protobuf::Message {
  public:
   EncryptRequest();
   virtual ~EncryptRequest();
@@ -1125,7 +1125,7 @@ class EncryptRequest : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  friend void protobuf_AddDesc_connection_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_connection_5fservice_2eproto();
   friend void protobuf_AssignDesc_connection_5fservice_2eproto();
   friend void protobuf_ShutdownFile_connection_5fservice_2eproto();
 
@@ -1134,7 +1134,7 @@ class EncryptRequest : public ::google::protobuf::Message {
 };
 // ===================================================================
 
-class ConnectionService : public ServiceBase
+class TC_PROTO_API ConnectionService : public ServiceBase
 {
  public:
 
@@ -1160,12 +1160,12 @@ class ConnectionService : public ServiceBase
   void CallServerMethod(uint32 token, uint32 methodId, MessageBuffer buffer) override final;
 
  protected:
-  virtual uint32 HandleConnect(::bgs::protocol::connection::v1::ConnectRequest const* request, ::bgs::protocol::connection::v1::ConnectResponse* response);
-  virtual uint32 HandleBind(::bgs::protocol::connection::v1::BindRequest const* request, ::bgs::protocol::connection::v1::BindResponse* response);
-  virtual uint32 HandleEcho(::bgs::protocol::connection::v1::EchoRequest const* request, ::bgs::protocol::connection::v1::EchoResponse* response);
+  virtual uint32 HandleConnect(::bgs::protocol::connection::v1::ConnectRequest const* request, ::bgs::protocol::connection::v1::ConnectResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleBind(::bgs::protocol::connection::v1::BindRequest const* request, ::bgs::protocol::connection::v1::BindResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleEcho(::bgs::protocol::connection::v1::EchoRequest const* request, ::bgs::protocol::connection::v1::EchoResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
   virtual uint32 HandleForceDisconnect(::bgs::protocol::connection::v1::DisconnectNotification const* request);
   virtual uint32 HandleKeepAlive(::bgs::protocol::NoData const* request);
-  virtual uint32 HandleEncrypt(::bgs::protocol::connection::v1::EncryptRequest const* request, ::bgs::protocol::NoData* response);
+  virtual uint32 HandleEncrypt(::bgs::protocol::connection::v1::EncryptRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
   virtual uint32 HandleRequestDisconnect(::bgs::protocol::connection::v1::DisconnectRequest const* request);
 
  private:

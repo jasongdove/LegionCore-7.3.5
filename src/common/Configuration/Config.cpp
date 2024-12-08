@@ -22,29 +22,31 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include "Config.h"
 
+namespace bpt = boost::property_tree;
+
 namespace
 {
-    boost::property_tree::ptree _config;
     std::string _filename;
+    std::vector<std::string> _args;
+    boost::property_tree::ptree _config;
     std::mutex _configLock;
 }
 
-namespace bpt = boost::property_tree;
-
-bool ConfigMgr::LoadInitial(std::string const& file, std::string& error)
+bool ConfigMgr::LoadInitial(std::string file, std::vector<std::string> args, std::string& error)
 {
     std::lock_guard<std::mutex> lock(_configLock);
 
-    _filename = file;
+    _filename = std::move(file);
+    _args = std::move(args);
 
     try
     {
         bpt::ptree fullTree;
-        read_ini(file, fullTree);
+        read_ini(_filename, fullTree);
 
         if (fullTree.empty())
         {
-            error = "empty file (" + file + ")";
+            error = "empty file (" + _filename + ")";
             return false;
         }
 
@@ -71,7 +73,7 @@ ConfigMgr* ConfigMgr::instance()
 
 bool ConfigMgr::Reload(std::string& error)
 {
-    return LoadInitial(_filename, error);
+    return LoadInitial(_filename, std::move(_args), error);
 }
 
 std::string ConfigMgr::GetStringDefault(std::string const& name, const std::string& def)
@@ -109,6 +111,11 @@ std::string const& ConfigMgr::GetFilename()
 {
     std::lock_guard<std::mutex> lock(_configLock);
     return _filename;
+}
+
+std::vector<std::string> const& ConfigMgr::GetArguments() const
+{
+    return _args;
 }
 
 std::vector<std::string> ConfigMgr::GetKeysByString(std::string const& name)

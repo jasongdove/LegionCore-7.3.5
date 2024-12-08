@@ -5,7 +5,7 @@ start q14115 spell phase(59074) phase 4.
 start q14116 spell - 59087 phase 8
  */
 
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptPCH.h"
 #include "ScriptedEscortAI.h"
 #include "SpellMgr.h"
 #include "Player.h"

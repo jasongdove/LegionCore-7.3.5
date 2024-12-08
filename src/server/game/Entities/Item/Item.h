@@ -405,7 +405,7 @@ struct ItemSocketInfo
 };
 #pragma pack(pop)
 
-class Item : public Object
+class TC_GAME_API Item : public Object
 {
     public:
         static Item* CreateItem(uint32 item, uint32 count, Player const* player = nullptr);

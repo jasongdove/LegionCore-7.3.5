@@ -71,7 +71,7 @@ class PlayerDump
         PlayerDump() {}
 };
 
-class PlayerDumpWriter : public PlayerDump
+class TC_GAME_API PlayerDumpWriter : public PlayerDump
 {
     public:
         PlayerDumpWriter() {}
@@ -92,7 +92,7 @@ class PlayerDumpWriter : public PlayerDump
         GUIDs follower;
 };
 
-class PlayerDumpReader : public PlayerDump
+class TC_GAME_API PlayerDumpReader : public PlayerDump
 {
     public:
         PlayerDumpReader() {}

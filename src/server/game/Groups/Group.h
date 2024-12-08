@@ -237,7 +237,7 @@ struct RaidMarker
     ObjectGuid TransportGUID;
 };
 
-class Group
+class TC_GAME_API Group
 {
     public:
         struct MemberSlot

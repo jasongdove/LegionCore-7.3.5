@@ -28,7 +28,6 @@
 #include "wmo.h"
 #include <CascLib.h>
 #include <boost/filesystem/directory.hpp>
-#include <boost/filesystem/exception.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <fstream>
 #include <iostream>
@@ -117,7 +116,7 @@ bool OpenCascStorage(int locale)
 
         return true;
     }
-    catch (boost::filesystem::filesystem_error& error)
+    catch (std::exception const& error)
     {
         printf("error opening casc storage : %s\n", error.what());
         return false;
@@ -135,7 +134,7 @@ uint32 GetInstalledLocalesMask()
 
         return CASC::GetInstalledLocalesMask(storage);
     }
-    catch (boost::filesystem::filesystem_error const& error)
+    catch (std::exception const& error)
     {
         printf("Unable to determine installed locales mask: %s\n", error.what());
     }

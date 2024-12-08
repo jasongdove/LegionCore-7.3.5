@@ -16,7 +16,7 @@ enum class Type : uint8
     SourceScript              ///< Used for script, that kind of vignette are never remove automaticaly
 };
 
-class Entity
+class TC_GAME_API Entity
 {
     friend class Manager;
 

@@ -55,7 +55,7 @@ enum ActionBarIndex
 
 static uint32 constexpr MAX_UNIT_ACTION_BAR_INDEX = ACTION_BAR_INDEX_END - ACTION_BAR_INDEX_START;
 
-struct CharmInfo
+struct TC_GAME_API CharmInfo
 {
     explicit CharmInfo(Unit* unit);
     ~CharmInfo();

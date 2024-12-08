@@ -1434,7 +1434,7 @@ struct BattlegroundAVScore final : public BattlegroundScore
         uint32 SecondaryObjectives;
 };
 
-class BattlegroundAlteracValley : public Battleground
+class TC_GAME_API BattlegroundAlteracValley : public Battleground
 {
     public:
         BattlegroundAlteracValley();

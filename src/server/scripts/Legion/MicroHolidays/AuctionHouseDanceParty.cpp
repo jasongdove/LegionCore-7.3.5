@@ -1,7 +1,7 @@
 /*
 */
  
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptPCH.h"
 
 enum eSay
 {

@@ -28,14 +28,14 @@
 #include "global_extensions/method_options.pb.h"  // IWYU pragma: export
 #include "global_extensions/service_options.pb.h"  // IWYU pragma: export
 #include "global_extensions/field_options.pb.h"  // IWYU pragma: export
-#include "Define.h"
+#include "Define.h" // for TC_PROTO_API
 // @@protoc_insertion_point(includes)
 
 namespace bgs {
 namespace protocol {
 
 // Internal implementation detail -- do not call these.
-void protobuf_AddDesc_rpc_5ftypes_2eproto();
+void TC_PROTO_API protobuf_AddDesc_rpc_5ftypes_2eproto();
 void protobuf_AssignDesc_rpc_5ftypes_2eproto();
 void protobuf_ShutdownFile_rpc_5ftypes_2eproto();
 
@@ -53,12 +53,12 @@ enum TraceInfo_Sampling {
   TraceInfo_Sampling_NO = 1,
   TraceInfo_Sampling_DEFER = 2
 };
-bool TraceInfo_Sampling_IsValid(int value);
+TC_PROTO_API bool TraceInfo_Sampling_IsValid(int value);
 const TraceInfo_Sampling TraceInfo_Sampling_Sampling_MIN = TraceInfo_Sampling_YES;
 const TraceInfo_Sampling TraceInfo_Sampling_Sampling_MAX = TraceInfo_Sampling_DEFER;
 const int TraceInfo_Sampling_Sampling_ARRAYSIZE = TraceInfo_Sampling_Sampling_MAX + 1;
 
-const ::google::protobuf::EnumDescriptor* TraceInfo_Sampling_descriptor();
+TC_PROTO_API const ::google::protobuf::EnumDescriptor* TraceInfo_Sampling_descriptor();
 inline const ::std::string& TraceInfo_Sampling_Name(TraceInfo_Sampling value) {
   return ::google::protobuf::internal::NameOfEnum(
     TraceInfo_Sampling_descriptor(), value);
@@ -70,7 +70,7 @@ inline bool TraceInfo_Sampling_Parse(
 }
 // ===================================================================
 
-class NO_RESPONSE : public ::google::protobuf::Message {
+class TC_PROTO_API NO_RESPONSE : public ::google::protobuf::Message {
  public:
   NO_RESPONSE();
   virtual ~NO_RESPONSE();
@@ -130,7 +130,7 @@ class NO_RESPONSE : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  friend void protobuf_AddDesc_rpc_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_rpc_5ftypes_2eproto();
   friend void protobuf_AssignDesc_rpc_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_rpc_5ftypes_2eproto();
 
@@ -139,7 +139,7 @@ class NO_RESPONSE : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Address : public ::google::protobuf::Message {
+class TC_PROTO_API Address : public ::google::protobuf::Message {
  public:
   Address();
   virtual ~Address();
@@ -224,7 +224,7 @@ class Address : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::std::string* address_;
   ::google::protobuf::uint32 port_;
-  friend void protobuf_AddDesc_rpc_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_rpc_5ftypes_2eproto();
   friend void protobuf_AssignDesc_rpc_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_rpc_5ftypes_2eproto();
 
@@ -233,7 +233,7 @@ class Address : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ProcessId : public ::google::protobuf::Message {
+class TC_PROTO_API ProcessId : public ::google::protobuf::Message {
  public:
   ProcessId();
   virtual ~ProcessId();
@@ -313,7 +313,7 @@ class ProcessId : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::uint32 label_;
   ::google::protobuf::uint32 epoch_;
-  friend void protobuf_AddDesc_rpc_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_rpc_5ftypes_2eproto();
   friend void protobuf_AssignDesc_rpc_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_rpc_5ftypes_2eproto();
 
@@ -322,7 +322,7 @@ class ProcessId : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ObjectAddress : public ::google::protobuf::Message {
+class TC_PROTO_API ObjectAddress : public ::google::protobuf::Message {
  public:
   ObjectAddress();
   virtual ~ObjectAddress();
@@ -404,7 +404,7 @@ class ObjectAddress : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::ProcessId* host_;
   ::google::protobuf::uint64 object_id_;
-  friend void protobuf_AddDesc_rpc_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_rpc_5ftypes_2eproto();
   friend void protobuf_AssignDesc_rpc_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_rpc_5ftypes_2eproto();
 
@@ -413,7 +413,7 @@ class ObjectAddress : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class NoData : public ::google::protobuf::Message {
+class TC_PROTO_API NoData : public ::google::protobuf::Message {
  public:
   NoData();
   virtual ~NoData();
@@ -473,7 +473,7 @@ class NoData : public ::google::protobuf::Message {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  friend void protobuf_AddDesc_rpc_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_rpc_5ftypes_2eproto();
   friend void protobuf_AssignDesc_rpc_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_rpc_5ftypes_2eproto();
 
@@ -482,7 +482,7 @@ class NoData : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ErrorInfo : public ::google::protobuf::Message {
+class TC_PROTO_API ErrorInfo : public ::google::protobuf::Message {
  public:
   ErrorInfo();
   virtual ~ErrorInfo();
@@ -584,7 +584,7 @@ class ErrorInfo : public ::google::protobuf::Message {
   ::google::protobuf::uint32 status_;
   ::google::protobuf::uint32 service_hash_;
   ::google::protobuf::uint32 method_id_;
-  friend void protobuf_AddDesc_rpc_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_rpc_5ftypes_2eproto();
   friend void protobuf_AssignDesc_rpc_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_rpc_5ftypes_2eproto();
 
@@ -593,7 +593,7 @@ class ErrorInfo : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class TraceInfo : public ::google::protobuf::Message {
+class TC_PROTO_API TraceInfo : public ::google::protobuf::Message {
  public:
   TraceInfo();
   virtual ~TraceInfo();
@@ -748,7 +748,7 @@ class TraceInfo : public ::google::protobuf::Message {
   ::std::string* span_id_;
   ::std::string* parent_span_id_;
   int sampling_;
-  friend void protobuf_AddDesc_rpc_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_rpc_5ftypes_2eproto();
   friend void protobuf_AssignDesc_rpc_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_rpc_5ftypes_2eproto();
 
@@ -757,7 +757,7 @@ class TraceInfo : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Header : public ::google::protobuf::Message {
+class TC_PROTO_API Header : public ::google::protobuf::Message {
  public:
   Header();
   virtual ~Header();
@@ -945,7 +945,7 @@ class Header : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::ProcessId > forward_targets_;
   ::bgs::protocol::TraceInfo* trace_info_;
   ::google::protobuf::uint32 service_hash_;
-  friend void protobuf_AddDesc_rpc_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_rpc_5ftypes_2eproto();
   friend void protobuf_AssignDesc_rpc_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_rpc_5ftypes_2eproto();
 

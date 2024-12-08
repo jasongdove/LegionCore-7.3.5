@@ -27,7 +27,7 @@
 
 class BigNumber;
 
-class SHA1Hash
+class TC_COMMON_API SHA1Hash
 {
     public:
         typedef std::integral_constant<uint32, SHA_DIGEST_LENGTH> DigestLength;
@@ -58,6 +58,6 @@ class SHA1Hash
 };
 
 /// Returns the SHA1 hash of the given content as hex string.
-std::string CalculateSHA1Hash(std::string const& content);
+TC_COMMON_API std::string CalculateSHA1Hash(std::string const& content);
 
 #endif

@@ -176,7 +176,7 @@ class BfGraveyard
         Battlefield* m_Bf;
 };
 
-class Battlefield : public ZoneScript
+class TC_GAME_API Battlefield : public ZoneScript
 {
     friend class BattlefieldMgr;
 

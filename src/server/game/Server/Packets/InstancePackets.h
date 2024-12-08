@@ -135,7 +135,7 @@ namespace WorldPackets
             uint32 Reason = 0;
         };
 
-        class BossKillCredit final : public ServerPacket
+        class TC_GAME_API BossKillCredit final : public ServerPacket
         {
         public:
             BossKillCredit(int32 ID) : ServerPacket(SMSG_BOSS_KILL_CREDIT, 4), encounterID(ID) { }
@@ -172,7 +172,7 @@ namespace WorldPackets
             bool Extended = false;
         };
 
-        class ChangePlayerDifficultyResult final : public ServerPacket
+        class TC_GAME_API ChangePlayerDifficultyResult final : public ServerPacket
         {
         public:
             ChangePlayerDifficultyResult() : ServerPacket(SMSG_CHANGE_PLAYER_DIFFICULTY_RESULT, 1 + 1 + 4 + 4 + 4 + 4 + 16) { }

@@ -50,7 +50,7 @@ namespace WorldPackets
 // update aura target map every 500 ms instead of every update - reduce amount of grid searcher calls
 #define UPDATE_TARGET_MAP_INTERVAL 500
 
-class AuraApplication
+class TC_GAME_API AuraApplication
 {
     friend void Unit::_ApplyAura(AuraApplication * aurApp, uint32 effMask);
     friend void Unit::_UnapplyAura(/*AuraApplicationMap*/std::multimap<uint32, AuraApplicationPtr>::iterator &i, AuraRemoveMode removeMode);
@@ -97,7 +97,7 @@ class AuraApplication
 
 typedef std::array<AuraEffect*, MAX_SPELL_EFFECTS> AuraEffectVector;
 
-class Aura
+class TC_GAME_API Aura
 {
     friend Aura* Unit::_TryStackingOrRefreshingExistingAura(SpellInfo const* newAura, uint32 effMask, Unit* caster, float *baseAmount, Item* castItem, ObjectGuid casterGUID);
     public:

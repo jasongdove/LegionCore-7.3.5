@@ -27,7 +27,7 @@ namespace Trinity
 {
 namespace Crypto
 {
-class RSA
+class TC_COMMON_API RSA
 {
 public:
     RSA(RSA const& rsa) = delete;

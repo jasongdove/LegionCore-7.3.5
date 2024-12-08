@@ -100,7 +100,7 @@ typedef std::vector<uint8> CreatureTextRepeatIds;
 typedef std::map<uint8, CreatureTextRepeatIds> CreatureTextRepeatGroup;
 typedef std::map<ObjectGuid::LowType, CreatureTextRepeatGroup> CreatureTextRepeatMap;//guid based
 
-class CreatureTextMgr
+class TC_GAME_API CreatureTextMgr
 {
     CreatureTextMgr() {};
     ~CreatureTextMgr() {};

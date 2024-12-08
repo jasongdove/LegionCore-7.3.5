@@ -248,7 +248,7 @@ typedef std::map<uint32 /*itemId*/, ConditionTypeContainer> ItemLootConditionCon
 
 typedef std::map<uint32, ConditionList> ConditionReferenceContainer;//only used for references
 
-class ConditionMgr
+class TC_GAME_API ConditionMgr
 {
         ConditionMgr();
         ~ConditionMgr();

@@ -173,7 +173,7 @@ class AuctionHouseObject
     AuctionEntryMap::const_iterator next;
 };
 
-class AuctionHouseMgr
+class TC_GAME_API AuctionHouseMgr
 {
         AuctionHouseMgr();
         ~AuctionHouseMgr();

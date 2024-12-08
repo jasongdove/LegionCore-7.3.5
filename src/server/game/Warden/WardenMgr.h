@@ -97,7 +97,7 @@ struct WardenCheck
     std::string Comment;
 };
 
-class WardenMgr
+class TC_GAME_API WardenMgr
 {
     private:
         WardenMgr();

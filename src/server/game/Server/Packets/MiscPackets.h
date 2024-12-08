@@ -517,7 +517,7 @@ namespace WorldPackets
             Personal = 0x2
         };
 
-        struct PhaseShiftDataPhase
+        struct TC_GAME_API PhaseShiftDataPhase
         {
             PhaseShiftDataPhase(uint16 id, EnumClassFlag<PhaseShiftFlags> flags);
             PhaseShiftDataPhase(uint16 id);
@@ -587,7 +587,7 @@ namespace WorldPackets
             ObjectGuid ObjectGUID;
         };
 
-        class PlaySound final : public ServerPacket
+        class TC_GAME_API PlaySound final : public ServerPacket
         {
         public:
             PlaySound(ObjectGuid sourceObjectGuid, int32 soundKitID) : ServerPacket(SMSG_PLAY_SOUND, 20), SourceObjectGuid(sourceObjectGuid), SoundKitID(soundKitID) { }
@@ -687,7 +687,7 @@ namespace WorldPackets
             uint16 AnimKitID = 0;
         };
 
-        class SetPlayHoverAnim final : public ServerPacket
+        class TC_GAME_API SetPlayHoverAnim final : public ServerPacket
         {
         public:
             SetPlayHoverAnim() : ServerPacket(SMSG_SET_PLAY_HOVER_ANIM, 16 + 1) { }
@@ -800,7 +800,7 @@ namespace WorldPackets
             std::vector<TaskProgress> Progress;
         };
 
-        class StreamingMovie final : public ServerPacket
+        class TC_GAME_API StreamingMovie final : public ServerPacket
         {
         public:
             StreamingMovie() : ServerPacket(SMSG_STREAMING_MOVIES, 4) { }
@@ -988,7 +988,7 @@ namespace WorldPackets
             std::vector<CUFProfile const*> CUFProfiles;
         };
         
-        class OverrideLight final : public ServerPacket
+        class TC_GAME_API OverrideLight final : public ServerPacket
         {
         public:
             OverrideLight() : ServerPacket(SMSG_OVERRIDE_LIGHT, 4 + 4 + 4) { }

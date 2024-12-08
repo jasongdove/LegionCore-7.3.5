@@ -22,6 +22,7 @@ add_subdirectory(readline)
 add_subdirectory(gsoap)
 add_subdirectory(rapidjson)
 add_subdirectory(protobuf)
+add_subdirectory(efsw)
 
 if(TOOLS)
   add_subdirectory(bzip2)

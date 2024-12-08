@@ -99,7 +99,7 @@ private:
     tFlags _flags;
 };
 
-class Tokenizer
+class TC_COMMON_API Tokenizer
 {
 public:
     typedef std::vector<char const*> StorageType;
@@ -125,16 +125,16 @@ public:
     StorageType m_storage;
 };
 
-void stripLineInvisibleChars(std::string &str);
+TC_COMMON_API void stripLineInvisibleChars(std::string &str);
 
-struct tm* localtime_r(const time_t* time, struct tm *result);
+TC_COMMON_API struct tm* localtime_r(const time_t* time, struct tm *result);
 
-std::string secsToTimeString(uint64 timeInSecs, bool shortText = false, bool hoursOnly = false);
-uint32 TimeStringToSecs(const std::string& timestring);
-std::string TimeToTimestampStr(time_t t);
+TC_COMMON_API std::string secsToTimeString(uint64 timeInSecs, bool shortText = false, bool hoursOnly = false);
+TC_COMMON_API uint32 TimeStringToSecs(const std::string& timestring);
+TC_COMMON_API std::string TimeToTimestampStr(time_t t);
 
-void ApplyPercentModFloatVar(float& var, float val, bool apply);
-int32 RoundingFloatValue(float val);
+TC_COMMON_API void ApplyPercentModFloatVar(float& var, float val, bool apply);
+TC_COMMON_API int32 RoundingFloatValue(float val);
 
 // Percentage calculation
 template <class T, class U>
@@ -161,51 +161,62 @@ T RoundToInterval(T& num, T floor, T ceil)
     return num = std::min(std::max(num, floor), ceil);
 }
 
-bool Utf8toWStr(const std::string& utf8str, std::wstring& wstr);
-bool Utf8toWStr(char const* utf8str, size_t csize, wchar_t* wstr, size_t& wsize);
-bool Utf8toWStr(const std::string& utf8str, wchar_t* wstr, size_t& wsize);
-bool WStrToUtf8(const std::wstring& wstr, std::string& utf8str);
-bool WStrToUtf8(wchar_t* wstr, size_t size, std::string& utf8str);
-size_t utf8length(std::string& utf8str);
-void utf8truncate(std::string& utf8str, size_t len);
+TC_COMMON_API bool Utf8toWStr(const std::string& utf8str, std::wstring& wstr);
+TC_COMMON_API bool Utf8toWStr(char const* utf8str, size_t csize, wchar_t* wstr, size_t& wsize);
+TC_COMMON_API bool Utf8toWStr(const std::string& utf8str, wchar_t* wstr, size_t& wsize);
+TC_COMMON_API bool WStrToUtf8(const std::wstring& wstr, std::string& utf8str);
+TC_COMMON_API bool WStrToUtf8(wchar_t* wstr, size_t size, std::string& utf8str);
+TC_COMMON_API size_t utf8length(std::string& utf8str);
+TC_COMMON_API void utf8truncate(std::string& utf8str, size_t len);
 
-bool isBasicLatinCharacter(wchar_t wchar);
-bool isExtendedLatinCharacter(wchar_t wchar);
-bool isCyrillicCharacter(wchar_t wchar);
-bool isEastAsianCharacter(wchar_t wchar);
-bool isNumeric(wchar_t wchar);
-bool isNumeric(char c);
-bool isNumeric(char const* str);
-bool isNumericOrSpace(wchar_t wchar);
-bool isBasicLatinString(const std::wstring& wstr, bool numericOrSpace);
-bool isExtendedLatinString(const std::wstring& wstr, bool numericOrSpace);
-bool isCyrillicString(const std::wstring& wstr, bool numericOrSpace);
-bool isEastAsianString(const std::wstring& wstr, bool numericOrSpace);
-wchar_t wcharToUpper(wchar_t wchar);
-wchar_t wcharToUpperOnlyLatin(wchar_t wchar);
-wchar_t wcharToLower(wchar_t wchar);
-void wstrToUpper(std::wstring& str);
-void wstrToLower(std::wstring& str);
+TC_COMMON_API bool isBasicLatinCharacter(wchar_t wchar);
+TC_COMMON_API bool isExtendedLatinCharacter(wchar_t wchar);
+TC_COMMON_API bool isCyrillicCharacter(wchar_t wchar);
+TC_COMMON_API bool isEastAsianCharacter(wchar_t wchar);
+TC_COMMON_API bool isNumeric(wchar_t wchar);
+TC_COMMON_API bool isNumeric(char c);
+TC_COMMON_API bool isNumeric(char const* str);
+TC_COMMON_API bool isNumericOrSpace(wchar_t wchar);
+TC_COMMON_API bool isBasicLatinString(const std::wstring& wstr, bool numericOrSpace);
+TC_COMMON_API bool isExtendedLatinString(const std::wstring& wstr, bool numericOrSpace);
+TC_COMMON_API bool isCyrillicString(const std::wstring& wstr, bool numericOrSpace);
+TC_COMMON_API bool isEastAsianString(const std::wstring& wstr, bool numericOrSpace);
+TC_COMMON_API wchar_t wcharToUpper(wchar_t wchar);
+TC_COMMON_API wchar_t wcharToUpperOnlyLatin(wchar_t wchar);
+TC_COMMON_API wchar_t wcharToLower(wchar_t wchar);
 
-std::wstring GetMainPartOfName(std::wstring wname, uint32 declension);
+struct CharToUpper
+{
+        char operator()(char c) const { return std::toupper(static_cast<unsigned char>(c)); }
+} inline constexpr charToUpper;
 
-bool utf8ToConsole(const std::string& utf8str, std::string& conStr);
-bool consoleToUtf8(const std::string& conStr, std::string& utf8str);
-bool Utf8FitTo(const std::string& str, const std::wstring& search);
-void utf8printf(FILE* out, const char *str, ...);
-void vutf8printf(FILE* out, const char *str, va_list* ap);
-bool Utf8ToUpperOnlyLatin(std::string& utf8String);
+struct CharToLower
+{
+        char operator()(char c) const { return std::tolower(static_cast<unsigned char>(c)); }
+} inline constexpr charToLower;
 
-bool IsIPAddress(char const* ipaddress);
+TC_COMMON_API void wstrToUpper(std::wstring& str);
+TC_COMMON_API void wstrToLower(std::wstring& str);
+TC_COMMON_API void strToUpper(std::string& str);
+TC_COMMON_API void strToLower(std::string& str);
 
-uint32 CreatePIDFile(std::string const& filename);
-uint32 GetPID();
+TC_COMMON_API std::wstring GetMainPartOfName(std::wstring wname, uint32 declension);
 
-std::string ByteArrayToHexStr(uint8 const* bytes, uint32 length, bool reverse = false);
-void HexStrToByteArray(std::string const& str, uint8* out, bool reverse = false);
+TC_COMMON_API bool utf8ToConsole(const std::string& utf8str, std::string& conStr);
+TC_COMMON_API bool consoleToUtf8(const std::string& conStr, std::string& utf8str);
+TC_COMMON_API bool Utf8FitTo(const std::string& str, const std::wstring& search);
+TC_COMMON_API void utf8printf(FILE* out, const char *str, ...);
+TC_COMMON_API void vutf8printf(FILE* out, const char *str, va_list* ap);
+TC_COMMON_API bool Utf8ToUpperOnlyLatin(std::string& utf8String);
 
-extern std::atomic<bool> m_stopEvent;
-extern bool m_worldCrashChecker;
+TC_COMMON_API bool IsIPAddress(char const* ipaddress);
+
+TC_COMMON_API uint32 CreatePIDFile(std::string const& filename);
+TC_COMMON_API uint32 GetPID();
+
+TC_COMMON_API std::string ByteArrayToHexStr(uint8 const* bytes, uint32 length, bool reverse = false);
+TC_COMMON_API void HexStrToByteArray(std::string const& str, uint8* out, bool reverse = false);
+
 uint64 GetThreadID();
 
 #endif
@@ -262,7 +273,7 @@ public:
     }
 };
 
-class flag128
+class TC_COMMON_API flag128
 {
     uint32 part[4];
 public:

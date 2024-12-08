@@ -34,9 +34,6 @@
 #include <arpa/inet.h>
 #endif
 
-bool m_worldCrashChecker;
-std::atomic<bool> m_stopEvent;
-
 uint64 GetThreadID()
 {
     std::stringstream ss;
@@ -467,15 +464,10 @@ wchar_t wcharToLower(wchar_t wchar)
     return wchar;
 }
 
-void wstrToUpper(std::wstring& str)
-{
-    std::transform(str.begin(), str.end(), str.begin(), wcharToUpper);
-}
-
-void wstrToLower(std::wstring& str)
-{
-    std::transform(str.begin(), str.end(), str.begin(), wcharToLower);
-}
+void wstrToUpper(std::wstring& str) { std::transform(std::begin(str), std::end(str), std::begin(str), wcharToUpper); }
+void wstrToLower(std::wstring& str) { std::transform(std::begin(str), std::end(str), std::begin(str), wcharToLower); }
+void strToUpper(std::string& str) { std::transform(std::begin(str), std::end(str), std::begin(str), charToUpper); }
+void strToLower(std::string& str) { std::transform(std::begin(str), std::end(str), std::begin(str), charToLower); }
 
 bool Utf8toWStr(char const* utf8str, size_t csize, wchar_t* wstr, size_t& wsize)
 {

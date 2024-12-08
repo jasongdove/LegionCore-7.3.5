@@ -478,7 +478,7 @@ typedef std::vector<uint32> DungeonEncounterToCreatureMap;
 
 class PlayerDumpReader;
 
-struct ItemSpecStats
+struct TC_GAME_API ItemSpecStats
 {
     uint32 ItemType;
     uint32 ItemSpecStatTypes[MAX_ITEM_PROTO_STATS];
@@ -489,7 +489,7 @@ struct ItemSpecStats
     void AddModStat(int32 itemStatType);
 };
 
-class ObjectMgr
+class TC_GAME_API ObjectMgr
 {
     friend class PlayerDumpReader;
 
@@ -853,7 +853,7 @@ class ObjectMgr
         bool IsVendorItemValid(uint32 vendor_entry, uint32 id, int32 maxcount, uint32 ptime, uint32 ExtendedCost, uint8 type, Player* player = nullptr, std::set<uint32>* skip_vendors = nullptr, uint32 ORnpcflag = 0) const;
 
         void LoadScriptNames();
-        ScriptNameContainer& GetScriptNames();
+        ScriptNameContainer const& GetAllScriptNames() const;
         std::string const& GetScriptName(uint32 id) const;
         uint32 GetScriptId(const char *name);
 

@@ -30,7 +30,7 @@ struct BattlePayDisplayInfoLocale
     std::vector<std::string> Name4;
 };
 
-class BattlePayDataStoreMgr
+class TC_GAME_API BattlePayDataStoreMgr
 {
     BattlePayDataStoreMgr();
     ~BattlePayDataStoreMgr();

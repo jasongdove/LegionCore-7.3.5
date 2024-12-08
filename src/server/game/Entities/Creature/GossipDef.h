@@ -143,7 +143,7 @@ struct QuestMenuItem
 
 typedef std::vector<QuestMenuItem> QuestMenuItemList;
 
-class GossipMenu
+class TC_GAME_API GossipMenu
 {
     GossipMenuItemContainer _menuItems;
     GossipMenuItemDataContainer _menuItemData;
@@ -178,7 +178,7 @@ public:
     static uint64 GetRequiredNpcFlagForOption(GossipOptionNpc optionNpc);
 };
 
-class QuestMenu
+class TC_GAME_API QuestMenu
 {
     QuestMenuItemList _questMenuItems;
 public:
@@ -194,7 +194,7 @@ public:
     QuestMenuItem const& GetItem(uint16 index) const;
 };
 
-class PlayerMenu
+class TC_GAME_API PlayerMenu
 {
     GossipMenu _gossipMenu;
     QuestMenu  _questMenu;

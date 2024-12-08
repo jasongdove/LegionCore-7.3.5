@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -16,19 +16,22 @@
  */
 
 #include "WorldserverService.h"
+#include "BattlenetRpcErrorCodes.h"
+#include "Config.h"
+#include "IpAddress.h"
 #include "Log.h"
+#include "ProtobufJSON.h"
+#include "Realm.h"
 #include "RealmList.h"
 #include "RealmList.pb.h"
-#include "BattlenetRpcErrorCodes.h"
-#include "JSON/ProtobufJSON.h"
+#include "World.h"
 #include <zlib.h>
-#include "Config.h"
 
 Battlenet::GameUtilitiesService::GameUtilitiesService(WorldSession* session) : BaseService(session)
 {
 }
 
-uint32 Battlenet::GameUtilitiesService::HandleProcessClientRequest(game_utilities::v1::ClientRequest const* request, game_utilities::v1::ClientResponse* response)
+uint32 Battlenet::GameUtilitiesService::HandleProcessClientRequest(game_utilities::v1::ClientRequest const* request, game_utilities::v1::ClientResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& /*continuation*/)
 {
     Attribute const* command = nullptr;
     std::unordered_map<std::string, Variant const*> params;
@@ -43,17 +46,15 @@ uint32 Battlenet::GameUtilitiesService::HandleProcessClientRequest(game_utilitie
 
     if (!command)
     {
-        TC_LOG_ERROR("server.bnetserver", "%s sent ClientRequest with no command.", GetCallerInfo().c_str());
+        TC_LOG_ERROR("session.rpc", "%s sent ClientRequest with no command.", GetCallerInfo().c_str());
         return ERROR_RPC_MALFORMED_REQUEST;
     }
 
     if (command->name() == "Command_RealmListRequest_v1_b9")
         return HandleRealmListRequest(params, response);
-    
-    if (command->name() == "Command_RealmJoinRequest_v1_b9")
+    else if (command->name() == "Command_RealmJoinRequest_v1_b9")
         return HandleRealmJoinRequest(params, response);
 
-    TC_LOG_ERROR("server.bnetserver", "%s sent ClientRequest with ERROR_RPC_NOT_IMPLEMENTED", GetCallerInfo().c_str());
     return ERROR_RPC_NOT_IMPLEMENTED;
 }
 
@@ -107,7 +108,7 @@ uint32 Battlenet::GameUtilitiesService::HandleRealmJoinRequest(std::unordered_ma
     return ERROR_WOW_SERVICES_INVALID_JOIN_TICKET;
 }
 
-uint32 Battlenet::GameUtilitiesService::HandleGetAllValuesForAttribute(game_utilities::v1::GetAllValuesForAttributeRequest const* request, game_utilities::v1::GetAllValuesForAttributeResponse* response)
+uint32 Battlenet::GameUtilitiesService::HandleGetAllValuesForAttribute(game_utilities::v1::GetAllValuesForAttributeRequest const* request, game_utilities::v1::GetAllValuesForAttributeResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& /*continuation*/)
 {
     if (request->attribute_key() == "Command_RealmListRequest_v1_b9")
     {

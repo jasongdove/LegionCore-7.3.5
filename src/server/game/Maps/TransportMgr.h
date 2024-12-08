@@ -100,7 +100,7 @@ struct TransportAnimation
 
 typedef std::map<uint32, TransportAnimation> TransportAnimationContainer;
 
-class TransportMgr
+class TC_GAME_API TransportMgr
 {
         friend uint32 DB2Manager::LoadStores(std::string const&, uint32);
 

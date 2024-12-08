@@ -39,7 +39,7 @@ namespace challenge {
 namespace v1 {
 
 // Internal implementation detail -- do not call these.
-void protobuf_AddDesc_challenge_5fservice_2eproto();
+void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
 void protobuf_AssignDesc_challenge_5fservice_2eproto();
 void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -58,7 +58,7 @@ class ChallengeExternalResult;
 
 // ===================================================================
 
-class Challenge : public ::google::protobuf::Message {
+class TC_PROTO_API Challenge : public ::google::protobuf::Message {
  public:
   Challenge();
   virtual ~Challenge();
@@ -168,7 +168,7 @@ class Challenge : public ::google::protobuf::Message {
   ::google::protobuf::uint32 type_;
   ::google::protobuf::uint32 retries_;
   ::std::string* answer_;
-  friend void protobuf_AddDesc_challenge_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
   friend void protobuf_AssignDesc_challenge_5fservice_2eproto();
   friend void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -177,7 +177,7 @@ class Challenge : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ChallengePickedRequest : public ::google::protobuf::Message {
+class TC_PROTO_API ChallengePickedRequest : public ::google::protobuf::Message {
  public:
   ChallengePickedRequest();
   virtual ~ChallengePickedRequest();
@@ -267,7 +267,7 @@ class ChallengePickedRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 challenge_;
   ::google::protobuf::uint32 id_;
   bool new_challenge_protocol_;
-  friend void protobuf_AddDesc_challenge_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
   friend void protobuf_AssignDesc_challenge_5fservice_2eproto();
   friend void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -276,7 +276,7 @@ class ChallengePickedRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ChallengePickedResponse : public ::google::protobuf::Message {
+class TC_PROTO_API ChallengePickedResponse : public ::google::protobuf::Message {
  public:
   ChallengePickedResponse();
   virtual ~ChallengePickedResponse();
@@ -351,7 +351,7 @@ class ChallengePickedResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::std::string* data_;
-  friend void protobuf_AddDesc_challenge_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
   friend void protobuf_AssignDesc_challenge_5fservice_2eproto();
   friend void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -360,7 +360,7 @@ class ChallengePickedResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ChallengeAnsweredRequest : public ::google::protobuf::Message {
+class TC_PROTO_API ChallengeAnsweredRequest : public ::google::protobuf::Message {
  public:
   ChallengeAnsweredRequest();
   virtual ~ChallengeAnsweredRequest();
@@ -460,7 +460,7 @@ class ChallengeAnsweredRequest : public ::google::protobuf::Message {
   ::std::string* answer_;
   ::std::string* data_;
   ::google::protobuf::uint32 id_;
-  friend void protobuf_AddDesc_challenge_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
   friend void protobuf_AssignDesc_challenge_5fservice_2eproto();
   friend void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -469,7 +469,7 @@ class ChallengeAnsweredRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ChallengeAnsweredResponse : public ::google::protobuf::Message {
+class TC_PROTO_API ChallengeAnsweredResponse : public ::google::protobuf::Message {
  public:
   ChallengeAnsweredResponse();
   virtual ~ChallengeAnsweredResponse();
@@ -564,7 +564,7 @@ class ChallengeAnsweredResponse : public ::google::protobuf::Message {
   ::std::string* data_;
   bool do_retry_;
   bool record_not_found_;
-  friend void protobuf_AddDesc_challenge_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
   friend void protobuf_AssignDesc_challenge_5fservice_2eproto();
   friend void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -573,7 +573,7 @@ class ChallengeAnsweredResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ChallengeCancelledRequest : public ::google::protobuf::Message {
+class TC_PROTO_API ChallengeCancelledRequest : public ::google::protobuf::Message {
  public:
   ChallengeCancelledRequest();
   virtual ~ChallengeCancelledRequest();
@@ -643,7 +643,7 @@ class ChallengeCancelledRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::uint32 id_;
-  friend void protobuf_AddDesc_challenge_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
   friend void protobuf_AssignDesc_challenge_5fservice_2eproto();
   friend void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -652,7 +652,7 @@ class ChallengeCancelledRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class SendChallengeToUserRequest : public ::google::protobuf::Message {
+class TC_PROTO_API SendChallengeToUserRequest : public ::google::protobuf::Message {
  public:
   SendChallengeToUserRequest();
   virtual ~SendChallengeToUserRequest();
@@ -806,7 +806,7 @@ class SendChallengeToUserRequest : public ::google::protobuf::Message {
   ::bgs::protocol::ProcessId* host_;
   ::bgs::protocol::EntityId* account_id_;
   ::google::protobuf::uint32 context_;
-  friend void protobuf_AddDesc_challenge_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
   friend void protobuf_AssignDesc_challenge_5fservice_2eproto();
   friend void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -815,7 +815,7 @@ class SendChallengeToUserRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class SendChallengeToUserResponse : public ::google::protobuf::Message {
+class TC_PROTO_API SendChallengeToUserResponse : public ::google::protobuf::Message {
  public:
   SendChallengeToUserResponse();
   virtual ~SendChallengeToUserResponse();
@@ -885,7 +885,7 @@ class SendChallengeToUserResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::uint32 id_;
-  friend void protobuf_AddDesc_challenge_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
   friend void protobuf_AssignDesc_challenge_5fservice_2eproto();
   friend void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -894,7 +894,7 @@ class SendChallengeToUserResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ChallengeUserRequest : public ::google::protobuf::Message {
+class TC_PROTO_API ChallengeUserRequest : public ::google::protobuf::Message {
  public:
   ChallengeUserRequest();
   virtual ~ChallengeUserRequest();
@@ -1022,7 +1022,7 @@ class ChallengeUserRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint64 deadline_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::Attribute > attributes_;
   ::bgs::protocol::EntityId* game_account_id_;
-  friend void protobuf_AddDesc_challenge_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
   friend void protobuf_AssignDesc_challenge_5fservice_2eproto();
   friend void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -1031,7 +1031,7 @@ class ChallengeUserRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ChallengeResultRequest : public ::google::protobuf::Message {
+class TC_PROTO_API ChallengeResultRequest : public ::google::protobuf::Message {
  public:
   ChallengeResultRequest();
   virtual ~ChallengeResultRequest();
@@ -1136,7 +1136,7 @@ class ChallengeResultRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 type_;
   ::std::string* answer_;
   ::google::protobuf::uint32 error_id_;
-  friend void protobuf_AddDesc_challenge_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
   friend void protobuf_AssignDesc_challenge_5fservice_2eproto();
   friend void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -1145,7 +1145,7 @@ class ChallengeResultRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ChallengeExternalRequest : public ::google::protobuf::Message {
+class TC_PROTO_API ChallengeExternalRequest : public ::google::protobuf::Message {
  public:
   ChallengeExternalRequest();
   virtual ~ChallengeExternalRequest();
@@ -1250,7 +1250,7 @@ class ChallengeExternalRequest : public ::google::protobuf::Message {
   ::std::string* request_token_;
   ::std::string* payload_type_;
   ::std::string* payload_;
-  friend void protobuf_AddDesc_challenge_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
   friend void protobuf_AssignDesc_challenge_5fservice_2eproto();
   friend void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -1259,7 +1259,7 @@ class ChallengeExternalRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ChallengeExternalResult : public ::google::protobuf::Message {
+class TC_PROTO_API ChallengeExternalResult : public ::google::protobuf::Message {
  public:
   ChallengeExternalResult();
   virtual ~ChallengeExternalResult();
@@ -1344,7 +1344,7 @@ class ChallengeExternalResult : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::std::string* request_token_;
   bool passed_;
-  friend void protobuf_AddDesc_challenge_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_challenge_5fservice_2eproto();
   friend void protobuf_AssignDesc_challenge_5fservice_2eproto();
   friend void protobuf_ShutdownFile_challenge_5fservice_2eproto();
 
@@ -1353,7 +1353,7 @@ class ChallengeExternalResult : public ::google::protobuf::Message {
 };
 // ===================================================================
 
-class ChallengeService : public ServiceBase
+class TC_PROTO_API ChallengeService : public ServiceBase
 {
  public:
 
@@ -1376,10 +1376,10 @@ class ChallengeService : public ServiceBase
   void CallServerMethod(uint32 token, uint32 methodId, MessageBuffer buffer) override final;
 
  protected:
-  virtual uint32 HandleChallengePicked(::bgs::protocol::challenge::v1::ChallengePickedRequest const* request, ::bgs::protocol::challenge::v1::ChallengePickedResponse* response);
-  virtual uint32 HandleChallengeAnswered(::bgs::protocol::challenge::v1::ChallengeAnsweredRequest const* request, ::bgs::protocol::challenge::v1::ChallengeAnsweredResponse* response);
-  virtual uint32 HandleChallengeCancelled(::bgs::protocol::challenge::v1::ChallengeCancelledRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleSendChallengeToUser(::bgs::protocol::challenge::v1::SendChallengeToUserRequest const* request, ::bgs::protocol::challenge::v1::SendChallengeToUserResponse* response);
+  virtual uint32 HandleChallengePicked(::bgs::protocol::challenge::v1::ChallengePickedRequest const* request, ::bgs::protocol::challenge::v1::ChallengePickedResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleChallengeAnswered(::bgs::protocol::challenge::v1::ChallengeAnsweredRequest const* request, ::bgs::protocol::challenge::v1::ChallengeAnsweredResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleChallengeCancelled(::bgs::protocol::challenge::v1::ChallengeCancelledRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleSendChallengeToUser(::bgs::protocol::challenge::v1::SendChallengeToUserRequest const* request, ::bgs::protocol::challenge::v1::SendChallengeToUserResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
 
  private:
   uint32 service_hash_;
@@ -1389,7 +1389,7 @@ class ChallengeService : public ServiceBase
 
 // -------------------------------------------------------------------
 
-class ChallengeListener : public ServiceBase
+class TC_PROTO_API ChallengeListener : public ServiceBase
 {
  public:
 

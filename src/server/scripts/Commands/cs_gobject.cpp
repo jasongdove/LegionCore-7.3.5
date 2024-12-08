@@ -734,7 +734,7 @@ public:
 
         handler->SendGlobalGMSysMessage("Portal Binded");
 
-        if (sScriptMgr->IsScriptScheduled())
+        if (sMapMgr->IsScriptScheduled())
         {
             handler->SendSysMessage("DB scripts used currently, please attempt reload later.");
             handler->SetSentErrorMessage(true);

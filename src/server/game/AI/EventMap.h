@@ -97,7 +97,7 @@ enum c_actions
     ACTION_15
 };
 
-class TC_COMMON_API EventMap
+class TC_GAME_API EventMap
 {
     /**
     * Internal storage type.

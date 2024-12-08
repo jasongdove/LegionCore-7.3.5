@@ -59,7 +59,7 @@ struct TempSummonData
     TempSummonType sumType; ///< Summon type, see TempSummonType for available types
 };
 
-class TempSummon : public Creature
+class TC_GAME_API TempSummon : public Creature
 {
     public:
         explicit TempSummon(SummonPropertiesEntry const* properties, Unit* owner, bool isWorldObject);
@@ -134,7 +134,7 @@ class Minion : public TempSummon
         bool IsGuardianPet() const;
 };
 
-class Guardian : public Minion
+class TC_GAME_API Guardian : public Minion
 {
     public:
         Guardian(SummonPropertiesEntry const* properties, Unit* owner, bool isWorldObject);

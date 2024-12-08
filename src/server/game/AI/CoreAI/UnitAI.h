@@ -48,7 +48,7 @@ enum SelectAggroTarget
 };
 
 // default predicate function to select target based on distance, player and/or aura criteria
-struct DefaultTargetSelector
+struct TC_GAME_API DefaultTargetSelector
 {
     const Unit* me;
     float m_dist;
@@ -66,7 +66,7 @@ struct DefaultTargetSelector
 
 // Target selector for spell casts checking range, auras and attributes
 // TODO: Add more checks from Spell::CheckCast
-struct SpellTargetSelector
+struct TC_GAME_API SpellTargetSelector
 {
     public:
         SpellTargetSelector(Unit* caster, uint32 spellId);
@@ -80,7 +80,7 @@ struct SpellTargetSelector
 // Very simple target selector, will just skip main target
 // NOTE: When passing to UnitAI::SelectTarget remember to use 0 as position for random selection
 //       because tank will not be in the temporary list
-struct NonTankTargetSelector
+struct TC_GAME_API NonTankTargetSelector
 {
     public:
         NonTankTargetSelector(Creature* source, bool playerOnly = true) : _source(source), _playerOnly(playerOnly) { }
@@ -91,7 +91,7 @@ struct NonTankTargetSelector
         bool _playerOnly;
 };
 
-struct TankTargetSelector
+struct TC_GAME_API TankTargetSelector
 {
     public:
         TankTargetSelector(Creature* source, bool playerOnly = true) : _source(source), _playerOnly(playerOnly) { }
@@ -102,7 +102,7 @@ struct TankTargetSelector
         bool _playerOnly;
 };
 
-class UnitAI
+class TC_GAME_API UnitAI
 {
     protected:
         Unit* const me;
@@ -266,7 +266,7 @@ class UnitAI
         void KillAllDelayedEvents();
 };
 
-class PlayerAI : public UnitAI
+class TC_GAME_API PlayerAI : public UnitAI
 {
     protected:
         Player* const me;
@@ -278,7 +278,7 @@ class PlayerAI : public UnitAI
         bool UpdateVictim();
 };
 
-class SimpleCharmedAI : public PlayerAI
+class TC_GAME_API SimpleCharmedAI : public PlayerAI
 {
     public:
         void UpdateAI(uint32 diff);

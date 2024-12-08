@@ -300,7 +300,7 @@ struct AreaTriggerInfo
     bool AllowBoxCheck;
 };
 
-class AreaTrigger : public WorldObject, public GridObject<AreaTrigger>, public MapObject
+class TC_GAME_API AreaTrigger : public WorldObject, public GridObject<AreaTrigger>, public MapObject
 {
         struct ActionInfo
         {

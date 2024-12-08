@@ -560,10 +560,10 @@ public:
     }
 };
 
-#define GLOBAL_GUID_CREATE(highguid) template<> ObjectGuid ObjectGuid::Create<highguid>(LowType counter) { return GuidFormat::Global(highguid, counter); }
-#define REALM_GUID_CREATE(highguid) template<> ObjectGuid ObjectGuid::Create<highguid>(LowType counter) { return GuidFormat::RealmSpecific(highguid, counter); }
-#define MAP_GUID_CREATE(highguid) template<> ObjectGuid ObjectGuid::Create<highguid>(uint16 mapId, uint32 entry, LowType counter, uint8 subType) { return GuidFormat::MapSpecific(highguid, subType, mapId, 0, entry, counter); }
-#define GLOBAL_GUID_WITH_SUBTYPE(highguid) template<> ObjectGuid ObjectGuid::Create<highguid>(LowType counter, uint8 subType) { return GuidFormat::MapSpecific(highguid, subType, 0, 0, 0, counter); }
+#define GLOBAL_GUID_CREATE(highguid) template<> TC_GAME_API ObjectGuid ObjectGuid::Create<highguid>(LowType counter) { return GuidFormat::Global(highguid, counter); }
+#define REALM_GUID_CREATE(highguid) template<> TC_GAME_API ObjectGuid ObjectGuid::Create<highguid>(LowType counter) { return GuidFormat::RealmSpecific(highguid, counter); }
+#define MAP_GUID_CREATE(highguid) template<> TC_GAME_API ObjectGuid ObjectGuid::Create<highguid>(uint16 mapId, uint32 entry, LowType counter, uint8 subType) { return GuidFormat::MapSpecific(highguid, subType, mapId, 0, entry, counter); }
+#define GLOBAL_GUID_WITH_SUBTYPE(highguid) template<> TC_GAME_API ObjectGuid ObjectGuid::Create<highguid>(LowType counter, uint8 subType) { return GuidFormat::MapSpecific(highguid, subType, 0, 0, 0, counter); }
 
 GLOBAL_GUID_WITH_SUBTYPE(HighGuid::Party)
 GLOBAL_GUID_CREATE(HighGuid::Uniq)
@@ -627,23 +627,23 @@ ObjectGuid ObjectGuid::Create(LowType /*counter*/, uint8 /*subType = 0*/)
     static_assert(type == HighGuid::Count, "This guid type cannot be constructed using Create(LowType counter, uint8 subType).");
 }
 
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Player>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Creature>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Pet>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Vehicle>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Item>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::GameObject>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::DynamicObject>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Corpse>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::LootObject>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::AreaTrigger>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Transport>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::BattlePet>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::PetBattle>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Conversation>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Cast>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::EventObject>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Scenario>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Vignette>::Generate();
-template ObjectGuid::LowType ObjectGuidGenerator<HighGuid::LFGList>::Generate();
-template uint32 ObjectGuidGenerator<HighGuid::LFGObject>::GenerateLow();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Player>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Creature>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Pet>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Vehicle>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Item>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::GameObject>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::DynamicObject>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Corpse>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::LootObject>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::AreaTrigger>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Transport>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::BattlePet>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::PetBattle>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Conversation>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Cast>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::EventObject>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Scenario>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::Vignette>::Generate();
+template TC_GAME_API ObjectGuid::LowType ObjectGuidGenerator<HighGuid::LFGList>::Generate();
+template TC_GAME_API uint32 ObjectGuidGenerator<HighGuid::LFGObject>::GenerateLow();

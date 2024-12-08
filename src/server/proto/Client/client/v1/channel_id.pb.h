@@ -34,7 +34,7 @@ namespace channel {
 namespace v1 {
 
 // Internal implementation detail -- do not call these.
-void protobuf_AddDesc_client_2fv1_2fchannel_5fid_2eproto();
+void TC_PROTO_API protobuf_AddDesc_client_2fv1_2fchannel_5fid_2eproto();
 void protobuf_AssignDesc_client_2fv1_2fchannel_5fid_2eproto();
 void protobuf_ShutdownFile_client_2fv1_2fchannel_5fid_2eproto();
 
@@ -42,7 +42,7 @@ class ChannelId;
 
 // ===================================================================
 
-class ChannelId : public ::google::protobuf::Message {
+class TC_PROTO_API ChannelId : public ::google::protobuf::Message {
  public:
   ChannelId();
   virtual ~ChannelId();
@@ -134,7 +134,7 @@ class ChannelId : public ::google::protobuf::Message {
   ::bgs::protocol::ProcessId* host_;
   ::google::protobuf::uint32 type_;
   ::google::protobuf::uint32 id_;
-  friend void protobuf_AddDesc_client_2fv1_2fchannel_5fid_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_client_2fv1_2fchannel_5fid_2eproto();
   friend void protobuf_AssignDesc_client_2fv1_2fchannel_5fid_2eproto();
   friend void protobuf_ShutdownFile_client_2fv1_2fchannel_5fid_2eproto();
 

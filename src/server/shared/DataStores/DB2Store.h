@@ -27,7 +27,7 @@ class ByteBuffer;
 struct DB2LoadInfo;
 
 /// Interface class for common access
-class DB2StorageBase
+class TC_SHARED_API DB2StorageBase
 {
 public:
     DB2StorageBase(char const* fileName, DB2LoadInfo const* loadInfo);

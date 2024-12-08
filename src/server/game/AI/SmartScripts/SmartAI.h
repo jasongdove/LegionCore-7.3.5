@@ -38,7 +38,7 @@ enum SmartEscortState
 static float constexpr SMART_ESCORT_MAX_PLAYER_DIST = 50;
 static float constexpr SMART_MAX_AID_DIST = SMART_ESCORT_MAX_PLAYER_DIST / 2.f;
 
-class SmartAI : public CreatureAI
+class TC_GAME_API SmartAI : public CreatureAI
 {
     public:
         ~SmartAI();
@@ -263,6 +263,7 @@ class SmartGameObjectAI : public GameObjectAI
         SmartScript mScript;
 };
 
-void AddSC_SmartSCripts();
+/// Registers scripts required by the SAI scripting system
+void AddSC_SmartScripts();
 
 #endif

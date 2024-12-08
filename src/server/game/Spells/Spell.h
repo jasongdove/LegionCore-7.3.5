@@ -170,7 +170,7 @@ enum SpellEffectHandleMode
     SPELL_EFFECT_HANDLE_HIT_TARGET,
 };
 
-class Spell
+class TC_GAME_API Spell
 {
     friend void Unit::SetCurrentCastedSpell(Spell* pSpell);
     friend class SpellScript;
@@ -772,7 +772,7 @@ class Spell
 
 namespace Trinity
 {
-    struct WorldObjectSpellTargetCheck
+    struct TC_GAME_API WorldObjectSpellTargetCheck
     {
         Unit* _caster;
         Unit* _referer;
@@ -786,7 +786,7 @@ namespace Trinity
         bool operator()(WorldObject* target);
     };
 
-    struct WorldObjectSpellNearbyTargetCheck : WorldObjectSpellTargetCheck
+    struct TC_GAME_API WorldObjectSpellNearbyTargetCheck : WorldObjectSpellTargetCheck
     {
         float _range;
         Position const* _position;
@@ -794,7 +794,7 @@ namespace Trinity
         bool operator()(WorldObject* target);
     };
 
-    struct WorldObjectSpellAreaTargetCheck : WorldObjectSpellTargetCheck
+    struct TC_GAME_API WorldObjectSpellAreaTargetCheck : WorldObjectSpellTargetCheck
     {
         float _range;
         Position const* _position;
@@ -803,7 +803,7 @@ namespace Trinity
         bool operator()(WorldObject* target);
     };
 
-    struct WorldObjectSpellBetweenTargetCheck : WorldObjectSpellAreaTargetCheck
+    struct TC_GAME_API WorldObjectSpellBetweenTargetCheck : WorldObjectSpellAreaTargetCheck
     {
         float _width, _range;
         Position const* _position;
@@ -811,14 +811,14 @@ namespace Trinity
         bool operator()(WorldObject* target);
     };
 
-    struct WorldObjectSpellConeTargetCheck : WorldObjectSpellAreaTargetCheck
+    struct TC_GAME_API WorldObjectSpellConeTargetCheck : WorldObjectSpellAreaTargetCheck
     {
         float _coneAngle;
         WorldObjectSpellConeTargetCheck(float coneAngle, float range, Unit* caster, SpellInfo const* spellInfo, SpellTargetCheckTypes selectionType, ConditionList* condList);
         bool operator()(WorldObject* target);
     };
 
-    struct WorldObjectSpellTrajTargetCheck : WorldObjectSpellAreaTargetCheck
+    struct TC_GAME_API WorldObjectSpellTrajTargetCheck : WorldObjectSpellAreaTargetCheck
     {
         WorldObjectSpellTrajTargetCheck(float range, Position const* position, Unit* caster, SpellInfo const* spellInfo);
         bool operator()(WorldObject* target);
@@ -827,7 +827,7 @@ namespace Trinity
 
 typedef void(Spell::*pEffect)(SpellEffIndex effIndex);
 
-class SpellEvent : public BasicEvent
+class TC_GAME_API SpellEvent : public BasicEvent
 {
     public:
         SpellEvent(Spell* spell);

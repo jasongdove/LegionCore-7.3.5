@@ -24,7 +24,7 @@ namespace Trinity
 {
     namespace Banner
     {
-        void Show(char const* applicationName, void(*log)(char const* text), void(*logExtraInfo)());
+        TC_COMMON_API void Show(char const* applicationName, void(*log)(char const* text), void(*logExtraInfo)());
     }
 }
 

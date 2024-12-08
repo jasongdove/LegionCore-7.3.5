@@ -37,7 +37,7 @@ namespace VMAP
 class GameObject;
 struct GameObjectDisplayInfoEntry;
 
-class GameObjectModelOwnerBase
+class TC_COMMON_API GameObjectModelOwnerBase
 {
 public:
     virtual ~GameObjectModelOwnerBase() = default;
@@ -56,7 +56,7 @@ public:
     virtual uint32 GetGUIDLow() const { return 0; }
 };
 
-class GameObjectModel /*, public Intersectable*/
+class TC_COMMON_API GameObjectModel /*, public Intersectable*/
 {
     GameObjectModel() : _collisionEnabled(false), iInvScale(0), iScale(0), iModel(nullptr), isWmo(false) { }
 public:
@@ -98,6 +98,6 @@ private:
     bool isWmo;
 };
 
-void LoadGameObjectModelList(std::string const& dataPath);
+TC_COMMON_API void LoadGameObjectModelList(std::string const& dataPath);
 
 #endif // _GAMEOBJECT_MODEL_H

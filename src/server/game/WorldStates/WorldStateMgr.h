@@ -9,7 +9,7 @@ inline void AddToWorldState(std::vector<WorldState*>** worldStates, WorldState* 
 
 class Player;
 
-class WorldStateMgr
+class TC_GAME_API WorldStateMgr
 {
 public:
     WorldStateMgr();

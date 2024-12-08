@@ -42,7 +42,7 @@ class TaskContext;
 /// with the same duration or a new one.
 /// It also provides access to the repeat counter which is useful for task that repeat itself often
 /// but behave different every time (spoken event dialogs for example).
-class TaskScheduler
+class TC_COMMON_API TaskScheduler
 {
     friend class TaskContext;
 
@@ -53,7 +53,7 @@ class TaskScheduler
     typedef std::function<bool()> predicate_t;
     typedef std::function<void()> success_t;
 
-    class Task
+    class TC_COMMON_API Task
     {
         friend class TaskContext;
         friend class TaskScheduler;
@@ -85,7 +85,7 @@ class TaskScheduler
 		bool operator()(TaskContainer const& left, TaskContainer const& right) const;
     };
 
-    class TaskQueue
+    class TC_COMMON_API TaskQueue
     {
         std::multiset<TaskContainer, Compare> container;
 
@@ -302,7 +302,7 @@ private:
     void Dispatch(success_t const& callback);
 };
 
-class TaskContext
+class TC_COMMON_API TaskContext
 {
     friend class TaskScheduler;
 

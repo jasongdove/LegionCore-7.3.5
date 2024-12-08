@@ -211,7 +211,7 @@ typedef std::unordered_map<uint32 /*zoneId*/, ZoneDynamicInfo> ZoneDynamicInfoMa
 
 typedef std::unordered_map<ObjectGuid, std::shared_ptr<WorldObject>> SharedObjectPtr;
 
-class Map
+class TC_GAME_API Map
 {
     friend class MapReference;
     public:
@@ -336,17 +336,17 @@ class Map
         SharedObjectPtr m_objectHolder;
 
         uint16 GetMapMaxPlayers() const;
-        bool Instanceable() const { return i_mapEntry && i_mapEntry->Instanceable(); }
-        bool IsDungeon() const { return i_mapEntry && i_mapEntry->IsDungeon(); }
-        bool IsDungeonOrRaid() const { return i_mapEntry && i_mapEntry->Is5pplDungeonOrRaid() && !i_mapEntry->IsContinent(); }
-        bool IsNonRaidDungeon() const { return i_mapEntry && i_mapEntry->IsNonRaidDungeon(); }
-        bool IsRaid() const { return i_mapEntry && i_mapEntry->IsRaid(); }
+        bool Instanceable() const;
+        bool IsDungeon() const;
+        bool IsDungeonOrRaid() const;
+        bool IsNonRaidDungeon() const;
+        bool IsRaid() const;
         bool IsLfr() const { return i_difficulty == DIFFICULTY_LFR || i_difficulty == DIFFICULTY_LFR_RAID || i_difficulty == DIFFICULTY_HC_SCENARIO || i_difficulty == DIFFICULTY_N_SCENARIO; }
         bool isChallenge() const { return i_difficulty == DIFFICULTY_MYTHIC_KEYSTONE; }
         bool IsNeedRecalc() const;
         bool IsCanScale() const;
         bool IsNeedRespawn(uint32 lastRespawn) const { return lastRespawn < m_respawnChallenge; }
-        bool IsScenario() const { return i_mapEntry && i_mapEntry->IsScenario(); }
+        bool IsScenario() const;
         bool IsRaidOrHeroicDungeon() const { return IsRaid() || IsHeroic(); }
         bool IsHeroic() const;
         bool Is10ManRaid() const { return IsRaid() && (i_difficulty == DIFFICULTY_10_N || i_difficulty == DIFFICULTY_25_N); }
@@ -357,11 +357,11 @@ class Map
         bool IsMythicRaid() const { return i_difficulty == DIFFICULTY_MYTHIC_RAID; }
         bool IsHeroicPlusRaid() const { return i_difficulty == DIFFICULTY_HEROIC_RAID || i_difficulty == DIFFICULTY_MYTHIC_RAID; }
         bool IsEventScenario() const { return i_difficulty == DIFFICULTY_EVENT_SCENARIO_6 || i_difficulty == DIFFICULTY_EVENT_SCENARIO; }
-        bool IsBattleground() const { return i_mapEntry && i_mapEntry->IsBattleground(); }
-        bool IsBattleArena() const { return i_mapEntry && i_mapEntry->IsBattleArena(); }
-        bool IsBattlegroundOrArena() const { return i_mapEntry && i_mapEntry->IsBattlegroundOrArena(); }
-        bool IsGarrison() const { return i_mapEntry && i_mapEntry->IsGarrison(); }
-        bool IsContinent() const { return i_mapEntry && i_mapEntry->IsContinent(); }
+        bool IsBattleground() const;
+        bool IsBattleArena() const;
+        bool IsBattlegroundOrArena() const;
+        bool IsGarrison() const;
+        bool IsContinent() const;
         bool CanCreatedZone() const;
         bool CanCreatedThread() const;
         BattlegroundMap* ToBgMap()
@@ -748,7 +748,7 @@ enum InstanceResetMethod
     INSTANCE_RESET_RESPAWN_DELAY
 };
 
-class InstanceMap : public Map
+class TC_GAME_API InstanceMap : public Map
 {
 public:
     InstanceMap(uint32 id, time_t, uint32 InstanceId, Difficulty difficulty, Map* _parent);

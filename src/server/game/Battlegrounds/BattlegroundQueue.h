@@ -51,7 +51,7 @@ struct GroupQueueInfo                                       // stores informatio
 };
 
 class Battleground;
-class BattlegroundQueue
+class TC_GAME_API BattlegroundQueue
 {
 public:
     BattlegroundQueue();

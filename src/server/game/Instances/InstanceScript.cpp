@@ -17,22 +17,23 @@
  */
 
 #include "InstanceScript.h"
-#include "DatabaseEnv.h"
-#include "Map.h"
-#include "Player.h"
-#include "GameObject.h"
 #include "ChallengeMgr.h"
 #include "Creature.h"
 #include "CreatureAI.h"
-#include "Log.h"
-#include "LFGMgr.h"
-#include "Group.h"
-#include "ScenarioMgr.h"
-#include "InstanceSaveMgr.h"
-#include "Packets/InstancePackets.h"
-#include "Guild.h"
-#include "ScriptMgr.h"
+#include "DatabaseEnv.h"
 #include "EasyJSon.hpp"
+#include "GameObject.h"
+#include "Group.h"
+#include "Guild.h"
+#include "InstanceSaveMgr.h"
+#include "LFGMgr.h"
+#include "Log.h"
+#include "Map.h"
+#include "Packets/InstancePackets.h"
+#include "Player.h"
+#include "ScenarioMgr.h"
+#include "ScriptMgr.h"
+#include "ScriptReloadMgr.h"
 
 DungeonEncounterEntry const* BossInfo::GetDungeonEncounterForDifficulty(Difficulty difficulty) const
 {
@@ -46,6 +47,15 @@ DungeonEncounterEntry const* BossInfo::GetDungeonEncounterForDifficulty(Difficul
 
 InstanceScript::InstanceScript(InstanceMap* map) : initDamageManager(false), _maxInCombatResCount(0), _combatResChargeTime(0), _nextCombatResChargeTime(0)
 {
+#ifdef TRINITY_API_USE_DYNAMIC_LINKING
+    uint32 scriptId = sObjectMgr->GetInstanceTemplate(map->GetId())->ScriptId;
+    auto const scriptname = sObjectMgr->GetScriptName(scriptId);
+    ASSERT(!scriptname.empty());
+   // Acquire a strong reference from the script module
+   // to keep it loaded until this object is destroyed.
+    module_reference = sScriptMgr->AcquireModuleReferenceOfScriptName(scriptname);
+#endif // #ifndef TRINITY_API_USE_DYNAMIC_LINKING
+
     SetType(ZONE_TYPE_INSTANCE);
     instance = map;
     completedEncounters = 0;

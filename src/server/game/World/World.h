@@ -92,6 +92,7 @@ enum WorldTimers
     WUPDATE_GUILDSAVE,
     WUPDATE_BLACKMARKET,
     WUPDATE_AHBOT,
+    WUPDATE_CHECK_FILECHANGES,
 
     WUPDATE_COUNT
 };
@@ -229,6 +230,12 @@ enum WorldBoolConfigs
     CONFIG_PLAYER_ALLOW_PVP_TALENTS_ALL_THE_TIME,
     CONFIG_GAIN_HONOR_GUARD,
     CONFIG_GAIN_HONOR_ELITE,
+    CONFIG_HOTSWAP_ENABLED,
+    CONFIG_HOTSWAP_RECOMPILER_ENABLED,
+    CONFIG_HOTSWAP_EARLY_TERMINATION_ENABLED,
+    CONFIG_HOTSWAP_BUILD_FILE_RECREATION_ENABLED,
+    CONFIG_HOTSWAP_INSTALL_ENABLED,
+    CONFIG_HOTSWAP_PREFIX_CORRECTION_ENABLED,
     BOOL_CONFIG_VALUE_COUNT
 };
 
@@ -617,7 +624,7 @@ enum ServerWorldStates
 };
 
 /// Storage class for commands issued for delayed execution
-struct CliCommandHolder
+struct TC_GAME_API CliCommandHolder
 {
     typedef void Print(void*, const char*);
     typedef void CommandFinished(void*, bool success);
@@ -662,7 +669,7 @@ struct GlobalMessageData
 };
 
 /// The World
-class World
+class TC_GAME_API World
 {
     public:
         static std::atomic<uint32> m_worldLoopCounter;
@@ -919,7 +926,8 @@ class World
     private:
         World();
         ~World();
-
+        
+        static std::atomic<bool> m_stopEvent;
         static uint8 m_ExitCode;
         uint32 m_ShutdownTimer;
         uint32 m_ShutdownMask;
@@ -1021,7 +1029,7 @@ class World
         sf::contention_free_shared_mutex< > _messageQueueLock;
 };
 
-extern Realm realm;
+TC_GAME_API extern Realm realm;
 uint32 GetVirtualRealmAddress();
 
 #define sWorld World::instance()

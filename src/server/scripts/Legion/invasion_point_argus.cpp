@@ -1,7 +1,7 @@
 #include "Scenario.h"
 #include "OutdoorPvP.h"
 #include "AccountMgr.h"
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptPCH.h"
 
 Position const DemonHunterBonich[5] =
 {

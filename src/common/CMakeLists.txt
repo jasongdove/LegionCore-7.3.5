@@ -75,8 +75,20 @@ add_dependencies(common revision_data.h)
 
 set_target_properties(common
     PROPERTIES
-      FOLDER
-        "server")
+      DEFINE_SYMBOL TRINITY_API_EXPORT_COMMON
+      FOLDER "server")
+
+if( BUILD_SHARED_LIBS )
+  if( UNIX )
+    install(TARGETS common
+      LIBRARY
+        DESTINATION lib)
+  elseif( WIN32 )
+    install(TARGETS common
+      RUNTIME
+        DESTINATION "${CMAKE_INSTALL_PREFIX}")
+  endif()
+endif()
 
 # Generate precompiled header
 if (USE_COREPCH)

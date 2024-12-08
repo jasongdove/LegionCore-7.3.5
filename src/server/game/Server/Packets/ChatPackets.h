@@ -143,7 +143,7 @@ namespace WorldPackets
         };
 
         // SMSG_CHAT
-        class Chat final : public ServerPacket
+        class TC_GAME_API Chat final : public ServerPacket
         {
         public:
             Chat() : ServerPacket(SMSG_CHAT, 100) { }
@@ -214,7 +214,7 @@ namespace WorldPackets
             int32 EmoteID = 0;
         };
 
-        class PrintNotification final : public ServerPacket
+        class TC_GAME_API PrintNotification final : public ServerPacket
         {
         public:
             PrintNotification(std::string const& notifyText) : ServerPacket(SMSG_PRINT_NOTIFICATION, 2 + notifyText.size()), NotifyText(notifyText) { }
@@ -256,7 +256,7 @@ namespace WorldPackets
             std::string MessageText;
         };
 
-        class WorldText final : public ServerPacket
+        class TC_GAME_API WorldText final : public ServerPacket
         {
         public:
             WorldText() : ServerPacket(SMSG_WORLD_TEXT, 16 + 4 + 4 + 2) { }

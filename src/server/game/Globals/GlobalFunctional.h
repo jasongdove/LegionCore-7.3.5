@@ -24,7 +24,7 @@
 #define MAX_PET_NAME             12                         // max allowed by client name length
 #define MAX_CHARTER_NAME         24                         // max allowed by client name length
 
-bool normalizePlayerName(std::string& name);
+TC_GAME_API bool normalizePlayerName(std::string& name);
 
 struct ExtendedPlayerName
 {
@@ -42,7 +42,7 @@ struct LanguageDesc
     uint32   skill_id;
 };
 #define LANGUAGE_DESC_COUNT 24
-extern LanguageDesc lang_description[LANGUAGE_DESC_COUNT];
+TC_GAME_API extern LanguageDesc lang_description[LANGUAGE_DESC_COUNT];
 LanguageDesc const* GetLanguageDescByID(uint32 lang);
 
 #endif

@@ -56,7 +56,7 @@ struct CreateBattlegroundData
     uint8 MaxGroupSize;
 };
 
-struct QueueSchedulerItem
+struct TC_GAME_API QueueSchedulerItem
 {
     QueueSchedulerItem(uint32 MMRating, uint8 joinType, uint8 bgQueueTypeId, uint16 bgTypeId, uint8 bracketid, Roles role = ROLES_DEFAULT, uint8 bracket_MinLevel = 0);
     QueueSchedulerItem() = default;
@@ -128,7 +128,7 @@ struct BrawlData
     std::vector<uint32> HolidayIDs{};
 };
 
-class BattlegroundMgr
+class TC_GAME_API BattlegroundMgr
 {
     BattlegroundMgr();
     ~BattlegroundMgr();

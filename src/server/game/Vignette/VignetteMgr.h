@@ -10,7 +10,7 @@ class Player;
 
 namespace Vignette
 {
-class Manager
+class TC_GAME_API Manager
 {
 public:
     explicit Manager(Player const* player);

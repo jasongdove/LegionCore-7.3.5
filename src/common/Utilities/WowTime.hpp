@@ -40,7 +40,7 @@ namespace MS
             }
         }
 
-        class WowTime
+        class TC_COMMON_API WowTime
         {
         public:
             WowTime();

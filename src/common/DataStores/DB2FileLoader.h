@@ -54,7 +54,7 @@ struct DB2Header
 };
 #pragma pack(pop)
 
-struct DB2FileLoadInfo
+struct TC_COMMON_API DB2FileLoadInfo
 {
     DB2FileLoadInfo();
     DB2FileLoadInfo(DB2FieldMeta const* fields, std::size_t fieldCount, DB2Meta const* meta);
@@ -68,7 +68,7 @@ struct DB2FileLoadInfo
     std::string TypesString;
 };
 
-struct DB2FileSource
+struct TC_COMMON_API DB2FileSource
 {
     virtual ~DB2FileSource();
     virtual bool IsOpen() const = 0;
@@ -123,7 +123,7 @@ struct DB2RecordCopy
 };
 #pragma pack(pop)
 
-class DB2FileLoader
+class TC_COMMON_API DB2FileLoader
 {
 public:
     DB2FileLoader();

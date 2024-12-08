@@ -68,7 +68,7 @@ enum CreatureSummonGroup
     CREATURE_SUMMON_GROUP_COMBAT     = 1,
 };
 
-class CreatureAI : public UnitAI
+class TC_GAME_API CreatureAI : public UnitAI
 {
 protected:
     Creature* const me;

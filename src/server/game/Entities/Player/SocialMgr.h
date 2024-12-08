@@ -131,7 +131,7 @@ class PlayerSocial
         ObjectGuid m_playerGUID;
 };
 
-class SocialMgr
+class TC_GAME_API SocialMgr
 {
         SocialMgr();
         ~SocialMgr();

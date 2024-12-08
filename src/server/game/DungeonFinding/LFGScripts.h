@@ -54,4 +54,6 @@ class LFGGroupScript : public GroupScript
         void OnInviteMember(Group* group, ObjectGuid const& guid) override;
 };
 
+/*keep private*/ void AddSC_LFGScripts();
+
 } // namespace lfg

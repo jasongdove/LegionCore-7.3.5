@@ -41,7 +41,7 @@ namespace friends {
 namespace v1 {
 
 // Internal implementation detail -- do not call these.
-void protobuf_AddDesc_friends_5fservice_2eproto();
+void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
 void protobuf_AssignDesc_friends_5fservice_2eproto();
 void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -62,7 +62,7 @@ class InvitationNotification;
 
 // ===================================================================
 
-class SubscribeRequest : public ::google::protobuf::Message {
+class TC_PROTO_API SubscribeRequest : public ::google::protobuf::Message {
  public:
   SubscribeRequest();
   virtual ~SubscribeRequest();
@@ -144,7 +144,7 @@ class SubscribeRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::EntityId* agent_id_;
   ::google::protobuf::uint64 object_id_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -153,7 +153,7 @@ class SubscribeRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class UnsubscribeRequest : public ::google::protobuf::Message {
+class TC_PROTO_API UnsubscribeRequest : public ::google::protobuf::Message {
  public:
   UnsubscribeRequest();
   virtual ~UnsubscribeRequest();
@@ -235,7 +235,7 @@ class UnsubscribeRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::EntityId* agent_id_;
   ::google::protobuf::uint64 object_id_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -244,7 +244,7 @@ class UnsubscribeRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GenericFriendRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GenericFriendRequest : public ::google::protobuf::Message {
  public:
   GenericFriendRequest();
   virtual ~GenericFriendRequest();
@@ -328,7 +328,7 @@ class GenericFriendRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::EntityId* agent_id_;
   ::bgs::protocol::EntityId* target_id_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -337,7 +337,7 @@ class GenericFriendRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GenericFriendResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GenericFriendResponse : public ::google::protobuf::Message {
  public:
   GenericFriendResponse();
   virtual ~GenericFriendResponse();
@@ -409,7 +409,7 @@ class GenericFriendResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::friends::v1::Friend* target_friend_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -418,7 +418,7 @@ class GenericFriendResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class AssignRoleRequest : public ::google::protobuf::Message {
+class TC_PROTO_API AssignRoleRequest : public ::google::protobuf::Message {
  public:
   AssignRoleRequest();
   virtual ~AssignRoleRequest();
@@ -515,7 +515,7 @@ class AssignRoleRequest : public ::google::protobuf::Message {
   ::bgs::protocol::EntityId* agent_id_;
   ::bgs::protocol::EntityId* target_id_;
   ::google::protobuf::RepeatedField< ::google::protobuf::int32 > role_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -524,7 +524,7 @@ class AssignRoleRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ViewFriendsRequest : public ::google::protobuf::Message {
+class TC_PROTO_API ViewFriendsRequest : public ::google::protobuf::Message {
  public:
   ViewFriendsRequest();
   virtual ~ViewFriendsRequest();
@@ -622,7 +622,7 @@ class ViewFriendsRequest : public ::google::protobuf::Message {
   ::bgs::protocol::EntityId* target_id_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > role_;
   mutable int _role_cached_byte_size_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -631,7 +631,7 @@ class ViewFriendsRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class ViewFriendsResponse : public ::google::protobuf::Message {
+class TC_PROTO_API ViewFriendsResponse : public ::google::protobuf::Message {
  public:
   ViewFriendsResponse();
   virtual ~ViewFriendsResponse();
@@ -704,7 +704,7 @@ class ViewFriendsResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::friends::v1::FriendOfFriend > friends_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -713,7 +713,7 @@ class ViewFriendsResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class UpdateFriendStateRequest : public ::google::protobuf::Message {
+class TC_PROTO_API UpdateFriendStateRequest : public ::google::protobuf::Message {
  public:
   UpdateFriendStateRequest();
   virtual ~UpdateFriendStateRequest();
@@ -820,7 +820,7 @@ class UpdateFriendStateRequest : public ::google::protobuf::Message {
   ::bgs::protocol::EntityId* target_id_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::Attribute > attribute_;
   ::google::protobuf::uint64 attributes_epoch_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -829,7 +829,7 @@ class UpdateFriendStateRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetFriendListRequest : public ::google::protobuf::Message {
+class TC_PROTO_API GetFriendListRequest : public ::google::protobuf::Message {
  public:
   GetFriendListRequest();
   virtual ~GetFriendListRequest();
@@ -913,7 +913,7 @@ class GetFriendListRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::EntityId* agent_id_;
   ::bgs::protocol::EntityId* target_id_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -922,7 +922,7 @@ class GetFriendListRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class GetFriendListResponse : public ::google::protobuf::Message {
+class TC_PROTO_API GetFriendListResponse : public ::google::protobuf::Message {
  public:
   GetFriendListResponse();
   virtual ~GetFriendListResponse();
@@ -995,7 +995,7 @@ class GetFriendListResponse : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::friends::v1::Friend > friends_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -1004,7 +1004,7 @@ class GetFriendListResponse : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class CreateFriendshipRequest : public ::google::protobuf::Message {
+class TC_PROTO_API CreateFriendshipRequest : public ::google::protobuf::Message {
  public:
   CreateFriendshipRequest();
   virtual ~CreateFriendshipRequest();
@@ -1102,7 +1102,7 @@ class CreateFriendshipRequest : public ::google::protobuf::Message {
   ::bgs::protocol::EntityId* invitee_id_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > role_;
   mutable int _role_cached_byte_size_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -1111,7 +1111,7 @@ class CreateFriendshipRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class FriendNotification : public ::google::protobuf::Message {
+class TC_PROTO_API FriendNotification : public ::google::protobuf::Message {
  public:
   FriendNotification();
   virtual ~FriendNotification();
@@ -1219,7 +1219,7 @@ class FriendNotification : public ::google::protobuf::Message {
   ::bgs::protocol::EntityId* game_account_id_;
   ::bgs::protocol::ProcessId* peer_;
   ::bgs::protocol::EntityId* account_id_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -1228,7 +1228,7 @@ class FriendNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class UpdateFriendStateNotification : public ::google::protobuf::Message {
+class TC_PROTO_API UpdateFriendStateNotification : public ::google::protobuf::Message {
  public:
   UpdateFriendStateNotification();
   virtual ~UpdateFriendStateNotification();
@@ -1336,7 +1336,7 @@ class UpdateFriendStateNotification : public ::google::protobuf::Message {
   ::bgs::protocol::EntityId* game_account_id_;
   ::bgs::protocol::ProcessId* peer_;
   ::bgs::protocol::EntityId* account_id_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -1345,7 +1345,7 @@ class UpdateFriendStateNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class InvitationNotification : public ::google::protobuf::Message {
+class TC_PROTO_API InvitationNotification : public ::google::protobuf::Message {
  public:
   InvitationNotification();
   virtual ~InvitationNotification();
@@ -1463,7 +1463,7 @@ class InvitationNotification : public ::google::protobuf::Message {
   ::bgs::protocol::ProcessId* peer_;
   ::bgs::protocol::EntityId* account_id_;
   ::google::protobuf::uint32 reason_;
-  friend void protobuf_AddDesc_friends_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5fservice_2eproto();
   friend void protobuf_AssignDesc_friends_5fservice_2eproto();
   friend void protobuf_ShutdownFile_friends_5fservice_2eproto();
 
@@ -1472,7 +1472,7 @@ class InvitationNotification : public ::google::protobuf::Message {
 };
 // ===================================================================
 
-class FriendsService : public ServiceBase
+class TC_PROTO_API FriendsService : public ServiceBase
 {
  public:
 
@@ -1505,20 +1505,20 @@ class FriendsService : public ServiceBase
   void CallServerMethod(uint32 token, uint32 methodId, MessageBuffer buffer) override final;
 
  protected:
-  virtual uint32 HandleSubscribe(::bgs::protocol::friends::v1::SubscribeRequest const* request, ::bgs::protocol::friends::v1::SubscribeResponse* response);
-  virtual uint32 HandleSendInvitation(::bgs::protocol::SendInvitationRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleAcceptInvitation(::bgs::protocol::GenericInvitationRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleRevokeInvitation(::bgs::protocol::GenericInvitationRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleDeclineInvitation(::bgs::protocol::GenericInvitationRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleIgnoreInvitation(::bgs::protocol::GenericInvitationRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleAssignRole(::bgs::protocol::friends::v1::AssignRoleRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleRemoveFriend(::bgs::protocol::friends::v1::GenericFriendRequest const* request, ::bgs::protocol::friends::v1::GenericFriendResponse* response);
-  virtual uint32 HandleViewFriends(::bgs::protocol::friends::v1::ViewFriendsRequest const* request, ::bgs::protocol::friends::v1::ViewFriendsResponse* response);
-  virtual uint32 HandleUpdateFriendState(::bgs::protocol::friends::v1::UpdateFriendStateRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleUnsubscribe(::bgs::protocol::friends::v1::UnsubscribeRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleRevokeAllInvitations(::bgs::protocol::friends::v1::GenericFriendRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleGetFriendList(::bgs::protocol::friends::v1::GetFriendListRequest const* request, ::bgs::protocol::friends::v1::GetFriendListResponse* response);
-  virtual uint32 HandleCreateFriendship(::bgs::protocol::friends::v1::CreateFriendshipRequest const* request, ::bgs::protocol::NoData* response);
+  virtual uint32 HandleSubscribe(::bgs::protocol::friends::v1::SubscribeRequest const* request, ::bgs::protocol::friends::v1::SubscribeResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleSendInvitation(::bgs::protocol::SendInvitationRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleAcceptInvitation(::bgs::protocol::GenericInvitationRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleRevokeInvitation(::bgs::protocol::GenericInvitationRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleDeclineInvitation(::bgs::protocol::GenericInvitationRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleIgnoreInvitation(::bgs::protocol::GenericInvitationRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleAssignRole(::bgs::protocol::friends::v1::AssignRoleRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleRemoveFriend(::bgs::protocol::friends::v1::GenericFriendRequest const* request, ::bgs::protocol::friends::v1::GenericFriendResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleViewFriends(::bgs::protocol::friends::v1::ViewFriendsRequest const* request, ::bgs::protocol::friends::v1::ViewFriendsResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleUpdateFriendState(::bgs::protocol::friends::v1::UpdateFriendStateRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleUnsubscribe(::bgs::protocol::friends::v1::UnsubscribeRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleRevokeAllInvitations(::bgs::protocol::friends::v1::GenericFriendRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleGetFriendList(::bgs::protocol::friends::v1::GetFriendListRequest const* request, ::bgs::protocol::friends::v1::GetFriendListResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleCreateFriendship(::bgs::protocol::friends::v1::CreateFriendshipRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
 
  private:
   uint32 service_hash_;
@@ -1528,7 +1528,7 @@ class FriendsService : public ServiceBase
 
 // -------------------------------------------------------------------
 
-class FriendsListener : public ServiceBase
+class TC_PROTO_API FriendsListener : public ServiceBase
 {
  public:
 

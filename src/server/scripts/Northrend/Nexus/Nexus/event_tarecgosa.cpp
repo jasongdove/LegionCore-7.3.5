@@ -1,5 +1,5 @@
 
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptPCH.h"
 
 #define GOSSIP_A_WRINKIE_IN_TIME "Yes, Anachronos. I am ready to witness your vision of the future."
 #define ACTION_A_WRINKIE_IN_TIME 1001

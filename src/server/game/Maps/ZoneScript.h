@@ -36,7 +36,7 @@ enum ZoneType
     ZONE_TYPE_INSTANCE  = 1,
 };
 
-class ZoneScript
+class TC_GAME_API ZoneScript
 {
         uint8 m_type;
     public:

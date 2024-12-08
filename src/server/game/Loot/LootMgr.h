@@ -149,7 +149,7 @@ class Player;
 class LootStore;
 class ConditionMgr;
 
-struct LootStoreItem
+struct TC_GAME_API LootStoreItem
 {
     std::list<Condition*>  conditions;                      // additional loot condition
     uint32  itemid;                                         // id of the item
@@ -187,7 +187,7 @@ struct CurrencyLoot
     CurrencyLoot(uint32 _entry, uint8 _type, uint32 _CurrencyId, uint32 _CurrencyAmount, uint32 _CurrencyMaxAmount, uint8 _lootmode, float _chance);
 };
 
-struct LootItem
+struct TC_GAME_API LootItem
 {
     struct
     {
@@ -258,7 +258,7 @@ typedef std::unordered_map<uint32, LootTemplate*> LootTemplateMap;
 
 typedef std::set<uint32> LootIdSet;
 
-class LootStore
+class TC_GAME_API LootStore
 {
     public:
         explicit LootStore(std::string name, std::string entryName, bool ratesAllowed, std::string addColum);
@@ -335,7 +335,7 @@ class LootTemplate
         LootGroups        PersonalGroups;
 };
 
-struct Loot
+struct TC_GAME_API Loot
 {
     QuestItemMap const& GetPlayerCurrencies() const { return PlayerCurrencies; }
     QuestItemMap const& GetPlayerQuestItems() const { return PlayerQuestItems; }
@@ -455,38 +455,38 @@ private:
 
 typedef std::map<ObjectGuid, Loot> PersonalLootMap;
 
-extern LootStore LootTemplates_Creature;
-extern LootStore LootTemplates_Fishing;
-extern LootStore LootTemplates_Gameobject;
-extern LootStore LootTemplates_Item;
-extern LootStore LootTemplates_Mail;
-extern LootStore LootTemplates_Milling;
-extern LootStore LootTemplates_Pickpocketing;
-extern LootStore LootTemplates_Reference;
-extern LootStore LootTemplates_Skinning;
-extern LootStore LootTemplates_Disenchant;
-extern LootStore LootTemplates_Prospecting;
-extern LootStore LootTemplates_Spell;
-extern LootStore LootTemplates_World;
-extern LootStore LootTemplates_Luck;
-extern LootStore LootTemplates_Zone;
+TC_GAME_API extern LootStore LootTemplates_Creature;
+TC_GAME_API extern LootStore LootTemplates_Fishing;
+TC_GAME_API extern LootStore LootTemplates_Gameobject;
+TC_GAME_API extern LootStore LootTemplates_Item;
+TC_GAME_API extern LootStore LootTemplates_Mail;
+TC_GAME_API extern LootStore LootTemplates_Milling;
+TC_GAME_API extern LootStore LootTemplates_Pickpocketing;
+TC_GAME_API extern LootStore LootTemplates_Reference;
+TC_GAME_API extern LootStore LootTemplates_Skinning;
+TC_GAME_API extern LootStore LootTemplates_Disenchant;
+TC_GAME_API extern LootStore LootTemplates_Prospecting;
+TC_GAME_API extern LootStore LootTemplates_Spell;
+TC_GAME_API extern LootStore LootTemplates_World;
+TC_GAME_API extern LootStore LootTemplates_Luck;
+TC_GAME_API extern LootStore LootTemplates_Zone;
 
-void LoadLootTemplates_Creature();
-void LoadLootTemplates_Fishing();
-void LoadLootTemplates_Gameobject();
-void LoadLootTemplates_Item();
-void LoadLootTemplates_Mail();
-void LoadLootTemplates_Milling();
-void LoadLootTemplates_Pickpocketing();
-void LoadLootTemplates_Skinning();
-void LoadLootTemplates_Disenchant();
-void LoadLootTemplates_Prospecting();
+TC_GAME_API void LoadLootTemplates_Creature();
+TC_GAME_API void LoadLootTemplates_Fishing();
+TC_GAME_API void LoadLootTemplates_Gameobject();
+TC_GAME_API void LoadLootTemplates_Item();
+TC_GAME_API void LoadLootTemplates_Mail();
+TC_GAME_API void LoadLootTemplates_Milling();
+TC_GAME_API void LoadLootTemplates_Pickpocketing();
+TC_GAME_API void LoadLootTemplates_Skinning();
+TC_GAME_API void LoadLootTemplates_Disenchant();
+TC_GAME_API void LoadLootTemplates_Prospecting();
 
-void LoadLootTemplates_Spell();
-void LoadLootTemplates_World();
-void LoadLootTemplates_Reference();
-void LoadLootTemplates_Luck();
-void LoadLootTemplates_Zone();
+TC_GAME_API void LoadLootTemplates_Spell();
+TC_GAME_API void LoadLootTemplates_World();
+TC_GAME_API void LoadLootTemplates_Reference();
+TC_GAME_API void LoadLootTemplates_Luck();
+TC_GAME_API void LoadLootTemplates_Zone();
 
 inline void LoadLootTables()
 {
@@ -508,7 +508,7 @@ inline void LoadLootTables()
     LoadLootTemplates_Reference();
 }
 
-class LootMgr
+class TC_GAME_API LootMgr
 {
         LootMgr() {}
         ~LootMgr() {}

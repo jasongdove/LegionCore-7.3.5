@@ -61,7 +61,7 @@ enum MiscChallengeData : uint32
 
 };
 
-class Challenge : public InstanceScript
+class TC_GAME_API Challenge : public InstanceScript
 {
 public:
     Challenge(InstanceMap* map, Player* player, uint32 instanceID, Scenario* scenario);

@@ -20,20 +20,21 @@
 #define CONFIG_H
 
 #include "Define.h"
-#include <vector>
+#include <boost/property_tree/ptree.hpp>
 #include <string>
+#include <vector>
 
-class ConfigMgr
+class TC_COMMON_API ConfigMgr
 {
     ConfigMgr() = default;
+    ConfigMgr(ConfigMgr const&) = delete;
+    ConfigMgr& operator=(ConfigMgr const&) = delete;
     ~ConfigMgr() = default;
 
 public:
 
-    ConfigMgr(ConfigMgr const&) = delete;
-    ConfigMgr& operator=(ConfigMgr const&) = delete;
-
-    bool LoadInitial(std::string const& file, std::string& error);
+    /// Method used only for loading main configuration files (bnetserver.conf and worldserver.conf)
+    bool LoadInitial(std::string file, std::vector<std::string> args, std::string& error);
 
     static ConfigMgr* instance();
 
@@ -45,6 +46,7 @@ public:
     float GetFloatDefault(std::string const& name, float def);
 
     std::string const& GetFilename();
+    std::vector<std::string> const& GetArguments() const;
     std::vector<std::string> GetKeysByString(std::string const& name);
 };
 

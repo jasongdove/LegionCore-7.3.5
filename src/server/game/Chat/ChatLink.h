@@ -66,7 +66,7 @@ private:
 };
 
 //"|c%s|Hitem:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d"
-class ItemChatLink : public ChatLink
+class TC_GAME_API ItemChatLink : public ChatLink
 {
 public:
     ItemChatLink();
@@ -95,7 +95,7 @@ protected:
 };
 
 //"|c%s|Hquest:%d:%d:%d:%d|h[%s]|h%s"
-class QuestChatLink : public ChatLink
+class TC_GAME_API QuestChatLink : public ChatLink
 {
 public:
     QuestChatLink();
@@ -112,7 +112,7 @@ protected:
 };
 
 //"|c%s|Hspell:%d:%d|h[%s]|h%s"
-class SpellChatLink : public ChatLink
+class TC_GAME_API SpellChatLink : public ChatLink
 {
 public:
     SpellChatLink();
@@ -126,7 +126,7 @@ protected:
 };
 
 //"|c%s|Hachievement:%d:%s:%d:%d:%d:%d:%u:%u:%u:%u|h[%s]|h%s"
-class AchievementChatLink : public ChatLink
+class TC_GAME_API AchievementChatLink : public ChatLink
 {
 public:
     AchievementChatLink();
@@ -142,7 +142,7 @@ protected:
 };
 
 //"|c%s|Htrade:%s:%d:%d|h[%s]|h|r"
-class TradeChatLink : public SpellChatLink
+class TC_GAME_API TradeChatLink : public SpellChatLink
 {
 public:
     TradeChatLink();
@@ -156,7 +156,7 @@ private:
 };
 
 //"|c%s|Htalent:%d|h[%s]|h%s"
-class TalentChatLink : public SpellChatLink
+class TC_GAME_API TalentChatLink : public SpellChatLink
 {
 public:
     TalentChatLink();
@@ -169,7 +169,7 @@ private:
 };
 
 //"|c%s|Hpvptal:%d|h[%s]|h%s"
-class PvTalentChatLink : public SpellChatLink
+class TC_GAME_API PvTalentChatLink : public SpellChatLink
 {
 public:
     PvTalentChatLink();
@@ -183,7 +183,7 @@ private:
 
 //"|c%s|Henchant:%d|h[%s: %s]|h|r"
 //"|c%s|Henchant:%d|h[%s]|h|r"
-class EnchantmentChatLink : public SpellChatLink
+class TC_GAME_API EnchantmentChatLink : public SpellChatLink
 {
 public:
     EnchantmentChatLink() = default;
@@ -193,7 +193,7 @@ public:
 };
 
 //"|c%s|Hcurrency:%d|h[%s]|h%s"
-class CurrencyChatLink : public SpellChatLink
+class TC_GAME_API CurrencyChatLink : public SpellChatLink
 {
 public:
     CurrencyChatLink();
@@ -205,7 +205,7 @@ private:
 };
 
 //"|c%s|Hbattlepet:%d:%d:%d:%d:%d:%d:%s|h[%s]|h%s"
-class BattlePetChatLink : public SpellChatLink
+class TC_GAME_API BattlePetChatLink : public SpellChatLink
 {
 public:
     BattlePetChatLink() = default;
@@ -217,7 +217,7 @@ protected:
 };
 
 //"|c%s|Hgarrfollowerability:%d|h[%s]|h%s"
-class GarrFollowerAbilityChatLink : public SpellChatLink
+class TC_GAME_API GarrFollowerAbilityChatLink : public SpellChatLink
 {
 public:
     GarrFollowerAbilityChatLink() = default;
@@ -229,7 +229,7 @@ protected:
 };
 
 //"|c%s|Hgarrfollower:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d|h[%s]|h%s"
-class GarrFollowerChatLink : public SpellChatLink
+class TC_GAME_API GarrFollowerChatLink : public SpellChatLink
 {
 public:
     GarrFollowerChatLink() = default;
@@ -241,7 +241,7 @@ protected:
 };
 
 //"|c%s|Hgarrmission:%d:%016llx|h[%s]|h%s"
-class GarrMissionChatLink : public SpellChatLink
+class TC_GAME_API GarrMissionChatLink : public SpellChatLink
 {
 public:
     GarrMissionChatLink() = default;
@@ -253,7 +253,7 @@ protected:
 };
 
 //"|c%s|Hinstancelock:%s:%d:%u:%d|h[%s]|h%s"
-class InstanceLockChatLink : public SpellChatLink
+class TC_GAME_API InstanceLockChatLink : public SpellChatLink
 {
 public:
     InstanceLockChatLink() = default;
@@ -265,7 +265,7 @@ protected:
 };
 
 //"|c%s|Hkeystone:%d:%d:%d:%d:%d|h[%s]|h%s"
-class KeystoneChatLink : public SpellChatLink
+class TC_GAME_API KeystoneChatLink : public SpellChatLink
 {
 public:
     KeystoneChatLink() = default;
@@ -277,7 +277,7 @@ protected:
 };
 
 //"|c%s|Htransmogillusion:%d|h[%s]|h%s"
-class TransmogIllusionChatLink : public SpellChatLink
+class TC_GAME_API TransmogIllusionChatLink : public SpellChatLink
 {
 public:
     TransmogIllusionChatLink() = default;
@@ -289,7 +289,7 @@ protected:
 };
 
 //"|c%s|Htransmogappearance:%d|h[%s]|h%s"
-class TransmogAppearanceChatLink : public SpellChatLink
+class TC_GAME_API TransmogAppearanceChatLink : public SpellChatLink
 {
 public:
     TransmogAppearanceChatLink() = default;
@@ -301,7 +301,7 @@ protected:
 };
 
 //"|c%s|Hjournal:%d:%d:%d|h[%s]|h%s"
-class JournalChatLink : public SpellChatLink
+class TC_GAME_API JournalChatLink : public SpellChatLink
 {
 public:
     JournalChatLink() = default;
@@ -313,7 +313,7 @@ protected:
 };
 
 //"|c%s|Hapower:%d:%d:%d|h[%s]|h%s"
-class ArtifactPowerChatLink : public SpellChatLink
+class TC_GAME_API ArtifactPowerChatLink : public SpellChatLink
 {
 public:
     ArtifactPowerChatLink() = default;

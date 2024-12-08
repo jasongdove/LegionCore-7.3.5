@@ -256,28 +256,27 @@ private:
     std::vector<T> _data;
 };
 
-extern GameTable<GtArmorMitigationByLvlEntry>       sArmorMitigationByLvlGameTable;
-extern GameTable<GtBarberShopCostBaseEntry>         sBarberShopCostBaseGameTable;
-extern GameTable<GtBaseMPEntry>                     sBaseMPGameTable;
-extern GameTable<GtCombatRatingsEntry>              sCombatRatingsGameTable;
-extern GameTable<GtCombatRatingsMultByILvl>         sCombatRatingsMultByILvlGameTable;
-extern GameTable<GtHpPerStaEntry>                   sHpPerStaGameTable;
-extern GameTable<GtItemSocketCostPerLevelEntry>     sItemSocketCostPerLevelGameTable;
-extern GameTable<GtNpcDamageByClassEntry>           sNpcDamageByClassGameTable[MAX_EXPANSIONS];
-extern GameTable<GtNpcManaCostScalerEntry>          sNpcManaCostScalerGameTable;
-extern GameTable<GtNpcTotalHpEntry>                 sNpcTotalHpGameTable[MAX_EXPANSIONS];
-extern GameTable<GtSpellScalingEntry>               sSpellScalingGameTable;
-extern GameTable<GtXpEntry>                         sXpGameTable;
-extern GameTable<GtHonorLevelEntry>                 sHonorLevelGameTable;
-extern GameTable<GtArtifactLevelXPEntry>            sArtifactLevelXPGameTable;
-extern GameTable<GtArtifactKnowledgeMultiplierEntry>sArtifactKnowledgeMultiplierGameTable;
-extern GameTable<GtBattlePetXPEntry>                sBattlePetXPTable;
-extern GameTable<GtBattlePetTypeDamageModEntry>     sBattlePetTypeDamageModTable;
-extern GameTable<GtChallengeModeDamageEntry>        sChallengeModeDamageTable;
-extern GameTable<GtChallengeModeHealthEntry>        sChallengeModeHealthTable;
+TC_GAME_API extern GameTable<GtArmorMitigationByLvlEntry>       sArmorMitigationByLvlGameTable;
+TC_GAME_API extern GameTable<GtBarberShopCostBaseEntry>         sBarberShopCostBaseGameTable;
+TC_GAME_API extern GameTable<GtBaseMPEntry>                     sBaseMPGameTable;
+TC_GAME_API extern GameTable<GtCombatRatingsEntry>              sCombatRatingsGameTable;
+TC_GAME_API extern GameTable<GtCombatRatingsMultByILvl>         sCombatRatingsMultByILvlGameTable;
+TC_GAME_API extern GameTable<GtHpPerStaEntry>                   sHpPerStaGameTable;
+TC_GAME_API extern GameTable<GtItemSocketCostPerLevelEntry>     sItemSocketCostPerLevelGameTable;
+TC_GAME_API extern GameTable<GtNpcDamageByClassEntry>           sNpcDamageByClassGameTable[MAX_EXPANSIONS];
+TC_GAME_API extern GameTable<GtNpcManaCostScalerEntry>          sNpcManaCostScalerGameTable;
+TC_GAME_API extern GameTable<GtNpcTotalHpEntry>                 sNpcTotalHpGameTable[MAX_EXPANSIONS];
+TC_GAME_API extern GameTable<GtSpellScalingEntry>               sSpellScalingGameTable;
+TC_GAME_API extern GameTable<GtXpEntry>                         sXpGameTable;
+TC_GAME_API extern GameTable<GtHonorLevelEntry>                 sHonorLevelGameTable;
+TC_GAME_API extern GameTable<GtArtifactLevelXPEntry>            sArtifactLevelXPGameTable;
+TC_GAME_API extern GameTable<GtArtifactKnowledgeMultiplierEntry>sArtifactKnowledgeMultiplierGameTable;
+TC_GAME_API extern GameTable<GtBattlePetXPEntry>                sBattlePetXPTable;
+TC_GAME_API extern GameTable<GtBattlePetTypeDamageModEntry>     sBattlePetTypeDamageModTable;
+TC_GAME_API extern GameTable<GtChallengeModeDamageEntry>        sChallengeModeDamageTable;
+TC_GAME_API extern GameTable<GtChallengeModeHealthEntry>        sChallengeModeHealthTable;
 
-
-void LoadGameTables(std::string const& dataPath);
+TC_GAME_API void LoadGameTables(std::string const& dataPath);
 
 template<class T>
 float GetGameTableColumnForClass(T const* row, int32 class_)

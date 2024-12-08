@@ -28,7 +28,7 @@ struct GuildChallengeReward
 };
 typedef std::vector<GuildChallengeReward> GuildChallengeRewardData;
 
-class GuildMgr
+class TC_GAME_API GuildMgr
 {
     GuildMgr();
     ~GuildMgr();

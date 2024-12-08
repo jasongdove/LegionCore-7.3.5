@@ -40,12 +40,14 @@
 #include <boost/asio/signal_set.hpp>
 #include <boost/program_options.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 #include <google/protobuf/stubs/common.h>
 #include <iostream>
 #include <csignal>
 
 using boost::asio::ip::tcp;
 using namespace boost::program_options;
+namespace fs = boost::filesystem;
 
 #ifndef _TRINITY_BNET_CONFIG
 # define _TRINITY_BNET_CONFIG  "bnetserver.conf"
@@ -72,13 +74,13 @@ void StopDB();
 void SignalHandler(std::weak_ptr<Trinity::Asio::IoContext> ioContextRef, boost::system::error_code const& error, int signalNumber);
 void KeepDatabaseAliveHandler(std::weak_ptr<Trinity::Asio::DeadlineTimer> dbPingTimerRef, int32 dbPingInterval, boost::system::error_code const& error);
 void BanExpiryHandler(std::weak_ptr<Trinity::Asio::DeadlineTimer> banExpiryCheckTimerRef, int32 banExpiryCheckInterval, boost::system::error_code const& error);
-variables_map GetConsoleArguments(int argc, char** argv, std::string& configFile, std::string& configService);
+variables_map GetConsoleArguments(int argc, char** argv, fs::path& configFile, std::string& configService);
 
 int main(int argc, char** argv)
 {
     signal(SIGABRT, &Trinity::AbortHandler);
 
-    std::string configFile = _TRINITY_BNET_CONFIG;
+    auto configFile = fs::absolute(_TRINITY_BNET_CONFIG);
     std::string configService;
     auto vm = GetConsoleArguments(argc, argv, configFile, configService);
     // exit if help or version is enabled
@@ -99,7 +101,9 @@ int main(int argc, char** argv)
 #endif
 
     std::string configError;
-    if (!sConfigMgr->LoadInitial(configFile, configError))
+    if (!sConfigMgr->LoadInitial(configFile.generic_string(),
+                             std::vector<std::string>(argv, argv + argc),
+                             configError))
     {
         printf("Error in config file: %s\n", configError.c_str());
         return 1;
@@ -321,7 +325,7 @@ void ServiceStatusWatcher(std::weak_ptr<Trinity::Asio::DeadlineTimer> serviceSta
 }
 #endif
 
-variables_map GetConsoleArguments(int argc, char** argv, std::string& configFile, std::string& configService)
+variables_map GetConsoleArguments(int argc, char** argv, fs::path& configFile, std::string& configService)
 {
     (void)configService;
 
@@ -329,7 +333,8 @@ variables_map GetConsoleArguments(int argc, char** argv, std::string& configFile
     all.add_options()
         ("help,h", "print usage message")
         ("version,v", "print version build info")
-        ("config,c", value<std::string>(&configFile)->default_value(_TRINITY_BNET_CONFIG), "use <arg> as configuration file")
+        ("config,c", value<fs::path>(&configFile)->default_value(fs::absolute(_TRINITY_BNET_CONFIG)),
+             "use <arg> as configuration file")
         ;
 #if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
     options_description win("Windows platform specific options");

@@ -5440,8 +5440,8 @@ uint32 Unit::RemoveAurasWithInterruptFlags(InterruptFlags flag, uint32 spellID, 
     return count;
 }
 
-template uint32 Unit::RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags flag, uint32 spellID, uint32 except);
-template uint32 Unit::RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags2 flag, uint32 spellID, uint32 except);
+template TC_GAME_API uint32 Unit::RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags flag, uint32 spellID, uint32 except);
+template TC_GAME_API uint32 Unit::RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags2 flag, uint32 spellID, uint32 except);
 
 void Unit::RemoveAurasWithFamily(SpellFamilyNames family, uint32 familyFlag1, uint32 familyFlag2, uint32 familyFlag3, ObjectGuid casterGUID)
 {

@@ -25,7 +25,7 @@
 
 struct CreatureData;
 
-class Transport : public GameObject, public TransportBase
+class TC_GAME_API Transport : public GameObject, public TransportBase
 {
         friend Transport* TransportMgr::CreateTransport(uint32, ObjectGuid::LowType, Map*);
 
@@ -131,7 +131,7 @@ class Transport : public GameObject, public TransportBase
         bool _delayedAddModel;
 };
 
-class StaticTransport : public Transport
+class TC_GAME_API StaticTransport : public Transport
 {
     public:
         StaticTransport();

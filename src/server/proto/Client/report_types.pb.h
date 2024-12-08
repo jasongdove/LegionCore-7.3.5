@@ -38,7 +38,7 @@ namespace report {
 namespace v1 {
 
 // Internal implementation detail -- do not call these.
-void protobuf_AddDesc_report_5ftypes_2eproto();
+void TC_PROTO_API protobuf_AddDesc_report_5ftypes_2eproto();
 void protobuf_AssignDesc_report_5ftypes_2eproto();
 void protobuf_ShutdownFile_report_5ftypes_2eproto();
 
@@ -58,12 +58,12 @@ enum SpamReport_SpamSource {
   SpamReport_SpamSource_WHISPER = 3,
   SpamReport_SpamSource_CHAT = 4
 };
-bool SpamReport_SpamSource_IsValid(int value);
+TC_PROTO_API bool SpamReport_SpamSource_IsValid(int value);
 const SpamReport_SpamSource SpamReport_SpamSource_SpamSource_MIN = SpamReport_SpamSource_OTHER;
 const SpamReport_SpamSource SpamReport_SpamSource_SpamSource_MAX = SpamReport_SpamSource_CHAT;
 const int SpamReport_SpamSource_SpamSource_ARRAYSIZE = SpamReport_SpamSource_SpamSource_MAX + 1;
 
-const ::google::protobuf::EnumDescriptor* SpamReport_SpamSource_descriptor();
+TC_PROTO_API const ::google::protobuf::EnumDescriptor* SpamReport_SpamSource_descriptor();
 inline const ::std::string& SpamReport_SpamSource_Name(SpamReport_SpamSource value) {
   return ::google::protobuf::internal::NameOfEnum(
     SpamReport_SpamSource_descriptor(), value);
@@ -75,7 +75,7 @@ inline bool SpamReport_SpamSource_Parse(
 }
 // ===================================================================
 
-class ReportType : public ::google::protobuf::Message {
+class TC_PROTO_API ReportType : public ::google::protobuf::Message {
  public:
   ReportType();
   virtual ~ReportType();
@@ -247,7 +247,7 @@ class ReportType : public ::google::protobuf::Message {
   } type_;
   ::google::protobuf::uint32 _oneof_case_[1];
 
-  friend void protobuf_AddDesc_report_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_report_5ftypes_2eproto();
   friend void protobuf_AssignDesc_report_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_report_5ftypes_2eproto();
 
@@ -256,7 +256,7 @@ class ReportType : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class CustomReport : public ::google::protobuf::Message {
+class TC_PROTO_API CustomReport : public ::google::protobuf::Message {
  public:
   CustomReport();
   virtual ~CustomReport();
@@ -359,7 +359,7 @@ class CustomReport : public ::google::protobuf::Message {
   ::std::string* type_;
   ::std::string* programid_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::Attribute > attribute_;
-  friend void protobuf_AddDesc_report_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_report_5ftypes_2eproto();
   friend void protobuf_AssignDesc_report_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_report_5ftypes_2eproto();
 
@@ -368,7 +368,7 @@ class CustomReport : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class SpamReport : public ::google::protobuf::Message {
+class TC_PROTO_API SpamReport : public ::google::protobuf::Message {
  public:
   SpamReport();
   virtual ~SpamReport();
@@ -476,7 +476,7 @@ class SpamReport : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameAccountHandle* target_;
   int source_;
-  friend void protobuf_AddDesc_report_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_report_5ftypes_2eproto();
   friend void protobuf_AssignDesc_report_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_report_5ftypes_2eproto();
 
@@ -485,7 +485,7 @@ class SpamReport : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class HarassmentReport : public ::google::protobuf::Message {
+class TC_PROTO_API HarassmentReport : public ::google::protobuf::Message {
  public:
   HarassmentReport();
   virtual ~HarassmentReport();
@@ -572,7 +572,7 @@ class HarassmentReport : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameAccountHandle* target_;
   ::std::string* text_;
-  friend void protobuf_AddDesc_report_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_report_5ftypes_2eproto();
   friend void protobuf_AssignDesc_report_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_report_5ftypes_2eproto();
 
@@ -581,7 +581,7 @@ class HarassmentReport : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class RealLifeThreatReport : public ::google::protobuf::Message {
+class TC_PROTO_API RealLifeThreatReport : public ::google::protobuf::Message {
  public:
   RealLifeThreatReport();
   virtual ~RealLifeThreatReport();
@@ -668,7 +668,7 @@ class RealLifeThreatReport : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameAccountHandle* target_;
   ::std::string* text_;
-  friend void protobuf_AddDesc_report_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_report_5ftypes_2eproto();
   friend void protobuf_AssignDesc_report_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_report_5ftypes_2eproto();
 
@@ -677,7 +677,7 @@ class RealLifeThreatReport : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class InappropriateBattleTagReport : public ::google::protobuf::Message {
+class TC_PROTO_API InappropriateBattleTagReport : public ::google::protobuf::Message {
  public:
   InappropriateBattleTagReport();
   virtual ~InappropriateBattleTagReport();
@@ -764,7 +764,7 @@ class InappropriateBattleTagReport : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameAccountHandle* target_;
   ::std::string* battle_tag_;
-  friend void protobuf_AddDesc_report_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_report_5ftypes_2eproto();
   friend void protobuf_AssignDesc_report_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_report_5ftypes_2eproto();
 
@@ -773,7 +773,7 @@ class InappropriateBattleTagReport : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class HackingReport : public ::google::protobuf::Message {
+class TC_PROTO_API HackingReport : public ::google::protobuf::Message {
  public:
   HackingReport();
   virtual ~HackingReport();
@@ -845,7 +845,7 @@ class HackingReport : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameAccountHandle* target_;
-  friend void protobuf_AddDesc_report_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_report_5ftypes_2eproto();
   friend void protobuf_AssignDesc_report_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_report_5ftypes_2eproto();
 
@@ -854,7 +854,7 @@ class HackingReport : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class BottingReport : public ::google::protobuf::Message {
+class TC_PROTO_API BottingReport : public ::google::protobuf::Message {
  public:
   BottingReport();
   virtual ~BottingReport();
@@ -926,7 +926,7 @@ class BottingReport : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameAccountHandle* target_;
-  friend void protobuf_AddDesc_report_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_report_5ftypes_2eproto();
   friend void protobuf_AssignDesc_report_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_report_5ftypes_2eproto();
 
@@ -935,7 +935,7 @@ class BottingReport : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Report : public ::google::protobuf::Message {
+class TC_PROTO_API Report : public ::google::protobuf::Message {
  public:
   Report();
   virtual ~Report();
@@ -1067,7 +1067,7 @@ class Report : public ::google::protobuf::Message {
   ::bgs::protocol::EntityId* reporting_game_account_;
   ::google::protobuf::uint64 report_timestamp_;
   ::google::protobuf::int32 report_qos_;
-  friend void protobuf_AddDesc_report_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_report_5ftypes_2eproto();
   friend void protobuf_AssignDesc_report_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_report_5ftypes_2eproto();
 

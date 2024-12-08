@@ -1453,7 +1453,7 @@ struct ArmyTrainingInfo
 
 typedef sf::safe_ptr<AchievementMgr<Player>> AchievementPtr;
 
-class Player : public Unit, public GridObject<Player>
+class TC_GAME_API Player : public Unit, public GridObject<Player>
 {
     friend class WorldSession;
     friend class BattlePayMgr;
@@ -2605,7 +2605,6 @@ class Player : public Unit, public GridObject<Player>
         void setFactionForRace(uint8 race);
 
         uint32 GetNativeTeam() const { return TeamForRace(getRace()); }
-        TeamId GetNativeTeamId() const { return TeamIdForRace(getRace()); }
 
         void InitDisplayIds();
 

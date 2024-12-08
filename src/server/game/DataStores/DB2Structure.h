@@ -4138,9 +4138,9 @@ struct MapEntry
     bool IsRaid() const;
     bool IsBattleground() const;
     bool IsBattleArena() const;
-    bool IsBattlegroundOrArena() const;
+    bool IsBattlegroundOrArena() const { return InstanceType == MAP_BATTLEGROUND || InstanceType == MAP_ARENA; }
     bool IsWorldMap() const;
-    bool IsScenario() const;
+    bool IsScenario() const { return InstanceType == MAP_SCENARIO; }
     bool GetEntrancePos(int32& mapid, float& x, float& y) const;
     bool IsContinent() const;
     bool IsDynamicDifficultyMap() const;

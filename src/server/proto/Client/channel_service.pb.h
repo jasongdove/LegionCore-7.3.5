@@ -40,7 +40,7 @@ namespace channel {
 namespace v1 {
 
 // Internal implementation detail -- do not call these.
-void protobuf_AddDesc_channel_5fservice_2eproto();
+void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
 void protobuf_AssignDesc_channel_5fservice_2eproto();
 void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -59,7 +59,7 @@ class UpdateMemberStateNotification;
 
 // ===================================================================
 
-class RemoveMemberRequest : public ::google::protobuf::Message {
+class TC_PROTO_API RemoveMemberRequest : public ::google::protobuf::Message {
  public:
   RemoveMemberRequest();
   virtual ~RemoveMemberRequest();
@@ -153,7 +153,7 @@ class RemoveMemberRequest : public ::google::protobuf::Message {
   ::bgs::protocol::EntityId* agent_id_;
   ::bgs::protocol::EntityId* member_id_;
   ::google::protobuf::uint32 reason_;
-  friend void protobuf_AddDesc_channel_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
   friend void protobuf_AssignDesc_channel_5fservice_2eproto();
   friend void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -162,7 +162,7 @@ class RemoveMemberRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class SendMessageRequest : public ::google::protobuf::Message {
+class TC_PROTO_API SendMessageRequest : public ::google::protobuf::Message {
  public:
   SendMessageRequest();
   virtual ~SendMessageRequest();
@@ -256,7 +256,7 @@ class SendMessageRequest : public ::google::protobuf::Message {
   ::bgs::protocol::EntityId* agent_id_;
   ::bgs::protocol::channel::v1::Message* message_;
   ::google::protobuf::uint64 required_privileges_;
-  friend void protobuf_AddDesc_channel_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
   friend void protobuf_AssignDesc_channel_5fservice_2eproto();
   friend void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -265,7 +265,7 @@ class SendMessageRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class UpdateChannelStateRequest : public ::google::protobuf::Message {
+class TC_PROTO_API UpdateChannelStateRequest : public ::google::protobuf::Message {
  public:
   UpdateChannelStateRequest();
   virtual ~UpdateChannelStateRequest();
@@ -349,7 +349,7 @@ class UpdateChannelStateRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::EntityId* agent_id_;
   ::bgs::protocol::channel::v1::ChannelState* state_change_;
-  friend void protobuf_AddDesc_channel_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
   friend void protobuf_AssignDesc_channel_5fservice_2eproto();
   friend void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -358,7 +358,7 @@ class UpdateChannelStateRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class UpdateMemberStateRequest : public ::google::protobuf::Message {
+class TC_PROTO_API UpdateMemberStateRequest : public ::google::protobuf::Message {
  public:
   UpdateMemberStateRequest();
   virtual ~UpdateMemberStateRequest();
@@ -457,7 +457,7 @@ class UpdateMemberStateRequest : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::channel::v1::Member > state_change_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > removed_role_;
   mutable int _removed_role_cached_byte_size_;
-  friend void protobuf_AddDesc_channel_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
   friend void protobuf_AssignDesc_channel_5fservice_2eproto();
   friend void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -466,7 +466,7 @@ class UpdateMemberStateRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class DissolveRequest : public ::google::protobuf::Message {
+class TC_PROTO_API DissolveRequest : public ::google::protobuf::Message {
  public:
   DissolveRequest();
   virtual ~DissolveRequest();
@@ -548,7 +548,7 @@ class DissolveRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::EntityId* agent_id_;
   ::google::protobuf::uint32 reason_;
-  friend void protobuf_AddDesc_channel_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
   friend void protobuf_AssignDesc_channel_5fservice_2eproto();
   friend void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -557,7 +557,7 @@ class DissolveRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class JoinNotification : public ::google::protobuf::Message {
+class TC_PROTO_API JoinNotification : public ::google::protobuf::Message {
  public:
   JoinNotification();
   virtual ~JoinNotification();
@@ -678,7 +678,7 @@ class JoinNotification : public ::google::protobuf::Message {
   ::bgs::protocol::channel::v1::ChannelState* channel_state_;
   ::bgs::protocol::channel::v1::ChannelId* channel_id_;
   ::bgs::protocol::account::v1::Identity* subscriber_;
-  friend void protobuf_AddDesc_channel_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
   friend void protobuf_AssignDesc_channel_5fservice_2eproto();
   friend void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -687,7 +687,7 @@ class JoinNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class MemberAddedNotification : public ::google::protobuf::Message {
+class TC_PROTO_API MemberAddedNotification : public ::google::protobuf::Message {
  public:
   MemberAddedNotification();
   virtual ~MemberAddedNotification();
@@ -783,7 +783,7 @@ class MemberAddedNotification : public ::google::protobuf::Message {
   ::bgs::protocol::channel::v1::Member* member_;
   ::bgs::protocol::channel::v1::ChannelId* channel_id_;
   ::bgs::protocol::account::v1::Identity* subscriber_;
-  friend void protobuf_AddDesc_channel_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
   friend void protobuf_AssignDesc_channel_5fservice_2eproto();
   friend void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -792,7 +792,7 @@ class MemberAddedNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class LeaveNotification : public ::google::protobuf::Message {
+class TC_PROTO_API LeaveNotification : public ::google::protobuf::Message {
  public:
   LeaveNotification();
   virtual ~LeaveNotification();
@@ -910,7 +910,7 @@ class LeaveNotification : public ::google::protobuf::Message {
   ::bgs::protocol::channel::v1::ChannelId* channel_id_;
   ::bgs::protocol::account::v1::Identity* subscriber_;
   ::google::protobuf::uint32 reason_;
-  friend void protobuf_AddDesc_channel_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
   friend void protobuf_AssignDesc_channel_5fservice_2eproto();
   friend void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -919,7 +919,7 @@ class LeaveNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class MemberRemovedNotification : public ::google::protobuf::Message {
+class TC_PROTO_API MemberRemovedNotification : public ::google::protobuf::Message {
  public:
   MemberRemovedNotification();
   virtual ~MemberRemovedNotification();
@@ -1037,7 +1037,7 @@ class MemberRemovedNotification : public ::google::protobuf::Message {
   ::bgs::protocol::channel::v1::ChannelId* channel_id_;
   ::bgs::protocol::account::v1::Identity* subscriber_;
   ::google::protobuf::uint32 reason_;
-  friend void protobuf_AddDesc_channel_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
   friend void protobuf_AssignDesc_channel_5fservice_2eproto();
   friend void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -1046,7 +1046,7 @@ class MemberRemovedNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class SendMessageNotification : public ::google::protobuf::Message {
+class TC_PROTO_API SendMessageNotification : public ::google::protobuf::Message {
  public:
   SendMessageNotification();
   virtual ~SendMessageNotification();
@@ -1179,7 +1179,7 @@ class SendMessageNotification : public ::google::protobuf::Message {
   ::std::string* battle_tag_;
   ::bgs::protocol::channel::v1::ChannelId* channel_id_;
   ::bgs::protocol::account::v1::Identity* subscriber_;
-  friend void protobuf_AddDesc_channel_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
   friend void protobuf_AssignDesc_channel_5fservice_2eproto();
   friend void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -1188,7 +1188,7 @@ class SendMessageNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class UpdateChannelStateNotification : public ::google::protobuf::Message {
+class TC_PROTO_API UpdateChannelStateNotification : public ::google::protobuf::Message {
  public:
   UpdateChannelStateNotification();
   virtual ~UpdateChannelStateNotification();
@@ -1296,7 +1296,7 @@ class UpdateChannelStateNotification : public ::google::protobuf::Message {
   ::bgs::protocol::channel::v1::ChannelState* state_change_;
   ::bgs::protocol::channel::v1::ChannelId* channel_id_;
   ::bgs::protocol::account::v1::Identity* subscriber_;
-  friend void protobuf_AddDesc_channel_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
   friend void protobuf_AssignDesc_channel_5fservice_2eproto();
   friend void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -1305,7 +1305,7 @@ class UpdateChannelStateNotification : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class UpdateMemberStateNotification : public ::google::protobuf::Message {
+class TC_PROTO_API UpdateMemberStateNotification : public ::google::protobuf::Message {
  public:
   UpdateMemberStateNotification();
   virtual ~UpdateMemberStateNotification();
@@ -1414,7 +1414,7 @@ class UpdateMemberStateNotification : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::channel::v1::Member > state_change_;
   ::bgs::protocol::channel::v1::ChannelId* channel_id_;
   ::bgs::protocol::account::v1::Identity* subscriber_;
-  friend void protobuf_AddDesc_channel_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_channel_5fservice_2eproto();
   friend void protobuf_AssignDesc_channel_5fservice_2eproto();
   friend void protobuf_ShutdownFile_channel_5fservice_2eproto();
 
@@ -1423,7 +1423,7 @@ class UpdateMemberStateNotification : public ::google::protobuf::Message {
 };
 // ===================================================================
 
-class ChannelService : public ServiceBase
+class TC_PROTO_API ChannelService : public ServiceBase
 {
  public:
 
@@ -1447,11 +1447,11 @@ class ChannelService : public ServiceBase
   void CallServerMethod(uint32 token, uint32 methodId, MessageBuffer buffer) override final;
 
  protected:
-  virtual uint32 HandleRemoveMember(::bgs::protocol::channel::v1::RemoveMemberRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleSendMessage(::bgs::protocol::channel::v1::SendMessageRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleUpdateChannelState(::bgs::protocol::channel::v1::UpdateChannelStateRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleUpdateMemberState(::bgs::protocol::channel::v1::UpdateMemberStateRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleDissolve(::bgs::protocol::channel::v1::DissolveRequest const* request, ::bgs::protocol::NoData* response);
+  virtual uint32 HandleRemoveMember(::bgs::protocol::channel::v1::RemoveMemberRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleSendMessage(::bgs::protocol::channel::v1::SendMessageRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleUpdateChannelState(::bgs::protocol::channel::v1::UpdateChannelStateRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleUpdateMemberState(::bgs::protocol::channel::v1::UpdateMemberStateRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleDissolve(::bgs::protocol::channel::v1::DissolveRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
 
  private:
   uint32 service_hash_;
@@ -1461,7 +1461,7 @@ class ChannelService : public ServiceBase
 
 // -------------------------------------------------------------------
 
-class ChannelListener : public ServiceBase
+class TC_PROTO_API ChannelListener : public ServiceBase
 {
  public:
 

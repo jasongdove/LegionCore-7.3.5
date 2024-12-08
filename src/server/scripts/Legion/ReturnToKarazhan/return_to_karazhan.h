@@ -1,7 +1,7 @@
 #ifndef RETURN_TO_KARAZHAN_H_
 #define RETURN_TO_KARAZHAN_H_
 
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptPCH.h"
 
 #define DataHeader "RKZ"
 

@@ -16,11 +16,11 @@
  */
 
 #include "AuthenticationPackets.h"
- #include <utility>
 #include "HmacHash.h"
 #include "Util.h"
 #include "RSA.h"
 #include "CharacterData.h"
+#include <utility>
 
 bool WorldPackets::Auth::EarlyProcessClientPacket::ReadNoThrow()
 {

@@ -341,7 +341,7 @@ enum CriteriaSort
 };
 
 template<class T>
-class AchievementMgr
+class TC_GAME_API AchievementMgr
 {
     public:
         AchievementMgr(T* owner);
@@ -424,7 +424,7 @@ class AchievementMgr
         std::vector<uint32*> _timeCriteriaTreesArr;
 };
 
-class AchievementGlobalMgr
+class TC_GAME_API AchievementGlobalMgr
 {
         AchievementGlobalMgr() { }
         ~AchievementGlobalMgr() { }

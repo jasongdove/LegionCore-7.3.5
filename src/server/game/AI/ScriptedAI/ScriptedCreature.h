@@ -42,7 +42,7 @@ inline T* EnsureAI(U* ai)
 
 class InstanceScript;
 
-class SummonList : public GuidList
+class TC_GAME_API SummonList : public GuidList
 {
     public:
         explicit SummonList(Creature* creature) : me(creature) {}
@@ -77,7 +77,7 @@ class SummonList : public GuidList
         Creature* me;
 };
 
-class SummonListGO : public GuidList
+class TC_GAME_API SummonListGO : public GuidList
 {
     public:
         explicit SummonListGO(Creature* creature) : me(creature) {}
@@ -94,7 +94,7 @@ class SummonListGO : public GuidList
         Creature* me;
 };
 
-class EntryCheckPredicate
+class TC_GAME_API EntryCheckPredicate
 {
     public:
         EntryCheckPredicate(uint32 entry) : _entry(entry) {}
@@ -104,13 +104,13 @@ class EntryCheckPredicate
         uint32 _entry;
 };
 
-class DummyEntryCheckPredicate
+class TC_GAME_API DummyEntryCheckPredicate
 {
     public:
         bool operator()(ObjectGuid) { return true; }
 };
 
-struct ScriptedAI : public CreatureAI
+struct TC_GAME_API ScriptedAI : public CreatureAI
 {
     explicit ScriptedAI(Creature* creature);
     virtual ~ScriptedAI() { }
@@ -335,7 +335,7 @@ struct ScriptedAI : public CreatureAI
         bool _isHeroic;
 };
 
-struct Scripted_NoMovementAI : public ScriptedAI
+struct TC_GAME_API Scripted_NoMovementAI : public ScriptedAI
 {
     Scripted_NoMovementAI(Creature* creature) : ScriptedAI(creature) { }
     virtual ~Scripted_NoMovementAI() {}
@@ -344,7 +344,7 @@ struct Scripted_NoMovementAI : public ScriptedAI
     void AttackStart(Unit* target) override;
 };
 
-class BossAI : public ScriptedAI
+class TC_GAME_API BossAI : public ScriptedAI
 {
 public:
     BossAI(Creature* creature, uint32 bossId);
@@ -406,7 +406,7 @@ private:
     uint32 _checkZoneInCombatTimer;
 };
 
-class WorldBossAI : public ScriptedAI
+class TC_GAME_API WorldBossAI : public ScriptedAI
 {
     public:
         WorldBossAI(Creature* creature);
@@ -436,7 +436,7 @@ class WorldBossAI : public ScriptedAI
         SummonList summons;
 };
 
-class BrawlersBossAI : public ScriptedAI
+class TC_GAME_API BrawlersBossAI : public ScriptedAI
 {
     public:
         BrawlersBossAI(Creature* creature);
@@ -458,14 +458,33 @@ class BrawlersBossAI : public ScriptedAI
 };
 
 // SD2 grid searchers.
-Creature* GetClosestCreatureWithEntry(WorldObject* source, uint32 entry, float maxSearchRange, bool alive = true);
-GameObject* GetClosestGameObjectWithEntry(WorldObject* source, uint32 entry, float maxSearchRange);
-void GetCreatureListWithEntryInGrid(std::list<Creature*>& list, WorldObject* source, uint32 entry, float maxSearchRange);
-void GetGameObjectListWithEntryInGrid(std::list<GameObject*>& list, WorldObject* source, uint32 entry, float maxSearchRange);
-void GetPlayerListInGrid(std::list<Player*>& list, WorldObject* source, float maxSearchRange);
+inline Creature* GetClosestCreatureWithEntry(WorldObject* source, uint32 entry, float maxSearchRange, bool alive = true)
+{
+    return source->FindNearestCreature(entry, maxSearchRange, alive);
+}
 
-void GetPositionWithDistInOrientation(Unit* pUnit, float dist, float orientation, float& x, float& y);
-void GetPosInRadiusWithRandomOrientation(Unit* unit, float dist, float &x, float &y);
-void GetRandPosFromCenterInDist(float centerX, float centerY, float dist, float& x, float& y);
+inline GameObject* GetClosestGameObjectWithEntry(WorldObject* source, uint32 entry, float maxSearchRange)
+{
+    return source->FindNearestGameObject(entry, maxSearchRange);
+}
+
+inline void GetCreatureListWithEntryInGrid(std::list<Creature*>& list, WorldObject* source, uint32 entry, float maxSearchRange)
+{
+    source->GetCreatureListWithEntryInGrid(list, entry, maxSearchRange);
+}
+
+inline void GetGameObjectListWithEntryInGrid(std::list<GameObject*>& list, WorldObject* source, uint32 entry, float maxSearchRange)
+{
+    source->GetGameObjectListWithEntryInGrid(list, entry, maxSearchRange);
+}
+
+inline void GetPlayerListInGrid(std::list<Player*>& list, WorldObject* source, float maxSearchRange)
+{
+    source->GetPlayerListInGrid(list, maxSearchRange);
+}
+
+TC_GAME_API void GetPositionWithDistInOrientation(Unit* pUnit, float dist, float orientation, float& x, float& y);
+TC_GAME_API void GetPosInRadiusWithRandomOrientation(Unit* unit, float dist, float &x, float &y);
+TC_GAME_API void GetRandPosFromCenterInDist(float centerX, float centerY, float dist, float& x, float& y);
 
 #endif // SCRIPTEDCREATURE_H_

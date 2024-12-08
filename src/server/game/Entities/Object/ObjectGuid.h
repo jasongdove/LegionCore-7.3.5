@@ -124,11 +124,11 @@ class GuidFormat;
 
 #pragma pack(push, 1)
 
-class ObjectGuid
+class TC_GAME_API ObjectGuid
 {
-    friend std::ostream& operator<<(std::ostream& stream, ObjectGuid const& guid);
-    friend ByteBuffer& operator<<(ByteBuffer& buf, ObjectGuid const& guid);
-    friend ByteBuffer& operator>>(ByteBuffer& buf, ObjectGuid& guid);
+    friend TC_GAME_API std::ostream& operator<<(std::ostream& stream, ObjectGuid const& guid);
+    friend TC_GAME_API ByteBuffer& operator<<(ByteBuffer& buf, ObjectGuid const& guid);
+    friend TC_GAME_API ByteBuffer& operator>>(ByteBuffer& buf, ObjectGuid& guid);
     friend class GuidFormat;
 
     public:
@@ -245,7 +245,7 @@ typedef std::list<uint32> Uint32List;
 typedef std::vector<uint32> Uint32Vector;
 
 template<HighGuid high>
-class ObjectGuidGenerator
+class TC_GAME_API ObjectGuidGenerator
 {
     public:
         explicit ObjectGuidGenerator(ObjectGuid::LowType start = UI64LIT(1)) : _nextGuid(start) { }
@@ -259,9 +259,9 @@ class ObjectGuidGenerator
         uint64 _nextGuid;
 };
 
-ByteBuffer& operator<<(ByteBuffer& buf, ObjectGuid const& guid);
-ByteBuffer& operator>>(ByteBuffer& buf, ObjectGuid& guid);
-std::ostream& operator<<(std::ostream& stream, ObjectGuid const& guid);
+TC_GAME_API ByteBuffer& operator<<(ByteBuffer& buf, ObjectGuid const& guid);
+TC_GAME_API ByteBuffer& operator>>(ByteBuffer& buf, ObjectGuid& guid);
+TC_GAME_API std::ostream& operator<<(std::ostream& stream, ObjectGuid const& guid);
 
 namespace std
 {

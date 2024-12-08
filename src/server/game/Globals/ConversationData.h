@@ -60,7 +60,7 @@ typedef std::unordered_map<uint32/*entry*/, std::vector<ConversationCreature> > 
 typedef std::unordered_map<uint32/*entry*/, std::vector<ConversationActor> > ConversationActorMap;
 typedef std::unordered_map<ObjectGuid::LowType, ConversationSpawnData> ConversationDataContainer;
 
-class ConversationDataStoreMgr
+class TC_GAME_API ConversationDataStoreMgr
 {
     ConversationDataStoreMgr();
     ~ConversationDataStoreMgr();

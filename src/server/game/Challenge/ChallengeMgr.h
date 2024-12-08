@@ -68,7 +68,7 @@ static const std::list<uint32> ChallengeChestList = {252674,252677,252686,252668
 
 class Challenge;
 
-class ChallengeMgr
+class TC_GAME_API ChallengeMgr
 {
     ChallengeMgr();
     ~ChallengeMgr();

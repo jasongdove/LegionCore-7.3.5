@@ -327,7 +327,7 @@ std::string GetScriptsTableNameByType(ScriptsType type);
 ScriptMapMap* GetScriptsMapByType(ScriptsType type);
 std::string GetScriptCommandName(ScriptCommands command);
 
-class ScriptDataStoreMgr
+class TC_GAME_API ScriptDataStoreMgr
 {
     ScriptDataStoreMgr();
     ~ScriptDataStoreMgr();

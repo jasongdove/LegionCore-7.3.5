@@ -45,6 +45,7 @@ class Player;
 class GameObject;
 class Creature;
 class Challenge;
+class ModuleReference;
 
 typedef std::set<GameObject*> DoorSet;
 typedef std::set<Creature*> MinionSet;
@@ -155,7 +156,7 @@ static uint32 const InCombatResurrectionTimer = 90 * IN_MILLISECONDS;
 static uint32 const ChallengeModeOrb = 246779;
 static uint32 const ChallengeModeDoor = 239323;
 
-class InstanceScript : public ZoneScript
+class TC_GAME_API InstanceScript : public ZoneScript
 {
     public:
         explicit InstanceScript(InstanceMap* map);
@@ -416,5 +417,10 @@ class InstanceScript : public ZoneScript
         WorldObjectMap _creatureData; // Now is only one object peer entry, if need all object in this entry, change guid to vector<guid>
         WorldObjectMap _gameObjectData; // Now is only one object peer entry, if need all object in this entry, change guid to vector<guid>
         LogsSystem::MainData _logData;
+
+    #ifdef TRINITY_API_USE_DYNAMIC_LINKING
+        // Strong reference to the associated script module
+        std::shared_ptr<ModuleReference> module_reference;
+    #endif // #ifndef TRINITY_API_USE_DYNAMIC_LINKING
 };
 #endif

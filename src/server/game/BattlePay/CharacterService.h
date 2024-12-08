@@ -2,7 +2,7 @@
 #ifndef _sCharService
 #define _sCharService
 
-class CharacterService
+class TC_GAME_API CharacterService
 {
 	CharacterService() = default;
 	~CharacterService() = default;

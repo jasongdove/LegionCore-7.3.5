@@ -198,7 +198,7 @@ typedef std::multimap<int32, uint32> ExclusiveQuestGroups;
 typedef std::unordered_map<uint32, PointOfInterestLocale> PointOfInterestLocaleContainer;
 typedef std::unordered_map<uint32, PointOfInterest> PointOfInterestContainer;
 
-class QuestDataStoreMgr
+class TC_GAME_API QuestDataStoreMgr
 {
     QuestDataStoreMgr();
     ~QuestDataStoreMgr();

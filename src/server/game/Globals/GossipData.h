@@ -35,7 +35,7 @@ typedef std::pair<GossipMenuItemsContainer::const_iterator, GossipMenuItemsConta
 typedef std::pair<GossipMenuItemsContainer::iterator, GossipMenuItemsContainer::iterator> GossipMenuItemsMapBoundsNonConst;
 typedef std::unordered_map<uint32, GossipMenuItemsLocale> GossipMenuItemsLocaleContainer;
 
-class GossipDataStoreMgr
+class TC_GAME_API GossipDataStoreMgr
 {
     GossipDataStoreMgr();
     ~GossipDataStoreMgr();

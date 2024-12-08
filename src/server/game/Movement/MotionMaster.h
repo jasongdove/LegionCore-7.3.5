@@ -97,7 +97,7 @@ struct JumpArrivalCastArgs
 
 inline bool IsInvalidMovementSlot(uint8 const slot) { return slot >= MAX_MOTION_SLOT; }
 
-class MotionMaster
+class TC_GAME_API MotionMaster
 {
     private:
         typedef std::vector<MovementGenerator*> ExpireList;

@@ -43,7 +43,7 @@ namespace Movement
 
     /*  Initializes and launches spline movement
      */
-    class MoveSplineInit
+    class TC_GAME_API MoveSplineInit
     {
     public:
 

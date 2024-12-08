@@ -284,7 +284,7 @@ enum BattlegroundPlayerPositionConstants
 
 struct CreateBattlegroundData;
 
-class Battleground
+class TC_GAME_API Battleground
 {
 public:
     Battleground();

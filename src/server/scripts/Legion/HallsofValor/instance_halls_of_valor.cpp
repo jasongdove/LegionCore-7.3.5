@@ -4,7 +4,7 @@
 
 #include "Group.h"
 #include "halls_of_valor.h"
-#include "PrecompiledHeaders/ScriptPCH.h"
+#include "ScriptPCH.h"
 #include "WorldPacket.h"
 #include "InstancePackets.h"
 

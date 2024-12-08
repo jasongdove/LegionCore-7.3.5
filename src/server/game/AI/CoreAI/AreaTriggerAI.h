@@ -24,7 +24,7 @@
 class AreaTrigger;
 class Unit;
 
-class AreaTriggerAI
+class TC_GAME_API AreaTriggerAI
 {
     protected:
         AreaTrigger* const at;

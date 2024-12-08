@@ -421,7 +421,7 @@ namespace WorldPackets
             uint8 AwaitingPlayers[MAX_TEAMS] = { };
         };
 
-        class BattlefieldStatusQueued final : public ServerPacket
+        class TC_GAME_API BattlefieldStatusQueued final : public ServerPacket
         {
         public:
             BattlefieldStatusQueued() : ServerPacket(SMSG_BATTLEFIELD_STATUS_QUEUED, 11) { }

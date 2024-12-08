@@ -21,7 +21,7 @@
 #include "Define.h"
 #include <vector>
 
-class MessageBuffer
+class TC_COMMON_API MessageBuffer
 {
     typedef std::vector<uint8>::size_type size_type;
 

@@ -28,7 +28,7 @@
 #include "entity_types.pb.h"
 #include "invitation_types.pb.h"
 #include "role_types.pb.h"
-#include "Define.h"
+#include "Define.h" // for TC_PROTO_API
 // @@protoc_insertion_point(includes)
 
 namespace bgs {
@@ -37,7 +37,7 @@ namespace friends {
 namespace v1 {
 
 // Internal implementation detail -- do not call these.
-void protobuf_AddDesc_friends_5ftypes_2eproto();
+void TC_PROTO_API protobuf_AddDesc_friends_5ftypes_2eproto();
 void protobuf_AssignDesc_friends_5ftypes_2eproto();
 void protobuf_ShutdownFile_friends_5ftypes_2eproto();
 
@@ -49,7 +49,7 @@ class SubscribeResponse;
 
 // ===================================================================
 
-class Friend : public ::google::protobuf::Message {
+class TC_PROTO_API Friend : public ::google::protobuf::Message {
  public:
   Friend();
   virtual ~Friend();
@@ -168,7 +168,7 @@ class Friend : public ::google::protobuf::Message {
   mutable int _role_cached_byte_size_;
   ::google::protobuf::uint64 privileges_;
   ::google::protobuf::uint64 attributes_epoch_;
-  friend void protobuf_AddDesc_friends_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5ftypes_2eproto();
   friend void protobuf_AssignDesc_friends_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_friends_5ftypes_2eproto();
 
@@ -177,7 +177,7 @@ class Friend : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class FriendOfFriend : public ::google::protobuf::Message {
+class TC_PROTO_API FriendOfFriend : public ::google::protobuf::Message {
  public:
   FriendOfFriend();
   virtual ~FriendOfFriend();
@@ -326,7 +326,7 @@ class FriendOfFriend : public ::google::protobuf::Message {
   ::google::protobuf::uint64 attributes_epoch_;
   ::std::string* full_name_;
   ::std::string* battle_tag_;
-  friend void protobuf_AddDesc_friends_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5ftypes_2eproto();
   friend void protobuf_AssignDesc_friends_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_friends_5ftypes_2eproto();
 
@@ -335,7 +335,7 @@ class FriendOfFriend : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class FriendInvitation : public ::google::protobuf::Message {
+class TC_PROTO_API FriendInvitation : public ::google::protobuf::Message {
  public:
   FriendInvitation();
   virtual ~FriendInvitation();
@@ -423,7 +423,7 @@ class FriendInvitation : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > role_;
   mutable int _role_cached_byte_size_;
   bool first_received_;
-  friend void protobuf_AddDesc_friends_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5ftypes_2eproto();
   friend void protobuf_AssignDesc_friends_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_friends_5ftypes_2eproto();
 
@@ -432,7 +432,7 @@ class FriendInvitation : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class FriendInvitationParams : public ::google::protobuf::Message {
+class TC_PROTO_API FriendInvitationParams : public ::google::protobuf::Message {
  public:
   FriendInvitationParams();
   virtual ~FriendInvitationParams();
@@ -599,7 +599,7 @@ class FriendInvitationParams : public ::google::protobuf::Message {
   mutable int _role_cached_byte_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > previous_role_deprecated_;
   mutable int _previous_role_deprecated_cached_byte_size_;
-  friend void protobuf_AddDesc_friends_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5ftypes_2eproto();
   friend void protobuf_AssignDesc_friends_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_friends_5ftypes_2eproto();
 
@@ -608,7 +608,7 @@ class FriendInvitationParams : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class SubscribeResponse : public ::google::protobuf::Message {
+class TC_PROTO_API SubscribeResponse : public ::google::protobuf::Message {
  public:
   SubscribeResponse();
   virtual ~SubscribeResponse();
@@ -750,7 +750,7 @@ class SubscribeResponse : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::Invitation > sent_invitations_;
   ::google::protobuf::RepeatedPtrField< ::bgs::protocol::Invitation > received_invitations_;
   ::google::protobuf::uint32 max_sent_invitations_;
-  friend void protobuf_AddDesc_friends_5ftypes_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_friends_5ftypes_2eproto();
   friend void protobuf_AssignDesc_friends_5ftypes_2eproto();
   friend void protobuf_ShutdownFile_friends_5ftypes_2eproto();
 

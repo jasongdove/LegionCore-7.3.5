@@ -37,7 +37,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 
-MapManager::MapManager(): _nextInstanceId(0), _mapInfoCounter(0)
+MapManager::MapManager(): _nextInstanceId(0), _mapInfoCounter(0), _scheduledScripts(0)
 {
     _mapCount = sMapStore.GetNumRows() + 1;
     i_maps.assign(_mapCount, nullptr);

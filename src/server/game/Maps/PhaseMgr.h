@@ -126,7 +126,7 @@ private:
     uint32 _questId = 0;
 };
 
-class PhaseMgr
+class TC_GAME_API PhaseMgr
 {
 public:
     PhaseMgr(Player* _player);

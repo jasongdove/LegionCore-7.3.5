@@ -123,11 +123,11 @@ namespace Trinity
 {
 namespace Crypto
 {
-    template bool RSA::LoadFromFile(std::string const& fileName, RSA::PublicKey);
-    template bool RSA::LoadFromFile(std::string const& fileName, RSA::PrivateKey);
-    template bool RSA::LoadFromString(std::string const& keyPem, RSA::PublicKey);
-    template bool RSA::LoadFromString(std::string const& keyPem, RSA::PrivateKey);
-    template bool RSA::Encrypt<RSA::PublicKey>(uint8 const* data, std::size_t dataLength, uint8* output, int32 paddingType);
-    template bool RSA::Encrypt<RSA::PrivateKey>(uint8 const* data, std::size_t dataLength, uint8* output, int32 paddingType);
+    template TC_COMMON_API bool RSA::LoadFromFile(std::string const& fileName, RSA::PublicKey);
+    template TC_COMMON_API bool RSA::LoadFromFile(std::string const& fileName, RSA::PrivateKey);
+    template TC_COMMON_API bool RSA::LoadFromString(std::string const& keyPem, RSA::PublicKey);
+    template TC_COMMON_API bool RSA::LoadFromString(std::string const& keyPem, RSA::PrivateKey);
+    template TC_COMMON_API bool RSA::Encrypt<RSA::PublicKey>(uint8 const* data, std::size_t dataLength, uint8* output, int32 paddingType);
+    template TC_COMMON_API bool RSA::Encrypt<RSA::PrivateKey>(uint8 const* data, std::size_t dataLength, uint8* output, int32 paddingType);
 }
 }

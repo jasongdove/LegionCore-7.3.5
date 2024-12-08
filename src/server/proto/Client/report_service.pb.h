@@ -39,7 +39,7 @@ namespace report {
 namespace v1 {
 
 // Internal implementation detail -- do not call these.
-void protobuf_AddDesc_report_5fservice_2eproto();
+void TC_PROTO_API protobuf_AddDesc_report_5fservice_2eproto();
 void protobuf_AssignDesc_report_5fservice_2eproto();
 void protobuf_ShutdownFile_report_5fservice_2eproto();
 
@@ -48,7 +48,7 @@ class SubmitReportRequest;
 
 // ===================================================================
 
-class SendReportRequest : public ::google::protobuf::Message {
+class TC_PROTO_API SendReportRequest : public ::google::protobuf::Message {
  public:
   SendReportRequest();
   virtual ~SendReportRequest();
@@ -120,7 +120,7 @@ class SendReportRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::bgs::protocol::report::v1::Report* report_;
-  friend void protobuf_AddDesc_report_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_report_5fservice_2eproto();
   friend void protobuf_AssignDesc_report_5fservice_2eproto();
   friend void protobuf_ShutdownFile_report_5fservice_2eproto();
 
@@ -129,7 +129,7 @@ class SendReportRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class SubmitReportRequest : public ::google::protobuf::Message {
+class TC_PROTO_API SubmitReportRequest : public ::google::protobuf::Message {
  public:
   SubmitReportRequest();
   virtual ~SubmitReportRequest();
@@ -213,7 +213,7 @@ class SubmitReportRequest : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::bgs::protocol::account::v1::GameAccountHandle* agent_id_;
   ::bgs::protocol::report::v1::ReportType* report_type_;
-  friend void protobuf_AddDesc_report_5fservice_2eproto();
+  friend void TC_PROTO_API protobuf_AddDesc_report_5fservice_2eproto();
   friend void protobuf_AssignDesc_report_5fservice_2eproto();
   friend void protobuf_ShutdownFile_report_5fservice_2eproto();
 
@@ -222,7 +222,7 @@ class SubmitReportRequest : public ::google::protobuf::Message {
 };
 // ===================================================================
 
-class ReportService : public ServiceBase
+class TC_PROTO_API ReportService : public ServiceBase
 {
  public:
 
@@ -243,8 +243,8 @@ class ReportService : public ServiceBase
   void CallServerMethod(uint32 token, uint32 methodId, MessageBuffer buffer) override final;
 
  protected:
-  virtual uint32 HandleSendReport(::bgs::protocol::report::v1::SendReportRequest const* request, ::bgs::protocol::NoData* response);
-  virtual uint32 HandleSubmitReport(::bgs::protocol::report::v1::SubmitReportRequest const* request, ::bgs::protocol::NoData* response);
+  virtual uint32 HandleSendReport(::bgs::protocol::report::v1::SendReportRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
+  virtual uint32 HandleSubmitReport(::bgs::protocol::report::v1::SubmitReportRequest const* request, ::bgs::protocol::NoData* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation);
 
  private:
   uint32 service_hash_;

@@ -754,7 +754,7 @@ struct TriggerCastData
 struct CalcDamageInfo;
 struct SpellNonMeleeDamage;
 
-class DamageInfo
+class TC_GAME_API DamageInfo
 {
 private:
     Unit* const m_attacker;
@@ -894,7 +894,7 @@ struct CalcDamageInfo
 };
 
 // Spell damage info structure based on structure sending in SMSG_SPELL_NON_MELEE_DAMAGE_LOG opcode
-struct SpellNonMeleeDamage
+struct TC_GAME_API SpellNonMeleeDamage
 {
     SpellNonMeleeDamage(Unit* _attacker, Unit* _target, uint32 spellID, uint32 spellXSpellVisualID, uint32 _schoolMask, ObjectGuid castGuid = ObjectGuid::Empty);
 
@@ -954,7 +954,7 @@ struct GlobalCooldown
 
 typedef std::unordered_map<uint32 /*category*/, GlobalCooldown> GlobalCooldownList;
 
-class GlobalCooldownMgr                                     // Shared by Player and CharmInfo
+class TC_GAME_API GlobalCooldownMgr                                     // Shared by Player and CharmInfo
 {
 public:
     GlobalCooldownMgr() {}
@@ -1086,7 +1086,7 @@ enum class DisplayToastMethod : uint8
 typedef std::set<Unit*> UnitSet;
 typedef std::set<AuraEffect*> AuraEffectSet;
 
-class Unit : public WorldObject
+class TC_GAME_API Unit : public WorldObject
 {
     enum DamageTrackingInfo
     {
@@ -2686,7 +2686,7 @@ class Unit : public WorldObject
         FunctionProcessor m_CombatFunctions;
 };
 
-class DelayCastEvent : public BasicEvent
+class TC_GAME_API DelayCastEvent : public BasicEvent
 {
     friend class EffectMovementGenerator;
     friend class Spell;

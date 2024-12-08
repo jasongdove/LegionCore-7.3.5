@@ -39,14 +39,27 @@ target_include_directories(game
 target_link_libraries(game
   PRIVATE
     trinity-core-interface
+    efsw
   PUBLIC
     shared
     Detour)
 
 set_target_properties(game
     PROPERTIES
-      FOLDER
-        "server")
+      DEFINE_SYMBOL TRINITY_API_EXPORT_GAME
+      FOLDER "server")
+
+if( BUILD_SHARED_LIBS )
+  if( UNIX )
+    install(TARGETS game
+      LIBRARY
+        DESTINATION lib)
+  elseif( WIN32 )
+    install(TARGETS game
+      RUNTIME
+        DESTINATION "${CMAKE_INSTALL_PREFIX}")
+  endif()
+endif()
 
 # Generate precompiled header
 if (USE_COREPCH)
