@@ -423,6 +423,7 @@ struct SmartEvent
             uint32 param2;
             uint32 param3;
             uint32 param4;
+            uint32 param5;
         } raw;
 
         struct
@@ -1296,7 +1297,7 @@ enum SMARTAI_TARGETS
 
 struct SmartTarget
 {
-    SmartTarget(SMARTAI_TARGETS t = SMART_TARGET_NONE, uint32 p1 = 0, uint32 p2 = 0, uint32 p3 = 0);
+    SmartTarget(SMARTAI_TARGETS t = SMART_TARGET_NONE, uint32 p1 = 0, uint32 p2 = 0, uint32 p3 = 0, uint32 p4 = 0);
 
     SMARTAI_TARGETS type;
     float x, y, z, o;
@@ -1384,6 +1385,7 @@ struct SmartTarget
             uint32 param1;
             uint32 param2;
             uint32 param3;
+            uint32 param4;
         } raw;
 
         struct

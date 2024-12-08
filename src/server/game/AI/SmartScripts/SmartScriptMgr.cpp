@@ -109,12 +109,13 @@ WayPoint::WayPoint(uint32 _id, float _x, float _y, float _z)
     z = _z;
 }
 
-SmartTarget::SmartTarget(SMARTAI_TARGETS t, uint32 p1, uint32 p2, uint32 p3): x(0), y(0), z(0), o(0)
+SmartTarget::SmartTarget(SMARTAI_TARGETS t, uint32 p1, uint32 p2, uint32 p3, uint32 p4): x(0), y(0), z(0), o(0)
 {
     type = t;
     raw.param1 = p1;
     raw.param2 = p2;
     raw.param3 = p3;
+    raw.param3 = p4;
 }
 
 SmartScriptHolder::SmartScriptHolder(): entryOrGuid(0), source_type(SMART_SCRIPT_TYPE_CREATURE), event_id(0), link(0), event{}, action{}, timer(0), active(false), runOnce(false), enableTimed(false)
@@ -274,23 +275,25 @@ void SmartAIMgr::LoadSmartAIFromDB()
         temp.event.raw.param2 = fields[10].GetUInt32();
         temp.event.raw.param3 = fields[11].GetUInt32();
         temp.event.raw.param4 = fields[12].GetUInt32();
+        temp.event.raw.param5 = fields[13].GetUInt32();
 
-        temp.action.type = (SMART_ACTION)fields[13].GetUInt8();
-        temp.action.raw.param1 = fields[14].GetUInt32();
-        temp.action.raw.param2 = fields[15].GetUInt32();
-        temp.action.raw.param3 = fields[16].GetUInt32();
-        temp.action.raw.param4 = fields[17].GetUInt32();
-        temp.action.raw.param5 = fields[18].GetUInt32();
-        temp.action.raw.param6 = fields[19].GetUInt32();
+        temp.action.type = (SMART_ACTION)fields[14].GetUInt8();
+        temp.action.raw.param1 = fields[15].GetUInt32();
+        temp.action.raw.param2 = fields[16].GetUInt32();
+        temp.action.raw.param3 = fields[17].GetUInt32();
+        temp.action.raw.param4 = fields[18].GetUInt32();
+        temp.action.raw.param5 = fields[19].GetUInt32();
+        temp.action.raw.param6 = fields[20].GetUInt32();
 
-        temp.target.type = (SMARTAI_TARGETS)fields[20].GetUInt8();
-        temp.target.raw.param1 = fields[21].GetUInt32();
-        temp.target.raw.param2 = fields[22].GetUInt32();
-        temp.target.raw.param3 = fields[23].GetUInt32();
-        temp.target.x = fields[24].GetFloat();
-        temp.target.y = fields[25].GetFloat();
-        temp.target.z = fields[26].GetFloat();
-        temp.target.o = fields[27].GetFloat();
+        temp.target.type = (SMARTAI_TARGETS)fields[21].GetUInt8();
+        temp.target.raw.param1 = fields[22].GetUInt32();
+        temp.target.raw.param2 = fields[23].GetUInt32();
+        temp.target.raw.param3 = fields[24].GetUInt32();
+        temp.target.raw.param4 = fields[25].GetUInt32();
+        temp.target.x = fields[26].GetFloat();
+        temp.target.y = fields[27].GetFloat();
+        temp.target.z = fields[28].GetFloat();
+        temp.target.o = fields[29].GetFloat();
 
         //check target
         if (!IsTargetValid(temp))
