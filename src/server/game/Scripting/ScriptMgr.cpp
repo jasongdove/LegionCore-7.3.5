@@ -125,18 +125,6 @@ template<>
 struct is_script_database_bound<AchievementRewardScript>
   : std::true_type { };
 
-template<>
-struct is_script_database_bound<GuildScript>
-  : std::true_type { };
-
-template<>
-struct is_script_database_bound<GroupScript>
-  : std::true_type { };
-
-template<>
-struct is_script_database_bound<WorldStateScript>
-  : std::true_type { };
-
 enum Spells
 {
     SPELL_HOTSWAP_VISUAL_SPELL_EFFECT = 40162 // 59084
