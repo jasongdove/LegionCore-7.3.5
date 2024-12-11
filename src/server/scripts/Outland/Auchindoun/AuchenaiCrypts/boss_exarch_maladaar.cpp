@@ -325,55 +325,8 @@ public:
     };
 };
 
-#define SPELL_AV_MORTAL_STRIKE          16856
-#define SPELL_AV_SUNDER_ARMOR           16145
-
-class mob_avatar_of_martyred : public CreatureScript
-{
-public:
-    mob_avatar_of_martyred() : CreatureScript("mob_avatar_of_martyred") {}
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new mob_avatar_of_martyredAI (creature);
-    }
-
-    struct mob_avatar_of_martyredAI : public ScriptedAI
-    {
-        mob_avatar_of_martyredAI(Creature* creature) : ScriptedAI(creature) {}
-
-        uint32 Mortal_Strike_timer;
-
-        void Reset() override
-        {
-            Mortal_Strike_timer = 10000;
-        }
-
-        void EnterCombat(Unit* /*who*/) override {}
-
-        void UpdateAI(uint32 diff) override
-        {
-            if (!UpdateVictim())
-                return;
-
-            if (Mortal_Strike_timer <= diff)
-            {
-                if (auto victim = me->getVictim())
-                    DoCast(victim, SPELL_AV_MORTAL_STRIKE, false);
-
-                Mortal_Strike_timer = urand(10, 30) * 1000;
-            }
-            else
-                Mortal_Strike_timer -= diff;
-
-            DoMeleeAttackIfReady();
-        }
-    };
-};
-
 void AddSC_boss_exarch_maladaar()
 {
     new boss_exarch_maladaar();
-    new mob_avatar_of_martyred();
     new mob_stolen_soul();
 }

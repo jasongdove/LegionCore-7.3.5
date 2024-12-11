@@ -166,11 +166,13 @@ void CreatureTextMgr::LoadCreatureTexts()
             temp.SpellID = 0;
         }
 
-        if (IsDuplicateText(temp.creatureId, temp.text))
-        {
-            WorldDatabase.PExecute("DELETE FROM creature_text WHERE Entry = %u AND GroupID = %u AND ID = %u", temp.creatureId, temp.group, temp.id);
-            continue;
-        }
+        // LC primary key (including text) is diff than TC primary key (not including text)
+        // since we have merged in TC creature_text, we don't want to delete like this
+        // if (IsDuplicateText(temp.creatureId, temp.text))
+        // {
+        //     WorldDatabase.PExecute("DELETE FROM creature_text WHERE Entry = %u AND GroupID = %u AND ID = %u", temp.creatureId, temp.group, temp.id);
+        //     continue;
+        // }
 
         //entry not yet added, add empty TextHolder (list of groups)
         if (mTextMap.find(temp.creatureId) == mTextMap.end())
