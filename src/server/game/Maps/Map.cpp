@@ -2859,7 +2859,7 @@ void Map::SendInitTransports(Player* player)
     UpdateData transData(player->GetMapId());
     for (Transport* transport : _transports)
         // send data for current transport in other place
-        if (transport != player->GetTransport() && transport->GetMapId() == GetId() && player->InSamePhase(transport)/* && (player->GetDistance(*i) <= MAX_VISIBILITY_DISTANCE || IsBattlegroundOrArena())*/)
+        if (transport != player->GetTransport() && transport->GetMapId() == GetId() && player->IsInPhase(transport)/* && (player->GetDistance(*i) <= MAX_VISIBILITY_DISTANCE || IsBattlegroundOrArena())*/)
             transport->BuildCreateUpdateBlockForPlayer(&transData, player);
 
     WorldPacket packet;
@@ -2880,7 +2880,7 @@ void Map::SendRemoveTransports(Player* player)
         player->GetSession()->SendPacket(&packet);
 }
 
-void Map::SendUpdateTransportVisibility(Player* player, std::set<uint32> const& /*previousPhases*/)
+void Map::SendUpdateTransportVisibility(Player* player, std::set<uint32> const& previousPhases)
 {
     // Hack to send out transports
     UpdateData transData(player->GetMapId());
@@ -2889,9 +2889,9 @@ void Map::SendUpdateTransportVisibility(Player* player, std::set<uint32> const& 
         if (transport == player->GetTransport())
             continue;
 
-        if (player->InSamePhase(transport) && !player->HaveAtClient(transport))
+        if (player->IsInPhase(transport) && !Trinity::Containers::Intersects(previousPhases.begin(), previousPhases.end(), transport->GetPhases().begin(), transport->GetPhases().end()))
             (transport)->BuildCreateUpdateBlockForPlayer(&transData, player);
-        else if (!player->InSamePhase(transport) && player->HaveAtClient(transport))
+        else if (!player->IsInPhase(transport))
             (transport)->BuildOutOfRangeUpdateBlock(&transData);
     }
 

@@ -577,6 +577,10 @@ class TC_GAME_API Map
 
         void UpdateOutdoorPvPScript();
 
+        void SendInitTransports(Player* player);
+        void SendRemoveTransports(Player* player);
+        void SendUpdateTransportVisibility(Player* player, std::set<uint32> const& previousPhases);
+
     private:
         void LoadMapAndVMap(int gx, int gy);
         void LoadVMap(int gx, int gy);
@@ -590,10 +594,6 @@ class TC_GAME_API Map
         void SetTimer(uint32 t) { i_gridExpiry = t < MIN_GRID_DELAY ? MIN_GRID_DELAY : t; }
 
         void SendInitSelf(Player* player);
-
-        void SendInitTransports(Player* player);
-        void SendRemoveTransports(Player* player);
-        void SendUpdateTransportVisibility(Player* player, std::set<uint32> const& previousPhases);
 
         bool CreatureCellRelocation(Creature* creature, Cell new_cell);
         bool GameObjectCellRelocation(GameObject* go, Cell new_cell);

@@ -899,7 +899,6 @@ bool InstanceScript::IsWipe() const
 
 void InstanceScript::UpdatePhasing()
 {
-    /*
     if (!instance)
         return;
 
@@ -913,6 +912,9 @@ void InstanceScript::UpdatePhasing()
     {
         if (player->CanContact())
         {
+            player->UpdatePhasing();
+
+            /*
             player->AddDelayedEvent(100, [player, step]() -> void
             {
                 PhaseUpdateData phaseUdateData;
@@ -921,9 +923,9 @@ void InstanceScript::UpdatePhasing()
                     phaseUdateData.AddScenarioUpdate(step);
                 player->GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
             });
+            */
         }
     });
-    */
 }
 
 void InstanceScript::SetBossNumber(uint32 number)

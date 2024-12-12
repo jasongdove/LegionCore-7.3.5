@@ -364,7 +364,7 @@ void TransportMgr::AddPathNodeToTransport(uint32 transportEntry, uint32 timeSeg,
     animNode.Path[timeSeg] = node;
 }
 
-Transport* TransportMgr::CreateTransport(uint32 entry, ObjectGuid::LowType guid /*= 0*/, Map* map /*= NULL*/)
+Transport* TransportMgr::CreateTransport(uint32 entry, ObjectGuid::LowType guid /*= 0*/, Map* map /*= NULL*/, uint32 phaseid /*= 0*/, uint32 phasegroup /*= 0*/)
 {
     // instance case, execute GetGameObjectEntry hook
     if (map)
@@ -411,6 +411,13 @@ Transport* TransportMgr::CreateTransport(uint32 entry, ObjectGuid::LowType guid 
         }
     }
 
+    if (phaseid)
+        trans->SetInPhase(phaseid, false, true);
+
+    if (phasegroup)
+        for (auto ph : sDB2Manager.GetPhasesForGroup(phasegroup))
+            trans->SetInPhase(ph, false, true);
+
     // use preset map for instances (need to know which instance)
     trans->SetMap(map ? map : sMapMgr->CreateMap(mapId, nullptr));
     if (map && map->IsDungeon())
@@ -428,7 +435,7 @@ void TransportMgr::SpawnContinentTransports()
 
     uint32 oldMSTime = getMSTime();
 
-    QueryResult result = WorldDatabase.Query("SELECT guid, entry FROM transports");
+    QueryResult result = WorldDatabase.Query("SELECT `guid`, `entry`, `phaseid`, `phasegroup` FROM `transports`");
 
     uint32 count = 0;
     if (result)
@@ -438,10 +445,12 @@ void TransportMgr::SpawnContinentTransports()
             Field* fields = result->Fetch();
             ObjectGuid::LowType guid = fields[0].GetUInt64();
             uint32 entry = fields[1].GetUInt32();
+            uint32 phaseid = fields[2].GetUInt32();
+            uint32 phasegroup = fields[3].GetUInt32();
 
             if (TransportTemplate const* tInfo = GetTransportTemplate(entry))
                 if (!tInfo->inInstance)
-                    if (CreateTransport(entry, 0, nullptr))
+                    if (CreateTransport(entry, guid, nullptr, phaseid, phasegroup))
                         ++count;
 
         } while (result->NextRow());

@@ -34,3 +34,7 @@ CREATE TABLE `phase_info` (
   `comment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE `transports`
+    ADD COLUMN `phaseid` INT(10) NOT NULL DEFAULT 0 AFTER `name`,
+    ADD COLUMN `phasegroup` INT(10) NOT NULL DEFAULT 0 AFTER `phaseid`;
