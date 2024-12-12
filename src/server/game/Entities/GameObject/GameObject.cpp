@@ -2799,13 +2799,6 @@ void GameObject::SetInPhase(uint32 id, bool update, bool apply)
         EnableCollision(true);
 }
 
-void GameObject::SetPhaseMask(uint32 newPhaseMask, bool update)
-{
-    WorldObject::SetPhaseMask(newPhaseMask, update);
-    if (m_model && m_model->isCollisionEnabled())
-        EnableCollision(true);
-}
-
 uint8 GameObject::GetNameSetId() const
 {
     switch (GetGoType())

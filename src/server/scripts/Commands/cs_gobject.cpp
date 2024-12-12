@@ -196,7 +196,7 @@ public:
         GameObject* object = sObjectMgr->IsStaticTransport(objectInfo->entry) ? new StaticTransport : new GameObject;
         uint32 guidLow = sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate();
 
-        if (!object->Create(guidLow, objectInfo->entry, map, player->GetPhaseMask(), Position(x, y, z, o), G3D::Quat(), 0, GO_STATE_READY))
+        if (!object->Create(guidLow, objectInfo->entry, map, 0, Position(x, y, z, o), G3D::Quat(), 0, GO_STATE_READY))
         {
             delete object;
             return false;

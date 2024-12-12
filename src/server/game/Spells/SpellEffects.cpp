@@ -5132,7 +5132,7 @@ void Spell::EffectSummonObjectWild(SpellEffIndex effIndex)
     Map* map = target->GetMap();
 
     G3D::Quat quat(G3D::Matrix3::fromEulerAnglesZYX(target->GetOrientation(), 0.f, 0.f));
-    if (!pGameObj->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), gameobject_id, map, m_caster->GetPhaseMask(), Position(x, y, z, target->GetOrientation()), quat, 100, GO_STATE_READY))
+    if (!pGameObj->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), gameobject_id, map, 0, Position(x, y, z, target->GetOrientation()), quat, 100, GO_STATE_READY))
     {
         delete pGameObj;
         return;
@@ -5188,7 +5188,7 @@ void Spell::EffectSummonObjectWild(SpellEffIndex effIndex)
     if (uint32 linkedEntry = pGameObj->GetGOInfo()->GetLinkedGameObjectEntry())
     {
         GameObject* linkedGO = sObjectMgr->IsStaticTransport(linkedEntry) ? new StaticTransport : new GameObject;
-        if (linkedGO->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), linkedEntry, map, m_caster->GetPhaseMask(), Position(x, y, z, target->GetOrientation()), quat, 100, GO_STATE_READY))
+        if (linkedGO->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), linkedEntry, map, 0, Position(x, y, z, target->GetOrientation()), quat, 100, GO_STATE_READY))
         {
             for (auto phase : m_caster->GetPhases())
                 linkedGO->SetInPhase(phase, false, true);
@@ -5939,7 +5939,7 @@ void Spell::EffectDuel(SpellEffIndex effIndex)
 
     Map* map = m_caster->GetMap();
     G3D::Quat quat(G3D::Matrix3::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f));
-    if (!pGameObj->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), objEntry, map, m_caster->GetPhaseMask(), Position(m_caster->GetPositionX() + (unitTarget->GetPositionX() - m_caster->GetPositionX()) / 2, m_caster->GetPositionY() + (unitTarget->GetPositionY() - m_caster->GetPositionY()) / 2, m_caster->GetPositionZ(), m_caster->GetOrientation()), quat, 0, GO_STATE_READY))
+    if (!pGameObj->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), objEntry, map, 0, Position(m_caster->GetPositionX() + (unitTarget->GetPositionX() - m_caster->GetPositionX()) / 2, m_caster->GetPositionY() + (unitTarget->GetPositionY() - m_caster->GetPositionY()) / 2, m_caster->GetPositionZ(), m_caster->GetOrientation()), quat, 0, GO_STATE_READY))
     {
         delete pGameObj;
         return;
@@ -6442,7 +6442,7 @@ void Spell::EffectSummonObject(SpellEffIndex effIndex)
 
     Map* map = m_caster->GetMap();
     G3D::Quat quat(G3D::Matrix3::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f));
-    if (!pGameObj->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), go_id, map, m_caster->GetPhaseMask(), Position(x, y, z, o), quat, 0, GO_STATE_READY))
+    if (!pGameObj->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), go_id, map, 0, Position(x, y, z, o), quat, 0, GO_STATE_READY))
     {
         delete pGameObj;
         return;
@@ -6520,7 +6520,7 @@ void Spell::EffectSurvey(SpellEffIndex /*effIndex*/)
 
     Map* map = m_caster->GetMap();
     G3D::Quat quat(G3D::Matrix3::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f));
-    if (!pGameObj->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), go_id, map, m_caster->GetPhaseMask(), Position(x, y, z, o), quat, 0, GO_STATE_READY))
+    if (!pGameObj->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), go_id, map, 0, Position(x, y, z, o), quat, 0, GO_STATE_READY))
     {
         delete pGameObj;
         return;
@@ -7305,7 +7305,7 @@ void Spell::EffectTransmitted(SpellEffIndex effIndex)
 
     GameObject* pGameObj = sObjectMgr->IsStaticTransport(objEntry) ? new StaticTransport : new GameObject;
     G3D::Quat quat(G3D::Matrix3::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f));
-    if (!pGameObj->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), objEntry, cMap, m_caster->GetPhaseMask(), Position(fx, fy, fz, m_caster->GetOrientation()), quat, 100, GO_STATE_READY))
+    if (!pGameObj->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), objEntry, cMap, 0, Position(fx, fy, fz, m_caster->GetOrientation()), quat, 100, GO_STATE_READY))
     {
         delete pGameObj;
         return;
@@ -7406,7 +7406,7 @@ void Spell::EffectTransmitted(SpellEffIndex effIndex)
     {
         GameObject* linkedGO = sObjectMgr->IsStaticTransport(linkedEntry) ? new StaticTransport : new GameObject;
         G3D::Quat quat2(G3D::Matrix3::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f));
-        if (linkedGO->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), linkedEntry, cMap, m_caster->GetPhaseMask(), Position(fx, fy, fz, m_caster->GetOrientation()), quat2, 100, GO_STATE_READY))
+        if (linkedGO->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), linkedEntry, cMap, 0, Position(fx, fy, fz, m_caster->GetOrientation()), quat2, 100, GO_STATE_READY))
         {
             for (auto phase : m_caster->GetPhases())
                 linkedGO->SetInPhase(phase, false, true);

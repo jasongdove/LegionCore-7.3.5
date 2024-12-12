@@ -2015,7 +2015,6 @@ class TC_GAME_API Unit : public WorldObject
         bool IsVisible() const { return (m_serverSideVisibility.GetValue(SERVERSIDE_VISIBILITY_GM) > SEC_PLAYER) ? false : true; }
 
         // common function for visibility checks for player/creatures with detection code
-        void SetPhaseMask(uint32 newPhaseMask, bool update) override;// overwrite WorldObject::SetPhaseMask
         void SetInPhase(uint32 id, bool update, bool apply) override;
         void UpdateObjectVisibility(bool forced = true) override;
 
