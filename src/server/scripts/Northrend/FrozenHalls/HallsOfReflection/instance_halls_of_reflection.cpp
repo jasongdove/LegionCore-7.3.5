@@ -164,7 +164,7 @@ public:
                     go->SetFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_INTERACT_COND);
                     HandleGameObject(ObjectGuid::Empty, false, go);
                     if (GetData(DATA_INTRO_EVENT) == DONE)
-                        go->SetPhaseMask(2, true);
+                        go->SetLootState(GO_JUST_DEACTIVATED);
                     break;
                 case GO_ENTRANCE_DOOR:
                     _entranceDoorGUID = go->GetGUID();

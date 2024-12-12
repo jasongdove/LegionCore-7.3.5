@@ -174,6 +174,7 @@ TC_GAME_API extern DB2Storage<MovieEntry>                               sMovieSt
 TC_GAME_API extern DB2Storage<OverrideSpellDataEntry>                   sOverrideSpellDataStore;
 TC_GAME_API extern DB2Storage<ParagonReputationEntry>                   sParagonReputationStore;
 TC_GAME_API extern DB2Storage<PhaseEntry>                               sPhaseStore;
+TC_GAME_API extern DB2Storage<PhaseXPhaseGroupEntry>                    sPhaseXPhaseGroupStore;
 TC_GAME_API extern DB2Storage<PlayerConditionEntry>                     sPlayerConditionStore;
 TC_GAME_API extern DB2Storage<PowerDisplayEntry>                        sPowerDisplayStore;
 TC_GAME_API extern DB2Storage<PowerTypeEntry>                           sPowerTypeStore;

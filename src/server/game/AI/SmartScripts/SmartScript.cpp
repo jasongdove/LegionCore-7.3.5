@@ -1249,10 +1249,33 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             CAST_AI(SmartAI, me->AI())->StartDespawn();
             break;
         }
-        case SMART_ACTION_SET_INGAME_PHASE_MASK:
+        case SMART_ACTION_SET_INGAME_PHASE_ID:
         {
-            if (GetBaseObject())
-                GetBaseObject()->SetPhaseMask(e.action.ingamePhaseMask.mask, true);
+            ObjectList* targets = GetTargets(e, unit);
+
+            if (!targets)
+                break;
+
+            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                (*itr)->SetInPhase(e.action.ingamePhaseId.id, true, e.action.ingamePhaseId.apply == 1);
+
+            delete targets;
+            break;
+        }
+        case SMART_ACTION_SET_INGAME_PHASE_GROUP:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+
+            if (!targets)
+                break;
+
+            std::set<uint32> const& phases = sDB2Manager.GetPhasesForGroup(e.action.ingamePhaseGroup.groupId);
+
+            for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
+                for (auto phase : phases)
+                    (*itr)->SetInPhase(phase, true, e.action.ingamePhaseGroup.apply == 1);
+
+            delete targets;
             break;
         }
         case SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL:
