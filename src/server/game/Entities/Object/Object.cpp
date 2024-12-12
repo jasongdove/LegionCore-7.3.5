@@ -1743,8 +1743,6 @@ void WorldObject::CleanupsBeforeDelete(bool /*finalCleanup*/)
     if (IsInWorld())
         RemoveFromWorld();
 
-    m_phaseId.clear();
-    m_phaseBit.clear();
     _terrainSwaps.clear();
     _worldMapAreaSwaps.clear();
     _visibilityPlayerList.clear();
@@ -1877,7 +1875,7 @@ bool WorldObject::IsWithinDist(WorldObject const* obj, float dist2compare, bool 
 
 bool WorldObject::IsWithinDistInMap(WorldObject const* obj, float dist2compare, bool is3D, bool ignoreObjectSize /*=false*/) const
 {
-    return obj && IsInMap(obj) && InSamePhase(obj) && _IsWithinDist(obj, dist2compare, is3D, ignoreObjectSize);
+    return obj && IsInMap(obj) && IsInPhase(obj) && _IsWithinDist(obj, dist2compare, is3D, ignoreObjectSize);
 }
 
 bool WorldObject::_IsWithinDist(WorldObject const* obj, float dist2compare, bool is3D, bool ignoreObjectSize /*=false*/) const
@@ -1994,7 +1992,7 @@ float WorldObject::GetWaterOrGroundLevel(float x, float y, float z, float* groun
     {
         if (GameObjectModel* _model = transport->m_model)
         {
-            float ground_z = _model->getHeight(x, y, z, DEFAULT_HEIGHT_SEARCH, GetPhases(), IsPlayer() || IsUnitOwnedByPlayer());
+            float ground_z = _model->getHeight(x, y, z, DEFAULT_HEIGHT_SEARCH, GetPhases());
             if (ground_z == -G3D::finf() || ground_z == G3D::finf())
                 return VMAP_INVALID_HEIGHT_VALUE;
 
@@ -2015,7 +2013,7 @@ float WorldObject::GetHeight(float x, float y, float z, bool vmap /*= true*/, fl
     {
         if (GameObjectModel* _model = transport->m_model)
         {
-            float ground_z = _model->getHeight(x, y, z, maxSearchDist, GetPhases(), IsPlayer() || IsUnitOwnedByPlayer());
+            float ground_z = _model->getHeight(x, y, z, maxSearchDist, GetPhases());
             if (ground_z == -G3D::finf() || ground_z == G3D::finf())
                 return VMAP_INVALID_HEIGHT_VALUE;
             return ground_z;
@@ -2979,7 +2977,10 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
         delete go;
         return nullptr;
     }
-    go->SetPhaseId(GetPhases(), false);
+
+    for (auto phase : GetPhases())
+        go->SetInPhase(phase, false, true);
+
     go->SetTratsport(GetTransport());
     go->SetRespawnTime(respawnTime);
 
@@ -3381,7 +3382,7 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
         destz -= 0.5f;
 
     // check dynamic collision
-    col = GetMap()->getObjectHitPos(GetPhases(), IsPlayer() || IsUnitOwnedByPlayer(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
+    col = GetMap()->getObjectHitPos(GetPhases(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
 
     // Collided with a gameobject
     if (col)
@@ -3497,7 +3498,7 @@ void WorldObject::MovePositionToTransportCollision(Position &pos, float dist, fl
     G3D::Vector3 pos2(destx, desty, destz + 2.0f);
     G3D::Vector3 resultPos;
 
-    bool col = _model->getObjectHitPos(GetPhases(), IsPlayer() || IsUnitOwnedByPlayer(), pos1, pos2, resultPos, -0.5f);
+    bool col = _model->getObjectHitPos(GetPhases(), pos1, pos2, resultPos, -0.5f);
     destx = resultPos.x;
     desty = resultPos.y;
     destz = resultPos.z;
@@ -3582,7 +3583,7 @@ void WorldObject::MovePositionToCollisionBetween(Position &pos, float distMin, f
     }
 
     // check dynamic collision
-    col = GetMap()->getObjectHitPos(GetPhases(), IsPlayer() || IsUnitOwnedByPlayer(), tempDestx, tempDesty, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
+    col = GetMap()->getObjectHitPos(GetPhases(), tempDestx, tempDesty, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
 
     // Collided with a gameobject
     if (col)
@@ -3669,6 +3670,69 @@ void WorldObject::SetPhaseMask(uint32 newPhaseMask, bool update)
 
     if (update && IsInWorld())
         UpdateObjectVisibility();
+}
+
+void WorldObject::SetInPhase(uint32 id, bool update, bool apply)
+{
+    if (apply)
+        _phases.insert(id);
+    else
+        _phases.erase(id);
+
+    if (update && IsInWorld())
+        UpdateObjectVisibility();
+}
+
+bool WorldObject::IsInPhase(WorldObject const* obj) const
+{
+    // PhaseId 169 is the default fallback phase
+    if (_phases.empty() && obj->GetPhases().empty())
+        return true;
+
+    if (_phases.empty() && obj->IsInPhase(169))
+        return true;
+
+    if (obj->GetPhases().empty() && IsInPhase(169))
+        return true;
+
+    for (auto phase : _phases)
+        if (obj->IsInPhase(phase))
+            return true;
+    return false;
+}
+
+// TODO: Phasing, legacy LC
+//! if someone has phaseID but enother has empty - not see any! YES! NOT SEE! FIX2. WHY SHOULD?
+//      FOR SUPPORT OLD STYLE NEED ALLOW TO SEE. FOR SUPER HIDE PHASE ALL SHOULD HAVE SOME PHASEIDs
+//! If some have 1 2 enother has 1 = see each other.
+//! ir some have 1 2 enorther has 3 - not see.
+//! if some has ignorePhase id - see each.
+bool WorldObject::IsInPhase(std::set<uint32> const& phase) const
+{
+    if (IgnorePhaseId())
+        return true;
+
+    // PhaseId 169 is the default fallback phase
+    if (phase.empty() && _phases.empty())
+        return true;
+
+    if (_phases.empty() && phase.contains(169))
+        return true;
+
+    if (phase.empty() && IsInPhase(169))
+        return true;
+
+    //! speed up case. should be done in any way.
+    // As iteration not check empty data but it should be done.
+    if (phase.empty() && !_phases.empty() || !phase.empty() && _phases.empty())
+        return false;
+
+    //! check target phases
+    for (auto PhaseID : phase)
+        if (IsInPhase(PhaseID))
+            return true;
+
+    return false;
 }
 
 void WorldObject::PlayDistanceSound(uint32 soundID, Player* target /*= nullptr*/)
@@ -3824,96 +3888,9 @@ ObjectGuid WorldObject::GetTransGUID() const
     return ObjectGuid::Empty;
 }
 
-//! if someone has phaseID but enother has empty - not see any! YES! NOT SEE! FIX2. WHY SHOULD? 
-//      FOR SUPPORT OLD STYLE NEED ALLOW TO SEE. FOR SUPER HIDE PHASE ALL SHOULD HAVE SOME PHASEIDs
-//! If some have 1 2 enother has 1 = see each other.
-//! ir some have 1 2 enorther has 3 - not see.
-//! if some has ignorePhase id - see each.
-bool WorldObject::InSamePhaseId(std::set<uint32> const& phase, bool otherUsePlayerPhasingRules) const
-{
-    bool usePlayerPhasingRules = IsPlayer() || IsUnitOwnedByPlayer();
-
-    if (IgnorePhaseId())
-        return true;
-
-    if (usePlayerPhasingRules && otherUsePlayerPhasingRules)
-        return true;
-
-    if (phase.empty() && m_phaseId.empty())
-        return true;
-
-    if (usePlayerPhasingRules && phase.empty())
-        return true;
-
-    if (otherUsePlayerPhasingRules && m_phaseId.empty())
-        return true;
-
-    //! speed up case. should be done in any way. 
-    // As iteration not check empty data but it should be done.
-    if (phase.empty() && !m_phaseId.empty() || !phase.empty() && m_phaseId.empty())
-        return false;
-
-    //! check target phases
-    for (auto PhaseID : phase)
-    {
-        if (PhaseID >= m_phaseBit.size())
-            continue;
-
-        if (m_phaseBit[PhaseID])
-            return true;
-    }
-    return false;
-}
-
-std::set<uint32> const& WorldObject::GetPhases() const
-{
-    return m_phaseId;
-}
-
-bool WorldObject::InSamePhaseId(WorldObject const* obj) const
-{
-    return obj->IgnorePhaseId() || InSamePhaseId(obj->GetPhases(), obj->IsPlayer() || obj->IsUnitOwnedByPlayer());
-}
-
 bool WorldObject::InSamePhase(WorldObject const* obj) const
 {
-    bool usePlayerPhasingRules = IsPlayer() || IsUnitOwnedByPlayer();
-    bool otherUsePlayerPhasingRules = obj->IsPlayer() || obj->IsUnitOwnedByPlayer();
-
-    if (!InSamePhase(obj->GetPhaseMask()))
-        return false;
-
-    return (usePlayerPhasingRules && otherUsePlayerPhasingRules) || InSamePhaseId(obj);
-}
-
-bool WorldObject::RemovePhase(uint32 PhaseID)
-{
-    if (PhaseID >= m_phaseBit.size() || !m_phaseBit[PhaseID])
-        return false;
-
-    m_phaseBit[PhaseID] = false;
-
-    return m_phaseId.erase(PhaseID);
-}
-
-void WorldObject::SetPhaseId(std::set<uint32> const& newPhaseId, bool /*update*/)
-{
-    m_phaseBit.clear();
-    for (auto PhaseID : newPhaseId)
-    {
-        if (PhaseID >= m_phaseBit.size())
-            m_phaseBit.resize(PhaseID+1, false);
-
-        m_phaseBit[PhaseID] = true;
-    }
-    m_phaseId = newPhaseId;
-};
-
-bool WorldObject::HasPhaseId(uint32 PhaseID) const
-{
-    if (PhaseID >= m_phaseBit.size())
-        return false;
-    return m_phaseBit[PhaseID];
+    return IsInPhase(obj);
 }
 
 C_PTR WorldObject::get_ptr()
@@ -4027,8 +4004,6 @@ void WorldObject::Clear()
 {
     Object::Clear();
 
-    m_phaseId.clear();
-    m_phaseBit.clear();
     _terrainSwaps.clear();
     _worldMapAreaSwaps.clear();
     _visibilityPlayerList.clear();

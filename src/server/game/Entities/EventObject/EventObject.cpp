@@ -159,7 +159,9 @@ bool EventObject::LoadEventObjectFromDB(ObjectGuid::LowType guid, Map* map)
 
     Object::_Create(ObjectGuid::Create<HighGuid::EventObject>(GetMapId(), data->id, guid));
     SetPhaseMask(data->phaseMask, false);
-    SetPhaseId(data->PhaseID, false);
+
+    for (auto phase : data->PhaseID)
+        SetInPhase(phase, false, true);
 
     SetEntry(data->id);
     SetObjectScale(1.0f);

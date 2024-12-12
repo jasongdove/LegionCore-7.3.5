@@ -16,15 +16,16 @@
  */
 
 #include "Arena.h"
+#include "ArenaScore.h"
+#include "Battleground.h"
+#include "BattlegroundMgr.h"
 #include "Bracket.h"
 #include "Group.h"
 #include "GuildMgr.h"
-#include "ArenaScore.h"
 #include "ObjectAccessor.h"
-#include "Player.h"
 #include "Packets/WorldStatePackets.h"
-#include "BattlegroundMgr.h"
-#include "Battleground.h"
+#include "Player.h"
+#include "SpellAuras.h"
 
 Arena::Arena()
 {

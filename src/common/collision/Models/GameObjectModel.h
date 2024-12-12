@@ -47,7 +47,7 @@ public:
     virtual uint8 GetNameSetId() const = 0;
     virtual bool IsDoor() const { return false; }
     virtual uint32 GetPhaseMask() const { return 0; }
-    virtual bool InSamePhaseId(std::set<uint32> const& /*phases*/, bool /*otherUsePlayerPhasingRules*/) const { return false; }
+    virtual bool IsInPhase(std::set<uint32> const& phases) const { return false; }
     virtual G3D::Vector3 GetPosition() const = 0;
     virtual float GetOrientation() const = 0;
     virtual float GetScale() const = 0;
@@ -73,12 +73,12 @@ public:
     bool isCollisionEnabled() const { return _collisionEnabled; }
     bool isMapObject() const { return isWmo; }
 
-    bool intersectRay(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit,  std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, VMAP::ModelIgnoreFlags ignoreFlags) const;
-    void intersectPoint(G3D::Vector3 const& point, VMAP::AreaInfo& info,  std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const;
+    bool intersectRay(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit,  std::set<uint32> const& phases, VMAP::ModelIgnoreFlags ignoreFlags) const;
+    void intersectPoint(G3D::Vector3 const& point, VMAP::AreaInfo& info,  std::set<uint32> const& phases) const;
 
-    bool isInLineOfSight(G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const;
-    bool getObjectHitPos(std::set<uint32> const& phases, bool otherUsePlayerPhasingRules, G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, G3D::Vector3& resultHitPos, float modifyDist) const;
-    float getHeight(float x, float y, float z, float maxSearchDist, std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const;
+    bool isInLineOfSight(G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, std::set<uint32> const& phases) const;
+    bool getObjectHitPos(std::set<uint32> const& phases, G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, G3D::Vector3& resultHitPos, float modifyDist) const;
+    float getHeight(float x, float y, float z, float maxSearchDist, std::set<uint32> const& phases) const;
 
     static GameObjectModel* Create(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath);
 

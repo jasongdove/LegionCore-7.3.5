@@ -236,8 +236,16 @@ bool GameObject::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, u
     }
 
     SetPhaseMask(phaseMask, false);
-    if (data)
-        SetPhaseId(data->PhaseID, false);
+
+    if (data && data->phaseid)
+        SetInPhase(data->phaseid, false, true);
+
+    if (data && data->phaseGroup)
+    {
+        // Set the gameobject in all the phases of the phasegroup
+        for (auto ph : sDB2Manager.GetPhasesForGroup(data->phaseGroup))
+            SetInPhase(ph, false, true);
+    }
 
     SetZoneScript();
     if (m_zoneScript)
@@ -986,7 +994,15 @@ bool GameObject::LoadGameObjectFromDB(ObjectGuid::LowType guid, Map* map, bool a
     if (!Create(guid, entry, map, data->phaseMask, Position(data->posX, data->posY, data->posZ, data->orientation), data->rotation, data->animprogress, static_cast<GOState>(data->go_state), data->artKit, data->AiID, data))
         return false;
 
-    SetPhaseId(data->PhaseID, false);
+    if (data && data->phaseid)
+        SetInPhase(data->phaseid, false, true);
+
+    if (data && data->phaseGroup)
+    {
+        // Set the gameobject in all the phases of the phasegroup
+        for (auto ph : sDB2Manager.GetPhasesForGroup(data->phaseGroup))
+            SetInPhase(ph, false, true);
+    }
 
     if (data->spawntimesecs >= 0)
     {
@@ -2778,6 +2794,13 @@ void GameObject::SetDisplayId(uint32 displayid)
     UpdateModel();
 }
 
+void GameObject::SetInPhase(uint32 id, bool update, bool apply)
+{
+    WorldObject::SetInPhase(id, update, apply);
+    if (m_model && m_model->isCollisionEnabled())
+        EnableCollision(true);
+}
+
 void GameObject::SetPhaseMask(uint32 newPhaseMask, bool update)
 {
     WorldObject::SetPhaseMask(newPhaseMask, update);
@@ -3200,8 +3223,8 @@ public:
     bool IsSpawned() const override { return _owner->isSpawned(); }
     uint32 GetDisplayId() const override { return _owner->GetDisplayId(); }
     uint8 GetNameSetId() const override { return _owner->GetNameSetId(); }
-    bool InSamePhaseId(std::set<uint32> const& phases, bool otherUsePlayerPhasingRules) const override { return _owner->InSamePhaseId(phases, otherUsePlayerPhasingRules); }
     uint32 GetPhaseMask() const override { return _owner->GetPhaseMask(); }
+    bool IsInPhase(std::set<uint32> const& phases) const override { return _owner->IsInPhase(phases); }
     G3D::Vector3 GetPosition() const override { return G3D::Vector3(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ()); }
     float GetOrientation() const override { return _owner->GetOrientation(); }
     float GetScale() const override { return _owner->GetObjectScale(); }

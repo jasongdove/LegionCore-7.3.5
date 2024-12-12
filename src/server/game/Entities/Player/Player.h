@@ -38,7 +38,6 @@
 #include "Object.h"
 #include "Packets/VehiclePackets.h"
 #include "Pet.h"
-#include "PhaseMgr.h"
 #include "PlayerTaxi.h"
 #include "QuestDef.h"
 #include "ReputationMgr.h"
@@ -61,7 +60,6 @@ class Group;
 class Guild;
 class OutdoorPvP;
 class Pet;
-class PhaseMgr;
 class PlayerMenu;
 class PlayerSocial;
 class RestMgr;
@@ -1612,8 +1610,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         Pet* SummonPet(uint32 entry, Optional<PetSaveMode> slot, float x, float y, float z, float ang, uint32 despwtime, bool* isNew = nullptr);
         void RemovePet(Pet* pet, PetSaveMode mode, bool returnreagent = false);
 
-        PhaseMgr& GetPhaseMgr() { return phaseMgr; }
-
         void Say(std::string const& text, const uint32 language, bool isSpamm = false);
         void Yell(std::string const& text, const uint32 language, bool isSpamm = false);
         void TextEmote(std::string const& text, bool isSpamm = false);
@@ -2918,6 +2914,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void UpdateTriggerVisibility();
         void UpdateCustomField();
 
+        void UpdatePhasing();
+
         template<class T>
         void UpdateVisibilityOf(T* target, UpdateData& data, std::set<Unit*>& visibleNow);
 
@@ -3532,8 +3530,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         Vignette::Manager& GetVignetteMgr() { return _vignetteMgr; }
 
-        bool NeedPhaseRecalculate;
-        bool NeedPhaseUpdate;
         bool NeedUpdateVisibility;
 
         ////////////////////Stat System/////////////////////
@@ -3671,8 +3667,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         uint32 _pendingBindTimer;
 
         uint32 _activeCheats;
-
-        PhaseMgr phaseMgr;
 
         uint32 _lastTargetedGO;
         float m_PersonnalXpRate;

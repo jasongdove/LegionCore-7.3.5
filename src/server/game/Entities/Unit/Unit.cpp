@@ -733,7 +733,7 @@ void Unit::resetAttackTimer(WeaponAttackType type)
 
 bool Unit::IsWithinCombatRange(const Unit* obj, float dist2compare) const
 {
-    if (!obj || !IsInMap(obj) || !InSamePhase(obj))
+    if (!obj || !IsInMap(obj) || !IsInPhase(obj))
         return false;
 
     float dx = GetPositionX() - obj->GetPositionX();
@@ -749,7 +749,7 @@ bool Unit::IsWithinCombatRange(const Unit* obj, float dist2compare) const
 
 bool Unit::IsWithinMeleeRange(const Unit* obj, float dist) const
 {
-    if (!obj || !IsInMap(obj) || !InSamePhase(obj))
+    if (!obj || !IsInMap(obj) || !IsInPhase(obj))
         return false;
 
     float dx = GetPositionX() - obj->GetPositionX();
@@ -5334,7 +5334,7 @@ void Unit::RemoveAurasWithAttribute(uint32 flags)
     }
 }
 
-void Unit::RemoveNotOwnSingleTargetAuras(uint32 newPhase)
+void Unit::RemoveNotOwnSingleTargetAuras(uint32 newPhase, bool phaseid)
 {
     if (m_cleanupDone && isSummon())
         return;
@@ -5355,11 +5355,11 @@ void Unit::RemoveNotOwnSingleTargetAuras(uint32 newPhase)
 
         if (aura->GetCasterGUID() != GetGUID() && aura->GetSpellInfo()->IsSingleTarget(caster, this))
         {
-            if (!newPhase)
+            if (!newPhase && !phaseid)
                 RemoveAura(iter);
             else
             {
-                if (!caster || !caster->InSamePhase(newPhase))
+                if (!caster || (newPhase && !caster->InSamePhase(newPhase)) || (!newPhase && !caster->IsInPhase(this)))
                     RemoveAura(iter);
                 else
                     ++iter;
@@ -23240,6 +23240,62 @@ float Unit::MeleeSpellMissChance(const Unit* victim, WeaponAttackType attType, u
     return missChance;
 }
 
+void Unit::SetInPhase(uint32 id, bool update, bool apply)
+{
+    WorldObject::SetInPhase(id, update, apply);
+
+    if (!IsInWorld())
+        return;
+
+    RemoveNotOwnSingleTargetAuras(0, true);
+
+    if (GetTypeId() == TYPEID_UNIT || (!ToPlayer()->isGameMaster() && !ToPlayer()->GetSession()->PlayerLogout()))
+    {
+        HostileRefManager& refManager = getHostileRefManager();
+        HostileReference* ref = refManager.getFirst();
+
+        while (ref)
+        {
+            if (Unit* unit = ref->getSource()->getOwner())
+                if (Creature* creature = unit->ToCreature())
+                    refManager.setOnlineOfflineState(creature, creature->IsInPhase(this));
+
+            ref = ref->next();
+        }
+
+        // modify threat lists for new phasemask
+        if (GetTypeId() != TYPEID_PLAYER)
+        {
+            std::list<HostileReference*> threatList = getThreatManager().getThreatList();
+            std::list<HostileReference*> offlineThreatList = getThreatManager().getOfflineThreatList();
+
+            // merge expects sorted lists
+            threatList.sort();
+            offlineThreatList.sort();
+            threatList.merge(offlineThreatList);
+
+            for (std::list<HostileReference*>::const_iterator itr = threatList.begin(); itr != threatList.end(); ++itr)
+                if (Unit* unit = (*itr)->getTarget())
+                    unit->getHostileRefManager().setOnlineOfflineState(ToCreature(), unit->IsInPhase(this));
+        }
+    }
+
+    for (ControlList::const_iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
+        if (Unit* controlled = ObjectAccessor::GetUnit(*this, *itr))
+            controlled->SetInPhase(id, true, apply);
+
+    for (uint8 i = 0; i < MAX_SUMMON_SLOT; ++i)
+        if (m_SummonSlot[i])
+            if (Creature* summon = GetMap()->GetCreature(m_SummonSlot[i]))
+                summon->SetInPhase(id, true, apply);
+
+    RebuildTerrainSwaps();
+
+    // Update visibility after phasing pets and summons so they wont despawn
+    if (update)
+        UpdateObjectVisibility();
+}
+
 void Unit::SetPhaseMask(uint32 newPhaseMask, bool update)
 {
     if (newPhaseMask == GetPhaseMask())
@@ -23296,82 +23352,6 @@ void Unit::SetPhaseMask(uint32 newPhaseMask, bool update)
                 summon->SetPhaseMask(newPhaseMask, true);
 
     RemoveNotOwnSingleTargetAuras(newPhaseMask);            // we can lost access to caster or target
-
-    // Update visibility after phasing pets and summons so they wont despawn
-    if (update)
-        UpdateObjectVisibility();
-}
-
-void Unit::SetPhaseId(std::set<uint32> const& newPhase, bool update)
-{
-    //- if differend size - we should do it.
-    if (newPhase.size() == GetPhases().size())
-    {
-        bool _exit = true;
-        for (auto phaseID : newPhase)
-            if (!HasPhaseId(phaseID))
-            {
-                _exit = false;
-                break;
-            }
-        if (_exit)
-            return;
-    }
-
-    WorldObject::SetPhaseId(newPhase, false);
-
-    if (IsInWorld())
-    {
-        // modify hostile references for new phasemask, some special cases deal with hostile references themselves
-        if (IsCreature() || (!ToPlayer()->isGameMaster() && !ToPlayer()->GetSession()->PlayerLogout()))
-        {
-            HostileRefManager& refManager = getHostileRefManager();
-            HostileReference* ref = refManager.getFirst();
-
-            while (ref)
-            {
-                if (Unit* unit = ref->getSource()->getOwner())
-                    if (Creature* creature = unit->ToCreature())
-                        refManager.setOnlineOfflineState(creature, creature->InSamePhase(this));
-
-                ref = ref->next();
-            }
-
-            // modify threat lists for new phasemask
-            if (!IsPlayer())
-            {
-                std::list<HostileReference*> threatList = getThreatManager().getThreatList();
-                std::list<HostileReference*> offlineThreatList = getThreatManager().getOfflineThreatList();
-
-                // merge expects sorted lists
-                threatList.sort();
-                offlineThreatList.sort();
-                threatList.merge(offlineThreatList);
-
-                for (std::list<HostileReference*>::const_iterator itr = threatList.begin(); itr != threatList.end(); ++itr)
-                    if (Unit* unit = (*itr)->getTarget())
-                        unit->getHostileRefManager().setOnlineOfflineState(ToCreature(), unit->InSamePhase(this));
-            }
-        }
-    }
-
-    if (!IsInWorld())
-    {
-        OnRelocated();
-        return;
-    }
-
-    for (ControlList::const_iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
-        if(Unit* unit = ObjectAccessor::GetUnit(*this, *itr))
-            if (unit->IsCreature())
-                unit->SetPhaseId(newPhase, true);
-
-    for (uint8 i = 0; i < MAX_SUMMON_SLOT; ++i)
-        if (m_SummonSlot[i])
-            if (Creature* summon = GetMap()->GetCreature(m_SummonSlot[i]))
-                summon->SetPhaseId(newPhase, true);
-
-    RebuildTerrainSwaps();
 
     // Update visibility after phasing pets and summons so they wont despawn
     if (update)

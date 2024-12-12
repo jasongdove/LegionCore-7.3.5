@@ -338,7 +338,15 @@ Creature* Transport::CreateNPCPassenger(ObjectGuid::LowType guid, CreatureData c
         return nullptr;
     }
 
-    creature->SetPhaseId(data->PhaseID, false);
+    if (data && data->phaseid)
+        creature->SetInPhase(data->phaseid, false, true);
+
+    if (data && data->phaseGroup)
+    {
+        // Set the passenger in all the phases of the phasegroup
+        for (auto ph : sDB2Manager.GetPhasesForGroup(data->phaseGroup))
+            creature->SetInPhase(ph, false, true);
+    }
 
     map->AddToMapWait(creature);
 
@@ -466,13 +474,25 @@ TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSu
     pos.GetPosition(x, y, z, o);
     CalculatePassengerPosition(x, y, z, &o);
 
-    if (!summon->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, 0, entry, vehId, 0, x, y, z, o))
+    uint32 phase = PHASEMASK_NORMAL;
+    std::set<uint32> phases;
+    if (summoner)
+    {
+        phase = summoner->GetPhaseMask();
+        phases = summoner->GetPhases();
+    }
+
+    if (phases.empty())
+        phases = GetPhases(); // If there was no summoner, try to use the transport phases
+
+    if (!summon->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, phase, entry, vehId, 0, x, y, z, o))
     {
         delete summon;
         return nullptr;
     }
 
-    summon->SetPhaseId(summoner ? summoner->GetPhases() : GetPhases(), false);
+    for (auto itr : phases)
+        summon->SetInPhase(itr, false, true);
 
     summon->SetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL, spellId);
 
@@ -791,8 +811,16 @@ bool StaticTransport::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* m
     }
 
     SetPhaseMask(phaseMask, false);
-    if (data)
-        SetPhaseId(data->PhaseID, false);
+
+    if (data && data->phaseid)
+        SetInPhase(data->phaseid, false, true);
+
+    if (data && data->phaseGroup)
+    {
+        // Set the gameobject in all the phases of the phasegroup
+        for (auto ph : sDB2Manager.GetPhasesForGroup(data->phaseGroup))
+            SetInPhase(ph, false, true);
+    }
 
     SetZoneScript();
     if (m_zoneScript)

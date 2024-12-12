@@ -719,7 +719,8 @@ public:
                 if (Creature* trigger = go->FindNearestCreature(112817, 20.0f))
                     trigger->DespawnOrUnsummon();
 
-                target->ToPlayer()->GetPhaseMgr().SetCustomPhase(1);
+                target->ToPlayer()->SetPhaseMask(1, true);
+
                 if (Creature* trigget = go->SummonCreature(102357, -1162.16f, 6124.12f, 53.38f, 2.87f))
                 {
                     trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());

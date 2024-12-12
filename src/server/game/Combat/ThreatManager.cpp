@@ -55,7 +55,7 @@ bool ThreatCalcHelper::isValidProcess(Unit* hatedUnit, Unit* hatingUnit, SpellIn
     if (!hatedUnit->IsAlive() || !hatingUnit->IsAlive())
         return false;
 
-    if (!hatedUnit->IsInMap(hatingUnit) || !hatedUnit->InSamePhase(hatingUnit))
+    if (!hatedUnit->IsInMap(hatingUnit) || !hatedUnit->IsInPhase(hatingUnit))
         return false;
 
     if (threatSpell && threatSpell->HasAttribute(SPELL_ATTR1_NO_THREAT))
@@ -132,7 +132,7 @@ void HostileReference::updateOnlineStatus()
         if (Unit* target = ObjectAccessor::GetUnit(*getSourceUnit(), getUnitGuid()))
             link(target, getSource());
 
-    if (isValid() && (!getTarget()->IsPlayer() || !getTarget()->ToPlayer()->isGameMaster()) && !getTarget()->HasUnitState(UNIT_STATE_IN_FLIGHT) && getTarget()->IsInMap(getSourceUnit()) && getTarget()->InSamePhase(getSourceUnit()))
+    if (isValid() && (!getTarget()->IsPlayer() || !getTarget()->ToPlayer()->isGameMaster()) && !getTarget()->HasUnitState(UNIT_STATE_IN_FLIGHT) && getTarget()->IsInMap(getSourceUnit()) && getTarget()->IsInPhase(getSourceUnit()))
     {
         if (Creature* creature = getSourceUnit()->ToCreature())
         {

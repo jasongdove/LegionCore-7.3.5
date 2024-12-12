@@ -1710,7 +1710,7 @@ class TC_GAME_API Unit : public WorldObject
         void RemoveAurasDueToItemSpell(Item* castItem, uint32 spellId);
         void RemoveAurasByType(AuraType auraType, ObjectGuid casterGUID = ObjectGuid::Empty, Aura* except = nullptr, bool negative = true, bool positive = true);
         void RemoveAurasByType(AuraType auraType, std::function<bool(AuraApplication const*)> const& check);
-        void RemoveNotOwnSingleTargetAuras(uint32 newPhase = 0x0);
+        void RemoveNotOwnSingleTargetAuras(uint32 newPhase = 0x0, bool phaseid = false);
 
         template <typename InterruptFlags>
         uint32 RemoveAurasWithInterruptFlags(InterruptFlags flag, uint32 spellID = 0, uint32 except = 0);
@@ -2016,7 +2016,7 @@ class TC_GAME_API Unit : public WorldObject
 
         // common function for visibility checks for player/creatures with detection code
         void SetPhaseMask(uint32 newPhaseMask, bool update) override;// overwrite WorldObject::SetPhaseMask
-        void SetPhaseId(std::set<uint32> const& newPhase, bool update) override;// overwrite WorldObject::SetPhaseId
+        void SetInPhase(uint32 id, bool update, bool apply) override;
         void UpdateObjectVisibility(bool forced = true) override;
 
         SpellImmuneList m_spellImmune[MAX_SPELL_IMMUNITY];

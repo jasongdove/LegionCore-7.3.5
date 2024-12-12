@@ -496,7 +496,7 @@ public:
     {
         if (InstanceScript* instance = creature->GetInstanceScript())
             if (instance->GetBossState(DATA_ZURAAL) != DONE)
-                if (!creature->HasPhaseId(8683))
+                if (!creature->IsInPhase(8683))
                     return false;
 
         player->PlayerTalkClass->SendCloseGossip();

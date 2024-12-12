@@ -1224,14 +1224,9 @@ public:
 
         Unit* target = handler->getSelectedUnit();    
         if (target)    
-        {    
-            if (target->GetTypeId() == TYPEID_PLAYER)    
-                target->ToPlayer()->GetPhaseMgr().SetCustomPhase(phasemask);    
-            else    
-                target->SetPhaseMask(phasemask, true);    
-        }    
-        else    
-            handler->GetSession()->GetPlayer()->GetPhaseMgr().SetCustomPhase(phasemask);
+            target->SetPhaseMask(phasemask, true);
+        else
+            handler->GetSession()->GetPlayer()->SetPhaseMask(phasemask, true);
 
         return true;
     }
@@ -1254,12 +1249,14 @@ public:
         if (target)
         {
             if (target->GetTypeId() == TYPEID_PLAYER)
-                target->ToPlayer()->SetPhaseId(phaseIds, true);
+                for (auto phase : phaseIds)
+                    target->ToPlayer()->SetInPhase(phase, true, true);
             else
                 return false;
         }
         else
-            handler->GetSession()->GetPlayer()->SetPhaseId(phaseIds, true);
+            for (auto phase : phaseIds)
+                handler->GetSession()->GetPlayer()->SetInPhase(phase, true, true);
 
         return true;
     }

@@ -81,13 +81,13 @@ public:
         }
 
         EventObject* eventobject = new EventObject();
-        if (!eventobject->Create(sObjectMgr->GetGenerator<HighGuid::EventObject>()->Generate(), map, chr->GetPhaseMgr().GetPhaseMaskForSpawn(), id, x, y, z, o, radius, spell, worldsafe))
+        if (!eventobject->Create(sObjectMgr->GetGenerator<HighGuid::EventObject>()->Generate(), map, chr->GetPhaseMask(), id, x, y, z, o, radius, spell, worldsafe))
         {
             delete eventobject;
             return false;
         }
 
-        eventobject->SaveToDB(map->GetId(), (UI64LIT(1) << map->GetSpawnMode()), chr->GetPhaseMgr().GetPhaseMaskForSpawn());
+        eventobject->SaveToDB(map->GetId(), (UI64LIT(1) << map->GetSpawnMode()), chr->GetPhaseMask());
 
         uint32 db_guid = eventobject->GetDBTableGUIDLow();
 

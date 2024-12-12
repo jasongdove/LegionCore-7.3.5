@@ -1195,6 +1195,9 @@ public:
             return false;
         }
 
+        for (auto phase : handler->GetSession()->GetPlayer()->GetPhases())
+            v->SetInPhase(phase, false, true);
+
         map->AddToMap(v->ToCreature());
 
         return true;
@@ -1768,7 +1771,6 @@ public:
         if (!player)
             return false;
 
-        player->GetPhaseMgr().SendDebugReportToPlayer(handler->GetSession()->GetPlayer());
         return true;
     }
 

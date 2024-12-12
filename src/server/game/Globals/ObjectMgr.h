@@ -36,10 +36,8 @@
 #include <limits>
 #include <utility>
 #include "ConditionMgr.h"
-#include "PhaseMgr.h"
 
 class Item;
-class PhaseMgr;
 
 struct EventObjectData;
 
@@ -61,6 +59,41 @@ typedef std::map<uint32, PageText> PageTextContainer;
 // Benchmarked: Faster than std::map (insert/find)
 typedef std::unordered_map<uint16, InstanceTemplate> InstanceTemplateContainer;
 typedef std::vector<InstanceTemplate*> InstanceTemplateVector;
+
+// Phasing (visibility)
+enum PhasingFlags
+{
+    PHASE_FLAG_OVERWRITE_EXISTING = 0x01, // don't stack with existing phases, overwrites existing phases
+    PHASE_FLAG_NO_MORE_PHASES = 0x02,     // stop calculating phases after this phase was applied (no more phases will be applied)
+    PHASE_FLAG_NEGATE_PHASE = 0x04        // negate instead to add the phasemask
+};
+
+struct PhaseInfo
+{
+    uint32 phaseId;
+    uint32 worldMapAreaSwap;
+    uint32 terrainSwapMap;
+};
+
+typedef std::unordered_map<uint32, PhaseInfo> PhaseInfoContainer;
+
+struct PhaseDefinition
+{
+    uint32 zoneId;
+    uint32 entry;
+    uint32 phasemask;
+    uint32 phaseId;
+    uint32 terrainswapmap;
+
+    // part of LC
+    uint16 wmAreaId;
+    uint16 uiWmAreaId;
+
+    uint8 flags;
+};
+
+typedef std::list<PhaseDefinition> PhaseDefinitionContainer;
+typedef std::unordered_map<uint32 /*zoneId*/, PhaseDefinitionContainer> PhaseDefinitionStore;
 
 struct GameTele
 {
@@ -685,7 +718,7 @@ class TC_GAME_API ObjectMgr
         void AddSpellToTrainer(uint32 entry, uint32 spell, uint32 spellCost, uint32 reqSkill, uint32 reqSkillValue, uint32 reqLevel);
 
         void LoadPhaseDefinitions();
-        void LoadSpellPhaseInfo();
+        void LoadPhaseInfo();
 
         void LoadResearchSiteToZoneData();
         void LoadDigSitePositions();
@@ -695,9 +728,6 @@ class TC_GAME_API ObjectMgr
         
         void LoadCreatureOutfits();
         
-        PhaseDefinitionStore const* GetPhaseDefinitionStore() { return &_PhaseDefinitionStore; }
-        SpellPhaseStore const* GetSpellPhaseStore() { return &_SpellPhaseStore; }
-
         std::string GeneratePetName(uint32 entry);
         uint32 GetBaseXP(uint8 level);
         uint32 GetXPForLevel(uint8 level) const;
@@ -859,6 +889,8 @@ class TC_GAME_API ObjectMgr
 
         SpellClickInfoMapBounds GetSpellClickInfoMapBounds(uint32 creature_id) const;
 
+        PhaseInfo const* GetPhaseInfo(uint32 phase) { return _PhaseInfoStore.find(phase) != _PhaseInfoStore.end() ? &_PhaseInfoStore[phase] : nullptr; }
+
         // for wintergrasp only
         GraveYardContainer GraveYardStore;
 
@@ -972,7 +1004,7 @@ class TC_GAME_API ObjectMgr
         CreatureOutfitContainer _creatureOutfitStore;
 
         PhaseDefinitionStore _PhaseDefinitionStore;
-        SpellPhaseStore _SpellPhaseStore;
+        PhaseInfoContainer _PhaseInfoStore;
 
         uint32 _skipUpdateCount;
         void PlayerCreateInfoAddItemHelper(uint32 race_, uint32 class_, uint32 itemId, int32 count, std::vector<uint32> bonusListIDs);

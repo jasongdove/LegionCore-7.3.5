@@ -1074,7 +1074,8 @@ class spell_mmut_phase_controller : public SpellScriptLoader
                 if (!owner || owner->GetTypeId() != TYPEID_PLAYER)
                     return;
 
-                owner->ToPlayer()->GetPhaseMgr().RegisterPhasingAuraEffect(aurEff);    
+                // TODO: Phasing
+                //owner->ToPlayer()->GetPhaseMgr().RegisterPhasingAuraEffect(aurEff);
                 owner->UpdateObjectVisibility();
             }
 
@@ -1084,7 +1085,8 @@ class spell_mmut_phase_controller : public SpellScriptLoader
                 if (!owner  || owner->GetTypeId() != TYPEID_PLAYER)
                     return;
 
-                owner->ToPlayer()->GetPhaseMgr().UnRegisterPhasingAuraEffect(aurEff);
+                // TODO: Phasing
+                //owner->ToPlayer()->GetPhaseMgr().UnRegisterPhasingAuraEffect(aurEff);
                 owner->UpdateObjectVisibility();
             }
 

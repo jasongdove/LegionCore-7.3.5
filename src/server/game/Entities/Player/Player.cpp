@@ -166,8 +166,7 @@ ItemEntry(vsi.ItemEntry), ItemSuffixFactor(vsi.ItemSuffixFactor), ItemUpgradeId(
 #ifdef _MSC_VER
 #pragma warning(disable:4355)
 #endif
-Player::Player(WorldSession* session) : Unit(true), _vignetteMgr(this), m_reputationMgr(this), phaseMgr(this),
-m_achievementMgr(sf::safe_ptr<AchievementMgr<Player>>(this))
+Player::Player(WorldSession* session) : Unit(true), _vignetteMgr(this), m_reputationMgr(this), m_achievementMgr(sf::safe_ptr<AchievementMgr<Player>>(this))
 {
 #ifdef _MSC_VER
 #pragma warning(default:4355)
@@ -215,8 +214,6 @@ m_achievementMgr(sf::safe_ptr<AchievementMgr<Player>>(this))
     m_zoneId = 0;
     m_zoneUpdateTimer = 0;
     m_zoneUpdateAllow = false;
-    NeedPhaseRecalculate = false;
-    NeedPhaseUpdate = false;
     NeedUpdateVisibility = false;
 
     m_nextSave = sWorld->getIntConfig(CONFIG_INTERVAL_SAVE);
@@ -1851,12 +1848,6 @@ void Player::Update(uint32 p_time)
         }
     }
 
-    if (NeedPhaseRecalculate)
-        GetPhaseMgr().Recalculate();
-
-    if (NeedPhaseUpdate)
-        GetPhaseMgr().Update();
-
     if (NeedUpdateVisibility)
     {
         UpdateObjectVisibility();
@@ -3379,13 +3370,6 @@ void Player::SetGameMaster(bool on)
 
         getHostileRefManager().setOnlineOfflineState(true);
         m_serverSideVisibilityDetect.SetValue(SERVERSIDE_VISIBILITY_GM, SEC_PLAYER);
-
-        AddDelayedEvent(100, [this]() -> void
-        {
-            GetPhaseMgr().AddUpdateFlag(PHASE_UPDATE_FLAG_SERVERSIDE_CHANGED);
-            GetPhaseMgr().RemoveUpdateFlag(PHASE_UPDATE_FLAG_ZONE_UPDATE);
-            GetPhaseMgr().Update();
-        });
     }
 
     UpdateObjectVisibility();
@@ -3898,13 +3882,6 @@ void Player::GiveLevel(uint8 level)
     }
 
     UpdateAchievementCriteria(CRITERIA_TYPE_REACH_LEVEL);
-
-    AddDelayedEvent(100, [this]() -> void
-    {
-        PhaseUpdateData phaseUdateData;
-        phaseUdateData.AddConditionType(CONDITION_LEVEL);
-        GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
-    });
 
     // Refer-A-Friend
     if (GetSession()->GetRecruiterId())
@@ -8685,11 +8662,6 @@ void Player::CheckAreaExploreAndOutdoor()
                 SendExplorationExperience(areaId, XP);
             }
             TC_LOG_DEBUG("entities.player", "Player %u discovered a new area: %u", GetGUIDLow(), areaId);
-
-            AddDelayedEvent(100, [this]() -> void
-            {
-                GetPhaseMgr().RemoveUpdateFlag(PHASE_UPDATE_FLAG_ZONE_UPDATE);
-            });
         }
     }
 }
@@ -10052,11 +10024,6 @@ void Player::UpdateArea(uint32 newArea)
             AddPlayerToArea(m_areaId);
     }
 
-    AddDelayedEvent(100, [this]() -> void
-    {
-        GetPhaseMgr().AddUpdateFlag(PHASE_UPDATE_FLAG_AREA_UPDATE);
-    });
-
     pvpInfo.inFFAPvPArea = area && (area->Flags[0] & AREA_FLAG_ARENA);
 
     UpdatePvPState(true);
@@ -10105,11 +10072,6 @@ void Player::UpdateArea(uint32 newArea)
         _restMgr->SetRestFlag(REST_FLAG_IN_FACTION_AREA);
     else
         _restMgr->RemoveRestFlag(REST_FLAG_IN_FACTION_AREA);
-
-    AddDelayedEvent(100, [this]() -> void
-    {
-        GetPhaseMgr().RemoveUpdateFlag(PHASE_UPDATE_FLAG_AREA_UPDATE);
-    });
 }
 
 void Player::UpdateZone(uint32 newZone, uint32 newArea)
@@ -10123,11 +10085,6 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
         m_areaId = 0;
         m_zoneForce = false;
     }
-
-    AddDelayedEvent(100, [this]() -> void
-    {
-        GetPhaseMgr().AddUpdateFlag(PHASE_UPDATE_FLAG_ZONE_UPDATE);
-    });
 
     ChaeckSeamlessTeleport(newZone);
 
@@ -10225,11 +10182,6 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
     UpdateZoneDependentAuras(newZone);
 
     ZoneTeleport(newZone);
-
-    AddDelayedEvent(100, [this]() -> void
-    {
-        GetPhaseMgr().RemoveUpdateFlag(PHASE_UPDATE_FLAG_ZONE_UPDATE);
-    });
 }
 
 bool Player::IsOutdoorPvPActive()
@@ -19016,9 +18968,6 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
 
     AddDelayedEvent(100, [this, quest_id]() -> void
     {
-        PhaseUpdateData phaseUdateData;
-        phaseUdateData.AddQuestUpdate(quest_id);
-        GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
         UpdateForQuestWorldObjects();
     });
 }
@@ -19468,13 +19417,6 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     RemoveActiveQuest(quest_id);
 
     SendQuestReward(quest, XP, questGiver ? questGiver->ToCreature() : nullptr, moneyRew, !announce);
-
-    AddDelayedEvent(100, [this, quest_id]() -> void
-    {
-        PhaseUpdateData phaseUdateData;
-        phaseUdateData.AddQuestUpdate(quest_id);
-        GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
-    });
 
     // update area quests
     uint32 newzone, newarea;
@@ -20162,9 +20104,6 @@ void Player::SetQuestStatus(uint32 quest_id, QuestStatus status)
 
     AddDelayedEvent(100, [this, quest_id]() -> void
     {
-        PhaseUpdateData phaseUdateData;
-        phaseUdateData.AddQuestUpdate(quest_id);
-        GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
         UpdateForQuestWorldObjects();
     });
 }
@@ -20183,13 +20122,6 @@ void Player::RemoveActiveQuest(uint32 quest_id)
     m_QuestStatusSave[quest_id] = QUEST_DELETE_SAVE_TYPE;
 
     SetQuestUpdate(quest_id);
-
-    AddDelayedEvent(100, [this, quest_id]() -> void
-    {
-        PhaseUpdateData phaseUdateData;
-        phaseUdateData.AddQuestUpdate(quest_id);
-        GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
-    });
 }
 
 void Player::RemoveRewardedQuest(uint32 quest_id)
@@ -20198,13 +20130,6 @@ void Player::RemoveRewardedQuest(uint32 quest_id)
     if (rewItr != m_RewardedQuests.end())
     {
         m_RewardedQuests.erase(rewItr);
-
-        AddDelayedEvent(100, [this, quest_id]() -> void
-        {
-            PhaseUpdateData phaseUdateData;
-            phaseUdateData.AddQuestUpdate(quest_id);
-            GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
-        });
     }
 
     // TC_LOG_DEBUG("worldquest", "RemoveRewardedQuest quest_id %u", quest_id);
@@ -26450,6 +26375,9 @@ Pet* Player::SummonPet(uint32 entry, Optional<PetSaveMode> slot, float x, float 
     if (petStable.GetCurrentPet())
         RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT);
 
+    for (auto itr : GetPhases())
+        pet->SetInPhase(itr, false, true);
+
     pet->SetTratsport(GetTransport());
     pet->SetCreatorGUID(GetGUID());
     pet->SetUInt32Value(UNIT_FIELD_FACTION_TEMPLATE, getFaction());
@@ -29704,7 +29632,6 @@ void Player::SendInitialPacketsBeforeAddToMap(bool login)
         SendDirectMessage(loginSetTimeSpeed.Write());
     }
 
-    GetPhaseMgr().Recalculate();
     SendMountSpells();
 
     if (login) // Don`t send when teleported
@@ -33901,13 +33828,6 @@ void Player::ActivateTalentGroup(ChrSpecializationEntry const* spec)
 
     SetGroupUpdateFlag(GROUP_UPDATE_FLAG_SPECIALIZATION_ID);
 
-    AddDelayedEvent(100, [this]() -> void
-    {
-        PhaseUpdateData phaseUdateData;
-        phaseUdateData.AddConditionType(CONDITION_SPEC_ID);
-        GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
-    });
-
     AddDelayedEvent(500, [this]() -> void
     {
         for (uint8 i = INVENTORY_SLOT_ITEM_START; i < GetInventoryEndSlot(); ++i)
@@ -34899,6 +34819,35 @@ void Player::ValidateMovementInfo(MovementInfo* mi)
         mi->AddMovementFlag(MOVEMENTFLAG_SPLINE_ELEVATION);
 
 #undef REMOVE_VIOLATING_FLAGS
+}
+
+void Player::UpdatePhasing()
+{
+    std::set<uint32> phaseIds;
+    std::set<uint32> terrainswaps;
+    std::set<uint32> worldAreaSwaps;
+
+    // Legacy LC
+    std::vector<WorldPackets::Misc::PhaseShiftDataPhase> phases;
+    std::vector<uint16> TerrainSwaps;
+    std::vector<uint16> WorldMapAreaIds;
+    std::vector<uint16> UiWorldMapAreaIds;
+
+    for (auto phase : GetPhases())
+    {
+        PhaseInfo const* info = sObjectMgr->GetPhaseInfo(phase);
+        if (!info)
+            continue;
+        terrainswaps.insert(info->terrainSwapMap);
+        worldAreaSwaps.insert(info->worldMapAreaSwap);
+
+        // Legacy LC
+        phases.emplace_back(phase);
+        TerrainSwaps.push_back(info->terrainSwapMap);
+        WorldMapAreaIds.push_back(info->worldMapAreaSwap);
+    }
+
+    GetSession()->SendSetPhaseShift(phases, TerrainSwaps, WorldMapAreaIds, UiWorldMapAreaIds);
 }
 
 void Player::SendMovementForce(AreaTrigger const* at, Position pos /*= Position()*/, float magnitude /*= 0.0f*/, uint32 type /*= 0*/, bool apply /*= false*/)
@@ -36081,11 +36030,6 @@ void Player::SceneCompleted(uint32 instance)
 
     m_sceneStatus[data->second] = SCENE_COMPLETE;
 
-    AddDelayedEvent(100, [this]() -> void
-    {
-        GetPhaseMgr().RemoveUpdateFlag(PHASE_UPDATE_FLAG_ZONE_UPDATE);
-    });
-
     AuraEffectList const& periodicAuras = GetAuraEffectsByType(SPELL_AURA_ACTIVATE_SCENE);
     for (AuraEffectList::const_iterator i = periodicAuras.begin(); i != periodicAuras.end(); ++i)
     {
@@ -36304,7 +36248,6 @@ uint32 Player::SelectArfiactSpellForSpec(uint32 specID)
 
 void Player::OnEnterMap()
 {
-    GetPhaseMgr().Recalculate();
 }
 
 void Player::AchieveCriteriaCredit(uint32 criteriaID)

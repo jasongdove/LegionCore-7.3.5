@@ -230,7 +230,9 @@ bool AreaTrigger::CreateAreaTrigger(ObjectGuid::LowType guidlow, uint32 triggerE
     if (caster)
     {
         SetPhaseMask(caster->GetPhaseMask(), false);
-        SetPhaseId(caster->GetPhases(), false);
+
+        for (auto phase : caster->GetPhases())
+            SetInPhase(phase, false, true);
     }
 
     if (spell && !spell->CanDestoyCastItem())

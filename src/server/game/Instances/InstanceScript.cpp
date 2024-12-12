@@ -34,6 +34,7 @@
 #include "ScenarioMgr.h"
 #include "ScriptMgr.h"
 #include "ScriptReloadMgr.h"
+#include "SpellAuras.h"
 
 DungeonEncounterEntry const* BossInfo::GetDungeonEncounterForDifficulty(Difficulty difficulty) const
 {
@@ -898,6 +899,7 @@ bool InstanceScript::IsWipe() const
 
 void InstanceScript::UpdatePhasing()
 {
+    /*
     if (!instance)
         return;
 
@@ -921,6 +923,7 @@ void InstanceScript::UpdatePhasing()
             });
         }
     });
+    */
 }
 
 void InstanceScript::SetBossNumber(uint32 number)

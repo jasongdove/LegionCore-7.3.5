@@ -334,6 +334,8 @@ struct CreatureData
     uint32 unit_flags = 0;                                      // enum UnitFlags mask values
     uint32 unit_flags3 = 0;                                     // enum UnitFlags_3 mask values
     uint32 dynamicflags = 0;
+    uint32 phaseid = 0;
+    uint32 phaseGroup = 0;
     bool isActive = false;
     float personalSize = 0;
     bool isTeemingSpawn = false;

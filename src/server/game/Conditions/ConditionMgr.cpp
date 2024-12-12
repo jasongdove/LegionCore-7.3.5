@@ -16,24 +16,25 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CharacterPackets.h"
 #include "ConditionMgr.h"
+#include "AreaTriggerData.h"
+#include "CharacterPackets.h"
+#include "DatabaseEnv.h"
 #include "GameEventMgr.h"
 #include "Garrison.h"
+#include "GlobalFunctional.h"
+#include "GossipData.h"
+#include "Group.h"
 #include "InstanceScript.h"
 #include "ObjectMgr.h"
 #include "Player.h"
-#include "ScriptedCreature.h"
-#include "ScriptMgr.h"
-#include "Spell.h"
-#include "SpellMgr.h"
-#include "ScenarioMgr.h"
-#include "Group.h"
-#include "DatabaseEnv.h"
-#include "AreaTriggerData.h"
 #include "QuestData.h"
-#include "GlobalFunctional.h"
-#include "GossipData.h"
+#include "ScenarioMgr.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "Spell.h"
+#include "SpellAuras.h"
+#include "SpellMgr.h"
 
 ConditionSourceInfo::ConditionSourceInfo(WorldObject* target0, WorldObject* target1, WorldObject* target2)
 {
@@ -1994,11 +1995,13 @@ bool ConditionMgr::isSourceTypeValid(Condition* cond)
             }
             break;
         case CONDITION_SOURCE_TYPE_PHASE_DEFINITION:
+            /*
             if (!PhaseMgr::IsConditionTypeSupported(cond->ConditionType))
             {
                 TC_LOG_ERROR("sql.sql", "Condition source type `CONDITION_SOURCE_TYPE_PHASE_DEFINITION` does not support condition type %u, ignoring.", cond->ConditionType);
                 return false;
             }
+            */
             break;
         case CONDITION_SOURCE_TYPE_AREATRIGGER_ACTION:
         {
@@ -3185,12 +3188,12 @@ bool ConditionMgr::IsPlayerMeetingCondition(Unit* unit, PlayerConditionEntry con
         && ((condition->MinExpansionLevel == CURRENT_EXPANSION) && condition->MinExpansionTier > 0) || condition->MinExpansionLevel > CURRENT_EXPANSION)
         return false;
 
-    if (condition->PhaseID && !unit->HasPhaseId(condition->PhaseID))
+    if (condition->PhaseID && !unit->IsInPhase(condition->PhaseID))
         return false;
 
     if (player && condition->PhaseGroupID)
     {
-        if (!player->InSamePhaseId(sDB2Manager.GetPhasesForGroup(condition->PhaseGroupID), false))
+        if (!player->IsInPhase(sDB2Manager.GetPhasesForGroup(condition->PhaseGroupID)))
             return false;
     }
 

@@ -59,7 +59,7 @@ void Trinity::WorldObjectSearcher<Check>::Visit(GameObjectMapType &m)
 
     for (auto &obj : m)
     {
-        if (obj->InSamePhase(i_phaseMask) && i_check(obj))
+        if (obj->IsInPhase(_searcher) && i_check(obj))
         {
             i_object = obj;
             return;
@@ -79,7 +79,7 @@ void Trinity::WorldObjectSearcher<Check>::Visit(PlayerMapType &m)
 
     for (auto &player : m)
     {
-        if (player->InSamePhase(i_phaseMask) && i_check(player))
+        if (player->IsInPhase(_searcher) && i_check(player))
         {
             i_object = player;
             return;
@@ -99,7 +99,7 @@ void Trinity::WorldObjectSearcher<Check>::Visit(CreatureMapType &m)
 
     for (auto &creature : m)
     {
-        if (creature->InSamePhase(i_phaseMask) && i_check(creature))
+        if (creature->IsInPhase(_searcher) && i_check(creature))
         {
             i_object = creature;
             return;
@@ -119,7 +119,7 @@ void Trinity::WorldObjectSearcher<Check>::Visit(CorpseMapType &m)
 
     for (auto &corpse : m)
     {
-        if (corpse->InSamePhase(i_phaseMask) && i_check(corpse))
+        if (corpse->IsInPhase(_searcher) && i_check(corpse))
         {
             i_object = corpse;
             return;
@@ -139,7 +139,7 @@ void Trinity::WorldObjectSearcher<Check>::Visit(DynamicObjectMapType &m)
 
     for (auto &obj : m)
     {
-        if (obj->InSamePhase(i_phaseMask) && i_check(obj))
+        if (obj->IsInPhase(_searcher) && i_check(obj))
         {
             i_object = obj;
             return;
@@ -159,7 +159,7 @@ void Trinity::WorldObjectSearcher<Check>::Visit(AreaTriggerMapType &m)
 
     for (auto &trigger : m)
     {
-        if (trigger->InSamePhase(i_phaseMask) && i_check(trigger))
+        if (trigger->IsInPhase(_searcher) && i_check(trigger))
         {
             i_object = trigger;
             return;
@@ -179,7 +179,7 @@ void Trinity::WorldObjectSearcher<Check>::Visit(ConversationMapType &m)
 
     for (auto &conver : m)
     {
-        if (conver->InSamePhase(i_phaseMask) && i_check(conver))
+        if (conver->IsInPhase(_searcher) && i_check(conver))
         {
             i_object = conver;
             return;
@@ -199,7 +199,7 @@ void Trinity::WorldObjectSearcher<Check>::Visit(EventObjectMapType &m)
 
     for (auto &event : m)
     {
-        if (event->InSamePhase(i_phaseMask) && i_check(event))
+        if (event->IsInPhase(_searcher) && i_check(event))
         {
             i_object = event;
             return;
@@ -214,7 +214,7 @@ void Trinity::WorldObjectLastSearcher<Check>::Visit(GameObjectMapType &m)
         return;
 
     for (auto &obj : m)
-        if (obj->InSamePhase(i_phaseMask) && i_check(obj))
+        if (obj->IsInPhase(_searcher) && i_check(obj))
             i_object = obj;
 }
 
@@ -225,7 +225,7 @@ void Trinity::WorldObjectLastSearcher<Check>::Visit(PlayerMapType &m)
         return;
 
     for (auto &player : m)
-        if (player->InSamePhase(i_phaseMask) && i_check(player))
+        if (player->IsInPhase(_searcher) && i_check(player))
             i_object = player;
 }
 
@@ -236,7 +236,7 @@ void Trinity::WorldObjectLastSearcher<Check>::Visit(CreatureMapType &m)
         return;
 
     for (auto &creature : m)
-        if (creature->InSamePhase(i_phaseMask) && i_check(creature))
+        if (creature->IsInPhase(_searcher) && i_check(creature))
             i_object = creature;
 }
 
@@ -247,7 +247,7 @@ void Trinity::WorldObjectLastSearcher<Check>::Visit(CorpseMapType &m)
         return;
 
     for (auto &corpse : m)
-        if (corpse->InSamePhase(i_phaseMask) && i_check(corpse))
+        if (corpse->IsInPhase(_searcher) && i_check(corpse))
             i_object = corpse;
 }
 
@@ -258,7 +258,7 @@ void Trinity::WorldObjectLastSearcher<Check>::Visit(DynamicObjectMapType &m)
         return;
 
     for (auto &obj : m)
-        if (obj->InSamePhase(i_phaseMask) && i_check(obj))
+        if (obj->IsInPhase(_searcher) && i_check(obj))
             i_object = obj;
 }
 
@@ -269,7 +269,7 @@ void Trinity::WorldObjectLastSearcher<Check>::Visit(AreaTriggerMapType &m)
         return;
 
     for (auto &trigger : m)
-        if (trigger->InSamePhase(i_phaseMask) && i_check(trigger))
+        if (trigger->IsInPhase(_searcher) && i_check(trigger))
             i_object = trigger;
 }
 
@@ -280,7 +280,7 @@ void Trinity::WorldObjectLastSearcher<Check>::Visit(ConversationMapType &m)
         return;
 
     for (auto &conver : m)
-        if (conver->InSamePhase(i_phaseMask) && i_check(conver))
+        if (conver->IsInPhase(_searcher) && i_check(conver))
             i_object = conver;
 }
 
@@ -291,7 +291,7 @@ void Trinity::WorldObjectLastSearcher<Check>::Visit(EventObjectMapType &m)
         return;
 
     for (auto &event : m)
-        if (event->InSamePhase(i_phaseMask) && i_check(event))
+        if (event->IsInPhase(_searcher) && i_check(event))
             i_object = event;
 }
 
@@ -394,7 +394,7 @@ void Trinity::GameObjectSearcher<Check>::Visit(GameObjectMapType &m)
 
     for (auto &obj : m)
     {
-        if (obj->InSamePhase(i_phaseMask) && i_check(obj))
+        if (obj->IsInPhase(_searcher) && i_check(obj))
         {
             i_object = obj;
             return;
@@ -406,7 +406,7 @@ template<class Check>
 void Trinity::GameObjectLastSearcher<Check>::Visit(GameObjectMapType &m)
 {
     for (auto &obj : m)
-        if (obj->InSamePhase(i_phaseMask) && i_check(obj))
+        if (obj->IsInPhase(_searcher) && i_check(obj))
             i_object = obj;
 }
 
@@ -414,7 +414,7 @@ template<class Check>
 void Trinity::GameObjectListSearcher<Check>::Visit(GameObjectMapType &m)
 {
     for (auto &obj : m)
-        if (obj->InSamePhase(i_phaseMask) && i_check(obj))
+        if (obj->IsInPhase(_searcher) && i_check(obj))
             i_objects.push_back(obj);
 }
 
@@ -429,7 +429,7 @@ void Trinity::UnitSearcher<Check>::Visit(CreatureMapType &m)
 
     for (auto &creature : m)
     {
-        if (creature->InSamePhase(i_phaseMask) && i_check(creature))
+        if (creature->IsInPhase(_searcher) && i_check(creature))
         {
             i_object = creature;
             return;
@@ -446,7 +446,7 @@ void Trinity::UnitSearcher<Check>::Visit(PlayerMapType &m)
 
     for (auto &player : m)
     {
-        if (player->InSamePhase(i_phaseMask) && i_check(player))
+        if (player->IsInPhase(_searcher) && i_check(player))
         {
             i_object = player;
             return;
@@ -458,7 +458,7 @@ template<class Check>
 void Trinity::UnitLastSearcher<Check>::Visit(CreatureMapType &m)
 {
     for (auto &creature : m)
-        if (creature->InSamePhase(i_phaseMask) && i_check(creature))
+        if (creature->IsInPhase(_searcher) && i_check(creature))
             i_object = creature;
 }
 
@@ -466,7 +466,7 @@ template<class Check>
 void Trinity::UnitLastSearcher<Check>::Visit(PlayerMapType &m)
 {
     for (auto &player : m)
-        if (player->InSamePhase(i_phaseMask) && i_check(player))
+        if (player->IsInPhase(_searcher) && i_check(player))
             i_object = player;
 }
 
@@ -474,7 +474,7 @@ template<class Check>
 void Trinity::UnitListSearcher<Check>::Visit(PlayerMapType &m)
 {
     for (auto &player : m)
-        if (player->InSamePhase(i_phaseMask) && i_check(player))
+        if (player->IsInPhase(_searcher) && i_check(player))
             i_objects.push_back(player);
 }
 
@@ -482,7 +482,7 @@ template<class Check>
 void Trinity::UnitListSearcher<Check>::Visit(CreatureMapType &m)
 {
     for (auto &creature : m)
-        if (creature->InSamePhase(i_phaseMask) && i_check(creature))
+        if (creature->IsInPhase(_searcher) && i_check(creature))
             i_objects.push_back(creature);
 }
 
@@ -490,7 +490,7 @@ template<class Check>
 void Trinity::AreaTriggerListSearcher<Check>::Visit(AreaTriggerMapType &m)
 {
     for (auto &trigger : m)
-        if (trigger->InSamePhase(i_phaseMask) && i_check(trigger))
+        if (trigger->IsInPhase(_searcher) && i_check(trigger))
             i_objects.push_back(trigger);
 }
  
@@ -505,7 +505,7 @@ void Trinity::CreatureSearcher<Check>::Visit(CreatureMapType &m)
 
     for (auto &creature : m)
     {
-        if (creature->InSamePhase(i_phaseMask) && i_check(creature))
+        if (creature->IsInPhase(_searcher) && i_check(creature))
         {
             i_object = creature;
             return;
@@ -517,7 +517,7 @@ template<class Check>
 void Trinity::CreatureLastSearcher<Check>::Visit(CreatureMapType &m)
 {
     for (auto &creature : m)
-        if (creature->InSamePhase(i_phaseMask) && i_check(creature))
+        if (creature->IsInPhase(_searcher) && i_check(creature))
             i_object = creature;
 }
 
@@ -525,7 +525,7 @@ template<class Check>
 void Trinity::CreatureListSearcher<Check>::Visit(CreatureMapType &m)
 {
     for (auto &creature : m)
-        if (creature->InSamePhase(i_phaseMask) && i_check(creature))
+        if (creature->IsInPhase(_searcher) && i_check(creature))
             i_objects.push_back(creature);
 }
 
@@ -533,7 +533,7 @@ template<class Check>
 void Trinity::PlayerListSearcher<Check>::Visit(PlayerMapType &m)
 {
     for (auto &player : m)
-        if (player->InSamePhase(i_phaseMask) && i_check(player))
+        if (player->IsInPhase(_searcher) && i_check(player))
             i_objects.push_back(player);
 }
 
@@ -546,7 +546,7 @@ void Trinity::PlayerSearcher<Check>::Visit(PlayerMapType &m)
 
     for (auto &player : m)
     {
-        if (player->InSamePhase(i_phaseMask) && i_check(player))
+        if (player->IsInPhase(_searcher) && i_check(player))
         {
             i_object = player;
             return;
@@ -558,7 +558,7 @@ template<class Check>
 void Trinity::PlayerLastSearcher<Check>::Visit(PlayerMapType& m)
 {
     for (auto &player : m)
-        if (player->InSamePhase(i_phaseMask) && i_check(player))
+        if (player->IsInPhase(_searcher) && i_check(player))
             i_object = player;
 }
 

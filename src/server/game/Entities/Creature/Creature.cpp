@@ -1307,6 +1307,13 @@ bool Creature::Create(ObjectGuid::LowType guidlow, Map* map, uint32 phaseMask, u
     SetMap(map);
     SetPhaseMask(phaseMask, false);
 
+    if (data && data->phaseid)
+        SetInPhase(data->phaseid, false, true);
+
+    if (data && data->phaseGroup)
+        for (auto ph : sDB2Manager.GetPhasesForGroup(data->phaseGroup))
+            SetInPhase(ph, false, true);
+
     CreatureTemplate const* cinfo = sObjectMgr->GetCreatureTemplate(entry);
     if (!cinfo)
     {
@@ -2190,8 +2197,12 @@ bool Creature::CreateFromProto(ObjectGuid::LowType guidlow, uint32 entry, int32 
     if (!UpdateEntry(entry, team, data))
         return false;
 
-    if (data)
-        SetPhaseId(data->PhaseID, false);
+    if (data && data->phaseid)
+        SetInPhase(data->phaseid, false, true);
+
+    if (data && data->phaseGroup)
+        for (auto ph : sDB2Manager.GetPhasesForGroup(data->phaseGroup))
+            SetInPhase(ph, false, true);
 
     if (vehId)
         CreateVehicleKit(vehId, entry, 0, true);

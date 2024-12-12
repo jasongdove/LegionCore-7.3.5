@@ -50,7 +50,7 @@ void VisibleNotifier::AddMaxVisible()
             if (!object->IsInWorld())
                 continue;
 
-            if (!i_player.InSamePhase((WorldObject*)object))
+            if (!i_player.IsInPhase((WorldObject*)object))
                 continue;
 
             vis_guids.erase(object->GetGUID());
@@ -299,16 +299,11 @@ void AIRelocationNotifier::Visit(EventObjectMapType &m)
         event->MoveInLineOfSight(unit_);
 }
 
-MessageDistDeliverer::MessageDistDeliverer(WorldObject* src, WorldPacket const* msg, float dist, bool own_team_only, Player const* skipped, GuidUnorderedSet ignoredSet) :
-    i_source(src), i_message(msg), i_phaseMask(src->GetPhaseMask()), i_distSq(dist * dist), team((own_team_only && src->IsPlayer()) ? src->ToPlayer()->GetTeam() : 0), skipped_receiver(skipped), m_IgnoredGUIDs(ignoredSet)
-{
-}
-
 void MessageDistDeliverer::Visit(PlayerMapType &m)
 {
     for (auto &target : m)
     {
-        if (!target->InSamePhase(target))
+        if (!target->IsInPhase(target))
             continue;
 
         if (target->GetExactDist2dSq(i_source) > i_distSq)
@@ -331,7 +326,7 @@ void MessageDistDeliverer::Visit(CreatureMapType &m)
 {
     for (auto &target : m)
     {
-        if (!target->InSamePhase(target))
+        if (!target->IsInPhase(target))
             continue;
 
         if (target->GetExactDist2dSq(i_source) > i_distSq)
@@ -351,7 +346,7 @@ void MessageDistDeliverer::Visit(DynamicObjectMapType &m)
 {
     for (auto &target : m)
     {
-        if (!target->InSamePhase(target))
+        if (!target->IsInPhase(target))
             continue;
 
         if (target->GetExactDist2dSq(i_source) > i_distSq)
@@ -385,15 +380,11 @@ void MessageDistDeliverer::SendPacket(Player* player)
     player->SendDirectMessage(i_message);
 }
 
-UnfriendlyMessageDistDeliverer::UnfriendlyMessageDistDeliverer(Unit const* src, WorldPacket* msg, float dist) : i_source(src), i_message(msg), i_phaseMask(src->GetPhaseMask()), i_distSq(dist * dist)
-{
-}
-
 void UnfriendlyMessageDistDeliverer::Visit(PlayerMapType &m)
 {
     for (auto &target : m)
     {
-        if (!target->InSamePhase(target))
+        if (!target->IsInPhase(target))
             continue;
 
         if (target->GetExactDist2dSq(i_source) > i_distSq)
@@ -1122,7 +1113,7 @@ AllWorldObjectsInRange::AllWorldObjectsInRange(const WorldObject* object, float 
 
 bool AllWorldObjectsInRange::operator()(WorldObject* go)
 {
-    return m_pObject->IsWithinDist(go, m_fRange, false) && m_pObject->InSamePhase(go);
+    return m_pObject->IsWithinDist(go, m_fRange, false) && m_pObject->IsInPhase(go);
 }
 
 ObjectTypeIdCheck::ObjectTypeIdCheck(TypeID typeId, bool equals) : _typeId(typeId), _equals(equals)

@@ -1763,7 +1763,7 @@ void World::SetInitialWorldSettings()
     sSpellMgr->LoadForbiddenSpells();
 
     TC_LOG_INFO("server.loading", "Loading Spell Phase Dbc Info...");
-    sObjectMgr->LoadSpellPhaseInfo();
+    sObjectMgr->LoadPhaseInfo();
 
     sAreaTriggerDataStore->LoadAreaTriggerForces();
 
@@ -4269,9 +4269,6 @@ void World::DeleteCharacterNameData(ObjectGuid const& guid)
 
 void World::UpdatePhaseDefinitions()
 {
-    for (SessionMap::const_iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)	
-        if (itr->second && itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld())	
-            itr->second->GetPlayer()->GetPhaseMgr().NotifyStoresReloaded();	
 }
 
 bool World::CheckCharacterName(std::string name)

@@ -478,9 +478,7 @@ public:
             {
                 player->CastSpell(player, SPELL_CREDIT, true);
                 player->CastSpell(player, SPELL_SUMMON, true);
-                std::set<uint32> phase = player->GetPhases();
-                phase.erase(PHASE_ARIOK_DB);
-                player->SetPhaseId(phase, true);
+                player->SetInPhase(PHASE_ARIOK_DB, true, false);
             }
         }
 
@@ -1257,7 +1255,7 @@ public:
             if (player->GetQuestStatus(QUEST) == QUEST_STATUS_INCOMPLETE)
             {
                 player->KilledMonsterCredit(CREDIT, ObjectGuid::Empty);
-                player->GetPhaseMgr().RemoveUpdateFlag(PHASE_UPDATE_FLAG_ZONE_UPDATE);
+                //player->GetPhaseMgr().RemoveUpdateFlag(PHASE_UPDATE_FLAG_ZONE_UPDATE);
                 return true;
             }
         }

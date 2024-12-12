@@ -1915,10 +1915,11 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
         //Phase
         if (Player* player = target->ToPlayer())
         {
-            if (apply)    
-                player->GetPhaseMgr().RegisterPhasingAura(GetId(), target);
-            else    
-                player->GetPhaseMgr().UnRegisterPhasingAura(GetId(), target);
+            // TODO: Phasing
+//            if (apply)
+//                player->GetPhaseMgr().RegisterPhasingAura(GetId(), target);
+//            else
+//                player->GetPhaseMgr().UnRegisterPhasingAura(GetId(), target);
         }
 
         Item* castItem = nullptr;

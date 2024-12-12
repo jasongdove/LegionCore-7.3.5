@@ -314,7 +314,7 @@ void WorldPackets::Party::PartyMemberStatseUpdate::Initialize(Player* player)
     if (mask & GROUP_UPDATE_FLAG_PHASE) //! @TODO
     {
         MemberState.Phases.emplace();
-        std::set<uint32> phases = player->GetPhases();
+        std::set<uint32> const& phases = player->GetPhases();
         MemberState.Phases->PhaseShiftFlags = 0x08 | (!phases.empty() ? 0x10 : 0);
         MemberState.Phases->PersonalGUID = ObjectGuid::Empty;
         for (uint32 phaseId : phases)

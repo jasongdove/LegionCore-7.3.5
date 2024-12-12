@@ -1382,7 +1382,8 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                         if (e.action.summonCreature.phaseByTarget)
                         {
                             summon->SetPhaseMask((*itr)->GetPhaseMask(), true);
-                            summon->SetPhaseId((*itr)->GetPhases(), false);
+                            for (auto phase : (*itr)->GetPhases())
+                                summon->SetInPhase(phase, false, true);
                         }
                     }
                 }
@@ -2530,7 +2531,8 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                         if (e.action.sumCreaturePV.getphases)
                         {
                             summon->SetPhaseMask(GetBaseObject()->GetPhaseMask(), true);
-                            summon->SetPhaseId(GetBaseObject()->GetPhases(), false);
+                            for (auto phase : GetBaseObject()->GetPhases())
+                                summon->SetInPhase(phase, false, true);
                         }
                     }
                 }

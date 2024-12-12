@@ -485,16 +485,18 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         bool InInstance() const { return m_currMap && m_currMap->Instanceable(); }
 
         virtual void SetPhaseMask(uint32 newPhaseMask, bool update);
+        virtual void SetInPhase(uint32 id, bool update, bool apply);
         uint32 GetPhaseMask() const { return m_phaseMask; }
-        bool RemovePhase(uint32 PhaseID);
         bool InSamePhase(WorldObject const* obj) const;
         bool InSamePhase(uint32 phasemask) const { return (GetPhaseMask() & phasemask) != 0; }
+        bool IsInPhase(uint32 phase) const { return _phases.find(phase) != _phases.end(); }
+        bool IsInPhase(WorldObject const* obj) const;
 
-        virtual void SetPhaseId(std::set<uint32> const& newPhaseId, bool update);
-        bool HasPhaseId(uint32 PhaseID) const;
-        std::set<uint32> const& GetPhases() const;
-        bool InSamePhaseId(WorldObject const* obj) const;
-        bool InSamePhaseId(std::set<uint32> const& phase, bool otherUsePlayerPhasingRules) const;
+        // TODO: legacy; should be replaced with PhaseShift check in GameObjectModel
+        bool IsInPhase(std::set<uint32> const& phases) const;
+
+        std::set<uint32> const& GetPhases() const { return _phases; }
+
         void RebuildTerrainSwaps();
         void RebuildWorldMapAreaSwaps();
         std::set<uint32> const& GetTerrainSwaps() const { return _terrainSwaps; }
@@ -755,8 +757,7 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         //uint32 m_mapId;                                     // object at map with map_id
         uint32 m_InstanceId;                                // in map copy with instance id
         uint32 m_phaseMask;                                 // in area phase state
-        std::set<uint32> m_phaseId;                         // special phase. It's new generation phase, when we should check id.
-        std::vector<bool> m_phaseBit;
+        std::set<uint32> _phases;
         bool m_ignorePhaseIdCheck;                          // like gm mode.
         std::set<uint32> _terrainSwaps;
         std::set<uint32> _worldMapAreaSwaps;

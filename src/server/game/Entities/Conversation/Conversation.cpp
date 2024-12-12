@@ -92,8 +92,11 @@ bool Conversation::CreateConversation(ObjectGuid::LowType guidlow, uint32 trigge
     }
 
     Object::_Create(ObjectGuid::Create<HighGuid::Conversation>(GetMapId(), triggerEntry, guidlow));
+
     SetPhaseMask(caster->GetPhaseMask(), false);
-    SetPhaseId(caster->GetPhases(), false);
+
+    for (auto phase : caster->GetPhases())
+        SetInPhase(phase, false, true);
 
     SetEntry(triggerEntry);
     SetObjectScale(1.0f);
@@ -303,7 +306,9 @@ bool Conversation::LoadConversationFromDB(ObjectGuid::LowType guid, Map* map, bo
 
     Object::_Create(ObjectGuid::Create<HighGuid::Conversation>(GetMapId(), data->id, guid));
     SetPhaseMask(data->phaseMask, false);
-    SetPhaseId(data->PhaseID, false);
+
+    for (auto phase : data->PhaseID)
+        SetInPhase(phase, false, true);
 
     SetEntry(data->id);
     SetObjectScale(1.0f);

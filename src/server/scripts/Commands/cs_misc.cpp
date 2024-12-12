@@ -1843,8 +1843,10 @@ public:
     }
     static bool HandlePhaseInfoCommand(ChatHandler* handler, char const* args)
     {
+        /*
         if (Player* player = handler->getSelectedPlayer())
             handler->PSendSysMessage(player->GetPhaseMgr().GetPhaseIdString().c_str());
+        */
 
         if (Unit* target = handler->getSelectedUnit())
         {
