@@ -21,7 +21,8 @@ CREATE TABLE `phase_definitions` (
   `phaseId` int(10) unsigned NOT NULL DEFAULT '0',
   `phaseGroup` int(10) NOT NULL DEFAULT '0',
   `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  PRIMARY KEY (`zoneId`,`entry`)
+  PRIMARY KEY (`zoneId`,`entry`),
+  UNIQUE KEY (`entry`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `phase_info`;
