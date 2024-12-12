@@ -384,7 +384,7 @@ enum AuraType
     SPELL_AURA_MOD_CRITICAL_DAMAGE_FROM_MEELE_SPELLS        = 323,
     SPELL_AURA_324                                          = 324,  // spell critical chance (probably by school mask)
     SPELL_AURA_325                                          = 325,  // Not used in 4.3.4
-    SPELL_AURA_PHASE_GROUP                                  = 326,
+    SPELL_AURA_PHASE_GROUP                                  = 326,  // Puts the player in all the phases that are in the group with id = miscB
     SPELL_AURA_FORCE_TO_SEE_ALL_PHASES                      = 327,
     SPELL_AURA_PROC_ON_POWER_PCT                            = 328,
     SPELL_AURA_MOD_POWER_GENERATE_PCT                       = 329,

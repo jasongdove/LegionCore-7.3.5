@@ -3695,10 +3695,7 @@ bool WorldObject::IsInPhase(WorldObject const* obj) const
     if (obj->GetPhases().empty() && IsInPhase(169))
         return true;
 
-    for (auto phase : _phases)
-        if (obj->IsInPhase(phase))
-            return true;
-    return false;
+    return Trinity::Containers::Intersects(_phases.begin(), _phases.end(), obj->GetPhases().begin(), obj->GetPhases().end());
 }
 
 // TODO: Phasing, legacy LC
@@ -3727,12 +3724,7 @@ bool WorldObject::IsInPhase(std::set<uint32> const& phase) const
     if (phase.empty() && !_phases.empty() || !phase.empty() && _phases.empty())
         return false;
 
-    //! check target phases
-    for (auto PhaseID : phase)
-        if (IsInPhase(PhaseID))
-            return true;
-
-    return false;
+    return Trinity::Containers::Intersects(_phases.begin(), _phases.end(), phase.begin(), phase.end());
 }
 
 void WorldObject::PlayDistanceSound(uint32 soundID, Player* target /*= nullptr*/)
