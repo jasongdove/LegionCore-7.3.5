@@ -235,8 +235,6 @@ bool GameObject::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, u
         return false;
     }
 
-    SetPhaseMask(phaseMask, false);
-
     if (data && data->phaseid)
         SetInPhase(data->phaseid, false, true);
 

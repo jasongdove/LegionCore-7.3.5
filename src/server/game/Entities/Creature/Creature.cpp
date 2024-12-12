@@ -1305,7 +1305,6 @@ bool Creature::Create(ObjectGuid::LowType guidlow, Map* map, uint32 phaseMask, u
 {
     ASSERT(map);
     SetMap(map);
-    SetPhaseMask(phaseMask, false);
 
     if (data && data->phaseid)
         SetInPhase(data->phaseid, false, true);
@@ -2619,8 +2618,6 @@ void Creature::setDeathState(DeathState s)
             LoadCreaturesAddon(true);
         });
         Motion_Initialize();
-        if (GetCreatureData() && GetPhaseMask() != GetCreatureData()->phaseMask)
-            SetPhaseMask(GetCreatureData()->phaseMask, false);
         Unit::setDeathState(ALIVE);
     }
 }

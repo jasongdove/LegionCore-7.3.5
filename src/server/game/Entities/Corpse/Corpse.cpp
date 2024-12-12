@@ -91,7 +91,6 @@ bool Corpse::Create(ObjectGuid::LowType guidlow, Player* owner)
     SetMap(owner->GetMap());
 
     Object::_Create(ObjectGuid::Create<HighGuid::Corpse>(GetMapId(), 0, guidlow));
-    //SetPhaseMask(owner->GetPhaseMask(), false);
     //SetPhaseId(owner->GetPhases(), false);
 
     SetObjectScale(1);

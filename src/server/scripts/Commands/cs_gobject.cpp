@@ -551,6 +551,8 @@ public:
     //set phasemask for selected object
     static bool HandleGameObjectSetPhaseCommand(ChatHandler* handler, char const* args)
     {
+        // TODO: Phasing
+        /*
         uint32 guidLow = GetGuidLowFromArgsOrLastTargetedGo(handler, args);
 
         if (!guidLow)
@@ -580,6 +582,7 @@ public:
 
         object->SetPhaseMask(phaseMask, true);
         object->SaveToDB();
+        */
         return true;
     }
 

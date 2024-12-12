@@ -184,7 +184,6 @@ public:
                 SpawnedAdds = 0;
 
                 me->SetVisible(true);
-                me->SetPhaseMask(1, true);
                 me->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 1);
                 me->setFaction(35);
                 me->SetStandState(UNIT_STAND_STATE_SIT_HIGH_CHAIR);

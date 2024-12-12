@@ -328,7 +328,7 @@ public:
             if (GameObject *pKTTrigger = me->GetMap()->GetGameObject(KTTriggerGUID))
             {
                 pKTTrigger->ResetDoorOrButton();
-                pKTTrigger->SetPhaseMask(1, true);
+                pKTTrigger->SetLootState(GO_READY);
             }
 
             for (uint8 i = 0; i <= 3; ++i)
@@ -442,7 +442,7 @@ public:
                             break;
                         case EVENT_TRIGGER:
                             if (GameObject *pKTTrigger = me->GetMap()->GetGameObject(KTTriggerGUID))
-                                pKTTrigger->SetPhaseMask(2, true);
+                                pKTTrigger->SetLootState(GO_JUST_DEACTIVATED);
                             break;
                         case EVENT_PHASE:
                             events.Reset();

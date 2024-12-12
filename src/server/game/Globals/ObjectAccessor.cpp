@@ -430,7 +430,6 @@ Corpse* ObjectAccessor::ConvertCorpseForPlayer(ObjectGuid player_guid, bool insi
         // bones->m_time = m_time;                              // don't overwrite time
         // bones->m_type = m_type;                              // don't overwrite type
         bones->Relocate(*corpse);
-        bones->SetPhaseMask(corpse->GetPhaseMask(), false);
 
         bones->SetUInt32Value(CORPSE_FIELD_FLAGS, corpse->GetUInt32Value(CORPSE_FIELD_FLAGS) | CORPSE_FLAG_BONES);
 

@@ -2731,22 +2731,6 @@ void AuraEffect::HandlePhase(AuraApplication const* aurApp, uint8 mode, bool app
 
     Unit* target = aurApp->GetTarget();
 
-    uint32 newPhase = 0;
-    Unit::AuraEffectList const& phases = target->GetAuraEffectsByType(SPELL_AURA_PHASE);
-    if (!phases.empty())
-        for (Unit::AuraEffectList::const_iterator itr = phases.begin(); itr != phases.end(); ++itr)
-            newPhase |= (*itr)->GetMiscValue();
-
-    if (!newPhase)
-    {
-        newPhase = PHASEMASK_NORMAL;
-        if (Creature* creature = target->ToCreature())
-            if (CreatureData const* data = sObjectMgr->GetCreatureData(creature->GetDBTableGUIDLow()))
-                newPhase = data->phaseMask;
-    }
-
-    target->SetPhaseMask(newPhase, false);
-
     target->SetInPhase(GetMiscValueB(), false, apply);
 
     // call functions which may have additional effects after chainging state of unit
@@ -2771,9 +2755,6 @@ void AuraEffect::HandlePhaseGroup(AuraApplication const* aurApp, uint8 mode, boo
         return;
 
     Unit* target = aurApp->GetTarget();
-
-    if (target->GetTypeId() != TYPEID_PLAYER)
-        return;
 
     std::set<uint32> const& phases = sDB2Manager.GetPhasesForGroup(GetMiscValueB());
     for (auto phase : phases)
