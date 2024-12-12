@@ -540,9 +540,9 @@ namespace WorldPackets
 
             WorldPacket const* Write() override;
 
-            std::vector<uint16> PreloadMapIDs;
-            std::vector<uint16> UiWorldMapAreaIDSwaps;
-            std::vector<uint16> VisibleMapIDs;
+            std::set<uint32> PreloadMapIDs;
+            std::set<uint32> UiWorldMapAreaIDSwaps;
+            std::set<uint32> VisibleMapIDs;
             PhaseShiftData Phaseshift;
             ObjectGuid Client;
         };

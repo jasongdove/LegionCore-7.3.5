@@ -202,8 +202,7 @@ public:
             return false;
         }
 
-        for (auto phase : player->GetPhases())
-            object->SetInPhase(phase, false, true);
+        object->CopyPhaseFrom(player);
 
         if (spawntimeSecs)
         {

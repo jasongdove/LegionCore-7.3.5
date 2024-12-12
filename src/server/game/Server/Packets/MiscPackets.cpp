@@ -384,17 +384,18 @@ WorldPacket const* WorldPackets::Misc::PhaseShift::Write()
 {
     _worldPacket << Client;
     _worldPacket << Phaseshift;
-    _worldPacket << uint32(VisibleMapIDs.size() * 2);           // size in bytes
+
+    _worldPacket << uint32(VisibleMapIDs.size() * 2);           // active terrain swaps size
     for (auto visibleMapId : VisibleMapIDs)
-        _worldPacket << visibleMapId;                           // Active terrain swap map id
+        _worldPacket << uint16(visibleMapId);                   // Active terrain swap map id
 
-    _worldPacket << uint32(PreloadMapIDs.size() * 2);           // size in bytes
+    _worldPacket << uint32(PreloadMapIDs.size() * 2);           // inactive terrain swaps size
     for (auto preloadMapId : PreloadMapIDs)
-        _worldPacket << preloadMapId;                           // Inactive terrain swap map id
+        _worldPacket << uint16(preloadMapId);                   // Inactive terrain swap map id
 
-    _worldPacket << uint32(UiWorldMapAreaIDSwaps.size() * 2);   // size in bytes
+    _worldPacket << uint32(UiWorldMapAreaIDSwaps.size() * 2);   // UI map swaps size
     for (auto uiWorldMapAreaIDSwap : UiWorldMapAreaIDSwaps)
-        _worldPacket << uiWorldMapAreaIDSwap;                   // UI map id, WorldMapArea.db2, controls map display
+        _worldPacket << uint16(uiWorldMapAreaIDSwap);           // UI map id, WorldMapArea.db2, controls map display
 
     return &_worldPacket;
 }

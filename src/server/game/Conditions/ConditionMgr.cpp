@@ -1051,7 +1051,6 @@ bool ConditionMgr::CanHaveSourceGroupSet(ConditionSourceType sourceType) const
             sourceType == CONDITION_SOURCE_TYPE_SPELL_CLICK_EVENT ||
             sourceType == CONDITION_SOURCE_TYPE_SMART_EVENT ||
             sourceType == CONDITION_SOURCE_TYPE_NPC_VENDOR ||
-            sourceType == CONDITION_SOURCE_TYPE_PHASE_DEFINITION ||
             sourceType == CONDITION_SOURCE_TYPE_AREATRIGGER_ACTION ||
             sourceType == CONDITION_SOURCE_TYPE_WORLD_LOOT_TEMPLATE ||
             sourceType == CONDITION_SOURCE_TYPE_PLAYER_CHOICE ||
@@ -1145,23 +1144,6 @@ ConditionList ConditionMgr::GetConditionsForNpcVendorEvent(uint32 creatureId, ui
             TC_LOG_DEBUG("condition", "GetConditionsForNpcVendorEvent: found conditions for creature entry %u item %u", creatureId, itemId);
         }
     }
-    return cond;
-}
-
-ConditionList ConditionMgr::GetConditionsForPhaseDefinition(uint32 zone, uint32 entry)
-{
-    ConditionList cond;
-    PhaseDefinitionConditionContainer::const_iterator itr = PhaseDefinitionsConditionStore.find(zone);
-    if (itr != PhaseDefinitionsConditionStore.end())
-    {
-        ConditionTypeContainer::const_iterator i = (*itr).second.find(entry);
-        if (i != (*itr).second.end())
-        {
-            cond = (*i).second;
-            TC_LOG_DEBUG("condition", "GetConditionsForPhaseDefinition: found conditions for zone %u entry %u size %zu", zone, entry, cond.size());
-        }
-    }
-
     return cond;
 }
 
@@ -1420,13 +1402,6 @@ void ConditionMgr::LoadConditions(bool isReload)
                 {
                     NpcVendorConditionContainerStore[cond->SourceGroup][cond->SourceEntry].push_back(cond);
                     valid =  true;
-                    ++count;
-                    continue;
-                }
-                case CONDITION_SOURCE_TYPE_PHASE_DEFINITION:
-                {
-                    PhaseDefinitionsConditionStore[cond->SourceGroup][cond->SourceEntry].push_back(cond);
-                    valid = true;
                     ++count;
                     continue;
                 }
@@ -1994,15 +1969,6 @@ bool ConditionMgr::isSourceTypeValid(Condition* cond)
                 }
             }
             break;
-        case CONDITION_SOURCE_TYPE_PHASE_DEFINITION:
-            /*
-            if (!PhaseMgr::IsConditionTypeSupported(cond->ConditionType))
-            {
-                TC_LOG_ERROR("sql.sql", "Condition source type `CONDITION_SOURCE_TYPE_PHASE_DEFINITION` does not support condition type %u, ignoring.", cond->ConditionType);
-                return false;
-            }
-            */
-            break;
         case CONDITION_SOURCE_TYPE_AREATRIGGER_ACTION:
         {
             AreaTriggerInfo const* info = sAreaTriggerDataStore->GetAreaTriggerInfo(cond->SourceGroup);
@@ -2045,8 +2011,14 @@ bool ConditionMgr::isSourceTypeValid(Condition* cond)
                     return false;
                 }
             }
+            break;
         }
-        break;
+        case CONDITION_SOURCE_TYPE_PHASE_DEFINITION_DEPRECATED:
+        {
+            TC_LOG_ERROR("sql.sql", "SourceType %u in `condition` table uses deprecated PHASE_DEFINITION, ignoring.", cond->SourceType);
+            return false;
+            break;
+        }
         case CONDITION_SOURCE_TYPE_GOSSIP_MENU:
         case CONDITION_SOURCE_TYPE_GOSSIP_MENU_OPTION:
         case CONDITION_SOURCE_TYPE_SMART_EVENT:
@@ -2054,6 +2026,8 @@ bool ConditionMgr::isSourceTypeValid(Condition* cond)
         case CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS:
         case CONDITION_SOURCE_TYPE_WORLD_STATE:
         case CONDITION_SOURCE_TYPE_NONE:
+        case CONDITION_SOURCE_TYPE_TERRAIN_SWAP:
+        case CONDITION_SOURCE_TYPE_PHASE:
         default:
             break;
     }
@@ -2565,6 +2539,14 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
                 TC_LOG_ERROR("sql.sql", "Phase condition has useless data in value3 (%u)!", cond->ConditionValue3);
             break;
         }
+        case CONDITION_TERRAIN_SWAP:
+        {
+            if (cond->ConditionValue2)
+                TC_LOG_ERROR("sql.sql", "Terrain swap condition has useless data in value2 (%u)!", cond->ConditionValue2);
+            if (cond->ConditionValue3)
+                TC_LOG_ERROR("sql.sql", "Terrain swap condition has useless data in value3 (%u)!", cond->ConditionValue3);
+            break;
+        }
         case CONDITION_TITLE:
         {
             CharTitlesEntry const* titleEntry = sCharTitlesStore.LookupEntry(cond->ConditionValue1);
@@ -2745,19 +2727,6 @@ void ConditionMgr::Clean()
     }
 
     NpcVendorConditionContainerStore.clear();
-
-    for (PhaseDefinitionConditionContainer::iterator itr = PhaseDefinitionsConditionStore.begin(); itr != PhaseDefinitionsConditionStore.end(); ++itr)
-    {
-        for (ConditionTypeContainer::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
-        {
-            for (ConditionList::const_iterator i = it->second.begin(); i != it->second.end(); ++i)
-                delete *i;
-            it->second.clear();
-        }
-        itr->second.clear();
-    }
-
-    PhaseDefinitionsConditionStore.clear();
 
     for (AreaTriggerConditionContainer::iterator itr = AreaTriggerConditionStore.begin(); itr != AreaTriggerConditionStore.end(); ++itr)
     {

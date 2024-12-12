@@ -912,7 +912,7 @@ void InstanceScript::UpdatePhasing()
     {
         if (player->CanContact())
         {
-            player->UpdatePhasing();
+            player->SendUpdatePhasing();
 
             /*
             player->AddDelayedEvent(100, [player, step]() -> void

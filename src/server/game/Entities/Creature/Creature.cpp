@@ -1793,6 +1793,9 @@ void Creature::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
     data.isActive = isActiveObject();
     // data.MaxVisible = cinfo->MaxVisible;
 
+    data.phaseid = GetDBPhase() > 0 ? GetDBPhase() : 0;
+    data.phaseGroup = GetDBPhase() < 0 ? abs(GetDBPhase()) : 0;
+
     // update in DB
     WorldDatabaseTransaction trans = WorldDatabase.BeginTransaction();
 
@@ -1809,7 +1812,8 @@ void Creature::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
     stmt->setUInt32(index++, zoneId);
     stmt->setUInt32(index++, areaId);
     stmt->setUInt64(index++, spawnMask);
-    stmt->setUInt16(index++, uint16(GetPhaseMask()));
+    stmt->setUInt32(index++, data.phaseid);
+    stmt->setUInt32(index++, data.phaseGroup);
     stmt->setUInt32(index++, displayId);
     stmt->setUInt8(index++, GetCurrentEquipmentId());
     stmt->setFloat(index++,  GetPositionX());

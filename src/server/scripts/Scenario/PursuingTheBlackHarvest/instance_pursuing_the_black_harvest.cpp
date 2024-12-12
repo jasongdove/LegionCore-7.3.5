@@ -56,12 +56,12 @@ public:
 
         void OnPlayerEnter(Player* player) override
         {
-            std::vector<WorldPackets::Misc::PhaseShiftDataPhase> phaseIds;
-            std::vector<uint16> terrainswaps;
-            std::vector<uint16> WorldMapAreaIds;
-            WorldMapAreaIds.emplace_back(992);
-            WorldMapAreaIds.emplace_back(683);
-            phaseIds.emplace_back(1982);
+            std::set<uint32> phaseIds;
+            std::set<uint32> terrainswaps;
+            std::set<uint32> WorldMapAreaIds;
+            WorldMapAreaIds.emplace(992);
+            WorldMapAreaIds.emplace(683);
+            phaseIds.emplace(1982);
             player->GetSession()->SendSetPhaseShift(phaseIds, terrainswaps, WorldMapAreaIds, {}, 16);
 
             player->CastSpell(player, SPELL_ENTER_THE_BLACK_TEMPLE);

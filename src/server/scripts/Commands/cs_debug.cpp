@@ -1195,8 +1195,7 @@ public:
             return false;
         }
 
-        for (auto phase : handler->GetSession()->GetPlayer()->GetPhases())
-            v->SetInPhase(phase, false, true);
+        v->CopyPhaseFrom(handler->GetSession()->GetPlayer());
 
         map->AddToMap(v->ToCreature());
 
@@ -1225,21 +1224,21 @@ public:
         if (!t)
             return false;
 
-        std::vector<WorldPackets::Misc::PhaseShiftDataPhase> phaseIds;
-        std::vector<uint16> visibleMapIDs;
-        std::vector<uint16> uiWorldMapAreaIDSwaps;
-        std::vector<uint16> preloadMapIDs;
+        std::set<uint32> phaseIds;
+        std::set<uint32> visibleMapIDs;
+        std::set<uint32> uiWorldMapAreaIDSwaps;
+        std::set<uint32> preloadMapIDs;
 
-        visibleMapIDs.emplace_back(static_cast<uint32>(atoi(t)));
+        visibleMapIDs.emplace(static_cast<uint32>(atoi(t)));
 
         if (p)
-            phaseIds.emplace_back(static_cast<uint32>(atoi(p)));
+            phaseIds.emplace(static_cast<uint32>(atoi(p)));
 
         if (w)
-            uiWorldMapAreaIDSwaps.emplace_back(static_cast<uint32>(atoi(w)));
+            uiWorldMapAreaIDSwaps.emplace(static_cast<uint32>(atoi(w)));
 
         if (s)
-            preloadMapIDs.emplace_back(static_cast<uint32>(atoi(s)));
+            preloadMapIDs.emplace(static_cast<uint32>(atoi(s)));
 
         handler->GetSession()->SendSetPhaseShift(phaseIds, visibleMapIDs, uiWorldMapAreaIDSwaps, preloadMapIDs);
         return true;
@@ -1765,12 +1764,28 @@ public:
         return true;
     }
 
-    static bool HandleDebugPhaseCommand(ChatHandler* handler, char const* args)
+    static bool HandleDebugPhaseCommand(ChatHandler* handler, char const* /*args*/)
     {
-        Player* player = handler->getSelectedPlayer();
-        if (!player)
-            return false;
+        Unit* target = handler->getSelectedUnit();
 
+        if (!target)
+        {
+            handler->SendSysMessage(LANG_SELECT_CREATURE);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        std::stringstream phases;
+
+        for (uint32 phase : target->GetPhases())
+        {
+            phases << phase << " ";
+        }
+
+        if (!phases.str().empty())
+            handler->PSendSysMessage("Target's current phases: %s", phases.str().c_str());
+        else
+            handler->SendSysMessage("Target is not phased");
         return true;
     }
 

@@ -28,6 +28,8 @@
 #include "UpdateData.h"
 #include "UpdateFields.h"
 
+#define DEFAULT_PHASE 169
+
 enum TempSummonType : uint8
 {
     TEMPSUMMON_TIMED_OR_DEAD_DESPAWN       = 1,             // despawns after a specified time OR when the creature disappears
@@ -485,23 +487,27 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         bool InInstance() const { return m_currMap && m_currMap->Instanceable(); }
 
         virtual void SetPhaseMask(uint32 newPhaseMask, bool update);
-        virtual void SetInPhase(uint32 id, bool update, bool apply);
+        virtual bool SetInPhase(uint32 id, bool update, bool apply);
+        void CopyPhaseFrom(WorldObject* obj, bool update = false);
+        void UpdateAreaPhase();
+        void ClearPhases(bool update = false);
+        void RebuildTerrainSwaps();
+        void RebuildWorldMapAreaSwaps();
+        bool HasInPhaseList(uint32 phase);
         uint32 GetPhaseMask() const { return m_phaseMask; }
-        bool InSamePhase(WorldObject const* obj) const;
-        bool InSamePhase(uint32 phasemask) const { return (GetPhaseMask() & phasemask) != 0; }
         bool IsInPhase(uint32 phase) const { return _phases.find(phase) != _phases.end(); }
         bool IsInPhase(WorldObject const* obj) const;
+        bool IsInTerrainSwap(uint32 terrainSwap) const { return _terrainSwaps.find(terrainSwap) != _terrainSwaps.end(); }
+        std::set<uint32> const& GetPhases() const { return _phases; }
+        std::set<uint32> const& GetTerrainSwaps() const { return _terrainSwaps; }
+        std::set<uint32> const& GetWorldMapAreaSwaps() const { return _worldMapAreaSwaps; }
+        int32 GetDBPhase() { return _dbPhase; }
+
+        // if negative it is used as PhaseGroupId
+        void SetDBPhase(int32 p) { _dbPhase = p; }
 
         // TODO: legacy; should be replaced with PhaseShift check in GameObjectModel
         bool IsInPhase(std::set<uint32> const& phases) const;
-
-        std::set<uint32> const& GetPhases() const { return _phases; }
-
-        void RebuildTerrainSwaps();
-        void RebuildWorldMapAreaSwaps();
-        std::set<uint32> const& GetTerrainSwaps() const { return _terrainSwaps; }
-        std::set<uint32> const& GetWorldMapAreaSwaps() const { return _worldMapAreaSwaps; }
-        bool IsInTerrainSwap(uint32 terrainSwap) const { return _terrainSwaps.find(terrainSwap) != _terrainSwaps.end(); }
 
         void setIgnorePhaseIdCheck(bool apply)  { m_ignorePhaseIdCheck = apply; }
         bool IgnorePhaseId() const { return m_ignorePhaseIdCheck; }
@@ -761,13 +767,14 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         bool m_ignorePhaseIdCheck;                          // like gm mode.
         std::set<uint32> _terrainSwaps;
         std::set<uint32> _worldMapAreaSwaps;
+        int32 _dbPhase;
 
         GuidUnorderedSet _visibilityPlayerList;
         GuidUnorderedSet _hideForGuid;
 
         virtual bool _IsWithinDist(WorldObject const* obj, float dist2compare, bool is3D, bool ignoreObjectSize = false) const;
         virtual bool CanNeverSee2(WorldObject const* obj) const { return false; }
-        virtual bool CanNeverSee(WorldObject const* obj) const { return GetMap() != obj->GetMap() || !InSamePhase(obj); }
+        virtual bool CanNeverSee(WorldObject const* obj) const { return GetMap() != obj->GetMap() || !IsInPhase(obj); }
         virtual bool CanAlwaysSee(WorldObject const* /*obj*/) const { return false; }
         bool CanDetect(WorldObject const* obj, bool ignoreStealth) const;
         bool CanDetectInvisibilityOf(WorldObject const* obj) const;

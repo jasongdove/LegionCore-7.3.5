@@ -5140,8 +5140,7 @@ void Spell::EffectSummonObjectWild(SpellEffIndex effIndex)
 
     pGameObj->SetTratsport(m_caster->GetTransport());
 
-    for (auto phase : m_caster->GetPhases())
-        pGameObj->SetInPhase(phase, false, true);
+    pGameObj->CopyPhaseFrom(m_caster);
 
     int32 duration = m_spellInfo->GetDuration(m_diffMode);
 
@@ -5190,8 +5189,7 @@ void Spell::EffectSummonObjectWild(SpellEffIndex effIndex)
         GameObject* linkedGO = sObjectMgr->IsStaticTransport(linkedEntry) ? new StaticTransport : new GameObject;
         if (linkedGO->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), linkedEntry, map, 0, Position(x, y, z, target->GetOrientation()), quat, 100, GO_STATE_READY))
         {
-            for (auto phase : m_caster->GetPhases())
-                linkedGO->SetInPhase(phase, false, true);
+            linkedGO->CopyPhaseFrom(m_caster);
 
             linkedGO->SetRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
             linkedGO->SetSpellId(m_spellInfo->Id);
@@ -5945,8 +5943,7 @@ void Spell::EffectDuel(SpellEffIndex effIndex)
         return;
     }
 
-    for (auto phase : m_caster->GetPhases())
-        pGameObj->SetInPhase(phase, false, true);
+    pGameObj->CopyPhaseFrom(m_caster);
 
     pGameObj->SetTratsport(m_caster->GetTransport());
     pGameObj->SetUInt32Value(GAMEOBJECT_FIELD_FACTION_TEMPLATE, m_caster->getFaction());
@@ -6448,8 +6445,7 @@ void Spell::EffectSummonObject(SpellEffIndex effIndex)
         return;
     }
 
-    for (auto phase : m_caster->GetPhases())
-        pGameObj->SetInPhase(phase, false, true);
+    pGameObj->CopyPhaseFrom(m_caster);
 
     pGameObj->SetTratsport(m_caster->GetTransport());
     //pGameObj->SetUInt32Value(GAMEOBJECT_FIELD_LEVEL, m_caster->GetEffectiveLevel());
@@ -7311,8 +7307,7 @@ void Spell::EffectTransmitted(SpellEffIndex effIndex)
         return;
     }
 
-    for (auto phase : m_caster->GetPhases())
-        pGameObj->SetInPhase(phase, false, true);
+    pGameObj->CopyPhaseFrom(m_caster);
 
     pGameObj->SetTratsport(m_caster->GetTransport());
     int32 duration = m_spellInfo->GetDuration(m_diffMode);
@@ -7408,8 +7403,7 @@ void Spell::EffectTransmitted(SpellEffIndex effIndex)
         G3D::Quat quat2(G3D::Matrix3::fromEulerAnglesZYX(m_caster->GetOrientation(), 0.f, 0.f));
         if (linkedGO->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), linkedEntry, cMap, 0, Position(fx, fy, fz, m_caster->GetOrientation()), quat2, 100, GO_STATE_READY))
         {
-            for (auto phase : m_caster->GetPhases())
-                linkedGO->SetInPhase(phase, false, true);
+            linkedGO->CopyPhaseFrom(m_caster);
 
             linkedGO->SetRespawnTime(duration > 0 ? duration / IN_MILLISECONDS : 0);
             //linkedGO->SetUInt32Value(GAMEOBJECT_FIELD_LEVEL, m_caster->getLevel());

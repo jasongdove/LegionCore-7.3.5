@@ -181,7 +181,7 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
         void SetGoAnimProgress(uint8 animprogress);
         static void SetGoArtKit(uint8 artkit, GameObject* go, ObjectGuid::LowType lowguid = 0);
 
-        void SetInPhase(uint32 id, bool update, bool apply);
+        bool SetInPhase(uint32 id, bool update, bool apply);
         void EnableCollision(bool enable);
 
         void Use(Unit* user);

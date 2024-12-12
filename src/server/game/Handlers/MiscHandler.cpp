@@ -488,11 +488,28 @@ void WorldSession::HandleUITimeRequest(WorldPackets::Misc::UITimeRequest& /*requ
     SendPacket(response.Write());
 }
 
-void WorldSession::SendSetPhaseShift(std::vector<WorldPackets::Misc::PhaseShiftDataPhase> phases, std::vector<uint16> const& visibleMapIDs, std::vector<uint16> const& uiWorldMapAreaIDSwaps, std::vector<uint16> const& preloadMapIDs, uint32 phaseShiftFlags /*= 0x1F*/)
+void WorldSession::SendSetPhaseShift(std::set<uint32> const& phaseIds, std::set<uint32> const& visibleMapIDs, std::set<uint32> const& uiWorldMapAreaIDSwaps, std::set<uint32> const& preloadMapIDs, uint32 phaseShiftFlags /*= 0x1F*/)
 {
     WorldPackets::Misc::PhaseShift phaseShift;
     phaseShift.Client = _player->GetGUID();
-    phaseShift.Phaseshift.PersonalGUID = ObjectGuid::Empty;
+    phaseShift.Phaseshift.PersonalGUID = _player->GetGUID();
+    phaseShift.Phaseshift.PhaseShiftFlags = phaseShiftFlags | 0x08;
+
+    for (auto phase : phaseIds)
+        phaseShift.Phaseshift.Phases.emplace_back(phase);
+
+    phaseShift.PreloadMapIDs = preloadMapIDs;
+    phaseShift.VisibleMapIDs = visibleMapIDs;
+    phaseShift.UiWorldMapAreaIDSwaps = uiWorldMapAreaIDSwaps;
+    SendPacket(phaseShift.Write());
+}
+
+// TODO: Phasing - Legacy LC
+void WorldSession::SendSetPhaseShift(std::vector<WorldPackets::Misc::PhaseShiftDataPhase> phases, std::set<uint32> const& visibleMapIDs, std::set<uint32> const& uiWorldMapAreaIDSwaps, std::set<uint32> const& preloadMapIDs, uint32 phaseShiftFlags /*= 0x1F*/)
+{
+    WorldPackets::Misc::PhaseShift phaseShift;
+    phaseShift.Client = _player->GetGUID();
+    phaseShift.Phaseshift.PersonalGUID = _player->GetGUID();
     phaseShift.Phaseshift.PhaseShiftFlags = phaseShiftFlags | 0x08;
     phaseShift.Phaseshift.Phases = std::move(phases);
     phaseShift.PreloadMapIDs = preloadMapIDs;

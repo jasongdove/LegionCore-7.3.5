@@ -100,6 +100,8 @@ enum ConditionTypes
     CONDITION_TIMEWALKING           = 66,                   // 0                0              0                  true if player is in timewalking.
     CONDITION_ACOUNT_QUEST          = 67,                   // quest_id         0              0                  true if quest_id was rewarded on any char account
     CONDITION_MAX                   = 68                    // MAX
+
+    // TODO: Phasing, swap CONDITION_SCENE_SEEN and CONDITION_TERRAIN_SWAP to match TC
 };
 
 /*! Documentation on implementing a new ConditionSourceType:
@@ -154,7 +156,7 @@ enum ConditionSourceType
     CONDITION_SOURCE_TYPE_QUEST_SHOW_MARK                = 20,
     CONDITION_SOURCE_TYPE_VEHICLE_SPELL                  = 21,
     CONDITION_SOURCE_TYPE_SMART_EVENT                    = 22,
-    CONDITION_SOURCE_TYPE_PHASE_DEFINITION               = 23,
+    CONDITION_SOURCE_TYPE_PHASE_DEFINITION_DEPRECATED    = 23,
     CONDITION_SOURCE_TYPE_SPELL_PROC                     = 24,
     CONDITION_SOURCE_TYPE_NPC_VENDOR                     = 25,
     CONDITION_SOURCE_TYPE_AREATRIGGER_ACTION             = 26,
@@ -166,7 +168,11 @@ enum ConditionSourceType
     CONDITION_SOURCE_TYPE_PLAYER_CHOICE                  = 32,
     CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS          = 33,
     CONDITION_SOURCE_TYPE_WORLD_STATE                    = 34,
-    CONDITION_SOURCE_TYPE_MAX                            = 35  //MAX
+    CONDITION_SOURCE_TYPE_TERRAIN_SWAP                   = 35,
+    CONDITION_SOURCE_TYPE_PHASE                          = 37,
+    CONDITION_SOURCE_TYPE_MAX                            = 38  //MAX
+
+    // TODO: Phasing, align condition sources to match TC. TERRAIN_SWAP = 25, PHASE = 26, etc
 };
 
 enum ComparisionType
@@ -242,7 +248,6 @@ typedef std::map<ConditionSourceType, ConditionTypeContainer> ConditionContainer
 typedef std::map<uint32, ConditionTypeContainer> CreatureSpellConditionContainer;
 typedef std::map<uint32, ConditionTypeContainer> NpcVendorConditionContainer;
 typedef std::map<std::pair<int32, uint32 /*SAI source_type*/>, ConditionTypeContainer> SmartEventConditionContainer;
-typedef std::map<int32 /*zoneId*/, ConditionTypeContainer> PhaseDefinitionConditionContainer;
 typedef std::map<uint32 /*areatrigger id*/, ConditionTypeContainer> AreaTriggerConditionContainer;
 typedef std::map<uint32 /*itemId*/, ConditionTypeContainer> ItemLootConditionContainer;
 
@@ -272,7 +277,6 @@ class TC_GAME_API ConditionMgr
         ConditionList GetConditionsForSmartEvent(int64 entryOrGuid, uint32 eventId, uint32 sourceType);
         ConditionList GetConditionsForVehicleSpell(uint32 creatureId, uint32 spellId);
         ConditionList GetConditionsForNpcVendorEvent(uint32 creatureId, uint32 itemId);
-        ConditionList GetConditionsForPhaseDefinition(uint32 zone, uint32 entry);
         ConditionList GetConditionsForAreaTriggerAction(uint32 areaTriggerId, uint32 actionId);
         ConditionList GetConditionsForItemLoot(uint32 creatureId, uint32 itemId);
 		bool IsObjectMeetingSmartEventConditions(int64 entryOrGuid, uint32 eventId, uint32 sourceType, Unit* unit, WorldObject* baseObject) const;
@@ -297,7 +301,6 @@ class TC_GAME_API ConditionMgr
         CreatureSpellConditionContainer   SpellClickEventConditionStore;
         NpcVendorConditionContainer       NpcVendorConditionContainerStore;
         SmartEventConditionContainer      SmartEventConditionStore;
-        PhaseDefinitionConditionContainer PhaseDefinitionsConditionStore;
         AreaTriggerConditionContainer     AreaTriggerConditionStore;
         ItemLootConditionContainer        ItemLootConditionStore;
 };

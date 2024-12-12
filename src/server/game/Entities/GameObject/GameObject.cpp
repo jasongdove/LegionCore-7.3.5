@@ -950,7 +950,6 @@ void GameObject::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
     stmt->setUInt16(index++, zoneId);
     stmt->setUInt16(index++, areaId);
     stmt->setUInt64(index++, spawnMask);
-    stmt->setUInt16(index++, uint16(GetPhaseMask()));
     stmt->setFloat(index++, GetPositionX());
     stmt->setFloat(index++, GetPositionY());
     stmt->setFloat(index++, GetPositionZ());
@@ -2792,11 +2791,13 @@ void GameObject::SetDisplayId(uint32 displayid)
     UpdateModel();
 }
 
-void GameObject::SetInPhase(uint32 id, bool update, bool apply)
+bool GameObject::SetInPhase(uint32 id, bool update, bool apply)
 {
-    WorldObject::SetInPhase(id, update, apply);
+    bool res = WorldObject::SetInPhase(id, update, apply);
     if (m_model && m_model->isCollisionEnabled())
         EnableCollision(true);
+
+    return res;
 }
 
 uint8 GameObject::GetNameSetId() const

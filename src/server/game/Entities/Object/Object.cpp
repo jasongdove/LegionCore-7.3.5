@@ -46,6 +46,8 @@
 #include "Player.h"
 #include "SharedDefines.h"
 #include "SpellPackets.h"
+#include "SpellAuras.h"
+#include "SpellAuraEffects.h"
 #include "TargetedMovementGenerator.h"
 #include "TemporarySummon.h"
 #include "Totem.h"
@@ -1577,7 +1579,7 @@ void Object::ResetMap()
     m_currMap = nullptr;
 }
 
-WorldObject::WorldObject(bool isWorldObject): LastUsedScriptID(0), m_transport(nullptr), m_name(""), m_isActive(false), m_isWorldObject(isWorldObject), m_zoneScript(nullptr), m_InstanceId(0), m_phaseMask(PHASEMASK_NORMAL), m_ignorePhaseIdCheck(false)
+WorldObject::WorldObject(bool isWorldObject): LastUsedScriptID(0), m_transport(nullptr), m_name(""), m_isActive(false), m_isWorldObject(isWorldObject), m_zoneScript(nullptr), m_InstanceId(0), m_phaseMask(PHASEMASK_NORMAL), _dbPhase(0), m_ignorePhaseIdCheck(false)
 {
     m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_ALIVE | GHOST_VISIBILITY_GHOST);
     m_serverSideVisibilityDetect.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_ALIVE);
@@ -2978,8 +2980,7 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
         return nullptr;
     }
 
-    for (auto phase : GetPhases())
-        go->SetInPhase(phase, false, true);
+    go->CopyPhaseFrom(this);
 
     go->SetTratsport(GetTransport());
     go->SetRespawnTime(respawnTime);
@@ -3672,12 +3673,141 @@ void WorldObject::SetPhaseMask(uint32 newPhaseMask, bool update)
         UpdateObjectVisibility();
 }
 
-void WorldObject::SetInPhase(uint32 id, bool update, bool apply)
+bool WorldObject::HasInPhaseList(uint32 phase)
 {
-    if (apply)
-        _phases.insert(id);
-    else
-        _phases.erase(id);
+    return _phases.find(phase) != _phases.end();
+}
+
+// Updates Area based phases, does not remove phases from auras
+// Phases from gm commands are not taken into calculations, they can be lost!!
+void WorldObject::UpdateAreaPhase()
+{
+    bool updateNeeded = false;
+    PhaseInfo phases = sObjectMgr->GetAreaPhases();
+    for (PhaseInfo::const_iterator itr = phases.begin(); itr != phases.end(); ++itr)
+    {
+        uint32 areaId = itr->first;
+        for (uint32 phaseId : itr->second)
+        {
+            if (areaId == GetAreaId())
+            {
+                ConditionList conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PHASE, phaseId);
+                if (sConditionMgr->IsObjectMeetToConditions(this, conditions))
+                {
+                    // add new phase if condition passed, true if it wasnt added before
+                    bool up = SetInPhase(phaseId, false, true);
+                    if (!updateNeeded && up)
+                        updateNeeded = true;
+                }
+                else
+                {
+                    // condition failed, remove phase, true if there was something removed
+                    bool up = SetInPhase(phaseId, false, false);
+                    if (!updateNeeded && up)
+                        updateNeeded = true;
+                }
+            }
+            else
+            {
+                // not in area, remove phase, true if there was something removed
+                bool up = SetInPhase(phaseId, false, false);
+                if (!updateNeeded && up)
+                    updateNeeded = true;
+            }
+        }
+    }
+
+    // do not remove a phase if it would be removed by an area but we have the same phase from an aura
+    if (Unit* unit = ToUnit())
+    {
+        Unit::AuraEffectList const& auraPhaseList = unit->GetAuraEffectsByType(SPELL_AURA_PHASE);
+        for (Unit::AuraEffectList::const_iterator itr = auraPhaseList.begin(); itr != auraPhaseList.end(); ++itr)
+        {
+            uint32 phase = uint32((*itr)->GetMiscValueB());
+            bool up = SetInPhase(phase, false, true);
+            if (!updateNeeded && up)
+                updateNeeded = true;
+        }
+        Unit::AuraEffectList const& auraPhaseGroupList = unit->GetAuraEffectsByType(SPELL_AURA_PHASE_GROUP);
+        for (Unit::AuraEffectList::const_iterator itr = auraPhaseGroupList.begin(); itr != auraPhaseGroupList.end(); ++itr)
+        {
+            bool up = false;
+            uint32 phaseGroup = uint32((*itr)->GetMiscValueB());
+            std::set<uint32> const& phases = sDB2Manager.GetPhasesForGroup(phaseGroup);
+            for (uint32 phase : phases)
+                up = SetInPhase(phase, false, true);
+            if (!updateNeeded && up)
+                updateNeeded = true;
+        }
+    }
+
+    // only update visibility and send packets if there was a change in the phase list
+
+    if (updateNeeded && GetTypeId() == TYPEID_PLAYER && IsInWorld())
+    {
+        ToPlayer()->GetSession()->SendSetPhaseShift(GetPhases(), GetTerrainSwaps(), GetWorldMapAreaSwaps(), {});
+    }
+
+    // only update visibilty once, to prevent objects appearing for a moment while adding in multiple phases
+    if (updateNeeded && IsInWorld())
+        UpdateObjectVisibility();
+}
+
+bool WorldObject::SetInPhase(uint32 id, bool update, bool apply)
+{
+    if (id)
+    {
+        if (apply)
+        {
+            if (HasInPhaseList(id)) // do not run the updates if we are already in this phase
+                return false;
+            _phases.insert(id);
+        }
+        else
+        {
+            for (uint32 phaseId : sObjectMgr->GetPhasesForArea(GetAreaId()))
+            {
+                if (id == phaseId)
+                {
+                    ConditionList conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PHASE, phaseId);
+                    if (sConditionMgr->IsObjectMeetToConditions(this, conditions))
+                    {
+                        // if area phase passes the condition we should not remove it (ie: if remove called from aura remove)
+                        // this however breaks the .mod phase command, you wont be able to remove any area based phases with it
+                        return false;
+                    }
+                }
+            }
+            if (!HasInPhaseList(id)) // do not run the updates if we are not in this phase
+                return false;
+            _phases.erase(id);
+        }
+    }
+    RebuildTerrainSwaps();
+
+    if (update && IsInWorld())
+        UpdateObjectVisibility();
+
+    return true;
+}
+
+void WorldObject::CopyPhaseFrom(WorldObject* obj, bool update)
+{
+    if (!obj)
+        return;
+
+    for (uint32 phase : obj->GetPhases())
+        SetInPhase(phase, false, true);
+
+    if (update && IsInWorld())
+        UpdateObjectVisibility();
+}
+
+void WorldObject::ClearPhases(bool update)
+{
+    _phases.clear();
+
+    RebuildTerrainSwaps();
 
     if (update && IsInWorld())
         UpdateObjectVisibility();
@@ -3689,10 +3819,13 @@ bool WorldObject::IsInPhase(WorldObject const* obj) const
     if (_phases.empty() && obj->GetPhases().empty())
         return true;
 
-    if (_phases.empty() && obj->IsInPhase(169))
+    if (_phases.empty() && obj->IsInPhase(DEFAULT_PHASE))
         return true;
 
-    if (obj->GetPhases().empty() && IsInPhase(169))
+    if (obj->GetPhases().empty() && IsInPhase(DEFAULT_PHASE))
+        return true;
+
+    if (GetTypeId() == TYPEID_PLAYER && ToPlayer()->isGameMaster())
         return true;
 
     return Trinity::Containers::Intersects(_phases.begin(), _phases.end(), obj->GetPhases().begin(), obj->GetPhases().end());
@@ -3713,10 +3846,10 @@ bool WorldObject::IsInPhase(std::set<uint32> const& phase) const
     if (phase.empty() && _phases.empty())
         return true;
 
-    if (_phases.empty() && phase.contains(169))
+    if (_phases.empty() && phase.contains(DEFAULT_PHASE))
         return true;
 
-    if (phase.empty() && IsInPhase(169))
+    if (phase.empty() && IsInPhase(DEFAULT_PHASE))
         return true;
 
     //! speed up case. should be done in any way.
@@ -3880,11 +4013,6 @@ ObjectGuid WorldObject::GetTransGUID() const
     return ObjectGuid::Empty;
 }
 
-bool WorldObject::InSamePhase(WorldObject const* obj) const
-{
-    return IsInPhase(obj);
-}
-
 C_PTR WorldObject::get_ptr()
 {
     if (ptr.numerator && ptr.numerator->ready)
@@ -3900,7 +4028,7 @@ void WorldObject::RebuildTerrainSwaps()
     // Clear all terrain swaps, will be rebuilt below
     // Reason for this is, multiple phases can have the same terrain swap, we should not remove the swap if another phase still use it
     _terrainSwaps.clear();
-    /*ConditionList conditions;
+    ConditionList conditions;
 
     // Check all applied phases for terrain swap and add it only once
     for (uint32 phaseId : _phases)
@@ -3930,7 +4058,7 @@ void WorldObject::RebuildTerrainSwaps()
 
         if (sConditionMgr->IsObjectMeetToConditions(this, conditions))
             _terrainSwaps.insert(swap);
-    }*/
+    }
 
     // online players have a game client with world map display
     if (IsPlayer())
@@ -3944,7 +4072,7 @@ void WorldObject::RebuildWorldMapAreaSwaps()
 
     // get ALL default terrain swaps, if we are using it (condition is true)
     // send the worldmaparea for it, to see swapped worldmaparea in client from other maps too, not just from our current
-    /*TerrainPhaseInfo defaults = sObjectMgr->GetDefaultTerrainSwapStore();
+    TerrainPhaseInfo defaults = sObjectMgr->GetDefaultTerrainSwapStore();
     for (TerrainPhaseInfo::const_iterator itr = defaults.begin(); itr != defaults.end(); ++itr)
     {
         for (uint32 swap : itr->second)
@@ -3975,7 +4103,7 @@ void WorldObject::RebuildWorldMapAreaSwaps()
                     _worldMapAreaSwaps.insert(map);
             }
         }
-    }*/
+    }
 }
 
 template<class NOTIFIER>

@@ -2914,7 +2914,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void UpdateTriggerVisibility();
         void UpdateCustomField();
 
-        void UpdatePhasing();
+        void SendUpdatePhasing();
 
         template<class T>
         void UpdateVisibilityOf(T* target, UpdateData& data, std::set<Unit*>& visibleNow);

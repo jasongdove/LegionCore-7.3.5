@@ -1343,13 +1343,13 @@ public:
                 case 8702:
                     if (IsNextStageAllowed(instance, STAGE_7))
                     {
-                        std::vector<WorldPackets::Misc::PhaseShiftDataPhase> phaseIds;
-                        std::vector<uint16> terrainswaps;
-                        std::vector<uint16> WorldMapAreaIds;
-                        WorldMapAreaIds.push_back(992);
-                        WorldMapAreaIds.push_back(683);
-                        phaseIds.emplace_back(1982);
-                        phaseIds.emplace_back(2387);
+                        std::set<uint32> phaseIds;
+                        std::set<uint32> terrainswaps;
+                        std::set<uint32> WorldMapAreaIds;
+                        WorldMapAreaIds.emplace(992);
+                        WorldMapAreaIds.emplace(683);
+                        phaseIds.emplace(1982);
+                        phaseIds.emplace(2387);
                         player->GetSession()->SendSetPhaseShift(phaseIds, terrainswaps, WorldMapAreaIds, {}, 16);
                         player->AddAura(SPELL_UPDATE_PHASE_SHIFT, player);
                         instance->HandleGameObject(instance->GetGuidData(DATA_SECOND_DOOR), true);

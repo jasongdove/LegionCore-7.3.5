@@ -920,6 +920,8 @@ bool Map::AddPlayerToMap(Player* player, bool initPlayer /*= true*/)
 
     player->UpdateObjectVisibility(false);
 
+    player->SendUpdatePhasing();
+
     sScriptMgr->OnPlayerEnterMap(this, player);
     sOutdoorPvPMgr->HandlePlayerEnterMap(player->GetGUID(), player->GetCurrentZoneID());
 
@@ -982,6 +984,8 @@ bool Map::AddToMap(T *obj)
 
     if (obj->isActiveObject())
         AddToActive(obj);
+
+    obj->RebuildTerrainSwaps();
 
     //something, such as vehicle, needs to be update immediately
     //also, trigger needs to cast spell, if not update, cannot see visual
@@ -4174,14 +4178,10 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 		mask = UNIT_MASK_GUARDIAN;
 
     uint32 team = 0;
-    std::set<uint32> phases;
 
     if (summoner)
-    {
-        phases = summoner->GetPhases();
         if (summoner->IsPlayer())
             team = summoner->ToPlayer()->GetTeam();
-    }
 
     TempSummon* summon = nullptr;
     switch (mask)
@@ -4212,8 +4212,7 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     }
 
     // Set the summon to the summoner's phase
-    for (auto phaseId : phases)
-        summon->SetInPhase(phaseId, false, true);
+    summon->CopyPhaseFrom(summoner);
 
     summon->SetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL, spellId);
     if (summoner)

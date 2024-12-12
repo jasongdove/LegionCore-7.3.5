@@ -10180,6 +10180,8 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
 
     UpdateZoneDependentAuras(newZone);
 
+    UpdateAreaPhase();
+
     ZoneTeleport(newZone);
 }
 
@@ -26364,7 +26366,7 @@ Pet* Player::SummonPet(uint32 entry, Optional<PetSaveMode> slot, float x, float 
 
     Map* map = GetMap();
     uint32 pet_number = sObjectMgr->GeneratePetNumber();
-    if (!pet->Create(sObjectMgr->GetGenerator<HighGuid::Pet>()->Generate(), map, GetPhaseMask(), entry, pet_number))
+    if (!pet->Create(sObjectMgr->GetGenerator<HighGuid::Pet>()->Generate(), map, entry, pet_number))
     {
         TC_LOG_ERROR("misc", "no such creature entry %u", entry);
         delete pet;
@@ -26374,8 +26376,7 @@ Pet* Player::SummonPet(uint32 entry, Optional<PetSaveMode> slot, float x, float 
     if (petStable.GetCurrentPet())
         RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT);
 
-    for (auto itr : GetPhases())
-        pet->SetInPhase(itr, false, true);
+    pet->CopyPhaseFrom(this);
 
     pet->SetTratsport(GetTransport());
     pet->SetCreatorGUID(GetGUID());
@@ -34820,36 +34821,17 @@ void Player::ValidateMovementInfo(MovementInfo* mi)
 #undef REMOVE_VIOLATING_FLAGS
 }
 
-void Player::UpdatePhasing()
+void Player::SendUpdatePhasing()
 {
     if (!IsInWorld())
         return;
 
-    std::set<uint32> phaseIds;
-    std::set<uint32> terrainswaps;
-    std::set<uint32> worldAreaSwaps;
+    RebuildTerrainSwaps(); // to set default map swaps
 
     // Legacy LC
-    std::vector<WorldPackets::Misc::PhaseShiftDataPhase> phases;
-    std::vector<uint16> TerrainSwaps;
-    std::vector<uint16> WorldMapAreaIds;
-    std::vector<uint16> UiWorldMapAreaIds;
+    std::set<uint32> UiWorldMapAreaIds;
 
-    for (auto phase : GetPhases())
-    {
-        PhaseInfo const* info = sObjectMgr->GetPhaseInfo(phase);
-        if (!info)
-            continue;
-        terrainswaps.insert(info->terrainSwapMap);
-        worldAreaSwaps.insert(info->worldMapAreaSwap);
-
-        // Legacy LC
-        phases.emplace_back(phase);
-        TerrainSwaps.push_back(info->terrainSwapMap);
-        WorldMapAreaIds.push_back(info->worldMapAreaSwap);
-    }
-
-    GetSession()->SendSetPhaseShift(phases, TerrainSwaps, WorldMapAreaIds, UiWorldMapAreaIds);
+    GetSession()->SendSetPhaseShift(GetPhases(), GetTerrainSwaps(), GetWorldMapAreaSwaps(), UiWorldMapAreaIds);
 }
 
 void Player::SendMovementForce(AreaTrigger const* at, Position pos /*= Position()*/, float magnitude /*= 0.0f*/, uint32 type /*= 0*/, bool apply /*= false*/)

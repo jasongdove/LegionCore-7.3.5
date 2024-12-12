@@ -234,6 +234,7 @@ public:
             { "model",          SEC_GAMEMASTER,     false, &HandleNpcSetModelCommand,          ""},
             { "movetype",       SEC_GAMEMASTER,     false, &HandleNpcSetMoveTypeCommand,       ""},
             { "phase",          SEC_GAMEMASTER,     false, &HandleNpcSetPhaseCommand,          ""},
+            { "phasegroup",     SEC_GAMEMASTER,     false, &HandleNpcSetPhaseGroupCommand,     ""},
             { "spawndist",      SEC_GAMEMASTER,     false, &HandleNpcSetSpawnDistCommand,      ""},
             { "spawntime",      SEC_GAMEMASTER,     false, &HandleNpcSetSpawnTimeCommand,      ""},
             { "data",           SEC_ADMINISTRATOR,  false, &HandleNpcSetDataCommand,           ""},
@@ -318,9 +319,6 @@ public:
             delete creature;
             return false;
         }
-
-        for (auto phase : chr->GetPhases())
-            creature->SetInPhase(phase, false, true);
 
         creature->SaveToDB(map->GetId(), (UI64LIT(1) << map->GetSpawnMode()), chr->GetPhaseMask());
 
@@ -1345,7 +1343,37 @@ public:
     }
 
     //npc phase handling
-    //change phase of creature or pet
+    //change phase of creature
+    static bool HandleNpcSetPhaseGroupCommand(ChatHandler* handler, char const* args)
+    {
+        if (!*args)
+            return false;
+
+        uint32 phaseGroupId = (uint32)atoi((char*)args);
+
+        Creature* creature = handler->getSelectedCreature();
+        if (!creature || creature->isPet())
+        {
+            handler->SendSysMessage(LANG_SELECT_CREATURE);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        creature->ClearPhases();
+
+        for (uint32 id : sDB2Manager.GetPhasesForGroup(phaseGroupId))
+            creature->SetInPhase(id, false, true); // don't send update here for multiple phases, only send it once after adding all phases
+
+        creature->UpdateObjectVisibility();
+        creature->SetDBPhase(-int(phaseGroupId));
+
+        creature->SaveToDB();
+
+        return true;
+    }
+
+    //npc phase handling
+    //change phase of creature
     static bool HandleNpcSetPhaseCommand(ChatHandler* handler, const char* args)
     {
         if (!*args)
@@ -1354,17 +1382,18 @@ public:
         uint32 phase = (uint32) atoi((char*)args);
 
         Creature* creature = handler->getSelectedCreature();
-        if (!creature)
+        if (!creature || creature->isPet())
         {
             handler->SendSysMessage(LANG_SELECT_CREATURE);
             handler->SetSentErrorMessage(true);
             return false;
         }
 
-        creature->SetInPhase(phase, true, !creature->IsInPhase(phase));
+        creature->ClearPhases();
+        creature->SetInPhase(phase, true, true);
+        creature->SetDBPhase(phase);
 
-        if (!creature->isPet())
-            creature->SaveToDB();
+        creature->SaveToDB();
 
         return true;
     }

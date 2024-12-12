@@ -94,7 +94,7 @@ void EventObject::Update(uint32 /*p_time*/)
     GetPlayerListInGrid(playerList, eventTemplate->radius);
     for (auto player : playerList)
     {
-        if (!player->InSamePhase(this))
+        if (!player->IsInPhase(this))
             continue;
 
         if (ActivatedForPlayer(player))

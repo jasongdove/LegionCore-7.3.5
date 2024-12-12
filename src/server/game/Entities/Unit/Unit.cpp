@@ -5359,7 +5359,7 @@ void Unit::RemoveNotOwnSingleTargetAuras(uint32 newPhase, bool phaseid)
                 RemoveAura(iter);
             else
             {
-                if (!caster || (newPhase && !caster->InSamePhase(newPhase)) || (!newPhase && !caster->IsInPhase(this)))
+                if (!caster || (newPhase && !caster->IsInPhase(newPhase)) || (!newPhase && !caster->IsInPhase(this)))
                     RemoveAura(iter);
                 else
                     ++iter;
@@ -5385,7 +5385,7 @@ void Unit::RemoveNotOwnSingleTargetAuras(uint32 newPhase, bool phaseid)
                     continue;
                 }
 
-                if (!_owner->InSamePhase(newPhase))
+                if (!_owner->IsInPhase(newPhase))
                 {
                     if (Unit* _unit = _owner->ToUnit())
                         _unit->RemoveAurasDueToSpell(aura->GetId());
@@ -17333,6 +17333,7 @@ void Unit::AddToWorld()
     {
         WorldObject::AddToWorld();
     }
+    RebuildTerrainSwaps();
 }
 
 void Unit::RemoveFromWorld()
@@ -19250,6 +19251,8 @@ bool Unit::InitTamedPet(Pet* pet, uint8 level, uint32 spell_id)
         TC_LOG_ERROR("entities.unit", "Pet::InitStatsForLevel() failed for creature (Entry: %u)!", pet->GetEntry());
         return false;
     }
+
+    pet->CopyPhaseFrom(this);
 
     pet->GetCharmInfo()->SetPetNumber(sObjectMgr->GeneratePetNumber(), true);
     // this enables pet details window (Shift+P)
@@ -23240,14 +23243,12 @@ float Unit::MeleeSpellMissChance(const Unit* victim, WeaponAttackType attType, u
     return missChance;
 }
 
-void Unit::SetInPhase(uint32 id, bool update, bool apply)
+bool Unit::SetInPhase(uint32 id, bool update, bool apply)
 {
-    WorldObject::SetInPhase(id, update, apply);
+    bool res = WorldObject::SetInPhase(id, update, apply);
 
     if (!IsInWorld())
-        return;
-
-    RemoveNotOwnSingleTargetAuras(0, true);
+        return res;
 
     if (GetTypeId() == TYPEID_UNIT || (!ToPlayer()->isGameMaster() && !ToPlayer()->GetSession()->PlayerLogout()))
     {
@@ -23289,11 +23290,13 @@ void Unit::SetInPhase(uint32 id, bool update, bool apply)
             if (Creature* summon = GetMap()->GetCreature(m_SummonSlot[i]))
                 summon->SetInPhase(id, true, apply);
 
-    RebuildTerrainSwaps();
+    RemoveNotOwnSingleTargetAuras(0, true);
 
     // Update visibility after phasing pets and summons so they wont despawn
     if (update)
         UpdateObjectVisibility();
+
+    return res;
 }
 
 class AINotifyTask final : public BasicEvent
@@ -27916,7 +27919,7 @@ void Unit::RemoveMultiSingleTargetAuras(uint32 newPhase)
         if (aura)
         {
             WorldObject* _owner = aura->GetOwner();
-            if (_owner && _owner != this && !_owner->InSamePhase(newPhase))
+            if (_owner && _owner != this && !_owner->IsInPhase(newPhase))
             {
                 if (Unit* _unit = _owner->ToUnit())
                 {
