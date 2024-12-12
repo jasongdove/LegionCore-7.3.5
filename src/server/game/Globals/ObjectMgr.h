@@ -81,15 +81,8 @@ struct PhaseDefinition
 {
     uint32 zoneId;
     uint32 entry;
-    uint32 phasemask;
     uint32 phaseId;
-    uint32 terrainswapmap;
-
-    // part of LC
-    uint16 wmAreaId;
-    uint16 uiWmAreaId;
-
-    uint8 flags;
+    uint32 phaseGroup;
 };
 
 typedef std::list<PhaseDefinition> PhaseDefinitionContainer;

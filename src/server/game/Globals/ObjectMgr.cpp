@@ -7201,8 +7201,8 @@ void ObjectMgr::LoadPhaseDefinitions()
 
     uint32 oldMSTime = getMSTime();
 
-    //                                                 0       1       2         3            4           5          6             7
-    QueryResult result = WorldDatabase.Query("SELECT zoneId, entry, phasemask, phaseId, PreloadMapID, VisibleMapID, flags, UiWorldMapAreaID FROM `phase_definitions` ORDER BY `entry` ASC");
+    //                                                 0        1         2          3
+    QueryResult result = WorldDatabase.Query("SELECT `zoneId`, `entry`, `phaseId`, `phaseGroup` FROM `phase_definitions` ORDER BY `entry` ASC");
 
     if (!result)
     {
@@ -7216,17 +7216,13 @@ void ObjectMgr::LoadPhaseDefinitions()
     {
         Field *fields = result->Fetch();
 
-        PhaseDefinition pd;
-
+        PhaseDefinition pd = {};
         pd.zoneId                = fields[0].GetUInt32();
         pd.entry                 = fields[1].GetUInt16();
-        pd.phasemask             = fields[2].GetUInt64();
-        pd.terrainswapmap        = fields[4].GetUInt16();
-        pd.wmAreaId              = fields[5].GetUInt16();
-        pd.flags                 = fields[6].GetUInt8();
-        pd.uiWmAreaId            = fields[7].GetUInt16();
+        pd.phaseId               = fields[2].GetUInt32();
+        pd.phaseGroup            = fields[3].GetUInt32();
 
-        // TODO: restore this data?
+        // TODO: Phasing - restore this data?
         /*
         Tokenizer phasesToken(fields[3].GetString(), ' ', 100);
         for (auto itr : phasesToken)
@@ -7235,12 +7231,14 @@ void ObjectMgr::LoadPhaseDefinitions()
         */
 
         // Checks
-        if ((pd.flags & PHASE_FLAG_OVERWRITE_EXISTING) && (pd.flags & PHASE_FLAG_NEGATE_PHASE))
+        if (pd.phaseGroup && pd.phaseId)
         {
-            TC_LOG_ERROR("sql.sql", "Flags defined in phase_definitions in zoneId %d and entry %u does contain PHASE_FLAG_OVERWRITE_EXISTING and PHASE_FLAG_NEGATE_PHASE. Setting flags to PHASE_FLAG_OVERWRITE_EXISTING", pd.zoneId, pd.entry);
-            pd.flags &= ~PHASE_FLAG_NEGATE_PHASE;
+            TC_LOG_ERROR("sql.sql", "Phase definition for zone %u (Entry: %u) has phaseGroup and phaseId set, phaseGroup set to 0", pd.zoneId, pd.entry);
+            pd.phaseGroup = 0;
         }
 
+        // TODO: Phasing
+        /*
         if (pd.terrainswapmap > 0)
         {
             const MapEntry* const map = sMapStore.LookupEntry(pd.terrainswapmap);
@@ -7250,6 +7248,7 @@ void ObjectMgr::LoadPhaseDefinitions()
                 continue;
             }
         }
+        */
 
         _PhaseDefinitionStore[pd.zoneId].push_back(pd);
 
