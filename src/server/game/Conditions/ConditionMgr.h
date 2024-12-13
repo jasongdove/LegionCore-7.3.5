@@ -242,16 +242,15 @@ struct Condition
     uint32 GetMaxAvailableConditionTargets();
 };
 
-typedef std::list<Condition*> ConditionList;
-typedef std::map<uint32, ConditionList> ConditionTypeContainer;
-typedef std::map<ConditionSourceType, ConditionTypeContainer> ConditionContainer;
-typedef std::map<uint32, ConditionTypeContainer> CreatureSpellConditionContainer;
-typedef std::map<uint32, ConditionTypeContainer> NpcVendorConditionContainer;
-typedef std::map<std::pair<int32, uint32 /*SAI source_type*/>, ConditionTypeContainer> SmartEventConditionContainer;
-typedef std::map<uint32 /*areatrigger id*/, ConditionTypeContainer> AreaTriggerConditionContainer;
-typedef std::map<uint32 /*itemId*/, ConditionTypeContainer> ItemLootConditionContainer;
+typedef std::list<Condition*> ConditionContainer;
+typedef std::map<uint32 /*SourceEntry*/, ConditionContainer> ConditionsByEntryMap;
+typedef std::map<ConditionSourceType /*SourceType*/, ConditionsByEntryMap> ConditionEntriesByTypeMap;
+typedef std::map<uint32, ConditionsByEntryMap> ConditionEntriesByCreatureIdMap;
+typedef std::map<std::pair<int32, uint32 /*SAI source_type*/>, ConditionsByEntryMap> SmartEventConditionContainer;
+typedef std::map<uint32 /*areatrigger id*/, ConditionsByEntryMap> AreaTriggerConditionContainer;
+typedef std::map<uint32 /*itemId*/, ConditionsByEntryMap> ItemLootConditionContainer;
 
-typedef std::map<uint32, ConditionList> ConditionReferenceContainer;//only used for references
+typedef std::map<uint32, ConditionContainer> ConditionReferenceContainer;//only used for references
 
 class TC_GAME_API ConditionMgr
 {
@@ -264,21 +263,21 @@ class TC_GAME_API ConditionMgr
 
         void LoadConditions(bool isReload = false);
         bool isConditionTypeValid(Condition* cond);
-        ConditionList GetConditionReferences(uint32 refId);
+        ConditionContainer GetConditionReferences(uint32 refId);
 
-        uint32 GetSearcherTypeMaskForConditionList(ConditionList const& conditions);
-        bool IsObjectMeetToConditions(WorldObject* object, ConditionList const& conditions);
-        bool IsObjectMeetToConditions(WorldObject* object1, WorldObject* object2, ConditionList const& conditions);
-        bool IsObjectMeetToConditions(ConditionSourceInfo& sourceInfo, ConditionList const& conditions) const;
+        uint32 GetSearcherTypeMaskForConditionList(ConditionContainer const& conditions);
+        bool IsObjectMeetToConditions(WorldObject* object, ConditionContainer const& conditions);
+        bool IsObjectMeetToConditions(WorldObject* object1, WorldObject* object2, ConditionContainer const& conditions);
+        bool IsObjectMeetToConditions(ConditionSourceInfo& sourceInfo, ConditionContainer const& conditions) const;
         bool CanHaveSourceGroupSet(ConditionSourceType sourceType) const;
         bool CanHaveSourceIdSet(ConditionSourceType sourceType) const;
-        ConditionList GetConditionsForNotGroupedEntry(ConditionSourceType sourceType, uint32 entry);
-        ConditionList GetConditionsForSpellClickEvent(uint32 creatureId, uint32 spellId);
-        ConditionList GetConditionsForSmartEvent(int64 entryOrGuid, uint32 eventId, uint32 sourceType);
-        ConditionList GetConditionsForVehicleSpell(uint32 creatureId, uint32 spellId);
-        ConditionList GetConditionsForNpcVendorEvent(uint32 creatureId, uint32 itemId);
-        ConditionList GetConditionsForAreaTriggerAction(uint32 areaTriggerId, uint32 actionId);
-        ConditionList GetConditionsForItemLoot(uint32 creatureId, uint32 itemId);
+        ConditionContainer GetConditionsForNotGroupedEntry(ConditionSourceType sourceType, uint32 entry);
+        ConditionContainer GetConditionsForSpellClickEvent(uint32 creatureId, uint32 spellId);
+        ConditionContainer GetConditionsForSmartEvent(int64 entryOrGuid, uint32 eventId, uint32 sourceType);
+        ConditionContainer GetConditionsForVehicleSpell(uint32 creatureId, uint32 spellId);
+        ConditionContainer GetConditionsForNpcVendorEvent(uint32 creatureId, uint32 itemId);
+        ConditionContainer GetConditionsForAreaTriggerAction(uint32 areaTriggerId, uint32 actionId);
+        ConditionContainer GetConditionsForItemLoot(uint32 creatureId, uint32 itemId);
 		bool IsObjectMeetingSmartEventConditions(int64 entryOrGuid, uint32 eventId, uint32 sourceType, Unit* unit, WorldObject* baseObject) const;
         
         static bool IsPlayerMeetingCondition(Unit* unit, int32 conditionID, bool send = false);
@@ -290,16 +289,16 @@ class TC_GAME_API ConditionMgr
         bool addToGossipMenus(Condition* cond);
         bool addToGossipMenuItems(Condition* cond);
         bool addToSpellImplicitTargetConditions(Condition* cond);
-        bool IsObjectMeetToConditionList(ConditionSourceInfo& sourceInfo, ConditionList const& conditions) const;
+        bool IsObjectMeetToConditionList(ConditionSourceInfo& sourceInfo, ConditionContainer const& conditions) const;
 
         void Clean(); // free up resources
         std::list<Condition*> AllocatedMemoryStore; // some garbage collection :)
 
-        ConditionContainer                ConditionStore;
+        ConditionEntriesByTypeMap         ConditionStore;
         ConditionReferenceContainer       ConditionReferenceStore;
-        CreatureSpellConditionContainer   VehicleSpellConditionStore;
-        CreatureSpellConditionContainer   SpellClickEventConditionStore;
-        NpcVendorConditionContainer       NpcVendorConditionContainerStore;
+        ConditionEntriesByCreatureIdMap   VehicleSpellConditionStore;
+        ConditionEntriesByCreatureIdMap   SpellClickEventConditionStore;
+        ConditionEntriesByCreatureIdMap   NpcVendorConditionContainerStore;
         SmartEventConditionContainer      SmartEventConditionStore;
         AreaTriggerConditionContainer     AreaTriggerConditionStore;
         ItemLootConditionContainer        ItemLootConditionStore;

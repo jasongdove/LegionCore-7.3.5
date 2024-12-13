@@ -3566,7 +3566,7 @@ void SpellInfo::_UnloadImplicitTargetConditionLists()
         if (EffectMask < uint32(1 << i))
             break;
 
-        ConditionList* cur = Effects[i]->ImplicitTargetConditions;
+        ConditionContainer* cur = Effects[i]->ImplicitTargetConditions;
         if (!cur)
             continue;
         for (uint8 j = i; j < MAX_SPELL_EFFECTS; ++j)

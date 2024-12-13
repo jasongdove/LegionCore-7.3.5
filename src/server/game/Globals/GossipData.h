@@ -6,7 +6,7 @@ enum class GossipOptionNpc : uint8;
 
 struct GossipMenuItems
 {
-    ConditionList   Conditions;
+    ConditionContainer   Conditions;
     uint32          MenuID;
     uint32          OptionIndex;
     uint32          OptionBroadcastTextID;
@@ -22,7 +22,7 @@ struct GossipMenuItems
 
 struct GossipMenus
 {
-    ConditionList   Conditions;
+    ConditionContainer   Conditions;
     uint32          MenuID;
     uint32          TextID;
 };

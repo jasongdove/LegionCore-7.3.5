@@ -83,7 +83,7 @@ class LootTemplate::LootGroup                               // A set of loot def
         void CheckLootRefs(LootTemplateMap const& store, LootIdSet* ref_set) const;
         LootStoreItemList* GetExplicitlyChancedItemList() { return &ExplicitlyChanced; }
         LootStoreItemList* GetEqualChancedItemList() { return &EqualChanced; }
-        void CopyConditions(ConditionList conditions);
+        void CopyConditions(ConditionContainer conditions);
         LootStoreItemList ExplicitlyChanced;                // Entries with chances defined in DB
         LootStoreItemList EqualChanced;                     // Zero chances - every entry takes the same chance
 
@@ -221,7 +221,7 @@ void LootStore::ResetConditions()
 {
     for (LootTemplateMap::iterator itr = m_LootTemplates.begin(); itr != m_LootTemplates.end(); ++itr)
     {
-        ConditionList empty;
+        ConditionContainer empty;
         (*itr).second->CopyConditions(empty);
     }
 }
@@ -1933,7 +1933,7 @@ bool LootTemplate::LootGroup::HasQuestDropForPlayer(Player const* player) const
     return false;
 }
 
-void LootTemplate::LootGroup::CopyConditions(ConditionList /*conditions*/)
+void LootTemplate::LootGroup::CopyConditions(ConditionContainer /*conditions*/)
 {
     for (LootStoreItemList::iterator i = ExplicitlyChanced.begin(); i != ExplicitlyChanced.end(); ++i)
     {
@@ -2577,7 +2577,7 @@ void LootTemplate::AddEntry(LootStoreItem& item)
     }
 }
 
-void LootTemplate::CopyConditions(ConditionList conditions)
+void LootTemplate::CopyConditions(ConditionContainer conditions)
 {
     for (LootStoreItemList::iterator i = Entries.begin(); i != Entries.end(); ++i)
         i->conditions.clear();
@@ -3420,13 +3420,13 @@ bool LootTemplate::CheckItemCondition(Player const* player, uint32 itemId, uint8
                 return false;
         }
 
-        ConditionList conditionsList = sConditionMgr->GetConditionsForItemLoot(1, itemId);
+        ConditionContainer conditionsList = sConditionMgr->GetConditionsForItemLoot(1, itemId);
         if (!sConditionMgr->IsObjectMeetToConditions(const_cast<Player*>(player), conditionsList))
             return false;
     }
     else
     {
-        ConditionList conditionsList = sConditionMgr->GetConditionsForItemLoot(2, itemId);
+        ConditionContainer conditionsList = sConditionMgr->GetConditionsForItemLoot(2, itemId);
         if (!sConditionMgr->IsObjectMeetToConditions(const_cast<Player*>(player), conditionsList))
             return false;
     }

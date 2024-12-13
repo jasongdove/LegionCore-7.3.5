@@ -308,7 +308,7 @@ class LootTemplate
         void ProcessOploteChest(Loot& loot) const;
         void ProcessChallengeChest(Loot& loot, uint32 lootId, Challenge* _challenge) const;
         void ProcessItemLoot(Loot& loot) const;
-        void CopyConditions(ConditionList conditions);
+        void CopyConditions(ConditionContainer conditions);
         void ProcessWorld(Loot& loot, bool rate, bool ignore = false) const;
         void ProcessLuck(Loot& loot, uint32 entry, bool ignore = false) const;
         void ProcessBossLoot(Loot& loot) const;

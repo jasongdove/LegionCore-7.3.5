@@ -143,7 +143,7 @@ struct TC_GAME_API VehicleAI : public CreatureAI
         bool m_IsVehicleInUse;
         void LoadConditions();
         void CheckConditions(uint32 diff);
-        ConditionList conditions;
+        ConditionContainer conditions;
         uint32 m_ConditionsTimer;
         bool m_DoDismiss;
         uint32 m_DismissTimer;

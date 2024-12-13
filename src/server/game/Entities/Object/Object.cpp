@@ -3683,7 +3683,7 @@ void WorldObject::UpdateAreaPhase()
         {
             if (areaId == GetAreaId())
             {
-                ConditionList conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PHASE, phaseId);
+                ConditionContainer conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PHASE, phaseId);
                 if (sConditionMgr->IsObjectMeetToConditions(this, conditions))
                 {
                     // add new phase if condition passed, true if it wasnt added before
@@ -3760,7 +3760,7 @@ bool WorldObject::SetInPhase(uint32 id, bool update, bool apply)
             {
                 if (id == phaseId)
                 {
-                    ConditionList conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PHASE, phaseId);
+                    ConditionContainer conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PHASE, phaseId);
                     if (sConditionMgr->IsObjectMeetToConditions(this, conditions))
                     {
                         // if area phase passes the condition we should not remove it (ie: if remove called from aura remove)
@@ -4018,7 +4018,7 @@ void WorldObject::RebuildTerrainSwaps()
     // Clear all terrain swaps, will be rebuilt below
     // Reason for this is, multiple phases can have the same terrain swap, we should not remove the swap if another phase still use it
     _terrainSwaps.clear();
-    ConditionList conditions;
+    ConditionContainer conditions;
 
     // Check all applied phases for terrain swap and add it only once
     for (uint32 phaseId : _phases)
@@ -4067,7 +4067,7 @@ void WorldObject::RebuildWorldMapAreaSwaps()
     {
         for (uint32 swap : itr->second)
         {
-            ConditionList conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_TERRAIN_SWAP, swap);
+            ConditionContainer conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_TERRAIN_SWAP, swap);
             if (sConditionMgr->IsObjectMeetToConditions(this, conditions))
             {
                 for (uint32 map : sObjectMgr->GetTerrainWorldMaps(swap))
@@ -4085,7 +4085,7 @@ void WorldObject::RebuildWorldMapAreaSwaps()
         {
             // add world map swaps for ANY map
 
-            ConditionList conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_TERRAIN_SWAP, swap);
+            ConditionContainer conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_TERRAIN_SWAP, swap);
 
             if (sConditionMgr->IsObjectMeetToConditions(this, conditions))
             {

@@ -549,7 +549,7 @@ void WorldSession::SendListInventory(ObjectGuid const& vendorGuid)
                 if (leftInStock == 0)
                     continue;
 
-                ConditionList conditions = sConditionMgr->GetConditionsForNpcVendorEvent(vendor->GetEntry(), vendorItem->item);
+                ConditionContainer conditions = sConditionMgr->GetConditionsForNpcVendorEvent(vendor->GetEntry(), vendorItem->item);
                 if (!sConditionMgr->IsObjectMeetToConditions(player, vendor, conditions))
                     continue;
 
