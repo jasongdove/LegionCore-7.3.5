@@ -20,6 +20,7 @@
 #define TRINITY_CONDITIONMGR_H
 
 #include "Errors.h"
+#include "Hash.h"
 
 class Creature;
 struct PlayerConditionEntry;

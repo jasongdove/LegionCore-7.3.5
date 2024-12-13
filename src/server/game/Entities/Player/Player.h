@@ -31,6 +31,7 @@
 #include "GameTime.h"
 #include "GridObject.h"
 #include "GroupReference.h"
+#include "Hash.h"
 #include "Item.h"
 #include "ItemTemplate.h"
 #include "LogsSystem.h"
