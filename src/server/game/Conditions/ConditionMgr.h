@@ -242,15 +242,15 @@ struct Condition
     uint32 GetMaxAvailableConditionTargets();
 };
 
-typedef std::list<Condition*> ConditionContainer;
-typedef std::map<uint32 /*SourceEntry*/, ConditionContainer> ConditionsByEntryMap;
-typedef std::map<ConditionSourceType /*SourceType*/, ConditionsByEntryMap> ConditionEntriesByTypeMap;
-typedef std::map<uint32, ConditionsByEntryMap> ConditionEntriesByCreatureIdMap;
-typedef std::map<std::pair<int32, uint32 /*SAI source_type*/>, ConditionsByEntryMap> SmartEventConditionContainer;
-typedef std::map<uint32 /*areatrigger id*/, ConditionsByEntryMap> AreaTriggerConditionContainer;
-typedef std::map<uint32 /*itemId*/, ConditionsByEntryMap> ItemLootConditionContainer;
+typedef std::vector<Condition*> ConditionContainer;
+typedef std::unordered_map<uint32 /*SourceEntry*/, ConditionContainer> ConditionsByEntryMap;
+typedef std::unordered_map<ConditionSourceType /*SourceType*/, ConditionsByEntryMap> ConditionEntriesByTypeMap;
+typedef std::unordered_map<uint32, ConditionsByEntryMap> ConditionEntriesByCreatureIdMap;
+typedef std::unordered_map<std::pair<int32, uint32 /*SAI source_type*/>, ConditionsByEntryMap> SmartEventConditionContainer;
+typedef std::unordered_map<uint32 /*areatrigger id*/, ConditionsByEntryMap> AreaTriggerConditionContainer;
+typedef std::unordered_map<uint32 /*itemId*/, ConditionsByEntryMap> ItemLootConditionContainer;
 
-typedef std::map<uint32, ConditionContainer> ConditionReferenceContainer;//only used for references
+typedef std::unordered_map<uint32, ConditionContainer> ConditionReferenceContainer;//only used for references
 
 class TC_GAME_API ConditionMgr
 {
@@ -292,7 +292,7 @@ class TC_GAME_API ConditionMgr
         bool IsObjectMeetToConditionList(ConditionSourceInfo& sourceInfo, ConditionContainer const& conditions) const;
 
         void Clean(); // free up resources
-        std::list<Condition*> AllocatedMemoryStore; // some garbage collection :)
+        std::vector<Condition*> AllocatedMemoryStore; // some garbage collection :)
 
         ConditionEntriesByTypeMap         ConditionStore;
         ConditionReferenceContainer       ConditionReferenceStore;
