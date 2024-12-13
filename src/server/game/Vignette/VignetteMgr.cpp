@@ -221,7 +221,7 @@ bool Manager::CanSeeVignette(T const* obj, uint32 vignetteID)
     if (!vignette || !sConditionMgr->IsPlayerMeetingCondition(const_cast<Player*>(_owner), vignette->PlayerConditionID))
         return false;
 
-    if (!sConditionMgr->IsObjectMeetToConditions(const_cast<Player*>(_owner), sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_VIGNETTE, vignetteID)))
+    if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_VIGNETTE, vignetteID, const_cast<Player*>(_owner)))
         return false;
 
     auto guid = obj->GetGUID();

@@ -541,7 +541,7 @@ void TurretAI::UpdateAI(uint32 /*diff*/)
 //VehicleAI
 //////////////
 
-VehicleAI::VehicleAI(Creature* c) : CreatureAI(c), m_vehicle(c->GetVehicleKit()), m_IsVehicleInUse(false), m_ConditionsTimer(VEHICLE_CONDITION_CHECK_TIME)
+VehicleAI::VehicleAI(Creature* c) : CreatureAI(c), m_vehicle(c->GetVehicleKit()), m_IsVehicleInUse(false), m_ConditionsTimer(VEHICLE_CONDITION_CHECK_TIME), m_HasConditions(false)
 {
     LoadConditions();
     m_DoDismiss = false;
@@ -573,30 +573,28 @@ void VehicleAI::Reset()
 
 void VehicleAI::OnCharmed(bool apply)
 {
-    if (m_IsVehicleInUse && !apply && !conditions.empty())//was used and has conditions
+    if (m_IsVehicleInUse && !apply && m_HasConditions) // was used and has conditions
     {
-        m_DoDismiss = true;//needs reset
+        m_DoDismiss = true; // needs reset
         me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_PLAYER_VEHICLE);
         me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
     }
     else if (apply)
-        m_DoDismiss = false;//in use again
-    m_DismissTimer = VEHICLE_DISMISS_TIME;//reset timer
+        m_DoDismiss = false; // in use again
+    m_DismissTimer = VEHICLE_DISMISS_TIME; // reset timer
     m_IsVehicleInUse = apply;
 }
 
 void VehicleAI::LoadConditions()
 {
-    conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_CREATURE_TEMPLATE_VEHICLE, me->GetEntry());
-    if (!conditions.empty())
-        TC_LOG_DEBUG("condition", "VehicleAI::LoadConditions: loaded %u conditions", uint32(conditions.size()));
+    m_HasConditions = sConditionMgr->HasConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_CREATURE_TEMPLATE_VEHICLE, me->GetEntry());
 }
 
 void VehicleAI::CheckConditions(const uint32 diff)
 {
     if (m_ConditionsTimer < diff)
     {
-        if (!conditions.empty())
+        if (m_HasConditions)
         {
             if (Vehicle* vehicleKit = me->GetVehicleKit())
                 for (auto& Seat : vehicleKit->Seats)
@@ -604,10 +602,10 @@ void VehicleAI::CheckConditions(const uint32 diff)
                     {
                         if (Player* player = passenger->ToPlayer())
                         {
-                            if (!sConditionMgr->IsObjectMeetToConditions(player, me, conditions))
+                            if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_CREATURE_TEMPLATE_VEHICLE, me->GetEntry(), player, me))
                             {
                                 player->ExitVehicle();
-                                return;//check other pessanger in next tick
+                                return; // check other pessanger in next tick
                             }
                         }
                     }

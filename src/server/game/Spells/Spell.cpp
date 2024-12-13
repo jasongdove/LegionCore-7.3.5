@@ -6856,10 +6856,8 @@ SpellCastResult Spell::CheckCast(bool strict)
     }
 
 
-    ConditionSourceInfo condInfo = ConditionSourceInfo(m_caster);
-    condInfo.mConditionTargets[1] = m_targets.GetObjectTarget();
-    ConditionContainer conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_SPELL, m_spellInfo->Id);
-    if (!conditions.empty() && !sConditionMgr->IsObjectMeetToConditions(condInfo, conditions))
+    ConditionSourceInfo condInfo = ConditionSourceInfo(m_caster, m_targets.GetObjectTarget());
+    if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_SPELL, m_spellInfo->Id, condInfo))
     {
         // send error msg to player if condition failed and text message available
         // TODO: using WorldSession::SendNotification is not blizzlike

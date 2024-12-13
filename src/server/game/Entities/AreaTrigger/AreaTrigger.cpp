@@ -1565,7 +1565,7 @@ bool AreaTrigger::CheckActionConditions(AreaTriggerAction const& action, Unit* u
         return false;
 
     ConditionSourceInfo srcInfo = ConditionSourceInfo(caster, unit);
-    return sConditionMgr->IsObjectMeetToConditions(srcInfo, sConditionMgr->GetConditionsForAreaTriggerAction(GetEntry(), action.id));
+    return sConditionMgr->IsObjectMeetingAreaTriggerConditions(GetEntry(), action.id, caster, unit);
 }
 
 void AreaTrigger::BindToCaster()

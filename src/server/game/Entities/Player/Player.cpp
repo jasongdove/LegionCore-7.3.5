@@ -9990,7 +9990,7 @@ void Player::UpdateArea(uint32 newArea)
         }
     }
 
-    ChaeckSeamlessTeleport(newArea, true);
+    CheckSeamlessTeleport(newArea, true);
 
 
     uint32 newAreaForUpdate = m_areaId;
@@ -10085,7 +10085,7 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
         m_zoneForce = false;
     }
 
-    ChaeckSeamlessTeleport(newZone);
+    CheckSeamlessTeleport(newZone);
 
     if (m_zoneId != newZone)
     {
@@ -19771,8 +19771,7 @@ bool Player::SatisfyQuestStatus(Quest const* qInfo, bool msg)
 
 bool Player::SatisfyQuestConditions(Quest const* qInfo, bool msg)
 {
-    ConditionContainer conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_ACCEPT, qInfo->GetQuestId());
-    if (!sConditionMgr->IsObjectMeetToConditions(this, conditions))
+    if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_QUEST_ACCEPT, qInfo->GetQuestId(), this))
     {
         if (msg)
             SendCanTakeQuestResponse(INVALIDREASON_DONT_HAVE_REQ, qInfo, "cond");
@@ -21284,12 +21283,10 @@ QuestGiverStatus Player::GetQuestDialogStatus(Object* questgiver)
         if (!quest)
             continue;
 
-        ConditionContainer conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_SHOW_MARK, quest->GetQuestId());
-        if (!sConditionMgr->IsObjectMeetToConditions(this, conditions))
+        if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_QUEST_SHOW_MARK, quest->GetQuestId(), this))
             continue;
 
-        conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_ACCEPT, quest->GetQuestId());
-        if (!sConditionMgr->IsObjectMeetToConditions(this, conditions))
+        if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_QUEST_ACCEPT, quest->GetQuestId(), this))
             continue;
 
         switch (GetQuestStatus(questId))
@@ -21323,12 +21320,10 @@ QuestGiverStatus Player::GetQuestDialogStatus(Object* questgiver)
         if (!quest)
             continue;
 
-        ConditionContainer conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_SHOW_MARK, quest->GetQuestId());
-        if (!sConditionMgr->IsObjectMeetToConditions(this, conditions))
+        if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_QUEST_SHOW_MARK, quest->GetQuestId(), this))
             continue;
 
-        conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_ACCEPT, quest->GetQuestId());
-        if (!sConditionMgr->IsObjectMeetToConditions(this, conditions))
+        if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_QUEST_ACCEPT, quest->GetQuestId(), this))
             continue;
 
         if (GetQuestStatus(questId) == QUEST_STATUS_NONE)
@@ -26817,8 +26812,7 @@ void Player::VehicleSpellInitialize()
             continue;
         }
 
-        ConditionContainer conditions = sConditionMgr->GetConditionsForVehicleSpell(vehicle->GetEntry(), spellId);
-        if (!sConditionMgr->IsObjectMeetToConditions(this, vehicle, conditions))
+        if (!sConditionMgr->IsObjectMeetingVehicleSpellConditions(vehicle->GetEntry(), spellId, this, vehicle))
         {
             TC_LOG_DEBUG("condition", "VehicleSpellInitialize: conditions not met for Vehicle entry %u spell %u", vehicle->ToCreature()->GetEntry(), spellId);
             spellsMessage.Buttons[i] = MAKE_UNIT_ACTION_BUTTON(0, i + 8);
@@ -30712,14 +30706,15 @@ void Player::UpdateForQuestWorldObjects()
                 {
                     //! This code doesn't look right, but it was logically converted to condition system to do the exact
                     //! same thing it did before. It definitely needs to be overlooked for intended functionality.
-                    ConditionContainer conds = sConditionMgr->GetConditionsForSpellClickEvent(obj->GetEntry(), _itr->second.spellId);
-
-                    for (ConditionContainer::const_iterator jtr = conds.begin(); jtr != conds.end() && !buildUpdateBlock; ++jtr)
-                        if ((*jtr)->ConditionType == CONDITION_QUESTREWARDED || (*jtr)->ConditionType == CONDITION_QUESTTAKEN)
-                        {
-                            buildUpdateBlock = true;
-                            break;
-                        }
+                    if (ConditionContainer const* conds = sConditionMgr->GetConditionsForSpellClickEvent(obj->GetEntry(), _itr->second.spellId))
+                    {
+                        for (ConditionContainer::const_iterator jtr = conds->begin(); jtr != conds->end() && !buildUpdateBlock; ++jtr)
+                            if ((*jtr)->ConditionType == CONDITION_QUESTREWARDED || (*jtr)->ConditionType == CONDITION_QUESTTAKEN)
+                            {
+                                buildUpdateBlock = true;
+                                break;
+                            }
+                    }
                 }
             }
             if (!buildUpdateBlock && obj->HasFlag(UNIT_FIELD_NPC_FLAGS2, UNIT_NPC_FLAG2_GARRISON_ARCHITECT))
@@ -33210,9 +33205,7 @@ bool Player::canSeeSpellClickOn(Creature const* c) const
             continue;
         }
 
-        ConditionContainer conds = sConditionMgr->GetConditionsForSpellClickEvent(c->GetEntry(), itr->second.spellId);
-        ConditionSourceInfo info = ConditionSourceInfo(const_cast<Player*>(this), const_cast<Creature*>(c));
-        if (!sConditionMgr->IsObjectMeetToConditions(info, conds))
+        if (sConditionMgr->IsObjectMeetingSpellClickConditions(c->GetEntry(), itr->second.spellId, const_cast<Player*>(this), const_cast<Creature*>(c)))
         {
             res = false;
             continue;
@@ -36486,7 +36479,7 @@ void Player::UnLockThirdSocketIfNeed(Item* item)
             item->AddBonuses(bonusID);
 }
 
-void Player::ChaeckSeamlessTeleport(uint32 newZoneOrArea, bool isArea)
+void Player::CheckSeamlessTeleport(uint32 newZoneOrArea, bool isArea)
 {
     if (!isArea && (m_zoneId ? m_zoneId : m_oldZoneId) != newZoneOrArea)
     {
@@ -36502,8 +36495,7 @@ void Player::ChaeckSeamlessTeleport(uint32 newZoneOrArea, bool isArea)
             }
             else if (to && !from)
             {
-                ConditionContainer conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_SEAMLESS_TELEPORT, to->ToMapID);
-                if (sConditionMgr->IsObjectMeetToConditions(this, conditions))
+                if (sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_SEAMLESS_TELEPORT, to->ToMapID, this))
                     if (GetMapId() != to->ToMapID)
                         TeleportTo(to->ToMapID, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation(), TELE_TO_SEAMLESS);
             }
@@ -36529,8 +36521,7 @@ void Player::ChaeckSeamlessTeleport(uint32 newZoneOrArea, bool isArea)
             }
             else if (to && !from)
             {
-                ConditionContainer conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_SEAMLESS_TELEPORT, to->ToMapID);
-                if (sConditionMgr->IsObjectMeetToConditions(this, conditions))
+                if (sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_SEAMLESS_TELEPORT, to->ToMapID, this))
                     if (GetMapId() != to->ToMapID)
                         TeleportTo(to->ToMapID, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation(), TELE_TO_SEAMLESS);
             }

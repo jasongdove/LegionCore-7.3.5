@@ -438,7 +438,7 @@ bool WorldStateMgr::IsFitToCondition(Player* player, WorldState const* state)
     if (state->HasFlag(WorldStatesData::Flags::Deleted))
         return false;
 
-    return sConditionMgr->IsObjectMeetToConditions(player, sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_WORLD_STATE, state->VariableID));
+    return sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_WORLD_STATE, state->VariableID, player);
 }
 
 uint32 WorldStateMgr::GetWorldStateValue(uint32 variableID, WorldObject* object)

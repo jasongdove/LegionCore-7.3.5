@@ -2358,7 +2358,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void UpdatePvP(bool state, bool override=false);
         void UpdateZone(uint32 newZone, uint32 newArea);
         void UpdateArea(uint32 newArea);
-        void ChaeckSeamlessTeleport(uint32 newZoneOrArea, bool isArea = false);
+        void CheckSeamlessTeleport(uint32 newZoneOrArea, bool isArea = false);
         void ZoneTeleport(uint32 zoneId);
         bool InFFAPvPArea();
 

@@ -549,13 +549,12 @@ void WorldSession::SendListInventory(ObjectGuid const& vendorGuid)
                 if (leftInStock == 0)
                     continue;
 
-                ConditionContainer conditions = sConditionMgr->GetConditionsForNpcVendorEvent(vendor->GetEntry(), vendorItem->item);
-                if (!sConditionMgr->IsObjectMeetToConditions(player, vendor, conditions))
+                if (!sConditionMgr->IsObjectMeetingVendorItemConditions(vendor->GetEntry(), vendorItem->item, _player, vendor))
                     continue;
 
+                // ???
                 // Check item for all NCP
-                conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_NPC_VENDOR, vendorItem->item);
-                if (!sConditionMgr->IsObjectMeetToConditions(player, vendor, conditions))
+                if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_NPC_VENDOR, vendorItem->item, player, vendor))
                     continue;
 
                 if (!(itemTemplate->AllowableClass & player->getClassMask()) && itemTemplate->GetBonding() == BIND_WHEN_PICKED_UP)
