@@ -309,13 +309,13 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
             condMeets = GetClosestGameObjectWithEntry(object, ConditionValue1, static_cast<float>(ConditionValue2)) ? true : false;
             break;
         }
-        case CONDITION_OBJECT_ENTRY:
+        case CONDITION_OBJECT_ENTRY_GUID_LEGACY:
         {
             if (uint32(object->GetTypeId()) == ConditionValue1)
                 condMeets = !ConditionValue2 || (object->GetEntry() == ConditionValue2);
             break;
         }
-        case CONDITION_TYPE_MASK:
+        case CONDITION_TYPE_MASK_LEGACY:
         {
             condMeets = object->isType(ConditionValue1);
             break;
@@ -745,7 +745,7 @@ uint32 Condition::GetSearcherTypeMaskForCondition() const
         case CONDITION_NEAR_GAMEOBJECT:
             mask |= GRID_MAP_TYPE_MASK_ALL;
             break;
-        case CONDITION_OBJECT_ENTRY:
+        case CONDITION_OBJECT_ENTRY_GUID_LEGACY:
             switch (ConditionValue1)
             {
                 case TYPEID_UNIT:
@@ -772,7 +772,7 @@ uint32 Condition::GetSearcherTypeMaskForCondition() const
                 default:
                     break;
             }
-        case CONDITION_TYPE_MASK:
+        case CONDITION_TYPE_MASK_LEGACY:
             if (ConditionValue1 & TYPEMASK_UNIT)
                 mask |= GRID_MAP_TYPE_MASK_CREATURE | GRID_MAP_TYPE_MASK_PLAYER;
             if (ConditionValue1 & TYPEMASK_PLAYER)
@@ -2357,7 +2357,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond) const
                 TC_LOG_ERROR("sql.sql", "NearGameObject condition has useless data in value3 (%u)!", cond->ConditionValue3);
             break;
         }
-        case CONDITION_OBJECT_ENTRY:
+        case CONDITION_OBJECT_ENTRY_GUID_LEGACY:
         {
             switch (cond->ConditionValue1)
             {
@@ -2388,7 +2388,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond) const
                 TC_LOG_ERROR("sql.sql", "ObjectEntry condition has useless data in value3 (%u)!", cond->ConditionValue3);
             break;
         }
-        case CONDITION_TYPE_MASK:
+        case CONDITION_TYPE_MASK_LEGACY:
         {
             if (!cond->ConditionValue1 || (cond->ConditionValue1 & ~(TYPEMASK_UNIT | TYPEMASK_PLAYER | TYPEMASK_GAMEOBJECT | TYPEMASK_CORPSE)))
             {
@@ -2552,11 +2552,24 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond) const
                 }
                 break;
             }
-        case CONDITION_UNUSED_21:
-            TC_LOG_ERROR("sql.sql", "Found ConditionTypeOrReference = CONDITION_UNUSED_21 in `conditions` table - ignoring");
-            return false;
-        case CONDITION_UNUSED_24:
-            TC_LOG_ERROR("sql.sql", "Found ConditionTypeOrReference = CONDITION_UNUSED_24 in `conditions` table - ignoring");
+        case CONDITION_UNIT_STATE:
+        case CONDITION_CREATURE_TYPE:
+        case CONDITION_DAILY_QUEST_DONE:
+        case CONDITION_CHARMED:
+        case CONDITION_PET_TYPE:
+        case CONDITION_TAXI:
+        case CONDITION_QUESTSTATE:
+        case CONDITION_QUEST_OBJECTIVE_COMPLETE:
+        case CONDITION_DIFFICULTY_ID:
+        case CONDITION_OBJECT_ENTRY_GUID:
+        case CONDITION_TYPE_MASK:
+        case CONDITION_BATTLE_PET_COUNT:
+        case CONDITION_SCENARIO_STEP:
+        case CONDITION_SCENE_IN_PROGRESS:
+        case CONDITION_PLAYER_CONDITION:
+        case CONDITION_PRIVATE_OBJECT:
+        case CONDITION_STRING_ID:
+            TC_LOG_ERROR("sql.sql", "Found ConditionTypeOrReference = %u in `conditions` table - ignoring", cond->ConditionType);
             return false;
         case CONDITION_REALM_ACHIEVEMENT:
         {
