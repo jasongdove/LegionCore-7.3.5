@@ -64,7 +64,7 @@ Condition::Condition()
 
 // Checks if object meets the condition
 // Can have CONDITION_SOURCE_TYPE_NONE && !mReferenceId if called from a special event (ie: SmartAI)
-bool Condition::Meets(ConditionSourceInfo& sourceInfo)
+bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
 {
     // ASSERT(ConditionTarget < MAX_CONDITION_TARGETS);
     if(ConditionTarget >= MAX_CONDITION_TARGETS)
@@ -659,7 +659,7 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo)
     return condMeets && script;
 }
 
-uint32 Condition::GetSearcherTypeMaskForCondition()
+uint32 Condition::GetSearcherTypeMaskForCondition() const
 {
     // build mask of types for which condition can return true
     // this is used for speeding up gridsearches
@@ -872,12 +872,7 @@ bool ConditionMgr::IsObjectMeetingSmartEventConditions(int64 entryOrGuid, uint32
 	return true;
 }
 
-bool Condition::isLoaded() const
-{
-    return ConditionType > CONDITION_NONE || ReferenceId;
-}
-
-uint32 Condition::GetMaxAvailableConditionTargets()
+uint32 Condition::GetMaxAvailableConditionTargets() const
 {
     // returns number of targets which are available for given source type
     switch (SourceType)
@@ -912,15 +907,6 @@ ConditionMgr* ConditionMgr::instance()
 {
     static ConditionMgr instance;
     return &instance;
-}
-
-ConditionContainer ConditionMgr::GetConditionReferences(uint32 refId)
-{
-    ConditionContainer conditions;
-    ConditionReferenceContainer::const_iterator ref = ConditionReferenceStore.find(refId);
-    if (ref != ConditionReferenceStore.end())
-        conditions = (*ref).second;
-    return conditions;
 }
 
 uint32 ConditionMgr::GetSearcherTypeMaskForConditionList(ConditionContainer const& conditions)
@@ -1009,13 +995,13 @@ bool ConditionMgr::IsObjectMeetToConditionList(ConditionSourceInfo& sourceInfo, 
     return false;
 }
 
-bool ConditionMgr::IsObjectMeetToConditions(WorldObject* object, ConditionContainer const& conditions)
+bool ConditionMgr::IsObjectMeetToConditions(WorldObject* object, ConditionContainer const& conditions) const
 {
     ConditionSourceInfo srcInfo = ConditionSourceInfo(object);
     return IsObjectMeetToConditions(srcInfo, conditions);
 }
 
-bool ConditionMgr::IsObjectMeetToConditions(WorldObject* object1, WorldObject* object2, ConditionContainer const& conditions)
+bool ConditionMgr::IsObjectMeetToConditions(WorldObject* object1, WorldObject* object2, ConditionContainer const& conditions) const
 {
     ConditionSourceInfo srcInfo = ConditionSourceInfo(object1, object2);
     return IsObjectMeetToConditions(srcInfo, conditions);
@@ -1064,7 +1050,7 @@ bool ConditionMgr::CanHaveSourceIdSet(ConditionSourceType sourceType) const
     return (sourceType == CONDITION_SOURCE_TYPE_SMART_EVENT);
 }
 
-ConditionContainer ConditionMgr::GetConditionsForNotGroupedEntry(ConditionSourceType sourceType, uint32 entry)
+ConditionContainer ConditionMgr::GetConditionsForNotGroupedEntry(ConditionSourceType sourceType, uint32 entry) const
 {
     ConditionContainer spellCond;
     if (sourceType > CONDITION_SOURCE_TYPE_NONE && sourceType < CONDITION_SOURCE_TYPE_MAX)
@@ -1083,7 +1069,7 @@ ConditionContainer ConditionMgr::GetConditionsForNotGroupedEntry(ConditionSource
     return spellCond;
 }
 
-ConditionContainer ConditionMgr::GetConditionsForSpellClickEvent(uint32 creatureId, uint32 spellId)
+ConditionContainer ConditionMgr::GetConditionsForSpellClickEvent(uint32 creatureId, uint32 spellId) const
 {
     ConditionContainer cond;
     ConditionEntriesByCreatureIdMap::const_iterator itr = SpellClickEventConditionStore.find(creatureId);
@@ -1099,7 +1085,7 @@ ConditionContainer ConditionMgr::GetConditionsForSpellClickEvent(uint32 creature
     return cond;
 }
 
-ConditionContainer ConditionMgr::GetConditionsForVehicleSpell(uint32 creatureId, uint32 spellId)
+ConditionContainer ConditionMgr::GetConditionsForVehicleSpell(uint32 creatureId, uint32 spellId) const
 {
     ConditionContainer cond;
     ConditionEntriesByCreatureIdMap::const_iterator itr = VehicleSpellConditionStore.find(creatureId);
@@ -1115,7 +1101,7 @@ ConditionContainer ConditionMgr::GetConditionsForVehicleSpell(uint32 creatureId,
     return cond;
 }
 
-ConditionContainer ConditionMgr::GetConditionsForSmartEvent(int64 entryOrGuid, uint32 eventId, uint32 sourceType)
+ConditionContainer ConditionMgr::GetConditionsForSmartEvent(int64 entryOrGuid, uint32 eventId, uint32 sourceType) const
 {
     ConditionContainer cond;
     SmartEventConditionContainer::const_iterator itr = SmartEventConditionStore.find(std::make_pair(entryOrGuid, sourceType));
@@ -1131,7 +1117,7 @@ ConditionContainer ConditionMgr::GetConditionsForSmartEvent(int64 entryOrGuid, u
     return cond;
 }
 
-ConditionContainer ConditionMgr::GetConditionsForNpcVendorEvent(uint32 creatureId, uint32 itemId)
+ConditionContainer ConditionMgr::GetConditionsForNpcVendorEvent(uint32 creatureId, uint32 itemId) const
 {
     ConditionContainer cond;
     ConditionEntriesByCreatureIdMap::const_iterator itr = NpcVendorConditionContainerStore.find(creatureId);
@@ -1147,7 +1133,7 @@ ConditionContainer ConditionMgr::GetConditionsForNpcVendorEvent(uint32 creatureI
     return cond;
 }
 
-ConditionContainer ConditionMgr::GetConditionsForAreaTriggerAction(uint32 areaTriggerId, uint32 actionId)
+ConditionContainer ConditionMgr::GetConditionsForAreaTriggerAction(uint32 areaTriggerId, uint32 actionId) const
 {
     ConditionContainer cond;
     AreaTriggerConditionContainer::const_iterator itr = AreaTriggerConditionStore.find(areaTriggerId);
@@ -1164,7 +1150,7 @@ ConditionContainer ConditionMgr::GetConditionsForAreaTriggerAction(uint32 areaTr
     return cond;
 }
 
-ConditionContainer ConditionMgr::GetConditionsForItemLoot(uint32 creatureId, uint32 itemId)
+ConditionContainer ConditionMgr::GetConditionsForItemLoot(uint32 creatureId, uint32 itemId) const
 {
     ConditionContainer cond;
     ItemLootConditionContainer::const_iterator itr = ItemLootConditionStore.find(creatureId);
@@ -1289,14 +1275,8 @@ void ConditionMgr::LoadConditions(bool isReload)
 
         if (iSourceTypeOrReferenceId < 0)//it is a reference template
         {
-            uint32 uRefId = abs(iSourceTypeOrReferenceId);
-            if (ConditionReferenceStore.find(uRefId) == ConditionReferenceStore.end())//make sure we have a list for our conditions, based on reference id
-            {
-                ConditionContainer mCondList;
-                ConditionReferenceStore[uRefId] = mCondList;
-            }
-            ConditionReferenceStore[uRefId].push_back(cond);//add to reference storage
-            count++;
+            ConditionReferenceStore[std::abs(iSourceTypeOrReferenceId)].push_back(cond);//add to reference storage
+            ++count;
             continue;
         }//end of reference templates
 
@@ -1437,20 +1417,6 @@ void ConditionMgr::LoadConditions(bool isReload)
         }
 
         //handle not grouped conditions
-        //make sure we have a storage list for our SourceType
-        if (ConditionStore.find(cond->SourceType) == ConditionStore.end())
-        {
-            ConditionsByEntryMap mTypeMap;
-            ConditionStore[cond->SourceType] = mTypeMap;//add new empty list for SourceType
-        }
-
-        //make sure we have a condition list for our SourceType's entry
-        if (ConditionStore[cond->SourceType].find(cond->SourceEntry) == ConditionStore[cond->SourceType].end())
-        {
-            ConditionContainer mCondList;
-            ConditionStore[cond->SourceType][cond->SourceEntry] = mCondList;
-        }
-
         //add new Condition to storage based on Type/Entry
         ConditionStore[cond->SourceType][cond->SourceEntry].push_back(cond);
         ++count;
@@ -1461,7 +1427,7 @@ void ConditionMgr::LoadConditions(bool isReload)
 
 }
 
-bool ConditionMgr::addToLootTemplate(Condition* cond, LootTemplate* loot)
+bool ConditionMgr::addToLootTemplate(Condition* cond, LootTemplate* loot) const
 {
     if (!loot)
     {
@@ -1477,7 +1443,7 @@ bool ConditionMgr::addToLootTemplate(Condition* cond, LootTemplate* loot)
     return false;
 }
 
-bool ConditionMgr::addToGossipMenus(Condition* cond)
+bool ConditionMgr::addToGossipMenus(Condition* cond) const
 {
     auto menuBounds = sGossipDataStore->GetGossipMenusMapBoundsNonConst(cond->SourceGroup);
     if (menuBounds.first != menuBounds.second)
@@ -1496,7 +1462,7 @@ bool ConditionMgr::addToGossipMenus(Condition* cond)
     return false;
 }
 
-bool ConditionMgr::addToGossipMenuItems(Condition* cond)
+bool ConditionMgr::addToGossipMenuItems(Condition* cond) const
 {
     auto menuItemBounds = sGossipDataStore->GetGossipMenuItemsMapBoundsNonConst(cond->SourceGroup);
     if (menuItemBounds.first != menuItemBounds.second)
@@ -1515,7 +1481,7 @@ bool ConditionMgr::addToGossipMenuItems(Condition* cond)
     return false;
 }
 
-bool ConditionMgr::addToSpellImplicitTargetConditions(Condition* cond)
+bool ConditionMgr::addToSpellImplicitTargetConditions(Condition* cond) const
 {
     uint32 conditionEffMask = cond->SourceGroup;
     SpellInfo* spellInfo = const_cast<SpellInfo*>(sSpellMgr->GetSpellInfo(cond->SourceEntry));
@@ -1601,7 +1567,7 @@ bool ConditionMgr::addToSpellImplicitTargetConditions(Condition* cond)
     return true;
 }
 
-bool ConditionMgr::isSourceTypeValid(Condition* cond)
+bool ConditionMgr::isSourceTypeValid(Condition* cond) const
 {
     if (cond->SourceType == CONDITION_SOURCE_TYPE_NONE || cond->SourceType >= CONDITION_SOURCE_TYPE_MAX)
     {
@@ -2655,102 +2621,57 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
 void ConditionMgr::Clean()
 {
     for (ConditionReferenceContainer::iterator itr = ConditionReferenceStore.begin(); itr != ConditionReferenceStore.end(); ++itr)
-    {
         for (ConditionContainer::const_iterator it = itr->second.begin(); it != itr->second.end(); ++it)
             delete *it;
-        itr->second.clear();
-    }
 
     ConditionReferenceStore.clear();
 
     for (ConditionEntriesByTypeMap::iterator itr = ConditionStore.begin(); itr != ConditionStore.end(); ++itr)
-    {
         for (ConditionsByEntryMap::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
-        {
             for (ConditionContainer::const_iterator i = it->second.begin(); i != it->second.end(); ++i)
                 delete *i;
-            it->second.clear();
-        }
-        itr->second.clear();
-    }
 
     ConditionStore.clear();
 
     for (ConditionEntriesByCreatureIdMap::iterator itr = VehicleSpellConditionStore.begin(); itr != VehicleSpellConditionStore.end(); ++itr)
-    {
         for (ConditionsByEntryMap::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
-        {
             for (ConditionContainer::const_iterator i = it->second.begin(); i != it->second.end(); ++i)
                 delete *i;
-            it->second.clear();
-        }
-        itr->second.clear();
-    }
 
     VehicleSpellConditionStore.clear();
 
     for (SmartEventConditionContainer::iterator itr = SmartEventConditionStore.begin(); itr != SmartEventConditionStore.end(); ++itr)
-    {
         for (ConditionsByEntryMap::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
-        {
             for (ConditionContainer::const_iterator i = it->second.begin(); i != it->second.end(); ++i)
                 delete *i;
-            it->second.clear();
-        }
-        itr->second.clear();
-    }
 
     SmartEventConditionStore.clear();
 
     for (ConditionEntriesByCreatureIdMap::iterator itr = SpellClickEventConditionStore.begin(); itr != SpellClickEventConditionStore.end(); ++itr)
-    {
         for (ConditionsByEntryMap::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
-        {
             for (ConditionContainer::const_iterator i = it->second.begin(); i != it->second.end(); ++i)
                 delete *i;
-            it->second.clear();
-        }
-        itr->second.clear();
-    }
 
     SpellClickEventConditionStore.clear();
 
     for (ConditionEntriesByCreatureIdMap::iterator itr = NpcVendorConditionContainerStore.begin(); itr != NpcVendorConditionContainerStore.end(); ++itr)
-    {
         for (ConditionsByEntryMap::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
-        {
             for (ConditionContainer::const_iterator i = it->second.begin(); i != it->second.end(); ++i)
                 delete *i;
-            it->second.clear();
-        }
-        itr->second.clear();
-    }
 
     NpcVendorConditionContainerStore.clear();
 
     for (AreaTriggerConditionContainer::iterator itr = AreaTriggerConditionStore.begin(); itr != AreaTriggerConditionStore.end(); ++itr)
-    {
         for (ConditionsByEntryMap::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
-        {
             for (ConditionContainer::const_iterator i = it->second.begin(); i != it->second.end(); ++i)
                 delete *i;
-            it->second.clear();
-        }
-        itr->second.clear();
-    }
 
     AreaTriggerConditionStore.clear();
 
     for (ItemLootConditionContainer::iterator itr = ItemLootConditionStore.begin(); itr != ItemLootConditionStore.end(); ++itr)
-    {
         for (ConditionsByEntryMap::iterator it = itr->second.begin(); it != itr->second.end(); ++it)
-        {
             for (ConditionContainer::const_iterator i = it->second.begin(); i != it->second.end(); ++i)
                 delete *i;
-            it->second.clear();
-        }
-        itr->second.clear();
-    }
 
     ItemLootConditionStore.clear();
 

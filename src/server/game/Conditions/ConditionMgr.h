@@ -214,7 +214,7 @@ struct ConditionSourceInfo
     ConditionSourceInfo(WorldObject* target0, WorldObject* target1 = nullptr, WorldObject* target2 = nullptr);
 
     WorldObject* mConditionTargets[MAX_CONDITION_TARGETS]; // an array of targets available for conditions
-    Condition* mLastFailedCondition;
+    Condition const* mLastFailedCondition;
 };
 
 struct Condition
@@ -236,10 +236,10 @@ struct Condition
 
     Condition();
 
-    bool Meets(ConditionSourceInfo& sourceInfo);
-    uint32 GetSearcherTypeMaskForCondition();
-    bool isLoaded() const;
-    uint32 GetMaxAvailableConditionTargets();
+    bool Meets(ConditionSourceInfo& sourceInfo) const;
+    uint32 GetSearcherTypeMaskForCondition() const;
+    bool isLoaded() const { return ConditionType > CONDITION_NONE || ReferenceId; }
+    uint32 GetMaxAvailableConditionTargets() const;
 };
 
 typedef std::vector<Condition*> ConditionContainer;
@@ -263,32 +263,31 @@ class TC_GAME_API ConditionMgr
 
         void LoadConditions(bool isReload = false);
         bool isConditionTypeValid(Condition* cond);
-        ConditionContainer GetConditionReferences(uint32 refId);
 
         uint32 GetSearcherTypeMaskForConditionList(ConditionContainer const& conditions);
-        bool IsObjectMeetToConditions(WorldObject* object, ConditionContainer const& conditions);
-        bool IsObjectMeetToConditions(WorldObject* object1, WorldObject* object2, ConditionContainer const& conditions);
+        bool IsObjectMeetToConditions(WorldObject* object, ConditionContainer const& conditions) const;
+        bool IsObjectMeetToConditions(WorldObject* object1, WorldObject* object2, ConditionContainer const& conditions) const;
         bool IsObjectMeetToConditions(ConditionSourceInfo& sourceInfo, ConditionContainer const& conditions) const;
         bool CanHaveSourceGroupSet(ConditionSourceType sourceType) const;
         bool CanHaveSourceIdSet(ConditionSourceType sourceType) const;
-        ConditionContainer GetConditionsForNotGroupedEntry(ConditionSourceType sourceType, uint32 entry);
-        ConditionContainer GetConditionsForSpellClickEvent(uint32 creatureId, uint32 spellId);
-        ConditionContainer GetConditionsForSmartEvent(int64 entryOrGuid, uint32 eventId, uint32 sourceType);
-        ConditionContainer GetConditionsForVehicleSpell(uint32 creatureId, uint32 spellId);
-        ConditionContainer GetConditionsForNpcVendorEvent(uint32 creatureId, uint32 itemId);
-        ConditionContainer GetConditionsForAreaTriggerAction(uint32 areaTriggerId, uint32 actionId);
-        ConditionContainer GetConditionsForItemLoot(uint32 creatureId, uint32 itemId);
+        ConditionContainer GetConditionsForNotGroupedEntry(ConditionSourceType sourceType, uint32 entry) const;
+        ConditionContainer GetConditionsForSpellClickEvent(uint32 creatureId, uint32 spellId) const;
+        ConditionContainer GetConditionsForSmartEvent(int64 entryOrGuid, uint32 eventId, uint32 sourceType) const;
+        ConditionContainer GetConditionsForVehicleSpell(uint32 creatureId, uint32 spellId) const;
+        ConditionContainer GetConditionsForNpcVendorEvent(uint32 creatureId, uint32 itemId) const;
+        ConditionContainer GetConditionsForAreaTriggerAction(uint32 areaTriggerId, uint32 actionId) const;
+        ConditionContainer GetConditionsForItemLoot(uint32 creatureId, uint32 itemId) const;
 		bool IsObjectMeetingSmartEventConditions(int64 entryOrGuid, uint32 eventId, uint32 sourceType, Unit* unit, WorldObject* baseObject) const;
         
         static bool IsPlayerMeetingCondition(Unit* unit, int32 conditionID, bool send = false);
         static bool IsPlayerMeetingCondition(Unit* unit, PlayerConditionEntry const* condition);
 
     private:
-        bool isSourceTypeValid(Condition* cond);
-        bool addToLootTemplate(Condition* cond, LootTemplate* loot);
-        bool addToGossipMenus(Condition* cond);
-        bool addToGossipMenuItems(Condition* cond);
-        bool addToSpellImplicitTargetConditions(Condition* cond);
+        bool isSourceTypeValid(Condition* cond) const;
+        bool addToLootTemplate(Condition* cond, LootTemplate* loot) const;
+        bool addToGossipMenus(Condition* cond) const;
+        bool addToGossipMenuItems(Condition* cond) const;
+        bool addToSpellImplicitTargetConditions(Condition* cond) const;
         bool IsObjectMeetToConditionList(ConditionSourceInfo& sourceInfo, ConditionContainer const& conditions) const;
 
         void Clean(); // free up resources

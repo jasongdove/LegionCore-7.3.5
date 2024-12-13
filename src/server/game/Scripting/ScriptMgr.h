@@ -511,7 +511,7 @@ class TC_GAME_API ConditionScript : public ScriptObject
     public:
 
         // Called when a single condition is checked for a player.
-        virtual bool OnConditionCheck(Condition* /*condition*/, ConditionSourceInfo& /*sourceInfo*/) { return true; }
+        virtual bool OnConditionCheck(Condition const* /*condition*/, ConditionSourceInfo& /*sourceInfo*/) { return true; }
 };
 
 class TC_GAME_API VehicleScript : public ScriptObject
@@ -989,7 +989,7 @@ class TC_GAME_API ScriptMgr
         void OnAuctionExpire(AuctionHouseObject* ah, AuctionEntry* entry);
 
         /* ConditionScript */
-        bool OnConditionCheck(Condition* condition, ConditionSourceInfo& sourceInfo);
+        bool OnConditionCheck(Condition const* condition, ConditionSourceInfo& sourceInfo);
 
         /* VehicleScript */
         void OnInstall(Vehicle* veh);
