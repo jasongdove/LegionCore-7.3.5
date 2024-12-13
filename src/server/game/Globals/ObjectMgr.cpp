@@ -2010,8 +2010,8 @@ void ObjectMgr::LoadCreatures()
     QueryResult result = WorldDatabase.Query("SELECT creature.guid, id, map, zoneId, areaId, modelid, equipment_id, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, "
     //        12            13         14          15           16        17         18          19                 20                21                   22                    23
         "currentwaypoint, curhealth, curmana, MovementType, spawnMask, eventEntry, pool_entry, creature.npcflag, creature.npcflag2, creature.unit_flags, creature.unit_flags3, creature.dynamicflags, "
-    //           24                25               26                 27	               28	                    29		30        31          32           33         34
-        "creature.isActive, creature.phaseUseFlags, creature.PhaseId, creature.PhaseGroup, creature.terrainSwapMap, AiID, MovementID, MeleeID, skipClone, personal_size, isTeemingSpawn "
+    //           24                25               26                 27	               28	                    29		30        31          32           33         34             35
+        "creature.isActive, creature.phaseUseFlags, creature.PhaseId, creature.PhaseGroup, creature.terrainSwapMap, AiID, MovementID, MeleeID, skipClone, personal_size, isTeemingSpawn, LegacyPhaseID "
         "FROM creature "
         "LEFT OUTER JOIN game_event_creature ON creature.guid = game_event_creature.guid "
         "LEFT OUTER JOIN pool_creature ON creature.guid = pool_creature.guid "
@@ -2087,6 +2087,12 @@ void ObjectMgr::LoadCreatures()
         data.skipClone      = fields[index++].GetBool();
         data.personalSize   = fields[index++].GetFloat();
         data.isTeemingSpawn = fields[index++].GetBool();
+
+        Tokenizer phasesToken(fields[index++].GetString(), ' ', 100);
+        for (auto itr : phasesToken)
+            if (PhaseEntry const* phase = sPhaseStore.LookupEntry(uint32(strtoull(itr, nullptr, 10))))
+                data.legacyPhaseIds.insert(phase->ID);
+
         data.gameEvent      = gameEvent;
         data.pool           = PoolId;
         // data.MaxVisible = cInfo->MaxVisible;
@@ -2591,8 +2597,8 @@ void ObjectMgr::LoadGameobjects()
 
     //                                                0                1   2    3         4           5           6        7           8
     QueryResult result = WorldDatabase.Query("SELECT gameobject.guid, id, map, zoneId, areaId, position_x, position_y, position_z, orientation, "
-    //      9          10         11          12         13          14             15      16         17         18        19          20            21         22       23              24    25
-        "rotation0, rotation1, rotation2, rotation3, spawntimesecs, animprogress, state, isActive, spawnMask, eventEntry, pool_entry, phaseUseFlags, PhaseId, PhaseGroup, terrainSwapMap, AiID, personal_size "
+    //      9          10         11          12         13          14             15      16         17         18        19          20            21         22       23              24    25             26
+        "rotation0, rotation1, rotation2, rotation3, spawntimesecs, animprogress, state, isActive, spawnMask, eventEntry, pool_entry, phaseUseFlags, PhaseId, PhaseGroup, terrainSwapMap, AiID, personal_size, LegacyPhaseID "
         "FROM gameobject LEFT OUTER JOIN game_event_gameobject ON gameobject.guid = game_event_gameobject.guid "
         "LEFT OUTER JOIN pool_gameobject ON gameobject.guid = pool_gameobject.guid ORDER BY `map` ASC, `guid` ASC");
 
@@ -2731,6 +2737,11 @@ void ObjectMgr::LoadGameobjects()
             TC_LOG_ERROR("sql.sql", "Table `gameobject` has gameobject (GUID: " UI64FMTD " Entry: %u) with invalid rotationW (%f) value, skip", guid, data.id, data.rotation.w);
             continue;
         }
+
+        Tokenizer phasesToken(fields[26].GetString(), ' ', 100);
+        for (auto itr : phasesToken)
+            if (PhaseEntry const* phase = sPhaseStore.LookupEntry(uint32(strtoull(itr, nullptr, 10))))
+                data.legacyPhaseIds.insert(phase->ID);
 
         data.phaseUseFlags = fields[20].GetUInt8();
         data.phaseId = fields[21].GetUInt32();

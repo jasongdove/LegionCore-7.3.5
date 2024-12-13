@@ -720,7 +720,6 @@ struct GameObjectData
 {
     explicit GameObjectData() : dbData(true) { }
 
-    std::set<uint32> PhaseID;
     ObjectGuid::LowType guid = 0;
     G3D::Quat rotation;
     uint32 id = 0;                                              // entry in gamobject_template
@@ -739,6 +738,7 @@ struct GameObjectData
     uint16 areaId = 0;
     int16 gameEvent = 0;
     uint8 artKit = 0;
+    std::set<uint32> legacyPhaseIds = {};
     uint8 phaseUseFlags = 0;
     uint32 phaseId = 0;
     uint32 phaseGroup = 0;

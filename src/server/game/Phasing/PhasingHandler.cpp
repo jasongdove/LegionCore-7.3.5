@@ -430,7 +430,7 @@ PhaseShift const& PhasingHandler::GetEmptyPhaseShift()
     return Empty;
 }
 
-void PhasingHandler::InitDbPhaseShift(PhaseShift& phaseShift, uint8 phaseUseFlags, uint16 phaseId, uint32 phaseGroupId)
+void PhasingHandler::InitDbPhaseShift(PhaseShift& phaseShift, uint8 phaseUseFlags, uint16 phaseId, uint32 phaseGroupId, std::set<uint32> legacyPhaseIds /*= {}*/)
 {
     phaseShift.ClearPhases();
     phaseShift.IsDbPhaseShift = true;
@@ -446,6 +446,9 @@ void PhasingHandler::InitDbPhaseShift(PhaseShift& phaseShift, uint8 phaseUseFlag
     else if (std::vector<uint32> const* phasesInGroup = sDB2Manager.GetPhasesForGroup(phaseGroupId))
         for (uint32 phaseInGroup : *phasesInGroup)
             phaseShift.AddPhase(phaseInGroup, GetPhaseFlags(phaseInGroup), nullptr);
+    else if (!legacyPhaseIds.empty())
+        for (uint32 legacyPhaseId : legacyPhaseIds)
+            phaseShift.AddPhase(legacyPhaseId, GetPhaseFlags(legacyPhaseId), nullptr);
 
     if (phaseShift.Phases.empty() || phaseShift.HasPhase(DEFAULT_PHASE))
     {

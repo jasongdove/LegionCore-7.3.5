@@ -333,6 +333,7 @@ struct CreatureData
     uint32 unit_flags = 0;                                      // enum UnitFlags mask values
     uint32 unit_flags3 = 0;                                     // enum UnitFlags_3 mask values
     uint32 dynamicflags = 0;
+    std::set<uint32> legacyPhaseIds = {};
     uint8 phaseUseFlags = 0;
     uint32 phaseId = 0;
     uint32 phaseGroup = 0;

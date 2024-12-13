@@ -1309,7 +1309,7 @@ bool Creature::Create(ObjectGuid::LowType guidlow, Map* map, uint32 entry, int32
 
     if (data)
     {
-        PhasingHandler::InitDbPhaseShift(GetPhaseShift(), data->phaseUseFlags, data->phaseId, data->phaseGroup);
+        PhasingHandler::InitDbPhaseShift(GetPhaseShift(), data->phaseUseFlags, data->phaseId, data->phaseGroup, data->legacyPhaseIds);
         PhasingHandler::InitDbVisibleMapId(GetPhaseShift(), data->terrainSwapMap);
     }
 
