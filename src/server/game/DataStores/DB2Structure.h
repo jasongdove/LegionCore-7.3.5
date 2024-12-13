@@ -4534,7 +4534,7 @@ struct PathPropertyEntry
 // FileOptions: Index, None
 struct PhaseEntry
 {
-    int32       ID;
+    uint32      ID;
     uint16      Flags;
 };
 
@@ -4560,7 +4560,7 @@ struct PhaseShiftZoneSoundsEntry
 // FileOptions: Index, None
 struct PhaseXPhaseGroupEntry
 {
-    int32       ID;
+    uint32      ID;
     uint16      PhaseID;
     uint16      PhaseGroupID;
 };
