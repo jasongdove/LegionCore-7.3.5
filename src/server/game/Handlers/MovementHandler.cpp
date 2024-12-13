@@ -717,7 +717,7 @@ void WorldSession::RelocateMover(MovementInfo &movementInfo)
     if (plrMover)
     {
         if (movementInfo.HasMovementFlag(MOVEMENTFLAG_SWIMMING) != plrMover->IsInWater())
-            plrMover->SetInWater(!plrMover->IsInWater() || map->IsUnderWater(G3D::Vector3(movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ)));
+            plrMover->SetInWater(!plrMover->IsInWater() || map->IsUnderWater(plrMover->GetPhaseShift(), movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ));
     }
 
     // SERVER REAL RELOCATION
@@ -749,7 +749,7 @@ void WorldSession::RelocateMover(MovementInfo &movementInfo)
     {
         if (movementInfo.HasMovementFlag(MOVEMENTFLAG_FALLING_FAR))
         {
-            float hauteur = plrMover->GetMap()->GetHeight(plrMover->GetPositionX(), plrMover->GetPositionY(), plrMover->GetPositionZ(), true);
+            float hauteur = plrMover->GetMap()->GetHeight(plrMover->GetPhaseShift(), plrMover->GetPositionX(), plrMover->GetPositionY(), plrMover->GetPositionZ(), true);
             bool undermap = false;
             // Undermap
             if ((plrMover->GetPositionZ() + 100.0f) < hauteur)

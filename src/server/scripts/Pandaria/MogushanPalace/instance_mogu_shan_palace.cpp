@@ -1,9 +1,10 @@
 /*===============
 ================*/
 
+#include "Packets/WorldStatePackets.h"
+#include "PhasingHandler.h"
 #include "VMapFactory.h"
 #include "mogu_shan_palace.h"
-#include "Packets/WorldStatePackets.h"
 
 class instance_mogu_shan_palace : public InstanceMapScript
 {
@@ -484,7 +485,7 @@ public:
 
                 if (auto chest = instance->GetGameObject(trialChestGuid))
                 {
-                    chest->SetInPhase(176, true, true);
+                    PhasingHandler::AddPhase(chest, 176, true);
                     chest->SetRespawnTime(604800);
                     instance->SummonCreature(CREATURE_JADE_QUILEN, otherPos[0]);
                 }

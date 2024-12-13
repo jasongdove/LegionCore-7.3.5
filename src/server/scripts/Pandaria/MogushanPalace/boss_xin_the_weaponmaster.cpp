@@ -215,7 +215,7 @@ struct mob_animated_staff : public ScriptedAI
             case EVENT_SUMMON_RING_TRIGGER:
                 if (point >= 11)
                 {
-                    if (TempSummon* tmp = me->SummonCreature(61499, _x, _y, me->GetMap()->GetHeight(_x, _y, me->GetPositionZ()), 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 10000))
+                    if (TempSummon* tmp = me->SummonCreature(61499, _x, _y, me->GetMap()->GetHeight(me->GetPhaseShift(), _x, _y, me->GetPositionZ()), 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 10000))
                     {
                         tmp->RemoveAura(119544);
                         tmp->CastSpell(tmp, 119590, false);
@@ -225,7 +225,7 @@ struct mob_animated_staff : public ScriptedAI
 
                 float x = _x + 5.0f * cos(point * M_PI / 5);
                 float y = _y + 5.0f * sin(point * M_PI / 5);
-                me->SummonCreature(61499, x, y, me->GetMap()->GetHeight(x, y, me->GetPositionZ()), 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 10000);
+                me->SummonCreature(61499, x, y, me->GetMap()->GetHeight(me->GetPhaseShift(), x, y, me->GetPositionZ()), 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 10000);
                 ++point;
                 events.RescheduleEvent(EVENT_SUMMON_RING_TRIGGER, 400);
                 break;

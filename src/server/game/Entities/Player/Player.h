@@ -2884,7 +2884,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         bool CanSummonPet(uint32 entry) const;
         // currently visible objects at player client
-        GuidSet m_clientGUIDs;
+        GuidUnorderedSet m_clientGUIDs;
+        GuidUnorderedSet m_visibleTransports;
         GuidSet m_extraLookList;
         sf::contention_free_shared_mutex< > i_clientGUIDLock;
         std::recursive_mutex i_killMapLock;
@@ -2893,7 +2894,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool HaveAtClient(WorldObject const* u);
         void AddClient(ObjectGuid guid);
         void RemoveClient(ObjectGuid guid);
-        GuidSet& GetClient();
+        GuidUnorderedSet& GetClient();
         void ClearClient();
 
         // some hack :( now impossible implemented correct build of object update packet
@@ -2913,8 +2914,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void UpdateVisibilityOf(WorldObject* target);
         void UpdateTriggerVisibility();
         void UpdateCustomField();
-
-        void SendUpdatePhasing();
 
         template<class T>
         void UpdateVisibilityOf(T* target, UpdateData& data, std::set<Unit*>& visibleNow);

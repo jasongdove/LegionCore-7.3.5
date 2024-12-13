@@ -1327,7 +1327,7 @@ public:
     virtual bool Execute(uint64 , uint32)
     {
         LiquidData liquidStatus;
-        ZLiquidStatus status = player->GetMap()->getLiquidStatus(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), MAP_ALL_LIQUIDS, &liquidStatus);
+        ZLiquidStatus status = player->GetMap()->getLiquidStatus(player->GetPhaseShift(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), MAP_ALL_LIQUIDS, &liquidStatus);
         if (!player->IsOnVehicle() && status == LIQUID_MAP_IN_WATER)
             player->AddAura(spellId, player);
         return true;
@@ -4870,7 +4870,7 @@ public:
             float posX = frand(228.0f, 270.0f);
             float posY = frand(3949.0f, 3962.0f);
 
-            me->SummonCreature(RAND(NPC_HEALER_A, NPC_HEALER_H), posX, posY, map->GetHeight(me->GetPhases(), posX, posY, 100.0f), 1.37f, TEMPSUMMON_CORPSE_DESPAWN);
+            me->SummonCreature(RAND(NPC_HEALER_A, NPC_HEALER_H), posX, posY, map->GetHeight(me->GetPhaseShift(), posX, posY, 100.0f), 1.37f, TEMPSUMMON_CORPSE_DESPAWN);
         }
 
         void JustSummoned(Creature* summon)

@@ -17,12 +17,13 @@
  */
 
 #include "BattlePetData.h"
-#include <fstream>
+#include "DB2Stores.h"
 #include "DatabaseEnv.h"
 #include "Log.h"
-#include "Timer.h"
 #include "MapManager.h"
-#include "DB2Stores.h"
+#include "PhasingHandler.h"
+#include "Timer.h"
+#include <fstream>
 
 BattlePetDataStoreMgr::BattlePetDataStoreMgr()
 {
@@ -196,7 +197,8 @@ void BattlePetDataStoreMgr::ComputeBattlePetSpawns()
         }
 
         auto mapEntry = sMapMgr->CreateBaseMap(mapID);
-        auto zPos = mapEntry->GetHeight(xPos, yPos, MAX_HEIGHT) + 0.5f;
+        // TODO: Phasing ??
+        auto zPos = mapEntry->GetHeight(PhasingHandler::GetEmptyPhaseShift(), xPos, yPos, MAX_HEIGHT) + 0.5f;
 
         std::string query = "INSERT INTO creature(id, map, zoneID, spawnMask, phaseMask, position_x, position_y, position_z, spawntimesecs) VALUES (";
         query += std::to_string(battlePetToCritter[battlePetNpcID]) + ", " + std::to_string(mapID) + ", " + std::to_string(zoneID) + ", 1, 1, " + std::to_string(xPos) + ", " + std::to_string(yPos) + ", " + std::to_string(zPos) + ", 120);\n";

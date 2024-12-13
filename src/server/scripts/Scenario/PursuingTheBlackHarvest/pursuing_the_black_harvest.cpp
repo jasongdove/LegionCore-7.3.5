@@ -16,8 +16,9 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MiscPackets.h"
 #include "pursuing_the_black_harvest.h"
+#include "MiscPackets.h"
+#include "PhasingHandler.h"
 
 Position const atPos[]
 {
@@ -1343,14 +1344,22 @@ public:
                 case 8702:
                     if (IsNextStageAllowed(instance, STAGE_7))
                     {
-                        std::set<uint32> phaseIds;
-                        std::set<uint32> terrainswaps;
-                        std::set<uint32> WorldMapAreaIds;
-                        WorldMapAreaIds.emplace(992);
-                        WorldMapAreaIds.emplace(683);
-                        phaseIds.emplace(1982);
-                        phaseIds.emplace(2387);
-                        player->GetSession()->SendSetPhaseShift(phaseIds, terrainswaps, WorldMapAreaIds, {}, 16);
+//                        std::set<uint32> phaseIds;
+//                        std::set<uint32> terrainswaps;
+//                        std::set<uint32> WorldMapAreaIds;
+//                        WorldMapAreaIds.emplace(992);
+//                        WorldMapAreaIds.emplace(683);
+//                        phaseIds.emplace(1982);
+//                        phaseIds.emplace(2387);
+//                        player->GetSession()->SendSetPhaseShift(phaseIds, terrainswaps, WorldMapAreaIds, {}, 16);
+
+                        PhaseShift phaseShift;
+                        phaseShift.AddUiWorldMapAreaIdSwap(992);
+                        phaseShift.AddUiWorldMapAreaIdSwap(683);
+                        phaseShift.AddPhase(1982, PhaseFlags::Cosmetic, nullptr);
+                        phaseShift.AddPhase(2387, PhaseFlags::Cosmetic, nullptr);
+                        PhasingHandler::SendToPlayer(player, phaseShift);
+
                         player->AddAura(SPELL_UPDATE_PHASE_SHIFT, player);
                         instance->HandleGameObject(instance->GetGuidData(DATA_SECOND_DOOR), true);
                         player->AddAura(SPELL_PLUNDER, player);

@@ -1642,6 +1642,8 @@ void World::SetInitialWorldSettings()
             mapData[mapEntry->ParentMapID].push_back(mapEntry->ID);
     }
 
+    sMapMgr->InitializeParentMapData(mapData);
+
     if (VMAP::VMapManager2* vmmgr2 = dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager()))
         vmmgr2->InitializeThreadUnsafe(mapData);
 
@@ -2081,17 +2083,7 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO("server.loading", "Loading World States...");              // must be loaded before battleground, outdoor PvP and conditions
     LoadWorldStates();
 
-    TC_LOG_INFO("server.loading", "Loading Terrain Phase definitions...");
-    sObjectMgr->LoadTerrainPhaseInfo();
-
-    TC_LOG_INFO("server.loading", "Loading Terrain Swap Default definitions...");
-    sObjectMgr->LoadTerrainSwapDefaults();
-
-    TC_LOG_INFO("server.loading", "Loading Terrain World Map definitions...");
-    sObjectMgr->LoadTerrainWorldMaps();
-
-    TC_LOG_INFO("server.loading", "Loading Phase Area definitions...");
-    sObjectMgr->LoadAreaPhases();
+    sObjectMgr->LoadPhases();
 
     TC_LOG_INFO("server.loading", "Loading Scenario data...");
     sObjectMgr->LoadScenarioData();

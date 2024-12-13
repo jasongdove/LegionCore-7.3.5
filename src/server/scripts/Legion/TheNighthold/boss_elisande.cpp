@@ -1232,7 +1232,7 @@ struct npc_elisande_epocheric_orb : ScriptedAI
             {
                 startTimer = 0;
                 DoCast(me, SPELL_EPOCHERIC_ORB_VISUAL, true);
-                float z = me->GetHeight(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
+                float z = me->GetMap()->GetHeight(me->GetPhaseShift(), me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
                 me->GetMotionMaster()->MovePoint(1, me->GetPositionX(), me->GetPositionY(), z, false);
             }
             else
@@ -1409,7 +1409,7 @@ class spell_elisande_epocheric_orb_at : public SpellScript
     void HandleOnHit(SpellEffIndex /*effIndex*/)
     {
         if (Unit* caster = GetCaster())
-            GetSpell()->destTarget->Relocate(caster->GetPositionX(), caster->GetPositionY(), caster->GetHeight(caster->GetPositionX(), caster->GetPositionY(),caster->GetPositionZ()));
+            GetSpell()->destTarget->Relocate(caster->GetPositionX(), caster->GetPositionY(), caster->GetMap()->GetHeight(caster->GetPhaseShift(), caster->GetPositionX(), caster->GetPositionY(),caster->GetPositionZ()));
     }
 
     void Register()

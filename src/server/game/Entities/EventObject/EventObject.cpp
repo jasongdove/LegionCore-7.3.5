@@ -159,8 +159,9 @@ bool EventObject::LoadEventObjectFromDB(ObjectGuid::LowType guid, Map* map)
 
     Object::_Create(ObjectGuid::Create<HighGuid::EventObject>(GetMapId(), data->id, guid));
 
-    for (auto phase : data->PhaseID)
-        SetInPhase(phase, false, true);
+    // TODO: Phasing
+//    for (auto phase : data->PhaseID)
+//        SetInPhase(phase, false, true);
 
     SetEntry(data->id);
     SetObjectScale(1.0f);
@@ -202,7 +203,7 @@ void EventObject::SaveToDB(uint32 mapid, uint64 spawnMask)
 
     uint32 zoneId = 0;
     uint32 areaId = 0;
-    sMapMgr->GetZoneAndAreaId(zoneId, areaId, mapid, GetPositionX(), GetPositionY(), GetPositionZ());
+    sMapMgr->GetZoneAndAreaId(GetPhaseShift(), zoneId, areaId, mapid, GetPositionX(), GetPositionY(), GetPositionZ());
 
     data.id = GetEntry();
     data.mapid = mapid;

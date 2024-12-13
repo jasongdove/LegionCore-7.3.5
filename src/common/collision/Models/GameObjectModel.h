@@ -35,6 +35,7 @@ namespace VMAP
 }
 
 class GameObject;
+class PhaseShift;
 struct GameObjectDisplayInfoEntry;
 
 class TC_COMMON_API GameObjectModelOwnerBase
@@ -46,7 +47,7 @@ public:
     virtual uint32 GetDisplayId() const = 0;
     virtual uint8 GetNameSetId() const = 0;
     virtual bool IsDoor() const { return false; }
-    virtual bool IsInPhase(std::set<uint32> const& phases) const { return false; }
+    virtual bool IsInPhase(PhaseShift const& /*phaseShift*/) const { return false; }
     virtual G3D::Vector3 GetPosition() const = 0;
     virtual float GetOrientation() const = 0;
     virtual float GetScale() const = 0;
@@ -72,12 +73,12 @@ public:
     bool isCollisionEnabled() const { return _collisionEnabled; }
     bool isMapObject() const { return isWmo; }
 
-    bool intersectRay(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit,  std::set<uint32> const& phases, VMAP::ModelIgnoreFlags ignoreFlags) const;
-    void intersectPoint(G3D::Vector3 const& point, VMAP::AreaInfo& info,  std::set<uint32> const& phases) const;
+    bool intersectRay(G3D::Ray const& ray, float& maxDist, bool stopAtFirstHit, PhaseShift const& phaseShift, VMAP::ModelIgnoreFlags ignoreFlags) const;
+    void intersectPoint(G3D::Vector3 const& point, VMAP::AreaInfo& info, PhaseShift const& phaseShift) const;
 
-    bool isInLineOfSight(G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, std::set<uint32> const& phases) const;
-    bool getObjectHitPos(std::set<uint32> const& phases, G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, G3D::Vector3& resultHitPos, float modifyDist) const;
-    float getHeight(float x, float y, float z, float maxSearchDist, std::set<uint32> const& phases) const;
+    bool isInLineOfSight(G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, PhaseShift const& phaseShift) const;
+    bool getObjectHitPos(PhaseShift const& phaseShift, G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, G3D::Vector3& resultHitPos, float modifyDist) const;
+    float getHeight(float x, float y, float z, float maxSearchDist, PhaseShift const& phaseShift) const;
 
     static GameObjectModel* Create(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath);
 

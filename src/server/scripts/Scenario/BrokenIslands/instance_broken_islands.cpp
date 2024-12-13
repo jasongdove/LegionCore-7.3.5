@@ -16,15 +16,16 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "InstanceScript.h"
+#include "MapManager.h"
+#include "MoveSplineInit.h"
+#include "PhasingHandler.h"
+#include "PlayerDefines.h"
+#include "QuestData.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
-#include "broken_islands.h"
-#include "MapManager.h"
 #include "Transport.h"
-#include "InstanceScript.h"
-#include "QuestData.h"
-#include "MoveSplineInit.h"
-#include "PlayerDefines.h"
+#include "broken_islands.h"
 
 class instance_broken_islands : public InstanceMapScript
 {
@@ -223,7 +224,7 @@ public:
                         if (GameObject* go = unit->FindNearestGameObject(240194, 20.0f))
                         {
                             go->SetGoState(GO_STATE_ACTIVE);
-                            go->SetInPhase(171, true, true);
+                            PhasingHandler::AddPhase(go, 171, true);
                         }
 
                         if (auto cr = unit->GetAnyOwner()->ToCreature())
@@ -700,7 +701,7 @@ public:
                             if (GameObject* go = targ->FindNearestGameObject(240211, 100.0f))
                             {
                                 go->SetGoState(GO_STATE_ACTIVE);
-                                go->SetInPhase(171, true, true);
+                                PhasingHandler::AddPhase(go, 171, true);
                             }
                             targ->DespawnOrUnsummon();
                         }
@@ -715,7 +716,7 @@ public:
                                 if (GameObject* go = targ->FindNearestGameObject(240211, 140.0f))
                                 {
                                     go->SetGoState(GO_STATE_ACTIVE);
-                                    go->SetInPhase(171, true, true);
+                                    PhasingHandler::AddPhase(go, 171, true);
                                 }
                                 targ->DespawnOrUnsummon();
                             }

@@ -17,26 +17,26 @@
  */
 
 #include "ObjectAccessor.h"
-#include "ObjectMgr.h"
-
-#include "Player.h"
+#include "CellImpl.h"
+#include "Corpse.h"
 #include "Creature.h"
-#include "GameObject.h"
 #include "DynamicObject.h"
 #include "EventObject.h"
-#include "Vehicle.h"
-#include "WorldPacket.h"
-#include "Item.h"
-#include "Corpse.h"
+#include "GameObject.h"
 #include "GridNotifiers.h"
-#include "MapManager.h"
-#include "Map.h"
-#include "CellImpl.h"
 #include "GridNotifiersImpl.h"
-#include "Opcodes.h"
-#include "ObjectDefines.h"
+#include "Item.h"
+#include "Map.h"
 #include "MapInstanced.h"
+#include "MapManager.h"
+#include "ObjectDefines.h"
+#include "ObjectMgr.h"
+#include "Opcodes.h"
+#include "PhasingHandler.h"
+#include "Player.h"
+#include "Vehicle.h"
 #include "World.h"
+#include "WorldPacket.h"
 
 template<class T>
 sf::contention_free_shared_mutex<>& HashMapHolder<T>::GetLock()
@@ -433,7 +433,7 @@ Corpse* ObjectAccessor::ConvertCorpseForPlayer(ObjectGuid player_guid, bool insi
 
         bones->SetUInt32Value(CORPSE_FIELD_FLAGS, corpse->GetUInt32Value(CORPSE_FIELD_FLAGS) | CORPSE_FLAG_BONES);
 
-        bones->CopyPhaseFrom(corpse);
+        PhasingHandler::InheritPhaseShift(bones, corpse);
 
         // add bones in grid store if grid loaded where corpse placed
         map->AddToMap(bones);

@@ -1,12 +1,13 @@
 /*
 */
 
+#include "army_training.h"
+#include "GameObjectAI.h"
+#include "PhasingHandler.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
-#include "GameObjectAI.h"
-#include "army_training.h"
-#include "WorldPacket.h"
 #include "SpellPackets.h"
+#include "WorldPacket.h"
 
 /*
 SPELL_CUSTOM_ERROR_REQUIRES_AT_LEAST_10_WITHERED                    = 293, // Requires at least 10 living withered
@@ -374,7 +375,7 @@ struct go_army_training_chests : public GameObjectAI
             despawn = true;
             go->AddDelayedEvent(3000, [&]() -> void
             {
-                go->SetInPhase(171, true, true);
+                PhasingHandler::AddPhase(go, 171, true);
             });
         }
     }

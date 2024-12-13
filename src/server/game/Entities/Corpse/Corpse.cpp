@@ -16,14 +16,15 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Common.h"
 #include "Corpse.h"
-#include "Player.h"
-#include "ObjectAccessor.h"
+#include "Common.h"
 #include "DatabaseEnv.h"
-#include "Opcodes.h"
-#include "World.h"
+#include "ObjectAccessor.h"
 #include "ObjectMgr.h"
+#include "Opcodes.h"
+#include "PhasingHandler.h"
+#include "Player.h"
+#include "World.h"
 
 Corpse::Corpse(CorpseType type) : WorldObject(type != CORPSE_BONES), m_type(type)
 {
@@ -99,7 +100,7 @@ bool Corpse::Create(ObjectGuid::LowType guidlow, Player* owner)
 
     _gridCoord = Trinity::ComputeGridCoord(GetPositionX(), GetPositionY());
 
-    CopyPhaseFrom(owner);
+    PhasingHandler::InheritPhaseShift(this, owner);
 
     return true;
 }
@@ -130,12 +131,12 @@ void Corpse::SaveToDB()
     stmt->setUInt32(index++, GetInstanceId());                                        // instanceId
     trans->Append(stmt);
 
-    for (uint32 phaseId : GetPhases())
+    for (PhaseShift::PhaseRef const& phase : GetPhaseShift().GetPhases())
     {
         index = 0;
         stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CORPSE_PHASES);
         stmt->setUInt32(index++, GetGUID().GetCounter());                             // Guid (corpse's)
-        stmt->setUInt32(index++, phaseId);                                            // PhaseId
+        stmt->setUInt32(index++, phase.Id);                                           // PhaseId
         stmt->setUInt32(index++, GetOwnerGUID().GetCounter());                        // OwnerGuid
         stmt->setUInt32(index++, uint32(m_time));                                     // Time
         stmt->setUInt8(index++, GetType());                                           // CorpseType

@@ -33,6 +33,7 @@
 #include "ObjectVisitors.hpp"
 #include "Opcodes.h"
 #include "OutdoorPvPMgr.h"
+#include "PhasingHandler.h"
 #include "Player.h"
 #include "PlayerDefines.h"
 #include "ScriptMgr.h"
@@ -2731,27 +2732,17 @@ void AuraEffect::HandlePhase(AuraApplication const* aurApp, uint8 mode, bool app
 
     Unit* target = aurApp->GetTarget();
 
-    std::set<uint32> const& oldPhases = target->GetPhases();
-    target->SetInPhase(GetMiscValueB(), false, apply);
-
-    if (target->IsInWorld())
-        if (Player* player = target->ToPlayer())
-            target->GetMap()->SendUpdateTransportVisibility(player, oldPhases);
-
-    // call functions which may have additional effects after chainging state of unit
-    // phase auras normally not expected at BG but anyway better check
-    if (apply && (mode & AURA_EFFECT_HANDLE_REAL))
+    if (apply)
     {
-        // drop flag at invisibiliy in bg
+        PhasingHandler::AddPhase(target, uint32(GetMiscValueB()), true);
+
+        // call functions which may have additional effects after chainging state of unit
+        // phase auras normally not expected at BG but anyway better check
+        // drop flag at invisibility in bg
         target->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_IMMUNE_OR_LOST_SELECTION, GetId());
     }
-
-    if (Player* player = target->ToPlayer())
-        player->SendUpdatePhasing();
-
-    // need triggering visibility update base at phase update of not GM invisible (other GMs anyway see in any phases)
-    if (target->IsVisible())
-        target->UpdateObjectVisibility();
+    else
+        PhasingHandler::RemovePhase(target, uint32(GetMiscValueB()), true);
 }
 
 void AuraEffect::HandlePhaseGroup(AuraApplication const* aurApp, uint8 mode, bool apply) const
@@ -2761,29 +2752,17 @@ void AuraEffect::HandlePhaseGroup(AuraApplication const* aurApp, uint8 mode, boo
 
     Unit* target = aurApp->GetTarget();
 
-    std::set<uint32> const& oldPhases = target->GetPhases();
-    std::set<uint32> const& phases = sDB2Manager.GetPhasesForGroup(GetMiscValueB());
-    for (auto phase : phases)
-        target->SetInPhase(phase, false, apply);
-
-    if (target->IsInWorld())
-        if (Player* player = target->ToPlayer())
-            target->GetMap()->SendUpdateTransportVisibility(player, oldPhases);
-
-    // call functions which may have additional effects after chainging state of unit
-    // phase auras normally not expected at BG but anyway better check
     if (apply)
     {
-        // drop flag at invisibiliy in bg
+        PhasingHandler::AddPhaseGroup(target, uint32(GetMiscValueB()), true);
+
+        // call functions which may have additional effects after chainging state of unit
+        // phase auras normally not expected at BG but anyway better check
+        // drop flag at invisibility in bg
         target->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_IMMUNE_OR_LOST_SELECTION);
     }
-
-    if (Player* player = target->ToPlayer())
-        player->SendUpdatePhasing();
-
-    // need triggering visibility update base at phase update of not GM invisible (other GMs anyway see in any phases)
-    if (target->IsVisible())
-        target->UpdateObjectVisibility();
+    else
+        PhasingHandler::RemovePhaseGroup(target, uint32(GetMiscValueB()), true);
 }
 
 /**********************/

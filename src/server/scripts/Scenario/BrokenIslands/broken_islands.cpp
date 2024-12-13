@@ -2,17 +2,18 @@
 The Broken Islands Scenario
 */
 
-#include "LFGMgr.h"
-#include "LFGQueue.h"
-#include "LFGPackets.h"
 #include "broken_islands.h"
-#include "DynamicObject.h"
-#include "ScriptedEscortAI.h"
-#include "CreatureTextMgr.h"
-#include "MiscPackets.h"
-#include "GameObjectAI.h"
-#include "QuestData.h"
 #include "CreatureGroups.h"
+#include "CreatureTextMgr.h"
+#include "DynamicObject.h"
+#include "GameObjectAI.h"
+#include "LFGMgr.h"
+#include "LFGPackets.h"
+#include "LFGQueue.h"
+#include "MiscPackets.h"
+#include "PhasingHandler.h"
+#include "QuestData.h"
+#include "ScriptedEscortAI.h"
 // #include "PrecompiledHeaders/ScriptPCH.h"
 
 #define GOSSIP_ACCEPT_DUEL      "Let''s duel"
@@ -2774,7 +2775,7 @@ public:
             {
                 player->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 53064);
                 go->SetGoState(GO_STATE_ACTIVE);
-                go->SetInPhase(171, true, true);
+                PhasingHandler::AddPhase(go, 171, true);
                 go->SetVisible(false);
             }
         }

@@ -27,6 +27,7 @@
 #include "MMapFactory.h"
 #include "MMapManager.h"
 #include "Map.h"
+#include "PhasingHandler.h"
 #include <G3D/Vector3.h>
 
 ////////////////// PathGenerator //////////////////
@@ -40,8 +41,8 @@ PathGenerator::PathGenerator(WorldObject const* owner) :
 
     TC_LOG_DEBUG("maps.mmaps", "++ PathGenerator::PathGenerator for %lu", _source->GetGUID().GetCounter());
 
-    uint32 mapId = _source->GetMapId(); // TODO: account for phasing
-    if (DisableMgr::IsPathfindingEnabled(mapId))
+    uint32 mapId = PhasingHandler::GetTerrainMapId(_source->GetPhaseShift(), _source->GetMap(), _source->GetPositionX(), _source->GetPositionY());
+    if (DisableMgr::IsPathfindingEnabled(_source->GetMapId()))
     {
         auto mmap = MMAP::MMapFactory::createOrGetMMapManager();
         _navMeshQuery = mmap->GetNavMeshQuery(mapId, _source->GetInstanceId());
@@ -241,8 +242,7 @@ void PathGenerator::BuildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
             // Check both start and end points, if they're both in water, then we can *safely* let the creature move
             for (uint32 i = 0; i < _pathPoints.size(); ++i)
             {
-                // TODO: support phasing
-                ZLiquidStatus status = _source->GetMap()->getLiquidStatus(_pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, MAP_ALL_LIQUIDS, nullptr);
+                ZLiquidStatus status = _source->GetBaseMap()->getLiquidStatus(_source->GetPhaseShift(), _pathPoints[i].x, _pathPoints[i].y, _pathPoints[i].z, MAP_ALL_LIQUIDS, nullptr);
                 // One of the points is not in the water, cancel movement.
                 if (status == LIQUID_MAP_NO_WATER)
                 {
@@ -281,7 +281,7 @@ void PathGenerator::BuildPolyPath(G3D::Vector3 const& startPos, G3D::Vector3 con
         bool buildShortcut = false;
 
         G3D::Vector3 const& p = (distToStartPoly > 7.0f) ? startPos : endPos;
-        if (_source->GetMap()->IsUnderWater(p)) // TODO: support phasing
+        if (_source->GetMap()->IsUnderWater(_source->GetPhaseShift(), p.x, p.y, p.z))
         {
             TC_LOG_DEBUG("maps.mmaps", "++ BuildPolyPath :: underWater case");
             if (const Unit* _sourceUnit = _source->ToUnit())
@@ -784,7 +784,7 @@ void PathGenerator::UpdateFilter()
 NavTerrainFlag PathGenerator::GetNavTerrain(float x, float y, float z)
 {
     LiquidData data;
-    ZLiquidStatus liquidStatus = _source->GetMap()->getLiquidStatus(x, y, z, MAP_ALL_LIQUIDS, &data);
+    ZLiquidStatus liquidStatus = _source->GetMap()->getLiquidStatus(_source->GetPhaseShift(), x, y, z, MAP_ALL_LIQUIDS, &data);
     if (liquidStatus == LIQUID_MAP_NO_WATER)
         return NAV_GROUND;
 
@@ -1084,7 +1084,7 @@ void PathGenerator::ShortenPathUntilDist(G3D::Vector3 const& target, float dist)
 
         // check if the shortened path is still in LoS with the target
         _source->GetHitSpherePointFor({ _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight }, x, y, z);
-        if (!_source->GetMap()->isInLineOfSight(x, y, z, _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight, _source->GetPhases(), VMAP::ModelIgnoreFlags::Nothing))
+        if (!_source->GetMap()->isInLineOfSight(_source->GetPhaseShift(), x, y, z, _pathPoints[i - 1].x, _pathPoints[i - 1].y, _pathPoints[i - 1].z + collisionHeight, VMAP::ModelIgnoreFlags::Nothing))
         {
             // whenver we find a point that is not in LoS anymore, simply use last valid path
             _pathPoints.resize(i + 1);

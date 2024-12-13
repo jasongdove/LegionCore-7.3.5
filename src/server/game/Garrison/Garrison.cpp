@@ -17,16 +17,17 @@
 
 #include "Garrison.h"
 #include "Creature.h"
+#include "DatabaseEnv.h"
 #include "GameObject.h"
 #include "GarrisonMgr.h"
-#include "MapManager.h"
-#include "ObjectMgr.h"
-#include "VehicleDefines.h"
-#include "MiscPackets.h"
 #include "InstanceScript.h"
 #include "LootPackets.h"
-#include "DatabaseEnv.h"
+#include "MapManager.h"
+#include "MiscPackets.h"
 #include "NPCPackets.h"
+#include "ObjectMgr.h"
+#include "PhasingHandler.h"
+#include "VehicleDefines.h"
 #include <G3D/Quat.h>
 
 #define SALVAGE_ITEM 114119
@@ -735,7 +736,7 @@ bool Garrison::Create(uint32 garrSiteId, bool skip_teleport /* = false*/)
     garrisonCreateResult.GarrSiteLevelID = siteLevel->ID;
     _owner->SendDirectMessage(garrisonCreateResult.Write());
 
-    //_owner->GetPhaseMgr().RemoveUpdateFlag(PHASE_UPDATE_FLAG_AREA_UPDATE); update phase send at quest credit.
+    PhasingHandler::OnConditionChange(_owner);
     if (siteLevel->UpgradeMovieID && !skip_teleport)
         _owner->TeleportTo(GetGarrisonMapID(), _owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ(), _owner->GetOrientation(), TELE_TO_SEAMLESS);
     SendRemoteInfo();

@@ -460,7 +460,7 @@ Map* MapInstanced::CreateZoneForPlayer(const uint32 mapId, Player* player)
     if (GetId() != mapId || !player)
         return nullptr;
 
-    uint32 newZoneId = GetZoneId(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ());
+    uint32 newZoneId = GetZoneId(player->GetPhaseShift(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ());
     Map* map = FindInstanceMap(newZoneId);
     if (!map)
         map = CreateZoneMap(newZoneId, player);

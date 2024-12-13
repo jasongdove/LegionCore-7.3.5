@@ -1,3 +1,4 @@
+#include "PhasingHandler.h"
 #include "shadowfang_keep.h"
 
 DoorData const doorData[] =
@@ -66,7 +67,7 @@ class instance_shadowfang_keep : public InstanceMapScript
                     case NPC_CROMUSH:
                         // TODO: replace phasing hack with spawn group
                         if (teamInInstance == ALLIANCE)
-                            creature->SetInPhase(170, true, true);
+                            PhasingHandler::AddPhase(creature, 170, true);
                             //creature->SetPhaseMask(2, true);
                         break;
                     case NPC_ASHBURY:

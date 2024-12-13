@@ -16,6 +16,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "PhasingHandler.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "thunder_forge.h"
@@ -152,7 +153,7 @@ public:
                             if (Creature* cre = instance->GetCreature(forgemasterGUID))
                             {
                                 cre->SetReactState(REACT_AGGRESSIVE);
-                                cre->SetInPhase(170, true, true);
+                                PhasingHandler::AddPhase(cre, 170, true);
                                 cre->AI()->DoAction(ACTION_1);
                             }
                             break;

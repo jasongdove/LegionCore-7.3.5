@@ -126,17 +126,17 @@ namespace WorldPackets
             ObjectGuid TargetGUID;
         };
 
-        struct GroupPhase
+        struct PartyMemberPhase
         {
             uint16 Flags = 0u;
             uint16 Id = 0u;
         };
 
-        struct GroupPhases
+        struct PartyMemberPhaseStates
         {
-            int32 PhaseShiftFlags = 0;
+            uint32 PhaseShiftFlags = 0;
             ObjectGuid PersonalGUID;
-            std::vector<GroupPhase> List;
+            std::vector<PartyMemberPhase> List;
         };
 
         struct GroupAura
@@ -162,7 +162,7 @@ namespace WorldPackets
         {
             std::vector<GroupAura> AuraList;
             Optional<GroupPetStats> PetStats;
-            GroupPhases Phases;
+            PartyMemberPhaseStates Phases;
             ObjectGuid GUID;
             int32 CurrentHealth = 0;
             int32 MaxHealth = 0;
@@ -209,7 +209,7 @@ namespace WorldPackets
 
             Optional<std::vector<GroupAura>> AuraList;
             Optional<GroupPetStats> PetStats;
-            Optional<GroupPhases> Phases;
+            Optional<PartyMemberPhaseStates> Phases;
             Optional<ObjectGuid> GUID;
             Optional<MemberStatePosition> Position;
             Optional<int32> CurrentHealth;
@@ -684,8 +684,8 @@ namespace WorldPackets
     }
 }
 
-ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::GroupPhase const& phase);
-ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::GroupPhases const& phases);
+ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::PartyMemberPhase const& phase);
+ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::PartyMemberPhaseStates const& phases);
 
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::GroupAura const& aura);
 ByteBuffer& operator<<(ByteBuffer& data, std::vector<WorldPackets::Party::GroupAura> const& auraList);

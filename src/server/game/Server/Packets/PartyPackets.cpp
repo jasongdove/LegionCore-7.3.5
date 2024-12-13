@@ -16,14 +16,14 @@
  */
 
 #include "PartyPackets.h"
-
+#include "ObjectMgr.h"
+#include "Pet.h"
+#include "PhasingHandler.h"
 #include "Player.h"
 #include "PlayerDefines.h"
-#include "Pet.h"
-#include "Vehicle.h"
-#include "SpellAuras.h"
 #include "SpellAuraEffects.h"
-#include "ObjectMgr.h"
+#include "SpellAuras.h"
+#include "Vehicle.h"
 
 WorldPacket const* WorldPackets::Party::PartyCommandResult::Write()
 {
@@ -314,16 +314,7 @@ void WorldPackets::Party::PartyMemberStatseUpdate::Initialize(Player* player)
     if (mask & GROUP_UPDATE_FLAG_PHASE) //! @TODO
     {
         MemberState.Phases.emplace();
-        std::set<uint32> const& phases = player->GetPhases();
-        MemberState.Phases->PhaseShiftFlags = 0x08 | (!phases.empty() ? 0x10 : 0);
-        MemberState.Phases->PersonalGUID = ObjectGuid::Empty;
-        for (uint32 phaseId : phases)
-        {
-            GroupPhase phase;
-            phase.Id = phaseId;
-            phase.Flags = 1;
-            MemberState.Phases->List.push_back(phase);
-        }
+        PhasingHandler::FillPartyMemberPhase(&*MemberState.Phases, player->GetPhaseShift());
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET)
@@ -821,16 +812,7 @@ void WorldPackets::Party::PartyMemberStats::Initialize(Player* player)
     }
 
     // Phases
-    std::set<uint32> phases = player->GetPhases();
-    MemberStats.Phases.PhaseShiftFlags = 0x08 | (!phases.empty() ? 0x10 : 0);
-    MemberStats.Phases.PersonalGUID = ObjectGuid::Empty;
-    for (uint32 phaseId : phases)
-    {
-        GroupPhase phase;
-        phase.Id = phaseId;
-        phase.Flags = 1;
-        MemberStats.Phases.List.push_back(phase);
-    }
+    PhasingHandler::FillPartyMemberPhase(&MemberStats.Phases, player->GetPhaseShift());
 
     // Pet
     if (player->GetPet())
@@ -923,21 +905,21 @@ WorldPacket const* WorldPackets::Party::PartyKillLog::Write()
     return &_worldPacket;
 }
 
-ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::GroupPhase const& phase)
+ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::PartyMemberPhase const& phase)
 {
-    data << phase.Flags;
-    data << phase.Id;
+    data << uint16(phase.Flags);
+    data << uint16(phase.Id);
 
     return data;
 }
 
-ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::GroupPhases const& phases)
+ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Party::PartyMemberPhaseStates const& phases)
 {
-    data << phases.PhaseShiftFlags;
-    data << static_cast<int32>(phases.List.size());
+    data << uint32(phases.PhaseShiftFlags);
+    data << uint32(phases.List.size());
     data << phases.PersonalGUID;
 
-    for (WorldPackets::Party::GroupPhase const& phase : phases.List)
+    for (WorldPackets::Party::PartyMemberPhase const& phase : phases.List)
         data << phase;
 
     return data;

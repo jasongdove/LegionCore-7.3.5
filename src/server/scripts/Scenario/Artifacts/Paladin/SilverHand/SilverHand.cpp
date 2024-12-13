@@ -2,11 +2,11 @@
     Paladin: SilverHand
 */
 
-#include "ScriptMgr.h"
-#include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
-
+#include "PhasingHandler.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
 
 // 106429
 class npc_travar_first : public CreatureScript
@@ -211,7 +211,7 @@ public:
                         GetGameObjectListWithEntryInGrid(gob, me, 251349, 12.0f);
                         if (!gob.empty())
                             for (std::list<GameObject*>::iterator itr = gob.begin(); itr != gob.end(); ++itr)
-                                (*itr)->SetInPhase(171, true, true); // hide
+                                PhasingHandler::AddPhase(*itr, 171, true); // hide
                     }
                     break;
                 }
@@ -281,7 +281,7 @@ public:
 
             // 251349
             if (GameObject* go = me->FindNearestGameObject(251349, 30.0f))
-                go->SetInPhase(171, true, true); // hide
+                PhasingHandler::AddPhase(go, 171, true); // hide
         }
     };
 };
@@ -431,7 +431,7 @@ public:
             GetGameObjectListWithEntryInGrid(gob, me, 251349, 5.0f);
             if (!gob.empty())
                 for (std::list<GameObject*>::iterator itr = gob.begin(); itr != gob.end(); ++itr)
-                    (*itr)->SetInPhase(171, true, true); // hide
+                    PhasingHandler::AddPhase(*itr, 171, true); // hide
         }
     };
 };
@@ -605,7 +605,7 @@ public:
             GetGameObjectListWithEntryInGrid(gob, me, 251349, 5.0f);
             if (!gob.empty())
                 for (std::list<GameObject*>::iterator itr = gob.begin(); itr != gob.end(); ++itr)
-                    (*itr)->SetInPhase(171, true, true); // hide
+                    PhasingHandler::AddPhase(*itr, 171, true); // hide
         }
     };
 };

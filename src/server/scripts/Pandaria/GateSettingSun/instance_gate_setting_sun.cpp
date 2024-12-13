@@ -1,6 +1,7 @@
 /*==============
 ==============*/
 
+#include "PhasingHandler.h"
 #include "gate_setting_sun.h"
 
 DoorData const doorData[] =
@@ -93,14 +94,15 @@ public:
         void OnPlayerEnter(Player* player) override
         {
             if (GetData(DATA_BRASIER_CLICKED) == NOT_STARTED)
-                player->SetInPhase(170, true, false);
+                PhasingHandler::RemovePhase(player, 170, true);
             else
-                player->SetInPhase(170, true, true);
+                PhasingHandler::AddPhase(player, 170, true);
+
         }
 
         void OnPlayerLeave(Player* player) override
         {
-            player->SetInPhase(170, true, false);
+            PhasingHandler::RemovePhase(player, 170, true);
         }
 
         void OnCreatureCreate(Creature* creature) override
@@ -307,7 +309,7 @@ public:
                         if (auto player = it->getSource())
                         {
                             player->SendCinematicStart(CINEMATIC_SETTING_SUN);
-                            player->SetInPhase(170, true, true);
+                            PhasingHandler::AddPhase(player, 170, true);
                             player->NearTeleportTo(1370.0f, 2283.6f, 402.328f, 2.70f);
                         }
                     }

@@ -921,7 +921,7 @@ class npc_alysrazor_fiery_tornado : public CreatureScript
                     G3D::Vector3 point;
                     point.x = centerPos.GetPositionX() + radius * cosf(angle);
                     point.y = centerPos.GetPositionY() + radius * sinf(angle);
-                    z = me->GetMap()->GetHeight(point.x, point.y, z);
+                    z = me->GetMap()->GetHeight(me->GetPhaseShift(), point.x, point.y, z);
                     point.z = z;
                     path.push_back(point);
                 }

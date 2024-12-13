@@ -19,11 +19,12 @@
  * Comment: Missing AI for Twisted Visages
  */
 
+#include "Group.h"
+#include "LFGMgr.h"
+#include "PhasingHandler.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ahnkahet.h"
-#include "LFGMgr.h"
-#include "Group.h"
 
 enum Spells
 {
@@ -131,7 +132,7 @@ public:
                         player->CastSpell(summon, SPELL_CLONE_PLAYER, true);
 
                         // phase the summon
-                        summon->SetInPhase(spellInfo->Effects[EFFECT_0]->MiscValueB, true, true);
+                        PhasingHandler::AddPhase(summon, spellInfo->Effects[EFFECT_0]->MiscValueB, true);
                     }
                 }
                 ++insanityHandled;
@@ -162,9 +163,9 @@ public:
             }
 
             // Visible for all players in insanity
-            me->SetInPhase(169, true, true);
             for (uint32 i = 173; i <= 177; ++i)
-                me->SetInPhase(i, true, true);
+                PhasingHandler::AddPhase(me, i, false);
+            PhasingHandler::AddPhase(me, DEFAULT_PHASE, true);
 
             insanityHandled = 0;
 
@@ -202,7 +203,7 @@ public:
                         return;
                     else
                     {
-                        nextPhase = *visage->GetPhases().begin();
+                        nextPhase = visage->GetPhaseShift().GetPhases().begin()->Id;
                         break;
                     }
                 }

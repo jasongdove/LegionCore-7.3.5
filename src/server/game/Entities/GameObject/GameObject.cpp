@@ -38,6 +38,7 @@
 #include "ObjectMgr.h"
 #include "ObjectVisitors.hpp"
 #include "OutdoorPvPMgr.h"
+#include "PhasingHandler.h"
 #include "PlayerDefines.h"
 #include "PoolMgr.h"
 #include "QuestData.h"
@@ -235,14 +236,10 @@ bool GameObject::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, P
         return false;
     }
 
-    if (data && data->phaseid)
-        SetInPhase(data->phaseid, false, true);
-
-    if (data && data->phaseGroup)
+    if (data)
     {
-        // Set the gameobject in all the phases of the phasegroup
-        for (auto ph : sDB2Manager.GetPhasesForGroup(data->phaseGroup))
-            SetInPhase(ph, false, true);
+        PhasingHandler::InitDbPhaseShift(GetPhaseShift(), data->phaseUseFlags, data->phaseId, data->phaseGroup);
+        PhasingHandler::InitDbVisibleMapId(GetPhaseShift(), data->terrainSwapMap);
     }
 
     SetZoneScript();
@@ -914,7 +911,7 @@ void GameObject::SaveToDB(uint32 mapid, uint64 spawnMask)
 
     uint32 zoneId = 0;
     uint32 areaId = 0;
-    sMapMgr->GetZoneAndAreaId(zoneId, areaId, mapid, GetPositionX(), GetPositionY(), GetPositionZ());
+    sMapMgr->GetZoneAndAreaId(GetPhaseShift(), zoneId, areaId, mapid, GetPositionX(), GetPositionY(), GetPositionZ());
 
     // data->guid = guid must not be updated at save
     data.id = GetEntry();
@@ -990,15 +987,8 @@ bool GameObject::LoadGameObjectFromDB(ObjectGuid::LowType guid, Map* map, bool a
     if (!Create(guid, entry, map, Position(data->posX, data->posY, data->posZ, data->orientation), data->rotation, data->animprogress, static_cast<GOState>(data->go_state), data->artKit, data->AiID, data))
         return false;
 
-    if (data && data->phaseid)
-        SetInPhase(data->phaseid, false, true);
-
-    if (data && data->phaseGroup)
-    {
-        // Set the gameobject in all the phases of the phasegroup
-        for (auto ph : sDB2Manager.GetPhasesForGroup(data->phaseGroup))
-            SetInPhase(ph, false, true);
-    }
+    PhasingHandler::InitDbPhaseShift(GetPhaseShift(), data->phaseUseFlags, data->phaseId, data->phaseGroup);
+    PhasingHandler::InitDbVisibleMapId(GetPhaseShift(), data->terrainSwapMap);
 
     if (data->spawntimesecs >= 0)
     {
@@ -2788,15 +2778,6 @@ void GameObject::SetDisplayId(uint32 displayid)
     UpdateModel();
 }
 
-bool GameObject::SetInPhase(uint32 id, bool update, bool apply)
-{
-    bool res = WorldObject::SetInPhase(id, update, apply);
-    if (m_model && m_model->isCollisionEnabled())
-        EnableCollision(true);
-
-    return res;
-}
-
 uint8 GameObject::GetNameSetId() const
 {
     switch (GetGoType())
@@ -3212,7 +3193,6 @@ public:
     bool IsSpawned() const override { return _owner->isSpawned(); }
     uint32 GetDisplayId() const override { return _owner->GetDisplayId(); }
     uint8 GetNameSetId() const override { return _owner->GetNameSetId(); }
-    bool IsInPhase(std::set<uint32> const& phases) const override { return _owner->IsInPhase(phases); }
     G3D::Vector3 GetPosition() const override { return G3D::Vector3(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ()); }
     float GetOrientation() const override { return _owner->GetOrientation(); }
     float GetScale() const override { return _owner->GetObjectScale(); }

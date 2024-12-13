@@ -396,7 +396,7 @@ class npc_tempest_slash : public CreatureScript
                     G3D::Vector3 point;
                     point.x = centerPos.GetPositionX() + radius * std::cos(stepbyangle*i);
                     point.y = centerPos.GetPositionY() + radius * std::sin(stepbyangle*i);
-                    z = me->GetMap()->GetHeight(point.x, point.y, z);
+                    z = me->GetMap()->GetHeight(me->GetPhaseShift(), point.x, point.y, z);
                     point.z = z;
                     path.push_back(point);
                 }

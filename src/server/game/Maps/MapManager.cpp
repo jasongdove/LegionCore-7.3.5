@@ -53,6 +53,11 @@ void MapManager::Initialize()
 {
 }
 
+void MapManager::InitializeParentMapData(const std::unordered_map<uint32, std::vector<uint32>>& mapData)
+{
+    _parentMapData = mapData;
+}
+
 void MapManager::InitializeVisibilityDistanceInfo()
 {
     for (uint16 i = 0; i < _mapCount; ++i)
@@ -70,24 +75,44 @@ Map* MapManager::CreateBaseMap(uint32 id)
 {
     Map* map = FindBaseMap(id);
 
-    if (map == nullptr)
+    if (!map)
     {
-        MapEntry const* entry = sMapStore.LookupEntry(id);
-        ASSERT(entry);
-
-        if (entry->Instanceable() || entry->CanCreatedZone())
-            map = new MapInstanced(id, i_gridCleanUpDelay);
-        else
+        MapEntry const* entry = sMapStore.AssertEntry(id);
+        if (entry->ParentMapID != -1)
         {
-            map = new Map(id, i_gridCleanUpDelay, 0, DIFFICULTY_NONE);
-            map->LoadRespawnTimes();
+            CreateBaseMap(entry->ParentMapID);
+
+            // must have been created by parent map
+            map = FindBaseMap(id);
+            return ASSERT_NOTNULL(map);
         }
 
-        i_maps[id] = map;
-        _mapThreads[id] = new std::thread(&Map::UpdateLoop, map, id);
+        std::lock_guard<std::mutex> lock(_mapsLock);
+        map = CreateBaseMap_i(entry);
     }
 
     ASSERT(map);
+    return map;
+}
+
+Map* MapManager::CreateBaseMap_i(MapEntry const* mapEntry)
+{
+    Map* map;
+    if (mapEntry->Instanceable() || mapEntry->CanCreatedZone())
+        map = new MapInstanced(mapEntry->ID, i_gridCleanUpDelay);
+    else
+    {
+        map = new Map(mapEntry->ID, i_gridCleanUpDelay, 0, DIFFICULTY_NONE);
+        map->LoadRespawnTimes();
+        //map->LoadCorpseData();
+    }
+
+    i_maps[mapEntry->ID] = map;
+    _mapThreads[mapEntry->ID] = new std::thread(&Map::UpdateLoop, map, mapEntry->ID);
+
+    for (uint32 childMapId : _parentMapData[mapEntry->ID])
+        map->AddChildTerrainMap(CreateBaseMap_i(sMapStore.AssertEntry(childMapId)));
+
     return map;
 }
 
@@ -138,22 +163,22 @@ Map* MapManager::FindMap(uint32 mapid, uint32 instanceId) const
     return instanceId == 0 ? map : nullptr;
 }
 
-uint32 MapManager::GetAreaId(uint32 mapid, float x, float y, float z) const
+uint32 MapManager::GetAreaId(PhaseShift const& phaseShift, uint32 mapid, float x, float y, float z) const
 {
     Map const* m = const_cast<MapManager*>(this)->CreateBaseMap(mapid);
-    return m->GetAreaId(x, y, z);
+    return m->GetAreaId(phaseShift, x, y, z);
 }
 
-uint32 MapManager::GetZoneId(uint32 mapid, float x, float y, float z) const
+uint32 MapManager::GetZoneId(PhaseShift const& phaseShift, uint32 mapid, float x, float y, float z) const
 {
     Map const* m = const_cast<MapManager*>(this)->CreateBaseMap(mapid);
-    return m->GetZoneId(x, y, z);
+    return m->GetZoneId(phaseShift, x, y, z);
 }
 
-void MapManager::GetZoneAndAreaId(uint32& zoneid, uint32& areaid, uint32 mapid, float x, float y, float z)
+void MapManager::GetZoneAndAreaId(PhaseShift const& phaseShift, uint32& zoneid, uint32& areaid, uint32 mapid, float x, float y, float z)
 {
     Map const* m = const_cast<MapManager*>(this)->CreateBaseMap(mapid);
-    m->GetZoneAndAreaId(zoneid, areaid, x, y, z);
+    m->GetZoneAndAreaId(phaseShift, zoneid, areaid, x, y, z);
 }
 
 bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
@@ -359,7 +384,7 @@ void MapManager::UnloadAll()
 {
     sInstanceSaveMgr->UnloadAll();
 
-    // Stop map befor unlooad map
+    // Stop map before unload map
     for (uint16 i = 0; i < _mapCount; ++i)
     {
         if (Map* map = i_maps[i])
@@ -374,6 +399,10 @@ void MapManager::UnloadAll()
 
     // Wait when map is stop update
     std::this_thread::sleep_for(Milliseconds(1000));
+
+    // first unlink child maps
+    for (auto const& map : i_maps)
+        map->UnlinkAllChildTerrainMaps();
 
     for (uint16 i = 0; i < _mapCount; ++i)
     {

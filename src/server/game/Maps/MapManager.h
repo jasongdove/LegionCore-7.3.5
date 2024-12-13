@@ -23,6 +23,7 @@
 #include "Map.h"
 #include "Position.h"
 
+class PhaseShift;
 class WorldLocation;
 class ChatHandler;
 
@@ -44,11 +45,12 @@ class TC_GAME_API MapManager
         Map* CreateMap(uint32 mapId, Player* player);
         Map* FindMap(uint32 mapId, uint32 instanceId) const;
 
-        uint32 GetAreaId(uint32 mapid, float x, float y, float z) const;
-        uint32 GetZoneId(uint32 mapid, float x, float y, float z) const;
-        void GetZoneAndAreaId(uint32& zoneid, uint32& areaid, uint32 mapid, float x, float y, float z);
+        uint32 GetAreaId(PhaseShift const& phaseShift, uint32 mapid, float x, float y, float z) const;
+        uint32 GetZoneId(PhaseShift const& phaseShift, uint32 mapid, float x, float y, float z) const;
+        void GetZoneAndAreaId(PhaseShift const& phaseShift, uint32& zoneid, uint32& areaid, uint32 mapid, float x, float y, float z);
 
         void Initialize();
+        void InitializeParentMapData(std::unordered_map<uint32, std::vector<uint32>> const& mapData);
         void Update(uint32);
 
         void SetGridCleanUpDelay(uint32 t);
@@ -93,7 +95,9 @@ class TC_GAME_API MapManager
         bool IsScriptScheduled() const { return _scheduledScripts > 0; }
 
     private:
+        Map* CreateBaseMap_i(MapEntry const* mapEntry);
 
+        std::mutex _mapsLock;
         uint32 i_gridCleanUpDelay;
         MapMapType i_maps;
 
@@ -102,6 +106,9 @@ class TC_GAME_API MapManager
 
         // atomic op counter for active scripts amount
         std::atomic<uint32> _scheduledScripts;
+
+        // parent map links
+        std::unordered_map<uint32, std::vector<uint32>> _parentMapData;
 };
 #define sMapMgr MapManager::instance()
 #endif

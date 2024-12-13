@@ -565,7 +565,7 @@ struct boss_brackenspore : public BossAI
         float oStep = float(2 * M_PI / 30.0f);
         float x = beachCenter.x + (radius * cos(o));
         float y = beachCenter.y + (radius * sin(o));
-        float z = map->GetHeight(x, y, MAX_HEIGHT);
+        float z = map->GetHeight(me->GetPhaseShift(), x, y, MAX_HEIGHT);
 
         /// First of all, verify if we can spawn an AreaTrigger all around the beach center
         /// With a radius of 60-80 yards, it must cover the beach progressively
@@ -582,7 +582,7 @@ struct boss_brackenspore : public BossAI
 
             x = beachCenter.x + (radius * cos(o));
             y = beachCenter.y + (radius * sin(o));
-            z = map->GetHeight(x, y, MAX_HEIGHT);
+            z = map->GetHeight(me->GetPhaseShift(), x, y, MAX_HEIGHT);
 
             if (me->IsWithinLOS(x, y, z) && CheckCreepingMossPosition(x, y))
             {
@@ -602,7 +602,7 @@ struct boss_brackenspore : public BossAI
 
             x = beachCenter.x + (radius * cos(o));
             y = beachCenter.y + (radius * sin(o));
-            z = map->GetHeight(x, y, MAX_HEIGHT);
+            z = map->GetHeight(me->GetPhaseShift(), x, y, MAX_HEIGHT);
 
             if (me->IsWithinLOS(x, y, z) && CheckCreepingMossPosition(x, y))
             {
@@ -618,7 +618,7 @@ struct boss_brackenspore : public BossAI
 
                 x = beachCenter.x + (radius * cos(o));
                 y = beachCenter.y + (radius * sin(o));
-                z = map->GetHeight(x, y, MAX_HEIGHT);
+                z = map->GetHeight(me->GetPhaseShift(), x, y, MAX_HEIGHT);
 
                 if (me->IsWithinLOS(x, y, z) && CheckCreepingMossPosition(x, y))
                 {

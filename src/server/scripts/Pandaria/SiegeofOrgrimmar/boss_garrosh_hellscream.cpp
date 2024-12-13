@@ -396,7 +396,7 @@ class boss_garrosh_hellscream : public CreatureScript
                 phase = PHASE_NULL;
                 if (me->ToTempSummon())
                 {       //StormWind (Last phase Heroic) spawn   
-                    if (me->GetMap()->GetAreaId(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ()) == 6816)
+                    if (me->GetMap()->GetAreaId(me->GetPhaseShift(), me->GetPositionX(), me->GetPositionY(), me->GetPositionZ()) == 6816)
                     {
                         me->AddAura(SPELL_SUMMON_ADDS, me);
                         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
@@ -652,7 +652,7 @@ class boss_garrosh_hellscream : public CreatureScript
                 }
 
                 //StormWind copy of Garrosh died, need destroy and obscure real Garrosh...
-                if (me->ToTempSummon() && me->GetMap()->GetAreaId(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ()) == 6816)
+                if (me->ToTempSummon() && me->GetMap()->GetAreaId(me->GetPhaseShift(), me->GetPositionX(), me->GetPositionY(), me->GetPositionZ()) == 6816)
                 {
                     if (Creature* realgarrosh = me->GetCreature(*me, instance->GetGuidData(DATA_GARROSH)))
                     {

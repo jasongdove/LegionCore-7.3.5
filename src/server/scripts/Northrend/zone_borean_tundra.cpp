@@ -36,11 +36,12 @@ npc_nesingwary_trapper
 npc_lurgglbr
 EndContentData */
 
+#include "PhasingHandler.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
-#include "ScriptedGossip.h"
 #include "ScriptedEscortAI.h"
 #include "ScriptedFollowerAI.h"
+#include "ScriptedGossip.h"
 
 /*######
 ## npc_sinkhole_kill_credit
@@ -1742,7 +1743,7 @@ public:
                     me->HandleEmoteCommand(EMOTE_ONESHOT_EXCLAMATION);
                     break;
                 case 20:
-                    me->SetInPhase(170, true, false);
+                    PhasingHandler::RemovePhase(me, 170, true);
                     Talk(SAY_5);
                     me->HandleEmoteCommand(EMOTE_ONESHOT_EXCLAMATION);
                     player->GroupEventHappens(QUEST_ESCAPING_THE_MIST, me);

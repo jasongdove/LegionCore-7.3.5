@@ -81,7 +81,7 @@ public:
 
             float l_X = creature->m_positionX + (std::cos(creature->GetOrientation()) * distance);
             float l_Y = creature->m_positionY + (std::sin(creature->GetOrientation()) * distance);
-            float l_Z = player->GetMap()->GetHeight(l_X, l_Y, MAX_HEIGHT);
+            float l_Z = player->GetMap()->GetHeight(player->GetPhaseShift(), l_X, l_Y, MAX_HEIGHT);
 
             Position playerPosition = Position(l_X, l_Y, l_Z);
             playerPosition.SetOrientation(atan2(creature->m_positionY - l_Y, creature->m_positionX - l_X));
@@ -90,7 +90,7 @@ public:
             Position trainerPosition = creature->GetPosition();
 
             Position battleCenterPosition = Position((playerPosition.m_positionX + trainerPosition.m_positionX) / 2, (playerPosition.m_positionY + trainerPosition.m_positionY) / 2, 0.0f, trainerPosition.GetOrientation() + M_PI);
-            battleCenterPosition.m_positionZ = player->GetMap()->GetHeight(battleCenterPosition.m_positionX, battleCenterPosition.m_positionY, MAX_HEIGHT);
+            battleCenterPosition.m_positionZ = player->GetMap()->GetHeight(player->GetPhaseShift(), battleCenterPosition.m_positionX, battleCenterPosition.m_positionY, MAX_HEIGHT);
 
             PetBattleRequest* battleRequest = sPetBattleSystem->CreateRequest(player->GetGUID());
             battleRequest->OpponentGuid = creature->GetGUID();

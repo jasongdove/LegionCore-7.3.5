@@ -21,7 +21,6 @@
 #define _DYNTREE_H
 
 #include "Define.h"
-#include <set>
 #include <mutex>
 
 namespace G3D
@@ -31,6 +30,7 @@ namespace G3D
 }
 
 class GameObjectModel;
+class PhaseShift;
 struct DynTreeImpl;
 class GameObject;
 
@@ -50,12 +50,12 @@ public:
     DynamicMapTree();
     ~DynamicMapTree();
 
-    bool isInLineOfSight(G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, std::set<uint32> const& phases, DynamicTreeCallback* dCallback = nullptr) const;
-    bool getIntersectionTime(std::set<uint32> const& phases, G3D::Ray const& ray, G3D::Vector3 const& endPos, float& maxDist, DynamicTreeCallback* dCallback = nullptr) const;
-    bool getObjectHitPos(std::set<uint32> const& phases, G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, G3D::Vector3& resultHitPos, float modifyDist, DynamicTreeCallback* dCallback = nullptr) const;
+    bool isInLineOfSight(G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, PhaseShift const& phaseShift, DynamicTreeCallback* dCallback = nullptr) const;
+    bool getIntersectionTime(PhaseShift const& phaseShift, G3D::Ray const& ray, G3D::Vector3 const& endPos, float& maxDist, DynamicTreeCallback* dCallback = nullptr) const;
+    bool getObjectHitPos(PhaseShift const& phaseShift, G3D::Vector3 const& startPos, G3D::Vector3 const& endPos, G3D::Vector3& resultHitPos, float modifyDist, DynamicTreeCallback* dCallback = nullptr) const;
 
-    float getHeight(float x, float y, float z, float maxSearchDist, std::set<uint32> const& phases, DynamicTreeCallback* dCallback = nullptr) const;
-    bool getAreaInfo(float x, float y, float& z, std::set<uint32> const& phases, uint32& flags, int32& adtId, int32& rootId, int32& groupId) const;
+    float getHeight(float x, float y, float z, float maxSearchDist, PhaseShift const& phaseShift, DynamicTreeCallback* dCallback = nullptr) const;
+    bool getAreaInfo(float x, float y, float& z, PhaseShift const& phaseShift, uint32& flags, int32& adtId, int32& rootId, int32& groupId) const;
 
     void insert(const GameObjectModel&);
     void remove(const GameObjectModel&);

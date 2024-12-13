@@ -562,12 +562,12 @@ void MotionMaster::MoveJump(float x, float y, float z, float o, float speedXY, f
 void MotionMaster::MoveFall(uint32 id/*=0*/)
 {
     // use larger distance for vmap height search than in most other cases
-    float tz = _owner->GetHeight(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ(), true, MAX_FALL_DISTANCE);
+    float tz = _owner->GetMap()->GetHeight(_owner->GetPhaseShift(), _owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ(), true, MAX_FALL_DISTANCE);
 
     if (tz <= INVALID_HEIGHT)
     {
         // try fall down to ground
-        tz = _owner->GetHeight(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ(), false, MAX_FALL_DISTANCE);
+        tz = _owner->GetMap()->GetHeight(_owner->GetPhaseShift(), _owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ(), false, MAX_FALL_DISTANCE);
     }
 
     if (tz <= INVALID_HEIGHT)
@@ -612,7 +612,7 @@ void MotionMaster::MoveCirclePath(float x, float y, float z, float radius, bool 
         if (_owner->IsFlying())
             point.z = z;
         else
-            point.z = _owner->GetHeight(point.x, point.y, z);
+            point.z = _owner->GetMap()->GetHeight(_owner->GetPhaseShift(), point.x, point.y, z);
 
         init.Path().push_back(point);
     }

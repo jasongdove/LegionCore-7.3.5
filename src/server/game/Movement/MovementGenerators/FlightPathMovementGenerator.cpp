@@ -19,6 +19,7 @@
 #include "MoveSpline.h"
 #include "MoveSplineInit.h"
 #include "ObjectMgr.h"
+#include "PhasingHandler.h"
 #include "PlayerDefines.h"
 #include "ScriptsData.h"
 
@@ -234,7 +235,8 @@ void FlightPathMovementGenerator::PreloadEndGrid()
     if (mapEntry->CanCreatedZone())
     {
         Map* endMap = sMapMgr->CreateBaseMap(_endMapId);
-        uint32 instanceId = endMap->GetZoneId(_endGridX, _endGridY, _endGridZ);
+        // TODO: Phasing? maybe goes away when MapInstanced goes away?
+        uint32 instanceId = endMap->GetZoneId(PhasingHandler::GetEmptyPhaseShift(), _endGridX, _endGridY, _endGridZ);
         endMap = sMapMgr->FindMap(_endMapId, instanceId);
     }
     else

@@ -1,8 +1,9 @@
-#include "ScriptedEscortAI.h"
 #include "CreatureTextMgr.h"
-#include "MapManager.h"
-#include "ScriptMgr.h"
 #include "GameObjectAI.h"
+#include "MapManager.h"
+#include "PhasingHandler.h"
+#include "ScriptMgr.h"
+#include "ScriptedEscortAI.h"
 #include "SpellAuraEffects.h"
 
 class sceneTrigger_dh_init : public SceneTriggerScript
@@ -1604,7 +1605,7 @@ public:
             creature->SetCorpseDelay(30);
             creature->SetRespawnDelay(15);
             if(GameObject* gob = me->FindNearestGameObject(GO, 100.0f))
-                gob->SetInPhase(170, true, true); // invis
+                PhasingHandler::AddPhase(gob, 170, true); // invis
         }
 
         enum data
@@ -1618,14 +1619,14 @@ public:
         {
             events.Reset();
             if(GameObject* gob = me->FindNearestGameObject(GO, 100.0f))
-                gob->SetInPhase(170, true, true); // invis
+                PhasingHandler::AddPhase(gob, 170, true); // invis
         }
 
         void EnterCombat(Unit* victim) override
         {
             sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0, victim->GetGUID());
             if(GameObject* gob = me->FindNearestGameObject(GO, 100.0f))
-                gob->SetInPhase(170, true, true); // invis
+                PhasingHandler::AddPhase(gob, 170, true); // invis
             events.RescheduleEvent(EVENT_1, 13000);
             events.RescheduleEvent(EVENT_2, 5000); // 20
         }

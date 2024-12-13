@@ -94,6 +94,7 @@
 #include "PetBattle.h"
 #include "PetBattleSystem.h"
 #include "PetPackets.h"
+#include "PhasingHandler.h"
 #include "PlayerDefines.h"
 #include "QueryHolder.h"
 #include "QuestData.h"
@@ -1873,7 +1874,7 @@ void Player::OnDisconnected()
 
     if (IsInWorld() && FindMap() && CanFreeMove())
     {
-        float height = GetMap()->GetHeight(GetPositionX(), GetPositionY(), GetPositionZ());
+        float height = GetBaseMap()->GetHeight(GetPhaseShift(), GetPositionX(), GetPositionY(), GetPositionZ());
         if ((GetPositionZ() < height + 0.1f) && !IsInWater())
             SetStandState(UNIT_STAND_STATE_SIT);
         // Apres avoir ajoute le bot on actualise la position du joueur
@@ -2766,7 +2767,7 @@ void Player::ProcessDelayedOperations()
             if (teamID == PETBATTLE_TEAM_2)
                 std::swap(request.TeamPosition[PETBATTLE_TEAM_1], request.TeamPosition[PETBATTLE_TEAM_2]);
 
-            matchMakingRequest.PetBattleCenterPosition.m_positionZ = GetMap()->GetHeight(matchMakingRequest.PetBattleCenterPosition.GetPositionX(), matchMakingRequest.PetBattleCenterPosition.GetPositionZ(), MAX_HEIGHT);
+            matchMakingRequest.PetBattleCenterPosition.m_positionZ = GetBaseMap()->GetHeight(GetPhaseShift(), matchMakingRequest.PetBattleCenterPosition.GetPositionX(), matchMakingRequest.PetBattleCenterPosition.GetPositionZ(), MAX_HEIGHT);
 
             GetSession()->SendPetBattleFinalizeLocation(&request);
 
@@ -3269,7 +3270,7 @@ GameObject* Player::GetGameObjectIfCanInteractWith(ObjectGuid guid, GameobjectTy
 
 bool Player::IsUnderWater() const
 {
-    return IsInWater() && GetPositionZ() < (GetMap()->GetWaterLevel(GetPositionX(), GetPositionY()) - 2);
+    return IsInWater() && GetPositionZ() < (GetBaseMap()->GetWaterLevel(GetPhaseShift(), GetPositionX(), GetPositionY()) - 2);
 }
 
 void Player::SetInWater(bool apply)
@@ -3300,8 +3301,15 @@ bool Player::IsInAreaTriggerRadius(uint32 areatriggerID) const
 
 bool Player::IsInAreaTriggerRadius(AreaTriggerEntry const* trigger) const
 {
-    if (!trigger || GetMapId() != trigger->ContinentID)
+    if (!trigger)
         return false;
+
+    if (int32(GetMapId()) != trigger->ContinentID && !GetPhaseShift().HasVisibleMapId(trigger->ContinentID))
+        return false;
+
+    if (trigger->PhaseID || trigger->PhaseGroupID || trigger->PhaseUseFlags)
+        if (!PhasingHandler::InDbPhaseShift(this, trigger->PhaseUseFlags, trigger->PhaseID, trigger->PhaseGroupID))
+            return false;
 
     if (trigger->Radius > 0.f)
     {
@@ -3321,7 +3329,6 @@ bool Player::IsInAreaTriggerRadius(AreaTriggerEntry const* trigger) const
 
 void Player::SetGameMaster(bool on)
 {
-    setIgnorePhaseIdCheck(on);
     if (on)
     {
         m_ExtraFlags |= PLAYER_EXTRA_GM_ON;
@@ -3342,10 +3349,13 @@ void Player::SetGameMaster(bool on)
         getHostileRefManager().setOnlineOfflineState(false);
         CombatStopWithPets();
 
+        PhasingHandler::SetAlwaysVisible(GetPhaseShift(), true);
         m_serverSideVisibilityDetect.SetValue(SERVERSIDE_VISIBILITY_GM, GetSession()->GetSecurity());
     }
     else
     {
+        PhasingHandler::SetAlwaysVisible(GetPhaseShift(), false);
+
         m_ExtraFlags &= ~ PLAYER_EXTRA_GM_ON;
         setFactionForRace(getRace());
         RemoveFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_GM);
@@ -8601,7 +8611,7 @@ void Player::CheckAreaExploreAndOutdoor()
         return;
 
     bool isOutdoor = false;
-    uint32 areaId = GetMap()->GetAreaId(GetPositionX(), GetPositionY(), GetPositionZ(), &isOutdoor);
+    uint32 areaId = GetBaseMap()->GetAreaId(GetPhaseShift(), GetPositionX(), GetPositionY(), GetPositionZ(), &isOutdoor);
 
     // Explore hack. Razorfen Kraul
     if (GetMapId() == 1 && areaId == 491)
@@ -9941,7 +9951,7 @@ uint32 Player::GetZoneIdFromDB(ObjectGuid guid)
         if (!sMapStore.LookupEntry(map))
             return 0;
 
-        zone = sMapMgr->GetZoneId(map, posx, posy, posz);
+        zone = sMapMgr->GetZoneId(PhasingHandler::GetEmptyPhaseShift(), map, posx, posy, posz);
 
         if (zone > 0)
         {
@@ -10032,6 +10042,7 @@ void Player::UpdateArea(uint32 newArea)
         SendInitWorldStates(m_zoneId, newArea);
 
     UpdateAreaDependentAuras(newArea);
+    PhasingHandler::OnAreaChange(this);
 
 	if (sWorld->getBoolConfig(CONFIG_PLAYER_ALLOW_PVP_TALENTS_ALL_THE_TIME) && getLevel() >= 110)
 	{
@@ -10179,8 +10190,6 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
     PrepareAreaQuest(newZone);
 
     UpdateZoneDependentAuras(newZone);
-
-    UpdateAreaPhase();
 
     ZoneTeleport(newZone);
 }
@@ -26371,7 +26380,7 @@ Pet* Player::SummonPet(uint32 entry, Optional<PetSaveMode> slot, float x, float 
     if (petStable.GetCurrentPet())
         RemovePet(nullptr, PET_SAVE_NOT_IN_SLOT);
 
-    pet->CopyPhaseFrom(this);
+    PhasingHandler::InheritPhaseShift(pet, this);
 
     pet->SetTratsport(GetTransport());
     pet->SetCreatorGUID(GetGUID());
@@ -29775,6 +29784,8 @@ void Player::SendInitialPacketsAfterAddToMap(bool login)
 
     GetSession()->SendBattlePetJournal();
 
+    PhasingHandler::OnMapChange(this);
+
     if (_garrison)
         _garrison->SendRemoteInfo();
 
@@ -30680,7 +30691,7 @@ void Player::UpdateForQuestWorldObjects()
 
     UpdateData udata(GetMapId());
     WorldPacket packet;
-    for (GuidSet::const_iterator itr = m_clientGUIDs.begin(), next; itr != m_clientGUIDs.end(); itr = next)
+    for (GuidUnorderedSet::const_iterator itr = m_clientGUIDs.begin(), next; itr != m_clientGUIDs.end(); itr = next)
     {
         next = itr;
         ++next;
@@ -31653,7 +31664,7 @@ void Player::SetOriginalGroup(Group* group, int8 subgroup)
 
 void Player::UpdateUnderwaterState(Map* m, float x, float y, float z)
 {
-    Zliquid_status = m->getLiquidStatus(x, y, z, MAP_ALL_LIQUIDS, &liquid_status);
+    Zliquid_status = m->getLiquidStatus(GetPhaseShift(), x, y, z, MAP_ALL_LIQUIDS, &liquid_status);
     if (!Zliquid_status)
     {
         m_MirrorTimerFlags &= ~(UNDERWATER_INWATER | UNDERWATER_INLAVA | UNDERWATER_INSLIME | UNDERWARER_INDARKWATER);
@@ -33624,7 +33635,6 @@ void Player::ActivateTalentGroup(ChrSpecializationEntry const* spec)
     if (GetPet())
         GetPet()->RemoveAllAurasOnDeath();
 
-    RemoveMultiSingleTargetAuras();
     //RemoveAllAuras(GetGUID(), NULL, false, true); // removes too many auras
     //ExitVehicle(); // should be impossible to switch specs from inside a vehicle..
 
@@ -34812,19 +34822,6 @@ void Player::ValidateMovementInfo(MovementInfo* mi)
         mi->AddMovementFlag(MOVEMENTFLAG_SPLINE_ELEVATION);
 
 #undef REMOVE_VIOLATING_FLAGS
-}
-
-void Player::SendUpdatePhasing()
-{
-    if (!IsInWorld())
-        return;
-
-    RebuildTerrainSwaps(); // to set default map swaps
-
-    // Legacy LC
-    std::set<uint32> UiWorldMapAreaIds;
-
-    GetSession()->SendSetPhaseShift(GetPhases(), GetTerrainSwaps(), GetWorldMapAreaSwaps(), UiWorldMapAreaIds);
 }
 
 void Player::SendMovementForce(AreaTrigger const* at, Position pos /*= Position()*/, float magnitude /*= 0.0f*/, uint32 type /*= 0*/, bool apply /*= false*/)
@@ -36845,7 +36842,7 @@ void Player::RemoveClient(ObjectGuid guid)
     i_clientGUIDLock.unlock();
 }
 
-GuidSet& Player::GetClient()
+GuidUnorderedSet& Player::GetClient()
 {
     return m_clientGUIDs;
 }
@@ -37202,7 +37199,7 @@ void Player::SummonBattlePet(ObjectGuid journalID)
     currentPet->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
     currentPet->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_WILD_BATTLE_PET);
 
-    currentPet->CopyPhaseFrom(this);
+    PhasingHandler::InheritPhaseShift(currentPet, this);
 
     GetMap()->AddToMap(currentPet->ToCreature());
 

@@ -1266,10 +1266,10 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
             float angle = float(rand_norm()) * static_cast<float>(M_PI * 35.0f / 180.0f) - static_cast<float>(M_PI * 17.5f / 180.0f);
             m_caster->GetClosePoint(x, y, z, DEFAULT_WORLD_OBJECT_SIZE, dist, angle);
 
-            float ground = m_caster->GetHeight(x, y, z, true, 50.0f);
+            float ground = m_caster->GetMap()->GetHeight(m_caster->GetPhaseShift(), x, y, z, true, 50.0f);
             float liquidLevel = VMAP_INVALID_HEIGHT_VALUE;
             LiquidData liquidData;
-            if (m_caster->GetMap()->getLiquidStatus(x, y, z, MAP_ALL_LIQUIDS, &liquidData))
+            if (m_caster->GetMap()->getLiquidStatus(m_caster->GetPhaseShift(), x, y, z, MAP_ALL_LIQUIDS, &liquidData))
                 liquidLevel = liquidData.level;
 
             if (liquidLevel <= ground) // When there is no liquid Map::GetWaterOrGroundLevel returns ground level
@@ -6722,10 +6722,10 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     if (m_caster->IsPlayer() && VMAP::VMapFactory::createOrGetVMapManager()->isLineOfSightCalcEnabled())
     {
-        if (m_spellInfo->HasAttribute(SPELL_ATTR0_OUTDOORS_ONLY) && !m_caster->GetMap()->IsOutdoors(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()))
+        if (m_spellInfo->HasAttribute(SPELL_ATTR0_OUTDOORS_ONLY) && !m_caster->GetMap()->IsOutdoors(m_caster->GetPhaseShift(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()))
             return SPELL_FAILED_ONLY_OUTDOORS;
 
-        if (m_spellInfo->HasAttribute(SPELL_ATTR0_INDOORS_ONLY) && m_caster->GetMap()->IsOutdoors(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()))
+        if (m_spellInfo->HasAttribute(SPELL_ATTR0_INDOORS_ONLY) && m_caster->GetMap()->IsOutdoors(m_caster->GetPhaseShift(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()))
             return SPELL_FAILED_ONLY_INDOORS;
     }
 

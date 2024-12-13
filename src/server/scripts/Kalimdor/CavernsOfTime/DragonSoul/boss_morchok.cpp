@@ -788,7 +788,7 @@ class spell_morchok_black_blood_of_the_earth : public SpellScriptLoader
                     for (uint32 i = 0; i < steps; ++i)
                     {
                         Position pos = { GetCaster()->GetPositionX() + 4 * j * cos(i * angle), GetCaster()->GetPositionY() + 4 * j * sin(i * angle), GetCaster()->GetPositionZ() };
-                        pos.m_positionZ = GetCaster()->GetMap()->GetHeight(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), false);
+                        pos.m_positionZ = GetCaster()->GetMap()->GetHeight(GetCaster()->GetPhaseShift(), pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), false);
 
                         bool collided = false;
                         if (!goList.empty())

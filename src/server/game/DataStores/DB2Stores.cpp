@@ -819,7 +819,7 @@ namespace
     ArtifactToUnlockContainer _artifactToUnlockContainer;
     DB2Manager::XContainer _xEncounter;
     DB2Manager::XContainer _xMechanic;
-    std::unordered_map<uint32, std::set<uint32>> _phasesByGroup;
+    std::unordered_map<uint32, std::vector<uint32>> _phasesByGroup;
     BattlePetSpeciesContainer _battlePetSpeciesContainer;
     CreatureToSpeciesContainer _creatureToSpeciesContainer;
     SpellToSkillContainer _spellToSkillContainer;
@@ -2149,7 +2149,7 @@ void DB2Manager::InitDB2CustomStores()
 
     for (PhaseXPhaseGroupEntry const* group : sPhaseXPhaseGroupStore)
         if (PhaseEntry const* phase = sPhaseStore.LookupEntry(group->PhaseID))
-            _phasesByGroup[group->PhaseGroupID].insert(phase->ID);
+            _phasesByGroup[group->PhaseGroupID].push_back(phase->ID);
 
     _battlePetSpeciesContainer.resize(sBattlePetSpeciesStore.GetNumRows(), nullptr);
     for (auto const& bps : sBattlePetSpeciesStore)
@@ -3777,13 +3777,13 @@ DB2Manager::XData const* DB2Manager::getXEncounter(uint32 x) const
     return Trinity::Containers::MapGetValuePtr(_xEncounter, x);
 }
 
-std::set<uint32> DB2Manager::GetPhasesForGroup(uint32 group) const
+std::vector<uint32> const* DB2Manager::GetPhasesForGroup(uint32 group) const
 {
     auto itr = _phasesByGroup.find(group);
     if (itr != _phasesByGroup.end())
-        return itr->second;
+        return &itr->second;
 
-    return {};
+    return nullptr;
 }
 
 SkillLineAbilityEntry const* DB2Manager::GetSkillBySpell(uint32 SpellID) const

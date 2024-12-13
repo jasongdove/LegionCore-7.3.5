@@ -275,7 +275,7 @@ class spell_warr_heroic_leap : public SpellScriptLoader
                 {
                     float x, y, z;
                     caster->GetPosition(x, y, z);
-                    float ground = caster->GetMap()->GetHeight(caster->GetPhases(), x, y, z, true);
+                    float ground = caster->GetMap()->GetHeight(caster->GetPhaseShift(), x, y, z, true);
                     if ((z - ground) <= 2.0f)
                         forceDest = false;
                 }

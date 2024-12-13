@@ -22,12 +22,13 @@ Comment: All tele related commands
 Category: commandscripts
 EndScriptData */
 
-#include "ScriptMgr.h"
-#include "ObjectMgr.h"
-#include "MapManager.h"
 #include "Chat.h"
-#include "Group.h"
 #include "DatabaseEnv.h"
+#include "Group.h"
+#include "MapManager.h"
+#include "ObjectMgr.h"
+#include "PhasingHandler.h"
+#include "ScriptMgr.h"
 
 class tele_commandscript : public CommandScript
 {
@@ -201,7 +202,7 @@ public:
 
             handler->PSendSysMessage(LANG_TELEPORTING_TO, nameLink.c_str(), handler->GetTrinityString(LANG_OFFLINE), tele->name.c_str());
             Player::SavePositionInDB(tele->mapId, tele->position_x, tele->position_y, tele->position_z, tele->orientation,
-                sMapMgr->GetZoneId(tele->mapId, tele->position_x, tele->position_y, tele->position_z), target_guid);
+                sMapMgr->GetZoneId(PhasingHandler::GetEmptyPhaseShift(), tele->mapId, tele->position_x, tele->position_y, tele->position_z), target_guid);
         }
 
         return true;

@@ -2,9 +2,10 @@
 //Siege of Orgrimmar
 
 #include "AccountMgr.h"
+#include "Packets/WorldStatePackets.h"
+#include "PhasingHandler.h"
 #include "PlayerDefines.h"
 #include "siege_of_orgrimmar.h"
-#include "Packets/WorldStatePackets.h"
 
 Position const LorewalkerChoSpawn[5]  = {
     {1448.236f, 312.6528f, 289.2837f, 4.652967f},
@@ -690,7 +691,7 @@ public:
                     {
                         if (garrosh->ToTempSummon())
                         {
-                            if (garrosh->GetMap()->GetAreaId(garrosh->GetPositionX(), garrosh->GetPositionY(), garrosh->GetPositionZ()) == 6816)
+                            if (garrosh->GetMap()->GetAreaId(garrosh->GetPhaseShift(), garrosh->GetPositionX(), garrosh->GetPositionY(), garrosh->GetPositionZ()) == 6816)
                                 garroshstormwindGuid = creature->GetGUID();
                             else
                                 garroshrealmGuid = creature->GetGUID();
@@ -796,7 +797,7 @@ public:
                 case GO_LIGHT_RAY_14:
                 case GO_LIGHT_RAY_15:
                 case GO_LIGHT_RAY_16:
-                    go->setIgnorePhaseIdCheck(true);
+                    PhasingHandler::ResetPhaseShift(go);
                     lightqGUIDs.push_back(go->GetGUID());
                     break;
                 case GO_SHA_ENERGY_WALL:
@@ -2026,7 +2027,7 @@ public:
                                 player->NearTeleportTo(Garroshroomcenterpos.GetPositionX(), Garroshroomcenterpos.GetPositionY(), Garroshroomcenterpos.GetPositionZ(), Garroshroomcenterpos.GetOrientation());
                                 player->RemoveAurasDueToSpell(SPELL_REALM_OF_YSHAARJ);
                             }  //player die in StormWind (Last phase Heroic)
-                            else if (player->GetMap()->GetAreaId(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ()) == 6816) //last phase Garrosh HM area
+                            else if (player->GetMap()->GetAreaId(player->GetPhaseShift(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ()) == 6816) //last phase Garrosh HM area
                                 player->NearTeleportTo(Garroshroomcenterpos.GetPositionX(), Garroshroomcenterpos.GetPositionY(), Garroshroomcenterpos.GetPositionZ(), Garroshroomcenterpos.GetOrientation());
                         }
                     }

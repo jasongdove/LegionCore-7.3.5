@@ -1,6 +1,4 @@
-/*
-*/
- 
+#include "PhasingHandler.h"
 #include "ScriptPCH.h"
 
 enum eSay
@@ -237,7 +235,7 @@ struct npc_ashtar : ScriptedAI
         GetGameObjectListWithEntryInGrid(GoList, me, 269949, 100.0f);
 
         for (auto& go : GoList)
-            go->SetInPhase(170, true, false);
+            PhasingHandler::RemovePhase(go, 170, true);
 
         for (auto& player : playerList)
         {
@@ -278,7 +276,7 @@ struct npc_ashtar : ScriptedAI
             std::list<GameObject*> GoList;
             GetGameObjectListWithEntryInGrid(GoList, me, 269949, 100.0f);
             for (auto& go : GoList)
-                go->SetInPhase(170, true, true);
+                PhasingHandler::AddPhase(go, 170, true);
 
             std::list<Player*> playerList;
             GetPlayerListInGrid(playerList, me, 100.0f);
@@ -502,7 +500,7 @@ struct npc_marla : ScriptedAI
         GetGameObjectListWithEntryInGrid(GoList, me, 270011, 100.0f);
 
         for (auto& go : GoList)
-            go->SetInPhase(170, true, false);
+            PhasingHandler::RemovePhase(go, 170, true);
 
         for (auto& player : playerList)
         {
@@ -532,7 +530,7 @@ struct npc_marla : ScriptedAI
             std::list<GameObject*> GoList;
             GetGameObjectListWithEntryInGrid(GoList, me, 270011, 100.0f);
             for (auto& go : GoList)
-                go->SetInPhase(170, true, true);
+                PhasingHandler::AddPhase(go, 170, true);
 
             std::list<Player*> playerList;
             GetPlayerListInGrid(playerList, me, 100.0f);

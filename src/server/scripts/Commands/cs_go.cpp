@@ -22,13 +22,14 @@ Comment: All go related commands
 Category: commandscripts
 EndScriptData */
 
-#include "ScriptMgr.h"
-#include "ObjectMgr.h"
-#include "MapManager.h"
-#include "TicketMgr.h"
 #include "Chat.h"
 #include "DatabaseEnv.h"
+#include "MapManager.h"
+#include "ObjectMgr.h"
+#include "PhasingHandler.h"
 #include "QuestData.h"
+#include "ScriptMgr.h"
+#include "TicketMgr.h"
 
 class go_commandscript : public CommandScript
 {
@@ -251,7 +252,7 @@ public:
             player->SaveRecallPosition();
 
         Map const* map = sMapMgr->CreateBaseMap(mapId);
-        float z = std::max(map->GetHeight(x, y, MAX_HEIGHT), map->GetWaterLevel(x, y));
+        float z = std::max(map->GetStaticHeight(PhasingHandler::GetEmptyPhaseShift(), x, y, MAX_HEIGHT), map->GetWaterLevel(PhasingHandler::GetEmptyPhaseShift(), x, y));
 
         player->TeleportTo(mapId, x, y, z, player->GetOrientation());
         return true;
@@ -388,7 +389,7 @@ public:
                     x = points->X;
                     y = points->Y;
                     if (Map const* map = sMapMgr->CreateBaseMap(mapId))
-                        z = std::max(map->GetHeight(x, y, MAX_HEIGHT), map->GetWaterLevel(x, y));
+                        z = std::max(map->GetStaticHeight(PhasingHandler::GetEmptyPhaseShift(), x, y, MAX_HEIGHT), map->GetWaterLevel(PhasingHandler::GetEmptyPhaseShift(), x, y));
                     break;
                 }
             }
@@ -529,7 +530,7 @@ public:
         else
             player->SaveRecallPosition();
 
-        float z = std::max(map->GetHeight(x, y, MAX_HEIGHT), map->GetWaterLevel(x, y));
+        float z = std::max(map->GetStaticHeight(PhasingHandler::GetEmptyPhaseShift(), x, y, MAX_HEIGHT), map->GetWaterLevel(PhasingHandler::GetEmptyPhaseShift(), x, y));
 
         player->TeleportTo(zoneEntry->ContinentID, x, y, z, player->GetOrientation());
         return true;
@@ -577,7 +578,7 @@ public:
                 return false;
             }
             Map const* map = sMapMgr->CreateBaseMap(mapId);
-            z = std::max(map->GetHeight(x, y, MAX_HEIGHT), map->GetWaterLevel(x, y));
+            z = std::max(map->GetStaticHeight(PhasingHandler::GetEmptyPhaseShift(), x, y, MAX_HEIGHT), map->GetWaterLevel(PhasingHandler::GetEmptyPhaseShift(), x, y));
         }
 
         // scenario special handling

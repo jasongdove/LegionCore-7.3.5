@@ -16,6 +16,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Pet.h"
 #include "CharmInfo.h"
 #include "Common.h"
 #include "Creature.h"
@@ -25,8 +26,8 @@
 #include "Group.h"
 #include "Log.h"
 #include "ObjectMgr.h"
-#include "Pet.h"
 #include "PetPackets.h"
+#include "PhasingHandler.h"
 #include "QueryHolder.h"
 #include "SpellAuraEffects.h"
 #include "SpellAuras.h"
@@ -249,7 +250,7 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petEntry, uint32 petnumber, bool c
     if (!Create(guid, map, petInfo->CreatureId, petInfo->PetNumber))
         return false;
 
-    CopyPhaseFrom(owner);
+    PhasingHandler::InheritPhaseShift(this, owner);
 
     setPetType(petInfo->Type);
     setFaction(owner->getFaction());

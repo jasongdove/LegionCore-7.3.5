@@ -738,7 +738,7 @@ struct npc_bgss_buff_box : ScriptedAI
     {
         me->AddDelayedEvent(2000, [this]() -> void
         {
-            me->GetMotionMaster()->MovePoint(1, me->GetPositionX(), me->GetPositionY(), me->GetWaterOrGroundLevel(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ()) + 15.0f);
+            me->GetMotionMaster()->MovePoint(1, me->GetPositionX(), me->GetPositionY(), me->GetMap()->GetWaterOrGroundLevel(me->GetPhaseShift(), me->GetPositionX(), me->GetPositionY(), me->GetPositionZ()) + 15.0f);
         });
     }
 
@@ -748,7 +748,7 @@ struct npc_bgss_buff_box : ScriptedAI
         {
             std::array<uint32, 3> m_buffs{ 206564 , 206565 , 206566 };
 
-            if (auto go = me->SummonGameObject(m_buffs[urand(0, 2)], me->GetPositionX(), me->GetPositionY(), me->GetWaterOrGroundLevel(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ()), 0, 0, 0, 0, 0, RESPAWN_ONE_DAY))
+            if (auto go = me->SummonGameObject(m_buffs[urand(0, 2)], me->GetPositionX(), me->GetPositionY(), me->GetMap()->GetWaterOrGroundLevel(me->GetPhaseShift(), me->GetPositionX(), me->GetPositionY(), me->GetPositionZ()), 0, 0, 0, 0, 0, RESPAWN_ONE_DAY))
                 go->SetLootState(GO_READY);
             me->DespawnOrUnsummon();
         }

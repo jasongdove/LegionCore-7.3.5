@@ -22,15 +22,16 @@ Comment: All gobject related commands
 Category: commandscripts
 EndScriptData */
 
-#include "ScriptMgr.h"
-#include "GameEventMgr.h"
-#include "ObjectMgr.h"
-#include "PoolMgr.h"
-#include "MapManager.h"
 #include "Chat.h"
 #include "DatabaseEnv.h"
-#include <G3D/Quat.h>
+#include "GameEventMgr.h"
+#include "MapManager.h"
+#include "ObjectMgr.h"
+#include "PhasingHandler.h"
+#include "PoolMgr.h"
+#include "ScriptMgr.h"
 #include "ScriptsData.h"
+#include <G3D/Quat.h>
 
 class gobject_commandscript : public CommandScript
 {
@@ -202,7 +203,7 @@ public:
             return false;
         }
 
-        object->CopyPhaseFrom(player);
+        PhasingHandler::InheritPhaseShift(object, player);
 
         if (spawntimeSecs)
         {

@@ -21,6 +21,7 @@ SDCategory: Trial Of the Champion
 EndScriptData */
 
 #include "trial_of_the_champion.h"
+#include "PhasingHandler.h"
 
 #define MAX_ENCOUNTER 4
 
@@ -145,7 +146,7 @@ public:
                     break;
                 case VEHICLE_BLACK_KNIGHT:
                     uiBlackKnightGryphonGUID = creature->GetGUID();
-                    creature->SetInPhase(170, true, true);
+                    PhasingHandler::AddPhase(creature, 170, true);
                     break;
             }
         }

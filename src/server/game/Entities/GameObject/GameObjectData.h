@@ -739,8 +739,10 @@ struct GameObjectData
     uint16 areaId = 0;
     int16 gameEvent = 0;
     uint8 artKit = 0;
-    uint32 phaseid = 0;
+    uint8 phaseUseFlags = 0;
+    uint32 phaseId = 0;
     uint32 phaseGroup = 0;
+    int32 terrainSwapMap = -1;
     bool isActive = false;
     float personalSize = 0;
     bool dbData = false;

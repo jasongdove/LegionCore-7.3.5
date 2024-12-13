@@ -396,7 +396,7 @@ class spell_parjesh_call_reinforcements : public SpellScript
         if (effIndex == EFFECT_0)
         {
           centrPos.SimplePosXYRelocationByAngle(pos, 38.0f, frand(0.0f, 6.28f));
-          pos.m_positionZ = GetCaster()->GetHeight(pos.m_positionX, pos.m_positionY, pos.m_positionZ + 2.0f, true);
+          pos.m_positionZ = GetCaster()->GetMap()->GetHeight(GetCaster()->GetPhaseShift(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 2.0f, true);
         }
 
         GetHitDest()->Relocate(pos);

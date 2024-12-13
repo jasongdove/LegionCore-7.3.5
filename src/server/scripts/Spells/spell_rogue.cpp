@@ -1365,7 +1365,7 @@ class spell_rog_death_from_above_jump : public SpellScript
             if (auto target = GetExplTargetUnit())
             {
                 Position pos = GetCaster()->GetPosition();
-                pos.m_positionZ = GetCaster()->GetHeight(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
+                pos.m_positionZ = GetCaster()->GetMap()->GetHeight(GetCaster()->GetPhaseShift(), pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
                 GetCaster()->MovePositionToFirstCollision(pos, GetCaster()->GetExactDist2d(target) - target->GetObjectSize(), GetCaster()->GetRelativeAngle(target));
                 GetSpell()->destTarget->Relocate(pos);
             }

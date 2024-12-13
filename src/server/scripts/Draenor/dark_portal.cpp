@@ -16,13 +16,14 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ScriptMgr.h"
-#include "ScriptedCreature.h"
-#include "ScriptedEscortAI.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
 #include "GossipDef.h"
+#include "PhasingHandler.h"
 #include "QuestData.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+#include "ScriptedEscortAI.h"
 
 enum misc
 {
@@ -478,7 +479,7 @@ public:
             {
                 player->CastSpell(player, SPELL_CREDIT, true);
                 player->CastSpell(player, SPELL_SUMMON, true);
-                player->SetInPhase(PHASE_ARIOK_DB, true, false);
+                PhasingHandler::RemovePhase(player, PHASE_ARIOK_DB, true);
             }
         }
 

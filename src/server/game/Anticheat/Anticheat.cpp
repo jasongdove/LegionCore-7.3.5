@@ -813,7 +813,7 @@ void PlayerCheatData::Unreachable(Unit* attacker)
     if (me->GetTransport())
         return;
 
-    float waterLevel = (me->GetBaseMap()->GetWaterLevel(me->GetPositionX(), me->GetPositionY()) + 5.0f);
+    float waterLevel = (me->GetBaseMap()->GetWaterLevel(me->GetPhaseShift(), me->GetPositionX(), me->GetPositionY()) + 5.0f);
     if (me->GetPositionZ() < waterLevel)
         return;
     if (attacker->GetPositionZ() < waterLevel)
@@ -973,8 +973,8 @@ bool PlayerCheatData::InterpolateMovement(MovementInfo const& mi, uint32 diffMs,
         return false;
 
     if (!(mi.MoveFlags[0] & (MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR | MOVEMENTFLAG_SWIMMING)))
-        z = me->GetMap()->GetHeight(x, y, z);
-    return me->GetMap()->isInLineOfSight(mi.Pos.m_positionX, mi.Pos.m_positionY, mi.Pos.m_positionZ + 0.5f, x, y, z + 0.5f, me->GetPhases(), VMAP::ModelIgnoreFlags::Nothing);
+        z = me->GetMap()->GetHeight(me->GetPhaseShift(), x, y, z);
+    return me->GetMap()->isInLineOfSight(me->GetPhaseShift(), mi.Pos.m_positionX, mi.Pos.m_positionY, mi.Pos.m_positionZ + 0.5f, x, y, z + 0.5f, VMAP::ModelIgnoreFlags::Nothing);
 }
 
 bool PlayerCheatData::GetMaxAllowedDist(MovementInfo const& mi, uint32 diffMs, float &dxy, float &dz, float &speed)
@@ -1058,7 +1058,7 @@ bool PlayerCheatData::HandleCustomAnticheatTests(uint32 opcode, MovementInfo& mo
             uint32 destZoneId = 0;
             uint32 destAreaId = 0;
 
-            mover->GetBaseMap()->GetZoneAndAreaId(destZoneId, destAreaId, movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ);
+            mover->GetBaseMap()->GetZoneAndAreaId(me->GetPhaseShift(), destZoneId, destAreaId, movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ);
 
             // get zone and area info
             MapEntry const* mapEntry = sMapStore.LookupEntry(mover->GetMapId());
@@ -1228,7 +1228,7 @@ bool PlayerCheatData::AllowUpdatePosition(MovementInfo const& movementInfo, floa
     uint32 destZoneId = 0;
     uint32 destAreaId = 0;
 
-    me->GetBaseMap()->GetZoneAndAreaId(destZoneId, destAreaId, movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ);
+    me->GetBaseMap()->GetZoneAndAreaId(me->GetPhaseShift(), destZoneId, destAreaId, movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ);
 
     // checks far teleports
     if (destZoneId == me->GetZoneId() && destAreaId == me->GetAreaId())
@@ -1271,7 +1271,7 @@ bool PlayerCheatData::CheckFarDistance(MovementInfo const& movementInfo, float d
     uint32 destZone;
     uint32 destArea;
     // some exclude zones - lifts and other, but..
-    me->GetBaseMap()->GetZoneAndAreaId(destZone, destArea, movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ);
+    me->GetBaseMap()->GetZoneAndAreaId(me->GetPhaseShift(), destZone, destArea, movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ);
     destZoneId = destZone;
     destAreaId = destArea;
 

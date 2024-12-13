@@ -15,6 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "PhasingHandler.h"
 #include "violet_hold.h"
 
 enum Spells
@@ -197,8 +198,8 @@ public:
         {
             summon->AI()->AttackStart(me->getVictim());
             summon->CastSpell((Unit*)NULL, SPELL_ZURAMAT_ADD_2);
-            summon->SetInPhase(169, true, true); // Normal phase
-            summon->SetInPhase(173, true, true); // Void phase
+            PhasingHandler::AddPhase(summon, 169, true); // Normal phase
+            PhasingHandler::AddPhase(summon, 173, true); // Void phase
         }
     };
 

@@ -510,41 +510,31 @@ namespace WorldPackets
             WorldPacket const* Write() override { return &_worldPacket; }
         };
 
-        enum class PhaseShiftFlags : uint16
+        struct PhaseShiftDataPhase
         {
-            None = 0x0,
-            Cosmetic = 0x1,
-            Personal = 0x2
-        };
-
-        struct TC_GAME_API PhaseShiftDataPhase
-        {
-            PhaseShiftDataPhase(uint16 id, EnumClassFlag<PhaseShiftFlags> flags);
-            PhaseShiftDataPhase(uint16 id);
-
-            EnumClassFlag<PhaseShiftFlags> PhaseFlags = PhaseShiftFlags::Cosmetic; // not default
+            uint16 PhaseFlags = 0;
             uint16 Id = 0;
         };
 
         struct PhaseShiftData
         {
+            uint32 PhaseShiftFlags = 0;
             std::vector<PhaseShiftDataPhase> Phases;
             ObjectGuid PersonalGUID;
-            uint32 PhaseShiftFlags = 8;
         };
 
-        class PhaseShift final : public ServerPacket
+        class PhaseShiftChange final : public ServerPacket
         {
         public:
-            PhaseShift() : ServerPacket(SMSG_PHASE_SHIFT_CHANGE, 16 + 4 + 4 + 16 + 4 + 4 + 4) { }
+            PhaseShiftChange() : ServerPacket(SMSG_PHASE_SHIFT_CHANGE, 16 + 4 + 4 + 16 + 4 + 4 + 4) { }
 
             WorldPacket const* Write() override;
 
-            std::set<uint32> PreloadMapIDs;
-            std::set<uint32> UiWorldMapAreaIDSwaps;
-            std::set<uint32> VisibleMapIDs;
-            PhaseShiftData Phaseshift;
             ObjectGuid Client;
+            PhaseShiftData Phaseshift;
+            std::vector<uint16> PreloadMapIDs;
+            std::vector<uint16> UiWorldMapAreaIDSwaps;
+            std::vector<uint16> VisibleMapIDs;
         };
 
         class ZoneUnderAttack final : public ServerPacket

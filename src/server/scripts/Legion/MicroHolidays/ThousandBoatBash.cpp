@@ -29,7 +29,7 @@ public:
                 ApplyOnEveryPlayerInZone([this](Player* player) -> void
                 {
                     ch_water = 2000;
-                    Zliquid_status = player->GetMap()->getLiquidStatus(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), MAP_ALL_LIQUIDS, &liquid_status);
+                    Zliquid_status = player->GetMap()->getLiquidStatus(player->GetPhaseShift(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), MAP_ALL_LIQUIDS, &liquid_status);
 
                     if (Zliquid_status & (LIQUID_MAP_WATER_WALK | LIQUID_MAP_UNDER_WATER | LIQUID_MAP_IN_WATER))
                     {
@@ -107,7 +107,7 @@ class spell_bating : public AuraScript
             return;
 
         LiquidData liquid_status;
-        ZLiquidStatus Zliquid_status = caster->GetMap()->getLiquidStatus(caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), MAP_ALL_LIQUIDS, &liquid_status);
+        ZLiquidStatus Zliquid_status = caster->GetMap()->getLiquidStatus(caster->GetPhaseShift(), caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), MAP_ALL_LIQUIDS, &liquid_status);
 
         if (Zliquid_status & (LIQUID_MAP_WATER_WALK | LIQUID_MAP_UNDER_WATER | LIQUID_MAP_IN_WATER))
             caster->CastSpell(caster, 234450, true);
@@ -153,7 +153,7 @@ class spell_boat_day : public AuraScript
             return;
 
         LiquidData liquid_status;
-        ZLiquidStatus Zliquid_status = caster->GetMap()->getLiquidStatus(caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), MAP_ALL_LIQUIDS, &liquid_status);
+        ZLiquidStatus Zliquid_status = caster->GetMap()->getLiquidStatus(caster->GetPhaseShift(), caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), MAP_ALL_LIQUIDS, &liquid_status);
 
         if (Zliquid_status & (LIQUID_MAP_WATER_WALK | LIQUID_MAP_UNDER_WATER | LIQUID_MAP_IN_WATER))
             caster->CastSpell(caster, 234460, true);

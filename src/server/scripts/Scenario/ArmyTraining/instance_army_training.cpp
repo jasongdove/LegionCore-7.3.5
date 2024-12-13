@@ -2,11 +2,11 @@
     army_training
 */
 
+#include "Packets/WorldStatePackets.h"
+#include "PhasingHandler.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "army_training.h"
-#include "Packets/WorldStatePackets.h"
-
 
 // main loot 252452 (win) + 251953 (fail)
 std::map<uint32, uint32> gosChestToLootChest
@@ -206,7 +206,7 @@ public:
                     break;
                 case 251954:
                     if (urand(1, 3) == 3)
-                        go->SetInPhase(171, true, true);
+                        PhasingHandler::AddPhase(go, 171, true);
                     break;
             }
         }
@@ -226,7 +226,7 @@ public:
                 for (auto entry : pplayer->armyTrainingInfo.justFindedChest)
                     if (chestsGuids.find(entry) != chestsGuids.end())
                         if (GameObject* go = instance->GetGameObject(chestsGuids[entry]))
-                            go->SetInPhase(171, true, true);
+                            PhasingHandler::AddPhase(go, 171, true);
 
                 if (!pplayer->armyTrainingInfo.justOpenedUnits[ARMY_UNIT_MAGE - 1])
                     for (auto guid : spectralChests)

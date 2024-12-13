@@ -27,6 +27,7 @@
 #include "Group.h"
 #include "InstanceScript.h"
 #include "ObjectMgr.h"
+#include "PhasingHandler.h"
 #include "Player.h"
 #include "QuestData.h"
 #include "ScenarioMgr.h"
@@ -396,7 +397,7 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
         }
         case CONDITION_PHASEID:
         {
-            condMeets = object->IsInPhase(ConditionValue1);
+            condMeets = object->GetPhaseShift().HasPhase(ConditionValue1);
             break;
         }
         case CONDITION_TITLE:
@@ -436,7 +437,7 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
         }
         case CONDITION_TERRAIN_SWAP:
         {
-            condMeets = object->IsInTerrainSwap(ConditionValue1);
+            condMeets = object->GetPhaseShift().HasVisibleMapId(ConditionValue1);
             break;
         }
         case CONDITION_STAND_STATE:
@@ -1216,6 +1217,8 @@ void ConditionMgr::LoadConditions(bool isReload)
         TC_LOG_INFO("misc", "Re-Loading `gossip_menu_option` Table for Conditions!");
         sGossipDataStore->LoadGossipMenuItems();
         sSpellMgr->UnloadSpellInfoImplicitTargetConditionLists();
+
+        sObjectMgr->UnloadPhaseConditions();
     }
 
     QueryResult result = WorldDatabase.Query("SELECT SourceTypeOrReferenceId, SourceGroup, SourceEntry, SourceId, ElseGroup, ConditionTypeOrReference, ConditionTarget, "
@@ -3101,13 +3104,26 @@ bool ConditionMgr::IsPlayerMeetingCondition(Unit* unit, PlayerConditionEntry con
         && ((condition->MinExpansionLevel == CURRENT_EXPANSION) && condition->MinExpansionTier > 0) || condition->MinExpansionLevel > CURRENT_EXPANSION)
         return false;
 
-    if (condition->PhaseID && !unit->IsInPhase(condition->PhaseID))
+    if (condition->PhaseID && !unit->GetPhaseShift().HasPhase(condition->PhaseID))
         return false;
 
+    // TODO: Phasing - does this work anymore?
     if (player && condition->PhaseGroupID)
     {
-        if (!player->IsInPhase(sDB2Manager.GetPhasesForGroup(condition->PhaseGroupID)))
-            return false;
+        if (std::vector<uint32> const* phaseIds = sDB2Manager.GetPhasesForGroup(condition->PhaseGroupID))
+        {
+            bool inGroup = false;
+
+            for (uint32 phaseId : *phaseIds)
+                if (player->GetPhaseShift().HasPhase(phaseId))
+                {
+                    inGroup = true;
+                    break;
+                }
+
+            if (!inGroup)
+                return false;
+        }
     }
 
     if (player && condition->QuestKillID)

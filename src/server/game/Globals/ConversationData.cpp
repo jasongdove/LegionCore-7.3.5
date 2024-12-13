@@ -19,6 +19,7 @@
 #include "ConversationData.h"
 #include "DatabaseEnv.h"
 #include "ObjectMgr.h"
+#include "PhasingHandler.h"
 
 ConversationDataStoreMgr::ConversationDataStoreMgr()
 {
@@ -150,7 +151,8 @@ void ConversationDataStoreMgr::LoadConversations()
             uint32 zoneId = 0;
             uint32 areaId = 0;
 
-            sMapMgr->GetZoneAndAreaId(zoneId, areaId, data.mapid, data.posX, data.posY, data.posZ);
+            // TODO: Phasing
+            sMapMgr->GetZoneAndAreaId(PhasingHandler::GetEmptyPhaseShift(), zoneId, areaId, data.mapid, data.posX, data.posY, data.posZ);
 
             data.zoneId = zoneId;
             data.areaId = areaId;

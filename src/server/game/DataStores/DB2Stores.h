@@ -174,7 +174,6 @@ TC_GAME_API extern DB2Storage<MovieEntry>                               sMovieSt
 TC_GAME_API extern DB2Storage<OverrideSpellDataEntry>                   sOverrideSpellDataStore;
 TC_GAME_API extern DB2Storage<ParagonReputationEntry>                   sParagonReputationStore;
 TC_GAME_API extern DB2Storage<PhaseEntry>                               sPhaseStore;
-TC_GAME_API extern DB2Storage<PhaseXPhaseGroupEntry>                    sPhaseXPhaseGroupStore;
 TC_GAME_API extern DB2Storage<PlayerConditionEntry>                     sPlayerConditionStore;
 TC_GAME_API extern DB2Storage<PowerDisplayEntry>                        sPowerDisplayStore;
 TC_GAME_API extern DB2Storage<PowerTypeEntry>                           sPowerTypeStore;
@@ -533,7 +532,7 @@ public:
     GarrTalentOptionMap const* GetGarrTalentOptionMap(uint16 __class, uint16 __line);
     XData const* getXMechanic(uint32 X) const;
     XData const* getXEncounter(uint32 X) const;
-    std::set<uint32> GetPhasesForGroup(uint32 group) const;
+    std::vector<uint32> const* GetPhasesForGroup(uint32 group) const;
     SkillLineAbilityEntry const* GetSkillBySpell(uint32 SpellID) const;
     BattlePetSpeciesEntry const* GetSpeciesBySpell(uint32 SpellID) const;
     BattlePetSpeciesEntry const* GetSpeciesByCreatureID(uint32 CreatureID) const;

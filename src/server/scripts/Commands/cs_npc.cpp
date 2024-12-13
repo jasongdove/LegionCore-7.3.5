@@ -22,13 +22,14 @@ Comment: All npc related commands
 Category: commandscripts
 EndScriptData */
 
-#include "ScriptMgr.h"
-#include "ObjectMgr.h"
 #include "Chat.h"
-#include "Transport.h"
-#include "CreatureGroups.h"
-#include "TargetedMovementGenerator.h"                      // for HandleNpcUnFollowCommand
 #include "CreatureAI.h"
+#include "CreatureGroups.h"
+#include "ObjectMgr.h"
+#include "PhasingHandler.h"
+#include "ScriptMgr.h"
+#include "TargetedMovementGenerator.h" // for HandleNpcUnFollowCommand
+#include "Transport.h"
 
 template<typename E, typename T = char const*>
 struct EnumName
@@ -1009,20 +1010,11 @@ public:
         handler->PSendSysMessage(LANG_NPCINFO_LOOT,  cInfo->lootid, cInfo->pickpocketLootId, cInfo->SkinLootId);
         handler->PSendSysMessage(LANG_NPCINFO_DUNGEON_ID, target->GetInstanceId());
 
-//        if (CreatureData const* data = sObjectMgr->GetCreatureData(target->GetSpawnId()))
+        // TODO: Phasing
+//        if (CreatureData const* data = sObjectMgr->GetCreatureData(target->GetDBTableGUIDLow()))
 //        {
 //            handler->PSendSysMessage(LANG_NPCINFO_PHASES, data->phaseId, data->phaseGroup);
-//            if (data->phaseGroup)
-//            {
-//                std::set<uint32> _phases = target->GetPhases();
-//
-//                if (!_phases.empty())
-//                {
-//                    handler->PSendSysMessage(LANG_NPCINFO_PHASE_IDS);
-//                    for (uint32 phaseId : _phases)
-//                        handler->PSendSysMessage("%u", phaseId);
-//                }
-//            }
+//            PhasingHandler::PrintToChat(handler, target->GetPhaseShift());
 //        }
 
         handler->PSendSysMessage(LANG_NPCINFO_ARMOR, target->GetArmor());
@@ -1374,13 +1366,9 @@ public:
             return false;
         }
 
-        creature->ClearPhases();
-
-        for (uint32 id : sDB2Manager.GetPhasesForGroup(phaseGroupId))
-            creature->SetInPhase(id, false, true); // don't send update here for multiple phases, only send it once after adding all phases
-
-        creature->UpdateObjectVisibility();
-        creature->SetDBPhase(-int(phaseGroupId));
+        PhasingHandler::ResetPhaseShift(creature);
+        PhasingHandler::AddPhaseGroup(creature, phaseGroupId, true);
+        creature->SetDBPhase(-phaseGroupId);
 
         creature->SaveToDB();
 
@@ -1394,7 +1382,7 @@ public:
         if (!*args)
             return false;
 
-        uint32 phase = (uint32) atoi((char*)args);
+        uint32 phaseID = (uint32) atoi((char*)args);
 
         Creature* creature = handler->getSelectedCreature();
         if (!creature || creature->isPet())
@@ -1404,9 +1392,9 @@ public:
             return false;
         }
 
-        creature->ClearPhases();
-        creature->SetInPhase(phase, true, true);
-        creature->SetDBPhase(phase);
+        PhasingHandler::ResetPhaseShift(creature);
+        PhasingHandler::AddPhase(creature, phaseID, true);
+        creature->SetDBPhase(phaseID);
 
         creature->SaveToDB();
 

@@ -363,14 +363,14 @@ struct mob_adepts : public ScriptedAI
         {
         case ACTION_ENCOURAGE:
             GetPositionWithDistInOrientation(me, 5.0f, me->GetOrientation(), x, y);
-            me->GetMotionMaster()->MovePoint(0, x, y, me->GetMap()->GetHeight(x, y, me->GetPositionZ()));
+            me->GetMotionMaster()->MovePoint(0, x, y, me->GetMap()->GetHeight(me->GetPhaseShift(), x, y, me->GetPositionZ()));
 
             DoCast(120867);
             events.RescheduleEvent(EVENT_APPLAUSE + urand(0, 1), 500 + urand(500, 1500));
             break;
         case ACTION_RETIRE:
             GetPositionWithDistInOrientation(me, -5.0f, me->GetOrientation(), x, y);
-            me->GetMotionMaster()->MovePoint(1, x, y, me->GetMap()->GetHeight(x, y, me->GetPositionZ()));
+            me->GetMotionMaster()->MovePoint(1, x, y, me->GetMap()->GetHeight(me->GetPhaseShift(), x, y, me->GetPositionZ()));
 
             me->RemoveAura(120867);
             DoCast(121569);
@@ -380,7 +380,7 @@ struct mob_adepts : public ScriptedAI
             status = STATUS_ATTACK_GRUNTS;
 
             GetPositionWithDistInOrientation(me, 30.0f, me->GetOrientation(), x, y);
-            me->GetMotionMaster()->MovePoint(0, x, y, me->GetMap()->GetHeight(x, y, me->GetPositionZ()));
+            me->GetMotionMaster()->MovePoint(0, x, y, me->GetMap()->GetHeight(me->GetPhaseShift(), x, y, me->GetPositionZ()));
 
             me->RemoveAura(121569);
             events.Reset();

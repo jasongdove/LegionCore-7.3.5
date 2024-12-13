@@ -16,22 +16,23 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Transport.h"
 #include "Anticheat.h"
 #include "Cell.h"
 #include "CellImpl.h"
 #include "Common.h"
 #include "GameObjectAI.h"
 #include "Log.h"
-#include "MapManager.h"
 #include "MMapFactory.h"
 #include "MMapManager.h"
+#include "MapManager.h"
 #include "ObjectMgr.h"
+#include "PhasingHandler.h"
 #include "Player.h"
-#include "ScriptsData.h"
 #include "ScriptMgr.h"
+#include "ScriptsData.h"
 #include "Spline.h"
 #include "Totem.h"
-#include "Transport.h"
 #include "UpdateData.h"
 #include "Vehicle.h"
 #include "ZoneScript.h"
@@ -338,13 +339,8 @@ Creature* Transport::CreateNPCPassenger(ObjectGuid::LowType guid, CreatureData c
         return nullptr;
     }
 
-    if (data->phaseid)
-        creature->SetInPhase(data->phaseid, false, true);
-    else if (data->phaseGroup)
-        for (auto phase : sDB2Manager.GetPhasesForGroup(data->phaseGroup))
-            creature->SetInPhase(phase, false, true);
-    else
-        creature->CopyPhaseFrom(this);
+    PhasingHandler::InitDbPhaseShift(creature->GetPhaseShift(), data->phaseUseFlags, data->phaseId, data->phaseGroup);
+    PhasingHandler::InitDbVisibleMapId(creature->GetPhaseShift(), data->terrainSwapMap);
 
     map->AddToMapWait(creature);
 
@@ -385,6 +381,9 @@ GameObject* Transport::CreateGOPassenger(ObjectGuid::LowType guid, GameObjectDat
         delete go;
         return nullptr;
     }
+
+    PhasingHandler::InitDbPhaseShift(go->GetPhaseShift(), data->phaseUseFlags, data->phaseId, data->phaseGroup);
+    PhasingHandler::InitDbVisibleMapId(go->GetPhaseShift(), data->terrainSwapMap);
 
     map->AddToMapWait(go);
 
@@ -472,20 +471,13 @@ TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSu
     pos.GetPosition(x, y, z, o);
     CalculatePassengerPosition(x, y, z, &o);
 
-    std::set<uint32> phases;
-    if (summoner)
-        phases = summoner->GetPhases();
-    else
-        phases = GetPhases(); // If there was no summoner, try to use the transport phases
-
     if (!summon->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, entry, vehId, 0, x, y, z, o))
     {
         delete summon;
         return nullptr;
     }
 
-    for (uint32 phase : phases)
-        summon->SetInPhase(phase, false, true);
+    PhasingHandler::InheritPhaseShift(summon, summoner ? static_cast<WorldObject*>(summoner) : static_cast<WorldObject*>(this));
 
     summon->SetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL, spellId);
 
@@ -803,15 +795,8 @@ bool StaticTransport::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* m
         return false;
     }
 
-    if (data && data->phaseid)
-        SetInPhase(data->phaseid, false, true);
-
-    if (data && data->phaseGroup)
-    {
-        // Set the gameobject in all the phases of the phasegroup
-        for (auto ph : sDB2Manager.GetPhasesForGroup(data->phaseGroup))
-            SetInPhase(ph, false, true);
-    }
+    // TODO: Phasing - is this needed?
+    PhasingHandler::InitDbPhaseShift(GetPhaseShift(), data->phaseUseFlags, data->phaseId, data->phaseGroup);
 
     SetZoneScript();
     if (m_zoneScript)

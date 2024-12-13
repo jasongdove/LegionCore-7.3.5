@@ -43,6 +43,7 @@
 #include "ObjectVisitors.hpp"
 #include "Opcodes.h"
 #include "OutdoorPvPMgr.h"
+#include "PhasingHandler.h"
 #include "Player.h"
 #include "SharedDefines.h"
 #include "SpellPackets.h"
@@ -1579,7 +1580,7 @@ void Object::ResetMap()
     m_currMap = nullptr;
 }
 
-WorldObject::WorldObject(bool isWorldObject): LastUsedScriptID(0), m_transport(nullptr), m_name(""), m_isActive(false), m_isWorldObject(isWorldObject), m_zoneScript(nullptr), m_InstanceId(0), _dbPhase(0), m_ignorePhaseIdCheck(false)
+WorldObject::WorldObject(bool isWorldObject): LastUsedScriptID(0), m_transport(nullptr), m_name(""), m_isActive(false), m_isWorldObject(isWorldObject), m_zoneScript(nullptr), m_InstanceId(0), _dbPhase(0)
 {
     m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_ALIVE | GHOST_VISIBILITY_GHOST);
     m_serverSideVisibilityDetect.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_ALIVE);
@@ -1689,7 +1690,7 @@ float WorldObject::GetDistanceToZOnfall()
     auto zNow = pos.m_positionX;
     if (auto lastUpdateTime = m_movementInfo.fall.lastTimeUpdate)
         zNow = pos.m_positionZ - Movement::computeFallElevation(Movement::MSToSec(GameTime::GetGameTimeMS() - lastUpdateTime), false) - 5.0f;
-    return zNow - GetHeight(pos.m_positionX, pos.m_positionY, MAX_HEIGHT, true);
+    return zNow - GetBaseMap()->GetHeight(GetPhaseShift(), pos.m_positionX, pos.m_positionY, MAX_HEIGHT, true);
 }
 
 bool WorldObject::IsWorldObject() const
@@ -1745,8 +1746,6 @@ void WorldObject::CleanupsBeforeDelete(bool /*finalCleanup*/)
     if (IsInWorld())
         RemoveFromWorld();
 
-    _terrainSwaps.clear();
-    _worldMapAreaSwaps.clear();
     _visibilityPlayerList.clear();
     _hideForGuid.clear();
 
@@ -1760,12 +1759,7 @@ uint32 WorldObject::GetZoneId() const
     if (!map || map->IsMapUnload())
         return m_zoneId;
 
-    return map->GetZoneId(m_positionX, m_positionY, m_positionZ);
-}
-
-uint32 WorldObject::GetPZoneId() const
-{
-    return sDB2Manager.GetParentZoneOrSelf(m_zoneId);
+    return map->GetZoneId(GetPhaseShift(), m_positionX, m_positionY, m_positionZ);
 }
 
 uint32 WorldObject::GetAreaId() const
@@ -1774,7 +1768,7 @@ uint32 WorldObject::GetAreaId() const
     if (!map || map->IsMapUnload())
         return m_areaId;
 
-    return map->GetAreaId(m_positionX, m_positionY, m_positionZ);
+    return map->GetAreaId(GetPhaseShift(), m_positionX, m_positionY, m_positionZ);
 }
 
 void WorldObject::GetZoneAndAreaId(uint32& zoneid, uint32& areaid) const
@@ -1787,7 +1781,7 @@ void WorldObject::GetZoneAndAreaId(uint32& zoneid, uint32& areaid) const
         return;
     }
 
-    map->GetZoneAndAreaId(zoneid, areaid, m_positionX, m_positionY, m_positionZ);
+    map->GetZoneAndAreaId(GetPhaseShift(), zoneid, areaid, m_positionX, m_positionY, m_positionZ);
 }
 
 InstanceScript* WorldObject::GetInstanceScript() const
@@ -1982,49 +1976,10 @@ bool WorldObject::IsWithinLOS(float ox, float oy, float oz, VMAP::ModelIgnoreFla
         else
             GetHitSpherePointFor({ ox, oy, oz }, x, y, z);
 
-        return GetMap()->isInLineOfSight(x, y, z + 2.f, ox, oy, oz + 2.f, GetPhases(), ignoreFlags);
+        return GetMap()->isInLineOfSight(GetPhaseShift(), x, y, z + 2.f, ox, oy, oz + 2.f, ignoreFlags);
     }
 
     return true;
-}
-
-float WorldObject::GetWaterOrGroundLevel(float x, float y, float z, float* ground /*= NULL*/, bool /*swim = false*/) const
-{
-    if (Transport* transport = GetTransport())
-    {
-        if (GameObjectModel* _model = transport->m_model)
-        {
-            float ground_z = _model->getHeight(x, y, z, DEFAULT_HEIGHT_SEARCH, GetPhases());
-            if (ground_z == -G3D::finf() || ground_z == G3D::finf())
-                return VMAP_INVALID_HEIGHT_VALUE;
-
-            if (ground)
-                *ground = ground_z;
-            return ground_z;
-        }
-    }
-
-    if (!GetMap())
-        return VMAP_INVALID_HEIGHT_VALUE;
-    return GetMap()->GetWaterOrGroundLevel(GetPhases(), x, y, z, ground);
-}
-
-float WorldObject::GetHeight(float x, float y, float z, bool vmap /*= true*/, float maxSearchDist /*= DEFAULT_HEIGHT_SEARCH*/) const
-{
-    if (Transport* transport = GetTransport())
-    {
-        if (GameObjectModel* _model = transport->m_model)
-        {
-            float ground_z = _model->getHeight(x, y, z, maxSearchDist, GetPhases());
-            if (ground_z == -G3D::finf() || ground_z == G3D::finf())
-                return VMAP_INVALID_HEIGHT_VALUE;
-            return ground_z;
-        }
-    }
-
-    if (!GetMap())
-        return VMAP_INVALID_HEIGHT_VALUE;
-    return GetMap()->GetHeight(GetPhases(), x, y, z, vmap, maxSearchDist);
 }
 
 Position WorldObject::GetHitSpherePointFor(Position const& dest) const
@@ -2271,7 +2226,7 @@ void WorldObject::GetRandomPoint(Position const& srcPos, float distance, Positio
 
 void WorldObject::UpdateGroundPositionZ(float x, float y, float &z) const
 {
-    float new_z = GetHeight(x, y, z + 2.0f, true);
+    float new_z = GetMap()->GetHeight(GetPhaseShift(), x, y, z + 2.0f, true);
     if (new_z > INVALID_HEIGHT)
         z = new_z + 0.08f;                                   // just to be sure that we are not a few pixel under the surface
 }
@@ -2295,9 +2250,9 @@ void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z, float* grou
             float ground_z = z;
             float max_z;
             if (canSwim)
-                max_z = GetWaterOrGroundLevel(x, y, z, &ground_z);
+                max_z = GetMap()->GetWaterOrGroundLevel(GetPhaseShift(), x, y, z, &ground_z, !ToUnit()->HasAuraType(SPELL_AURA_WATER_WALK));
             else
-                max_z = ground_z = GetHeight(x, y, z);
+                max_z = ground_z = GetMap()->GetHeight(GetPhaseShift(), x, y, z, true);
 
             if (max_z > INVALID_HEIGHT)
             {
@@ -2317,7 +2272,7 @@ void WorldObject::UpdateAllowedPositionZ(float x, float y, float &z, float* grou
         }
         else
         {
-            float ground_z = GetHeight(x, y, z) + unit->GetHoverOffset();
+            float ground_z = GetMap()->GetHeight(GetPhaseShift(), x, y, z, true) + unit->GetHoverOffset();
             if (z < ground_z)
                 z = ground_z;
 
@@ -2980,7 +2935,7 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
         return nullptr;
     }
 
-    go->CopyPhaseFrom(this);
+    PhasingHandler::InheritPhaseShift(go, this);
 
     go->SetTratsport(GetTransport());
     go->SetRespawnTime(respawnTime);
@@ -3280,8 +3235,8 @@ void WorldObject::MovePosition(Position &pos, float dist, float angle)
         return;
     }
 
-    float ground = GetHeight(destx, desty, MAX_HEIGHT, true);
-    float floor = GetHeight(destx, desty, pos.m_positionZ, true);
+    float ground = GetMap()->GetHeight(GetPhaseShift(), destx, desty, MAX_HEIGHT, true);
+    float floor = GetMap()->GetHeight(GetPhaseShift(), destx, desty, pos.m_positionZ, true);
     float destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
 
     float step = dist / 10.0f;
@@ -3293,8 +3248,8 @@ void WorldObject::MovePosition(Position &pos, float dist, float angle)
         {
             destx -= step * std::cos(angle);
             desty -= step * std::sin(angle);
-            ground = GetHeight(destx, desty, MAX_HEIGHT, true);
-            floor = GetHeight(destx, desty, pos.m_positionZ, true);
+            ground = GetMap()->GetHeight(GetPhaseShift(), destx, desty, MAX_HEIGHT, true);
+            floor = GetMap()->GetHeight(GetPhaseShift(), destx, desty, pos.m_positionZ, true);
             destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
         }
         // we have correct destz now
@@ -3334,8 +3289,8 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
     }
 
     bool isFalling = m_movementInfo.HasMovementFlag(MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR);
-    float ground = GetHeight(destx, desty, MAX_HEIGHT, true);
-    float floor = GetHeight(destx, desty, pos.m_positionZ, true);
+    float ground = GetMap()->GetHeight(GetPhaseShift(), destx, desty, MAX_HEIGHT, true);
+    float floor = GetMap()->GetHeight(GetPhaseShift(), destx, desty, pos.m_positionZ, true);
     float destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
 
     if (IsInWater()) // In water not allow change Z to ground
@@ -3362,15 +3317,16 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
         {
             destx -= step * std::cos(angle);
             desty -= step * std::sin(angle);
-            ground = GetHeight(destx, desty, MAX_HEIGHT, true);
-            floor = GetHeight(destx, desty, pos.m_positionZ, true);
+            ground = GetMap()->GetHeight(GetPhaseShift(), destx, desty, MAX_HEIGHT, true);
+            floor = GetMap()->GetHeight(GetPhaseShift(), destx, desty, pos.m_positionZ, true);
             destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
         }
         else
             break;
     }
 
-    bool col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
+    bool col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(PhasingHandler::GetTerrainMapId(GetPhaseShift(), GetMap(), pos.m_positionX, pos.m_positionY),
+        pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
     // collision occurred
     if (col)
     {
@@ -3383,7 +3339,7 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
         destz -= 0.5f;
 
     // check dynamic collision
-    col = GetMap()->getObjectHitPos(GetPhases(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
+    col = GetMap()->getObjectHitPos(GetPhaseShift(), pos.m_positionX, pos.m_positionY, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
 
     // Collided with a gameobject
     if (col)
@@ -3403,8 +3359,8 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
         {
             destx -= step * std::cos(angle);
             desty -= step * std::sin(angle);
-            ground = GetHeight(destx, desty, MAX_HEIGHT, true);
-            floor = GetHeight(destx, desty, pos.m_positionZ, true);
+            ground = GetMap()->GetHeight(GetPhaseShift(), destx, desty, MAX_HEIGHT, true);
+            floor = GetMap()->GetHeight(GetPhaseShift(), destx, desty, pos.m_positionZ, true);
             destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
         }
         // we have correct destz now
@@ -3431,7 +3387,7 @@ void WorldObject::MovePositionToFirstCollision(Position &pos, float dist, float 
                 return;
 
             // fall back to gridHeight if any
-            float gridHeight = GetMap()->GetGridMapHeigh(pos.m_positionX, pos.m_positionY);
+            float gridHeight = GetMap()->GetGridHeight(GetPhaseShift(), pos.m_positionX, pos.m_positionY);
             if (gridHeight > INVALID_HEIGHT)
                 pos.m_positionZ = gridHeight + unit->GetHoverOffset();
         }
@@ -3468,7 +3424,7 @@ void WorldObject::MovePositionToTransportCollision(Position &pos, float dist, fl
         return;
     }
 
-    float floor = GetHeight(destx, desty, pos.m_positionZ + 2.0f, true);
+    float floor = GetMap()->GetHeight(GetPhaseShift(), destx, desty, pos.m_positionZ + 2.0f, true);
     float destz = floor;
 
     if (destz == VMAP_INVALID_HEIGHT_VALUE)
@@ -3481,7 +3437,7 @@ void WorldObject::MovePositionToTransportCollision(Position &pos, float dist, fl
             {
                 destx -= step * std::cos(angle);
                 desty -= step * std::sin(angle);
-                floor = GetHeight(destx, desty, pos.m_positionZ + 2.0f, true);
+                floor = GetMap()->GetHeight(GetPhaseShift(), destx, desty, pos.m_positionZ + 2.0f, true);
                 destz = floor;
             }
             else
@@ -3499,7 +3455,7 @@ void WorldObject::MovePositionToTransportCollision(Position &pos, float dist, fl
     G3D::Vector3 pos2(destx, desty, destz + 2.0f);
     G3D::Vector3 resultPos;
 
-    bool col = _model->getObjectHitPos(GetPhases(), pos1, pos2, resultPos, -0.5f);
+    bool col = _model->getObjectHitPos(GetPhaseShift(), pos1, pos2, resultPos, -0.5f);
     destx = resultPos.x;
     desty = resultPos.y;
     destz = resultPos.z;
@@ -3526,7 +3482,7 @@ void WorldObject::MovePositionToTransportCollision(Position &pos, float dist, fl
         {
             destx -= step * std::cos(angle);
             desty -= step * std::sin(angle);
-            floor = GetHeight(destx, desty, pos.m_positionZ, true);
+            floor = GetMap()->GetHeight(GetPhaseShift(), destx, desty, pos.m_positionZ, true);
             destz = floor;
         }
         // we have correct destz now
@@ -3568,8 +3524,8 @@ void WorldObject::MovePositionToCollisionBetween(Position &pos, float distMin, f
         return;
     }
 
-    float ground = GetHeight(destx, desty, MAX_HEIGHT, true);
-    float floor = GetHeight(destx, desty, pos.m_positionZ, true);
+    float ground = GetMap()->GetHeight(GetPhaseShift(), destx, desty, MAX_HEIGHT, true);
+    float floor = GetMap()->GetHeight(GetPhaseShift(), destx, desty, pos.m_positionZ, true);
     float destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
 
     bool col = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(GetMapId(), tempDestx, tempDesty, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
@@ -3584,7 +3540,7 @@ void WorldObject::MovePositionToCollisionBetween(Position &pos, float distMin, f
     }
 
     // check dynamic collision
-    col = GetMap()->getObjectHitPos(GetPhases(), tempDestx, tempDesty, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
+    col = GetMap()->getObjectHitPos(GetPhaseShift(), tempDestx, tempDesty, pos.m_positionZ + 0.5f, destx, desty, destz + 0.5f, destx, desty, destz, -0.5f);
 
     // Collided with a gameobject
     if (col)
@@ -3603,8 +3559,8 @@ void WorldObject::MovePositionToCollisionBetween(Position &pos, float distMin, f
         {
             destx -= step * std::cos(angle);
             desty -= step * std::sin(angle);
-            ground = GetHeight(destx, desty, MAX_HEIGHT, true);
-            floor = GetHeight(destx, desty, pos.m_positionZ, true);
+            ground = GetMap()->GetHeight(GetPhaseShift(), destx, desty, MAX_HEIGHT, true);
+            floor = GetMap()->GetHeight(GetPhaseShift(), destx, desty, pos.m_positionZ, true);
             destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
         }
         // we have correct destz now
@@ -3663,189 +3619,6 @@ void WorldObject::GenerateCollisionNonDuplicatePoints(std::list<Position>& randP
 float WorldObject::GetObjectSize() const
 {
     return m_valuesCount > UNIT_FIELD_COMBAT_REACH ? m_floatValues[UNIT_FIELD_COMBAT_REACH] : DEFAULT_WORLD_OBJECT_SIZE;
-}
-
-bool WorldObject::HasInPhaseList(uint32 phase)
-{
-    return _phases.find(phase) != _phases.end();
-}
-
-// Updates Area based phases, does not remove phases from auras
-// Phases from gm commands are not taken into calculations, they can be lost!!
-void WorldObject::UpdateAreaPhase()
-{
-    bool updateNeeded = false;
-    PhaseInfo phases = sObjectMgr->GetAreaPhases();
-    for (PhaseInfo::const_iterator itr = phases.begin(); itr != phases.end(); ++itr)
-    {
-        uint32 areaId = itr->first;
-        for (uint32 phaseId : itr->second)
-        {
-            if (areaId == GetAreaId())
-            {
-                if (sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_PHASE, phaseId, this))
-                {
-                    // add new phase if condition passed, true if it wasnt added before
-                    bool up = SetInPhase(phaseId, false, true);
-                    if (!updateNeeded && up)
-                        updateNeeded = true;
-                }
-                else
-                {
-                    // condition failed, remove phase, true if there was something removed
-                    bool up = SetInPhase(phaseId, false, false);
-                    if (!updateNeeded && up)
-                        updateNeeded = true;
-                }
-            }
-            else
-            {
-                // not in area, remove phase, true if there was something removed
-                bool up = SetInPhase(phaseId, false, false);
-                if (!updateNeeded && up)
-                    updateNeeded = true;
-            }
-        }
-    }
-
-    // do not remove a phase if it would be removed by an area but we have the same phase from an aura
-    if (Unit* unit = ToUnit())
-    {
-        Unit::AuraEffectList const& auraPhaseList = unit->GetAuraEffectsByType(SPELL_AURA_PHASE);
-        for (Unit::AuraEffectList::const_iterator itr = auraPhaseList.begin(); itr != auraPhaseList.end(); ++itr)
-        {
-            uint32 phase = uint32((*itr)->GetMiscValueB());
-            updateNeeded = SetInPhase(phase, false, true) || updateNeeded;
-        }
-        Unit::AuraEffectList const& auraPhaseGroupList = unit->GetAuraEffectsByType(SPELL_AURA_PHASE_GROUP);
-        for (Unit::AuraEffectList::const_iterator itr = auraPhaseGroupList.begin(); itr != auraPhaseGroupList.end(); ++itr)
-        {
-            uint32 phaseGroup = uint32((*itr)->GetMiscValueB());
-            std::set<uint32> phases = sDB2Manager.GetPhasesForGroup(phaseGroup);
-            for (uint32 phase : phases)
-                updateNeeded = SetInPhase(phase, false, true) || updateNeeded;
-        }
-    }
-
-    // only update visibility and send packets if there was a change in the phase list
-
-    if (updateNeeded && GetTypeId() == TYPEID_PLAYER && IsInWorld())
-    {
-        ToPlayer()->GetSession()->SendSetPhaseShift(GetPhases(), GetTerrainSwaps(), GetWorldMapAreaSwaps(), {});
-    }
-
-    // only update visibilty once, to prevent objects appearing for a moment while adding in multiple phases
-    if (updateNeeded && IsInWorld())
-        UpdateObjectVisibility();
-}
-
-bool WorldObject::SetInPhase(uint32 id, bool update, bool apply)
-{
-    if (id)
-    {
-        if (apply)
-        {
-            // do not run the updates if we are already in this phase
-            if (!_phases.insert(id).second)
-                return false;
-        }
-        else
-        {
-            auto phaseItr = _phases.find(id);
-            if (phaseItr == _phases.end())
-                return false;
-
-            for (uint32 phaseId : sObjectMgr->GetPhasesForArea(GetAreaId()))
-            {
-                if (id == phaseId)
-                {
-                    if (sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_PHASE, phaseId, this))
-                    {
-                        // if area phase passes the condition we should not remove it (ie: if remove called from aura remove)
-                        // this however breaks the .mod phase command, you wont be able to remove any area based phases with it
-                        return false;
-                    }
-                }
-            }
-
-            _phases.erase(phaseItr);
-        }
-    }
-    RebuildTerrainSwaps();
-
-    if (update && IsInWorld())
-        UpdateObjectVisibility();
-
-    return true;
-}
-
-void WorldObject::CopyPhaseFrom(WorldObject* obj, bool update)
-{
-    if (!obj)
-        return;
-
-    for (uint32 phase : obj->GetPhases())
-        SetInPhase(phase, false, true);
-
-    if (update && IsInWorld())
-        UpdateObjectVisibility();
-}
-
-void WorldObject::ClearPhases(bool update)
-{
-    _phases.clear();
-
-    RebuildTerrainSwaps();
-
-    if (update && IsInWorld())
-        UpdateObjectVisibility();
-}
-
-bool WorldObject::IsInPhase(WorldObject const* obj) const
-{
-    // PhaseId 169 is the default fallback phase
-    if (_phases.empty() && obj->GetPhases().empty())
-        return true;
-
-    if (_phases.empty() && obj->IsInPhase(DEFAULT_PHASE))
-        return true;
-
-    if (obj->GetPhases().empty() && IsInPhase(DEFAULT_PHASE))
-        return true;
-
-    if (GetTypeId() == TYPEID_PLAYER && ToPlayer()->isGameMaster())
-        return true;
-
-    return Trinity::Containers::Intersects(_phases.begin(), _phases.end(), obj->GetPhases().begin(), obj->GetPhases().end());
-}
-
-// TODO: Phasing, legacy LC
-//! if someone has phaseID but enother has empty - not see any! YES! NOT SEE! FIX2. WHY SHOULD?
-//      FOR SUPPORT OLD STYLE NEED ALLOW TO SEE. FOR SUPER HIDE PHASE ALL SHOULD HAVE SOME PHASEIDs
-//! If some have 1 2 enother has 1 = see each other.
-//! ir some have 1 2 enorther has 3 - not see.
-//! if some has ignorePhase id - see each.
-bool WorldObject::IsInPhase(std::set<uint32> const& phase) const
-{
-    if (IgnorePhaseId())
-        return true;
-
-    // PhaseId 169 is the default fallback phase
-    if (phase.empty() && _phases.empty())
-        return true;
-
-    if (_phases.empty() && phase.contains(DEFAULT_PHASE))
-        return true;
-
-    if (phase.empty() && IsInPhase(DEFAULT_PHASE))
-        return true;
-
-    //! speed up case. should be done in any way.
-    // As iteration not check empty data but it should be done.
-    if (phase.empty() && !_phases.empty() || !phase.empty() && _phases.empty())
-        return false;
-
-    return Trinity::Containers::Intersects(_phases.begin(), _phases.end(), phase.begin(), phase.end());
 }
 
 void WorldObject::PlayDistanceSound(uint32 soundID, Player* target /*= nullptr*/)
@@ -4011,82 +3784,6 @@ C_PTR WorldObject::get_ptr()
     return ptr.shared_from_this();
 }
 
-void WorldObject::RebuildTerrainSwaps()
-{
-    // Clear all terrain swaps, will be rebuilt below
-    // Reason for this is, multiple phases can have the same terrain swap, we should not remove the swap if another phase still use it
-    _terrainSwaps.clear();
-    ConditionContainer conditions;
-
-    // Check all applied phases for terrain swap and add it only once
-    for (uint32 phaseId : _phases)
-    {
-        std::list<uint32>& swaps = sObjectMgr->GetPhaseTerrainSwaps(phaseId);
-
-        for (uint32 swap : swaps)
-        {
-            // only add terrain swaps for current map
-            MapEntry const* mapEntry = sMapStore.LookupEntry(swap);
-            if (!mapEntry || mapEntry->ParentMapID != int32(GetMapId()))
-                continue;
-
-            if (sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_TERRAIN_SWAP, swap, this))
-                _terrainSwaps.insert(swap);
-        }
-    }
-
-    // get default terrain swaps, only for current map always
-    std::list<uint32>& mapSwaps = sObjectMgr->GetDefaultTerrainSwaps(GetMapId());
-
-    for (uint32 swap : mapSwaps)
-    {
-        if (sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_TERRAIN_SWAP, swap, this))
-            _terrainSwaps.insert(swap);
-    }
-
-    // online players have a game client with world map display
-    if (IsPlayer())
-        RebuildWorldMapAreaSwaps();
-}
-
-void WorldObject::RebuildWorldMapAreaSwaps()
-{
-    // Clear all world map area swaps, will be rebuilt below
-    _worldMapAreaSwaps.clear();
-
-    // get ALL default terrain swaps, if we are using it (condition is true)
-    // send the worldmaparea for it, to see swapped worldmaparea in client from other maps too, not just from our current
-    TerrainPhaseInfo defaults = sObjectMgr->GetDefaultTerrainSwapStore();
-    for (TerrainPhaseInfo::const_iterator itr = defaults.begin(); itr != defaults.end(); ++itr)
-    {
-        for (uint32 swap : itr->second)
-        {
-            if (sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_TERRAIN_SWAP, swap, this))
-            {
-                for (uint32 map : sObjectMgr->GetTerrainWorldMaps(swap))
-                    _worldMapAreaSwaps.insert(map);
-            }
-        }
-    }
-
-    // Check all applied phases for world map area swaps
-    for (uint32 phaseId : _phases)
-    {
-        std::list<uint32>& swaps = sObjectMgr->GetPhaseTerrainSwaps(phaseId);
-
-        for (uint32 swap : swaps)
-        {
-            // add world map swaps for ANY map
-
-            if (sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_TERRAIN_SWAP, swap, this))
-            {
-                for (uint32 map : sObjectMgr->GetTerrainWorldMaps(swap))
-                    _worldMapAreaSwaps.insert(map);
-            }
-        }
-    }
-}
-
 template<class NOTIFIER>
 void WorldObject::VisitNearbyGridObject(const float &radius, NOTIFIER &notifier) const
 {
@@ -4105,8 +3802,6 @@ void WorldObject::Clear()
 {
     Object::Clear();
 
-    _terrainSwaps.clear();
-    _worldMapAreaSwaps.clear();
     _visibilityPlayerList.clear();
     _hideForGuid.clear();
 }

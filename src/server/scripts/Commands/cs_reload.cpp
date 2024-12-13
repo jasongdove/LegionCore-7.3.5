@@ -102,7 +102,7 @@ public:
             { "disenchant_loot_template",     SEC_ADMINISTRATOR, true,  &HandleReloadLootTemplatesDisenchantCommand,    ""},
             { "event_scripts",                SEC_ADMINISTRATOR, true,  &HandleReloadEventScriptsCommand,               ""},
             { "fishing_loot_template",        SEC_ADMINISTRATOR, true,  &HandleReloadLootTemplatesFishingCommand,       ""},
-            { "game_graveyard_zone",          SEC_ADMINISTRATOR, true,  &HandleReloadGameGraveyardZoneCommand,          ""},
+            { "graveyard_zone",               SEC_ADMINISTRATOR, true,  &HandleReloadGraveyardZoneCommand,              ""},
             { "game_tele",                    SEC_ADMINISTRATOR, true,  &HandleReloadGameTeleCommand,                   ""},
             { "gameobject_questender",        SEC_ADMINISTRATOR, true,  &HandleReloadGOQuestInvRelationsCommand,        ""},
             { "gameobject_loot_template",     SEC_ADMINISTRATOR, true,  &HandleReloadLootTemplatesGameobjectCommand,    ""},
@@ -130,7 +130,6 @@ public:
             { "npc_trainer",                  SEC_ADMINISTRATOR, true,  &HandleReloadNpcTrainerCommand,                 ""},
             { "npc_vendor",                   SEC_ADMINISTRATOR, true,  &HandleReloadNpcVendorCommand,                  ""},
             { "page_text",                    SEC_ADMINISTRATOR, true,  &HandleReloadPageTextsCommand,                  ""},
-            { "phasedefinitions",             SEC_ADMINISTRATOR, true,  &HandleReloadPhaseDefinitionsCommand,           ""},
             { "pickpocketing_loot_template",  SEC_ADMINISTRATOR, true,  &HandleReloadLootTemplatesPickpocketingCommand, ""},
             { "points_of_interest",           SEC_ADMINISTRATOR, true,  &HandleReloadPointsOfInterestCommand,           ""},
             { "prospecting_loot_template",    SEC_ADMINISTRATOR, true,  &HandleReloadLootTemplatesProspectingCommand,   ""},
@@ -230,7 +229,7 @@ public:
         //HandleReloadQuestAreaTriggersCommand(handler, ""); -- reloaded in HandleReloadAllQuestCommand
         HandleReloadAreaTriggerTeleportCommand(handler, "");
         HandleReloadAreaTriggerTavernCommand(handler, "");
-        HandleReloadGameGraveyardZoneCommand(handler, "");
+        HandleReloadGraveyardZoneCommand(handler, "");
         return true;
     }
 
@@ -1139,13 +1138,13 @@ public:
         return true;
     }
 
-    static bool HandleReloadGameGraveyardZoneCommand(ChatHandler* handler, const char* /*args*/)
+    static bool HandleReloadGraveyardZoneCommand(ChatHandler* handler, const char* /*args*/)
     {
         TC_LOG_INFO("misc", "Re-Loading Graveyard-zone links...");
 
         sObjectMgr->LoadGraveyardZones();
 
-        handler->SendGlobalGMSysMessage("DB table `game_graveyard_zone` reloaded.");
+        handler->SendGlobalGMSysMessage("DB table `graveyard_zone` reloaded.");
 
         return true;
     }
@@ -1291,15 +1290,6 @@ public:
         TC_LOG_INFO("misc", "Reloading script_waypoint table...");
         sScriptSystemMgr->LoadScriptWaypoints();
         handler->SendGlobalGMSysMessage("script_waypoint table reloaded.");
-        return true;
-    }
-
-    static bool HandleReloadPhaseDefinitionsCommand(ChatHandler* handler, const char* /*args*/)    
-    {    
-        TC_LOG_INFO("misc", "Reloading terrain_phase_info table...");
-        sObjectMgr->LoadTerrainPhaseInfo();
-        sWorld->UpdatePhaseDefinitions();    
-        handler->SendGlobalGMSysMessage("Terrain phase infos reloaded.");
         return true;
     }
 

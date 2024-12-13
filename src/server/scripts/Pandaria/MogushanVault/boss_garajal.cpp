@@ -16,6 +16,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "PhasingHandler.h"
 #include "mogu_shan_vault.h"
 
 enum eSpells
@@ -264,7 +265,7 @@ class boss_garajal : public CreatureScript
                                 {
                                     if (Creature* soulCutter = me->SummonCreature(NPC_SOUL_CUTTER, target->GetPositionX() + 2.0f, target->GetPositionY() + 2.0f, target->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN, 30000, i == 0 ? viewerGuid : ObjectGuid::Empty))
                                     {
-                                        soulCutter->SetInPhase(170, true, true);
+                                        PhasingHandler::AddPhase(soulCutter, 170, true);
                                         soulCutter->AI()->AttackStart(target);
                                         soulCutter->SetInCombatWith(target);
                                         soulCutter->getThreatManager().addThreat(target, 10000.0f);
@@ -391,7 +392,7 @@ class mob_shadowy_minion : public CreatureScript
                     if (Creature* spirit = me->SummonCreature(NPC_SHADOWY_MINION_SPIRIT, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation(), TEMPSUMMON_DEAD_DESPAWN))
                     {
                         spiritGuid = spirit->GetGUID();
-                        spirit->SetInPhase(170, true, true);
+                        PhasingHandler::AddPhase(spirit, 170, true);
                     }
 
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_SELECTABLE);

@@ -456,7 +456,7 @@ struct npc_snowdrift_novice : public ScriptedAI
         {
             float x, y;
             GetPositionWithDistInOrientation(me, 40.0f, 4.0f, x, y);
-            me->GetMotionMaster()->MoveJump(x, y, me->GetMap()->GetHeight(x, y, me->GetPositionZ()), 20, 10, POINT_NOVICE_JUMP);
+            me->GetMotionMaster()->MoveJump(x, y, me->GetMap()->GetHeight(me->GetPhaseShift(), x, y, me->GetPositionZ()), 20, 10, POINT_NOVICE_JUMP);
             jumpDone = true;
         }
     }
@@ -568,7 +568,7 @@ struct npc_snowdrift_miniboss : public ScriptedAI
         {
             float x, y;
             GetPositionWithDistInOrientation(me, 30.0f, 4.23f, x, y);
-            me->GetMotionMaster()->MoveJump(x, y, me->GetMap()->GetHeight(x, y, me->GetPositionZ()), 20, 10, POINT_MINIBOSS_JUMP);
+            me->GetMotionMaster()->MoveJump(x, y, me->GetMap()->GetHeight(me->GetPhaseShift(), x, y, me->GetPositionZ()), 20, 10, POINT_MINIBOSS_JUMP);
             jumpDone = true;
 
             if (me->GetEntry() == NPC_FLAGRANT_LOTUS)

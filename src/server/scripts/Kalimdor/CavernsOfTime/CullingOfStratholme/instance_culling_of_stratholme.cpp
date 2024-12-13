@@ -1,6 +1,7 @@
-#include "culling_of_stratholme.h"
 #include "CreatureTextMgr.h"
 #include "Packets/WorldStatePackets.h"
+#include "PhasingHandler.h"
+#include "culling_of_stratholme.h"
 
 #define MAX_ENCOUNTER 5
 
@@ -288,7 +289,7 @@ class instance_culling_of_stratholme : public InstanceMapScript
                                         if (auto arthas = instance->GetCreature(GetGuidData(DATA_ARTHAS)))
                                             if (auto risenZombie = arthas->SummonCreature(NPC_ZOMBIE, citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ(), citizen->GetOrientation())) //, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000))
                                                 _zombiesList.push_back(risenZombie->GetGUID());
-                                        citizen->SetInPhase(170, true, true);
+                                        PhasingHandler::AddPhase(citizen, 170, true);
                                     }
                                 break;
                         }

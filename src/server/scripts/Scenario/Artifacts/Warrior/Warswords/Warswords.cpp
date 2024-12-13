@@ -2,10 +2,11 @@
     Warrior: Warswords
 */
 
-#include "ScriptMgr.h"
-#include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "PhasingHandler.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
 
 // 245188
 class go_mystic_bonfire : public GameObjectScript
@@ -32,7 +33,7 @@ public:
                     go->GetGameObjectListWithEntryInGrid(goList, 244751, 45.0f);
                     if (!goList.empty())
                         for (std::list<GameObject*>::const_iterator itr = goList.begin(); itr != goList.end(); ++itr)
-                            (*itr)->SetInPhase(173, true, true);
+                            PhasingHandler::AddPhase(*itr, 173, true);
 
                     return true;
                 }

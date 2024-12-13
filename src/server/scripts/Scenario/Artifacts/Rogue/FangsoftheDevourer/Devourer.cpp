@@ -2,10 +2,11 @@
     Rogue: Devourer
 */
 
-#include "ScriptMgr.h"
-#include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "PhasingHandler.h"
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
 
 // 105464
 class npc_valzuun : public CreatureScript
@@ -258,11 +259,11 @@ public:
                 if (criteria != 0)
                     player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, criteria);
 
-                go->SetInPhase(173, true, true); // hide
+                PhasingHandler::AddPhase(go, 173, true); // hide
                 if (go->GetEntry() == 249390)
                 {
                     if (GameObject* doors = go->FindNearestGameObject(249391, 10.0f))
-                        doors->SetInPhase(173, true, true);
+                        PhasingHandler::AddPhase(doors, 173, true);
                     player->DestroyItemCount(136802, 1, true); // last go. del quest item ?
 
                     std::list<Creature*> adds;
@@ -346,7 +347,7 @@ public:
                 for (std::list<GameObject*>::iterator itr = doors.begin(); itr != doors.end(); ++itr)
                 {
                     (*itr)->SetGoState(GO_STATE_ACTIVE);
-                    (*itr)->SetInPhase(173, true, true);
+                    PhasingHandler::AddPhase(*itr, 173, true);
                 }
         }
 

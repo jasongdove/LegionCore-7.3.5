@@ -207,7 +207,7 @@ struct npc_add_generator : public ScriptedAI
 
         float x = me->GetPositionX();
         float y = me->GetPositionY() - 10;
-        float z = me->GetMap()->GetHeight(x, y, 400.0f);
+        float z = me->GetMap()->GetHeight(me->GetPhaseShift(), x, y, 400.0f);
         summoned->GetMotionMaster()->MoveJump(x, y, z, 10, 20);
 
         if (summoned->GetEntry() == 63992)

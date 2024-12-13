@@ -2,11 +2,12 @@
     Rogue: Kingslayers
 */
 
+#include "Kingslayers.h"
+#include "CreatureTextMgr.h"
+#include "GameObjectAI.h"
+#include "PhasingHandler.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
-#include "CreatureTextMgr.h"
-#include "Kingslayers.h"
-#include "GameObjectAI.h"
 
 // 107979 108015
 class npc_garona_halforcen : public CreatureScript
@@ -840,7 +841,7 @@ public:
                     {
                         outro->GetMotionMaster()->MovePoint(0, -8332.05f, 274.51f, 156.83f);
                         if (GameObject* doors = outro->FindNearestGameObject(251106, 60.0f))
-                            doors->SetInPhase(171, true, true); // hide
+                            PhasingHandler::AddPhase(doors, 171, true); // hide
 
                         if (Creature* garona = outro->FindNearestCreature(108222, 70.0f, true))
                         {
@@ -849,7 +850,7 @@ public:
                         }
                     });
                 }
-                
+
                 if (!target->ToPlayer()->HasItemCount(128870, 1))
                 {
                     target->ToPlayer()->AddItem(128870, 1);

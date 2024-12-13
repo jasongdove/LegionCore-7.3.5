@@ -258,7 +258,7 @@ struct boss_illysanna_ravencrest : public BossAI
                             {
                                 Position pos;
                                 trash->GetNearPoint2D(pos, 15.0f, 0.0f);
-                                pos.m_positionZ = trash->GetHeight(pos.m_positionX, pos.m_positionY, pos.m_positionZ, true);
+                                pos.m_positionZ = trash->GetMap()->GetHeight(trash->GetPhaseShift(), pos.m_positionX, pos.m_positionY, pos.m_positionZ, true);
                                 trash->SetHomePosition(pos);
                                 trash->GetMotionMaster()->MoveJump(pos, 15.0f, 10.0f, 15.0f);
                             }

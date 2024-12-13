@@ -358,7 +358,7 @@ bool Player::TeleportToDigsiteInMap(uint32 mapId)
     ResearchPOIPoint const& point = Trinity::Containers::SelectRandomContainerElement(data.points);
     float x = point.x;
     float y = point.y;
-    float z = map->GetHeight(GetPhases(), x, y, MAX_HEIGHT) + 0.1;
+    float z = map->GetHeight(GetPhaseShift(), x, y, MAX_HEIGHT) + 0.1;
 
     TeleportTo(mapId, x, y, z, GetOrientation());
     return true;

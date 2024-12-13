@@ -474,8 +474,28 @@ typedef std::vector<DungeonEncounterList*> DungeonEncounterVector;
 typedef std::unordered_map<uint32, uint16> CreatureToDungeonEncounterMap;
 typedef std::vector<uint32> DungeonEncounterToCreatureMap;
 
-typedef std::unordered_map<uint32, std::list<uint32>> TerrainPhaseInfo;
-typedef std::unordered_map<uint32, std::list<uint32>> PhaseInfo;
+struct TerrainSwapInfo
+{
+    uint32 Id;
+    std::vector<uint32> UiWorldMapAreaIDSwaps;
+};
+
+struct PhaseInfoStruct
+{
+    uint32 Id;
+    std::unordered_set<uint32> Areas;
+
+    bool IsAllowedInArea(uint32 areaId) const;
+};
+
+struct PhaseAreaInfo
+{
+    PhaseAreaInfo(PhaseInfoStruct const* phaseInfo) : PhaseInfo(phaseInfo) { }
+
+    PhaseInfoStruct const* PhaseInfo;
+    std::unordered_set<uint32> SubAreaExclusions;
+    ConditionContainer Conditions;
+};
 
 class PlayerDumpReader;
 
@@ -685,7 +705,9 @@ class TC_GAME_API ObjectMgr
         void LoadTrainerSpell();
         void AddSpellToTrainer(uint32 entry, uint32 spell, uint32 spellCost, uint32 reqSkill, uint32 reqSkillValue, uint32 reqLevel);
 
-        void LoadTerrainPhaseInfo();
+        void LoadPhases();
+        void UnloadPhaseConditions();
+
         void LoadTerrainSwapDefaults();
         void LoadTerrainWorldMaps();
         void LoadAreaPhases();
@@ -859,13 +881,6 @@ class TC_GAME_API ObjectMgr
 
         SpellClickInfoMapBounds GetSpellClickInfoMapBounds(uint32 creature_id) const;
 
-        std::list<uint32>& GetPhaseTerrainSwaps(uint32 phaseid) { return _terrainPhaseInfoStore[phaseid]; }
-        std::list<uint32>& GetDefaultTerrainSwaps(uint32 mapid) { return _terrainMapDefaultStore[mapid]; }
-        std::list<uint32>& GetTerrainWorldMaps(uint32 terrainId) { return _terrainWorldMapStore[terrainId]; }
-        TerrainPhaseInfo& GetDefaultTerrainSwapStore() { return _terrainMapDefaultStore; }
-        std::list<uint32>& GetPhasesForArea(uint32 area) { return _phases[area]; }
-        PhaseInfo& GetAreaPhases() { return _phases; }
-
         // for wintergrasp only
         GraveYardContainer GraveYardStore;
 
@@ -978,10 +993,17 @@ class TC_GAME_API ObjectMgr
         
         CreatureOutfitContainer _creatureOutfitStore;
 
-        TerrainPhaseInfo _terrainPhaseInfoStore;
-        TerrainPhaseInfo _terrainMapDefaultStore;
-        TerrainPhaseInfo _terrainWorldMapStore;
-        PhaseInfo _phases;
+    public:
+        PhaseInfoStruct const* GetPhaseInfo(uint32 phaseId) const;
+        std::vector<PhaseAreaInfo> const* GetPhasesForArea(uint32 areaId) const;
+        TerrainSwapInfo const* GetTerrainSwapInfo(uint32 terrainSwapId) const;
+        std::vector<TerrainSwapInfo*> const* GetTerrainSwapsForMap(uint32 mapId) const;
+
+    private:
+        std::unordered_map<uint32, PhaseInfoStruct> _phaseInfoById;
+        std::unordered_map<uint32, TerrainSwapInfo> _terrainSwapInfoById;
+        std::unordered_map<uint32, std::vector<PhaseAreaInfo>> _phaseInfoByArea;
+        std::unordered_map<uint32, std::vector<TerrainSwapInfo*>> _terrainSwapInfoByMap;
 
         uint32 _skipUpdateCount;
         void PlayerCreateInfoAddItemHelper(uint32 race_, uint32 class_, uint32 itemId, int32 count, std::vector<uint32> bonusListIDs);

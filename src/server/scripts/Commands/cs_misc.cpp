@@ -30,6 +30,7 @@
 #include "MovementGenerator.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
+#include "PhasingHandler.h"
 #include "PlayerDefines.h"
 #include "QuestData.h"
 #include "ScriptMgr.h"
@@ -37,8 +38,8 @@
 #include "SpellAuras.h"
 #include "TargetedMovementGenerator.h"
 #include "WordFilterMgr.h"
-#include <fstream>
 #include <boost/locale/encoding_utf.hpp>
+#include <fstream>
 
 class misc_commandscript : public CommandScript
 {
@@ -368,10 +369,9 @@ public:
         sDB2Manager.Map2ZoneCoordinates(zoneX, zoneY, zoneId);
 
         Map const* map = object->GetMap();
-        float groundZ = map->GetHeight(object->GetPhases(), object->GetPositionX(), object->GetPositionY(), MAX_HEIGHT);
+        float groundZ = map->GetHeight(object->GetPhaseShift(), object->GetPositionX(), object->GetPositionY(), MAX_HEIGHT);
         DynamicTreeCallback dCallback;
-        float floorZ = map->GetHeight(object->GetPhases(), object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), true, DEFAULT_HEIGHT_SEARCH, &dCallback);
-        float vmapZ = map->GetVmapHeight(object->GetPositionX(), object->GetPositionY(), object->GetPositionZ());
+        float floorZ = map->GetHeight(object->GetPhaseShift(), object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), true, DEFAULT_HEIGHT_SEARCH, &dCallback);
         GridCoord gridCoord = Trinity::ComputeGridCoord(object->GetPositionX(), object->GetPositionY());
 
         int TileX = (MAX_NUMBER_OF_GRIDS - 1) - gridCoord.x_coord;
@@ -385,7 +385,7 @@ public:
         {
             uint32 mogpFlags;
             int32 adtId, rootId, groupId;
-            if(map->GetAreaInfo(object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), mogpFlags, adtId, rootId, groupId))
+            if(map->GetAreaInfo(object->GetPhaseShift(), object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), mogpFlags, adtId, rootId, groupId))
             {
                 if(WMOAreaTableEntry const* wmoEntry = sDB2Manager.GetWMOAreaTableEntryByTripple(rootId, adtId, groupId))
                     if(std::strlen(wmoEntry->AreaName->Str[LOCALE_enUS]) > 0)
@@ -394,7 +394,7 @@ public:
                 handler->PSendSysMessage("WMO rootId %i adtId %i groupId %i mogpFlags %u", rootId, adtId, groupId, mogpFlags);
             }
 
-            if (map->IsOutdoors(object->GetPositionX(), object->GetPositionY(), object->GetPositionZ()))
+            if (map->IsOutdoors(object->GetPhaseShift(), object->GetPositionX(), object->GetPositionY(), object->GetPositionZ()))
                 handler->PSendSysMessage("You are outdoors");
             else
                 handler->PSendSysMessage("You are indoors");
@@ -406,37 +406,23 @@ public:
             object->GetMapId(), (mapEntry ? mapEntry->MapName->Str[sObjectMgr->GetDBCLocaleIndex()] : "<unknown>"),
             zoneId, (zoneEntry ? zoneEntry->AreaName->Str[sObjectMgr->GetDBCLocaleIndex()] : "<unknown>"),
             areaId, AreaName,
-            StringJoin(object->GetPhases(), ", ").c_str(),
             object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), object->GetOrientation(),
             cell.GridX(), cell.GridY(), cell.CellX(), cell.CellY(), object->GetInstanceId(),
             zoneX, zoneY, groundZ, floorZ, haveMap, haveVMap);
 
-        handler->PSendSysMessage("Difficulty %i spawnmask %i vmapZ %f GetPositionZ %f TileX %i TileY %i thread %zu",
-        map->GetDifficultyID(), map->GetSpawnMode(), vmapZ, object->GetPositionZ(), TileX, TileY, std::hash<std::thread::id>()(std::this_thread::get_id()));
+        handler->PSendSysMessage("Difficulty %i spawnmask %i GetPositionZ %f TileX %i TileY %i thread %zu",
+        map->GetDifficultyID(), map->GetSpawnMode(), object->GetPositionZ(), TileX, TileY, std::hash<std::thread::id>()(std::this_thread::get_id()));
 
         if (object->m_movementInfo.transport.Guid)
             handler->PSendSysMessage("Transport position: %s Guid: %s", object->m_movementInfo.transport.Pos.ToString().c_str(), object->m_movementInfo.transport.Guid.ToString().c_str());
 
         LiquidData liquidStatus;
-        ZLiquidStatus status = map->getLiquidStatus(object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), MAP_ALL_LIQUIDS, &liquidStatus);
+        ZLiquidStatus status = map->getLiquidStatus(object->GetPhaseShift(), object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), MAP_ALL_LIQUIDS, &liquidStatus);
 
         if (status)
             handler->PSendSysMessage(LANG_LIQUID_STATUS, liquidStatus.level, liquidStatus.depth_level, liquidStatus.entry, liquidStatus.type_flags, status);
 
-        if (!object->GetTerrainSwaps().empty())
-        {
-            std::stringstream ss;
-            for (uint32 swap : object->GetTerrainSwaps())
-                ss << swap << " ";
-            handler->PSendSysMessage("Target's active terrain swaps: %s", ss.str().c_str());
-        }
-        if (!object->GetWorldMapAreaSwaps().empty())
-        {
-            std::stringstream ss;
-            for (uint32 swap : object->GetWorldMapAreaSwaps())
-                ss << swap << " ";
-            handler->PSendSysMessage("Target's active world map area swaps: %s", ss.str().c_str());
-        }
+        PhasingHandler::PrintToChat(handler, object->GetPhaseShift());
 
         if (!object->m_movementInfo.transport.Guid.IsEmpty())
             handler->PSendSysMessage("Transport pos: (%f, %f, %f)", object->m_movementInfo.transport.Pos.GetPositionX(), object->m_movementInfo.transport.Pos.GetPositionY(), object->m_movementInfo.transport.Pos.GetPositionZ());
@@ -698,7 +684,8 @@ public:
             target->GetContactPoint(_player, x, y, z);
 
             _player->TeleportTo(target->GetMapId(), x, y, z, _player->GetAngle(target), TELE_TO_GM_MODE);
-            _player->CopyPhaseFrom(target, true);
+            PhasingHandler::InheritPhaseShift(_player, target);
+            _player->UpdateObjectVisibility();
         }
         else
         {
@@ -823,7 +810,8 @@ public:
             float x, y, z;
             handler->GetSession()->GetPlayer()->GetClosePoint(x, y, z, target->GetObjectSize());
             target->TeleportTo(handler->GetSession()->GetPlayer()->GetMapId(), x, y, z, target->GetOrientation());
-            target->CopyPhaseFrom(handler->GetSession()->GetPlayer(), true);
+            PhasingHandler::InheritPhaseShift(target, handler->GetSession()->GetPlayer());
+            target->UpdateObjectVisibility();
         }
         else
         {
@@ -1841,25 +1829,15 @@ public:
 
         return true;
     }
+
     static bool HandlePhaseInfoCommand(ChatHandler* handler, char const* args)
     {
-        /*
-        if (Player* player = handler->getSelectedPlayer())
-            handler->PSendSysMessage(player->GetPhaseMgr().GetPhaseIdString().c_str());
-        */
-
         if (Unit* target = handler->getSelectedUnit())
-        {
-            std::set<uint32> const& phases = target->GetPhases();
-            std::ostringstream ss;
-            for (uint32 phaseId : phases)
-                ss << phaseId << ' ';
-
-            handler->PSendSysMessage("GetPhases : %s", ss.str().c_str());
-        }
+            PhasingHandler::PrintToChat(handler, target->GetPhaseShift());
 
         return true;
     }
+
     // show info of player
     static bool HandlePInfoCommand(ChatHandler* handler, char const* args)
     {

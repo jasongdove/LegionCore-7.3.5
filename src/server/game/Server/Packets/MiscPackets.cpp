@@ -361,7 +361,7 @@ WorldPacket const* WorldPackets::Misc::RandomRoll::Write()
 
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Misc::PhaseShiftDataPhase const& phaseShiftDataPhase)
 {
-    data << phaseShiftDataPhase.PhaseFlags.AsUnderlyingType();
+    data << uint16(phaseShiftDataPhase.PhaseFlags);
     data << uint16(phaseShiftDataPhase.Id);
     return data;
 }
@@ -377,24 +377,21 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Misc::PhaseShiftData cons
     return data;
 }
 
-WorldPackets::Misc::PhaseShiftDataPhase::PhaseShiftDataPhase(uint16 id, EnumClassFlag<PhaseShiftFlags> flags): PhaseFlags(flags), Id(id) { }
-WorldPackets::Misc::PhaseShiftDataPhase::PhaseShiftDataPhase(uint16 id): Id(id) { }
-
-WorldPacket const* WorldPackets::Misc::PhaseShift::Write()
+WorldPacket const* WorldPackets::Misc::PhaseShiftChange::Write()
 {
     _worldPacket << Client;
     _worldPacket << Phaseshift;
 
-    _worldPacket << uint32(VisibleMapIDs.size() * 2);           // active terrain swaps size
-    for (auto visibleMapId : VisibleMapIDs)
+    _worldPacket << uint32(VisibleMapIDs.size() * 2);           // size in bytes
+    for (uint16 visibleMapId : VisibleMapIDs)
         _worldPacket << uint16(visibleMapId);                   // Active terrain swap map id
 
-    _worldPacket << uint32(PreloadMapIDs.size() * 2);           // inactive terrain swaps size
-    for (auto preloadMapId : PreloadMapIDs)
+    _worldPacket << uint32(PreloadMapIDs.size() * 2);           // size in bytes
+    for (uint16 preloadMapId : PreloadMapIDs)
         _worldPacket << uint16(preloadMapId);                   // Inactive terrain swap map id
 
-    _worldPacket << uint32(UiWorldMapAreaIDSwaps.size() * 2);   // UI map swaps size
-    for (auto uiWorldMapAreaIDSwap : UiWorldMapAreaIDSwaps)
+    _worldPacket << uint32(UiWorldMapAreaIDSwaps.size() * 2);   // size in bytes
+    for (uint16 uiWorldMapAreaIDSwap : UiWorldMapAreaIDSwaps)
         _worldPacket << uint16(uiWorldMapAreaIDSwap);           // UI map id, WorldMapArea.db2, controls map display
 
     return &_worldPacket;

@@ -55,6 +55,7 @@ class InstanceScript;
 class MapInstanced;
 class Object;
 class OutdoorPvP;
+class PhaseShift;
 class Player;
 class TempSummon;
 class Transport;
@@ -276,33 +277,35 @@ class TC_GAME_API Map
 
         uint32 GetId() const;
         uint32 GetParentMap() const;
+
+        bool HasGrid(uint32 mapId, int32 gx, int32 gy) const;
         static bool ExistMap(uint32 mapid, int gx, int gy);
         static bool ExistVMap(uint32 mapid, int gx, int gy);
-        Map const* GetParent() const;
-        void AddChildTerrainMap(Map* map);
-        void UnlinkAllChildTerrainMaps();
+
+        Map const* GetParent() const { return m_parentMap; }
+        void AddChildTerrainMap(Map* map) { m_childTerrainMaps->push_back(map); }
+        void UnlinkAllChildTerrainMaps() { m_childTerrainMaps->clear(); }
 
         // some calls like isInWater should not use vmaps due to processor power
         // can return INVALID_HEIGHT if under z+2 z coord not found height
-        float GetHeight(float x, float y, float z, bool checkVMap = true, float maxSearchDist = DEFAULT_HEIGHT_SEARCH) const;
+        float GetStaticHeight(PhaseShift const& phaseShift, float x, float y, float z, bool checkVMap = true, float maxSearchDist = DEFAULT_HEIGHT_SEARCH) const;
         float GetMinHeight(Position pos) const;
-        float GetVmapHeight(float x, float y, float z) const;
-        float GetGridMapHeigh(float x, float y) const;
+        float GetGridHeight(PhaseShift const& phaseShift, float x, float y) const;
 
-        ZLiquidStatus getLiquidStatus(float x, float y, float z, uint8 ReqLiquidType, LiquidData* data = nullptr) const;
+        ZLiquidStatus getLiquidStatus(PhaseShift const& phaseShift, float x, float y, float z, uint8 ReqLiquidType, LiquidData* data = nullptr) const;
         
-        uint32 GetAreaId(float x, float y, float z, bool *isOutdoors) const;
-        bool GetAreaInfo(float x, float y, float z, uint32& mogpflags, int32& adtId, int32& rootId, int32& groupId) const;
-        uint32 GetAreaId(float x, float y, float z) const;
-        uint32 GetZoneId(float x, float y, float z) const;
-        void GetZoneAndAreaId(uint32& zoneid, uint32& areaid, float x, float y, float z) const;
+        uint32 GetAreaId(PhaseShift const& phaseShift, float x, float y, float z, bool *isOutdoors) const;
+        bool GetAreaInfo(PhaseShift const& phaseShift, float x, float y, float z, uint32& mogpflags, int32& adtId, int32& rootId, int32& groupId) const;
+        uint32 GetAreaId(PhaseShift const& phaseShift, float x, float y, float z) const;
+        uint32 GetZoneId(PhaseShift const& phaseShift, float x, float y, float z) const;
+        void GetZoneAndAreaId(PhaseShift const& phaseShift, uint32& zoneid, uint32& areaid, float x, float y, float z) const;
 
-        bool IsOutdoors(float x, float y, float z) const;
+        bool IsOutdoors(PhaseShift const& phaseShift, float x, float y, float z) const;
 
-        uint8 GetTerrainType(float x, float y) const;
-        float GetWaterLevel(float x, float y) const;
-        bool IsInWater(float x, float y, float z, LiquidData* data = nullptr) const;
-        bool IsUnderWater(G3D::Vector3 pos) const;
+        uint8 GetTerrainType(PhaseShift const& phaseShift, float x, float y) const;
+        float GetWaterLevel(PhaseShift const& phaseShift, float x, float y) const;
+        bool IsInWater(PhaseShift const& phaseShift, float x, float y, float z, LiquidData* data = nullptr) const;
+        bool IsUnderWater(PhaseShift const& phaseShift, float x, float y, float z) const;
 
         void MoveAllCreaturesInMoveList();
         void MoveAllGameObjectsInMoveList();
@@ -472,15 +475,15 @@ class TC_GAME_API Map
         InstanceMap* ToInstanceMap();
         InstanceMap const* ToInstanceMap() const;
 
-        float GetWaterOrGroundLevel(std::set<uint32> const& phases, float x, float y, float z, float* ground = nullptr, bool swim = false) const;
-        float GetHeight(std::set<uint32> const& phases, float x, float y, float z, bool vmap = true, float maxSearchDist = DEFAULT_HEIGHT_SEARCH, DynamicTreeCallback* dCallback = nullptr) const;
-        bool isInLineOfSight(float x1, float y1, float z1, float x2, float y2, float z2, std::set<uint32> const& phases, VMAP::ModelIgnoreFlags ignoreFlags, DynamicTreeCallback* dCallback = nullptr) const;
+        float GetWaterOrGroundLevel(PhaseShift const& phaseShift, float x, float y, float z, float* ground = nullptr, bool swim = false) const;
+        float GetHeight(PhaseShift const& phaseShift, float x, float y, float z, bool vmap = true, float maxSearchDist = DEFAULT_HEIGHT_SEARCH, DynamicTreeCallback* dCallback = nullptr) const;
+        bool isInLineOfSight(PhaseShift const& phaseShift, float x1, float y1, float z1, float x2, float y2, float z2, VMAP::ModelIgnoreFlags ignoreFlags, DynamicTreeCallback* dCallback = nullptr) const;
         void Balance() { _dynamicTree.balance(); }
         void RemoveGameObjectModel(GameObjectModel const& model) { _dynamicTree.remove(model); }
         void InsertGameObjectModel(GameObjectModel const& model) { _dynamicTree.insert(model); }
         bool ContainsGameObjectModel(GameObjectModel const& model) const { return _dynamicTree.contains(model);}
-        bool getObjectHitPos(std::set<uint32> const& phases, Position startPos, Position destPos, float modifyDist, DynamicTreeCallback* dCallback = nullptr);
-        bool getObjectHitPos(std::set<uint32> const& phases, float x1, float y1, float z1, float x2, float y2, float z2, float& rx, float &ry, float& rz, float modifyDist, DynamicTreeCallback* dCallback = nullptr);
+        bool getObjectHitPos(PhaseShift const& phaseShift, Position startPos, Position destPos, float modifyDist, DynamicTreeCallback* dCallback = nullptr);
+        bool getObjectHitPos(PhaseShift const& phaseShift, float x1, float y1, float z1, float x2, float y2, float z2, float& rx, float &ry, float& rz, float modifyDist, DynamicTreeCallback* dCallback = nullptr);
         void UpdateEncounterState(EncounterCreditType type, uint32 creditEntry, Unit* sourc, Unit* player);
 
         virtual ObjectGuid::LowType GetOwnerGuildId(uint32 /*team*/ = TEAM_OTHER) const { return 0; }
@@ -579,7 +582,7 @@ class TC_GAME_API Map
 
         void SendInitTransports(Player* player);
         void SendRemoveTransports(Player* player);
-        void SendUpdateTransportVisibility(Player* player, std::set<uint32> const& previousPhases);
+        void SendUpdateTransportVisibility(Player* player);
 
     private:
         void LoadMapAndVMap(int gx, int gy);
@@ -590,6 +593,7 @@ class TC_GAME_API Map
         static void UnloadMapImpl(Map* map, int gx, int gy);
         void LoadMMap(int gx, int gy);
         GridMap* GetGrid(float x, float y);
+        GridMap* GetGrid(uint32 mapId, float x, float y);
 
         void SetTimer(uint32 t) { i_gridExpiry = t < MIN_GRID_DELAY ? MIN_GRID_DELAY : t; }
 

@@ -22,11 +22,12 @@ Comment: All wp related commands
 Category: commandscripts
 EndScriptData */
 
-#include "ScriptMgr.h"
-#include "ObjectMgr.h"
-#include "WaypointManager.h"
 #include "Chat.h"
 #include "DatabaseEnv.h"
+#include "ObjectMgr.h"
+#include "PhasingHandler.h"
+#include "ScriptMgr.h"
+#include "WaypointManager.h"
 
 class wp_commandscript : public CommandScript
 {
@@ -695,7 +696,7 @@ public:
                         return false;
                     }
 
-                    wpCreature2->CopyPhaseFrom(chr);
+                    PhasingHandler::InheritPhaseShift(wpCreature2, chr);
 
                     wpCreature2->SaveToDB(map->GetId(), (UI64LIT(1) << map->GetSpawnMode()));
                     // To call _LoadGoods(); _LoadQuests(); CreateTrainerSpells();
@@ -922,7 +923,7 @@ public:
                     return false;
                 }
 
-                wpCreature->CopyPhaseFrom(chr);
+                PhasingHandler::InheritPhaseShift(wpCreature, chr);
 
                 // Set "wpguid" column to the visual waypoint
                 WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_UPD_WAYPOINT_DATA_WPGUID);
@@ -988,7 +989,7 @@ public:
                 return false;
             }
 
-            creature->CopyPhaseFrom(chr);
+            PhasingHandler::InheritPhaseShift(creature, chr);
 
             creature->SaveToDB(map->GetId(), (UI64LIT(1) << map->GetSpawnMode()));
             if (!creature->LoadCreatureFromDB(creature->GetDBTableGUIDLow(), map))
@@ -1039,7 +1040,7 @@ public:
                 return false;
             }
 
-            creature->CopyPhaseFrom(chr);
+            PhasingHandler::InheritPhaseShift(creature, chr);
 
             creature->SaveToDB(map->GetId(), (UI64LIT(1) << map->GetSpawnMode()));
             if (!creature->LoadCreatureFromDB(creature->GetDBTableGUIDLow(), map))

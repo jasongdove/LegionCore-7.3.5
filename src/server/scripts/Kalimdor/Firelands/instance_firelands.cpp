@@ -1,4 +1,5 @@
 #include "AccountMgr.h"
+#include "PhasingHandler.h"
 #include "firelands.h"
 
 // areatrigger
@@ -76,7 +77,10 @@ class instance_firelands : public InstanceMapScript
                         break;
                     case NPC_BALEROC:
                         uiBalerocGUID = pCreature->GetGUID();
-                        pCreature->SetInPhase(170, true, (GetBossState(DATA_SHANNOX) != DONE) || (GetBossState(DATA_RHYOLITH) != DONE) || (GetBossState(DATA_BETHTILAC) != DONE) || (GetBossState(DATA_ALYSRAZOR) != DONE));
+                        if ((GetBossState(DATA_SHANNOX) != DONE) || (GetBossState(DATA_RHYOLITH) != DONE) || (GetBossState(DATA_BETHTILAC) != DONE) || (GetBossState(DATA_ALYSRAZOR) != DONE))
+                            PhasingHandler::AddPhase(pCreature, 170, true);
+                        else
+                            PhasingHandler::RemovePhase(pCreature, 170, true);
                         break;
                     case NPC_CIRCLE_OF_THRONES_PORTAL:
                         creaturePortals.push_back(pCreature);
@@ -218,7 +222,7 @@ class instance_firelands : public InstanceMapScript
                         HandleGameObject(uiFirewallBalerockGUID, balerocAvailable);
                     if (balerocAvailable)
                         if (Creature* baleroc = instance->GetCreature(uiBalerocGUID))
-                            baleroc->SetInPhase(170, true, false);
+                            PhasingHandler::RemovePhase(baleroc, 170, true);
                     break;
                 }
 

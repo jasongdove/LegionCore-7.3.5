@@ -761,7 +761,7 @@ struct boss_fallen_avatar : BossAI
                     if (isSecondPhase)
                         if (!me->HasUnitMovementFlag(MOVEMENTFLAG_FALLING))
                         {
-                            float tz = me->GetHeight(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), false, MAX_FALL_DISTANCE);
+                            float tz = me->GetMap()->GetHeight(me->GetPhaseShift(), me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), false, MAX_FALL_DISTANCE);
                             if (tz <= 1509.7f) // fall under water
                                 me->NearTeleportTo(me->GetPositionX(), me->GetPositionY(), 1508.80f, me->GetOrientation());
                             else

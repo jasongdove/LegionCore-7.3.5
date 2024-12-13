@@ -980,7 +980,7 @@ class spell_dru_travel_form : public SpellScriptLoader
             {
                 if (Unit* caster = GetCaster())
                 {
-                    if (!caster->GetMap()->IsOutdoors(caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ()))
+                    if (!caster->GetMap()->IsOutdoors(caster->GetPhaseShift(), caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ()))
                         return SPELL_FAILED_ONLY_OUTDOORS;
                 }
 
@@ -1072,7 +1072,7 @@ class spell_dru_travel_form : public SpellScriptLoader
                 {
                     if (Unit* caster = GetCaster())
                     {
-                        if (!caster->GetMap()->IsOutdoors(caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ()))
+                        if (!caster->GetMap()->IsOutdoors(caster->GetPhaseShift(), caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ()))
                         {
                             GetAura()->Remove();
                             return;

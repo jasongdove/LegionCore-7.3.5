@@ -1266,7 +1266,7 @@ LocaleConstant ChatHandler::GetSessionDbcLocale() const
     return m_session->GetSessionDbcLocale();
 }
 
-int ChatHandler::GetSessionDbLocaleIndex() const
+LocaleConstant ChatHandler::GetSessionDbLocaleIndex() const
 {
     return m_session->GetSessionDbLocaleIndex();
 }
@@ -1351,7 +1351,7 @@ LocaleConstant CliHandler::GetSessionDbcLocale() const
     return sWorld->GetDefaultDbcLocale();
 }
 
-int CliHandler::GetSessionDbLocaleIndex() const
+LocaleConstant CliHandler::GetSessionDbLocaleIndex() const
 {
     return sObjectMgr->GetDBCLocaleIndex();
 }

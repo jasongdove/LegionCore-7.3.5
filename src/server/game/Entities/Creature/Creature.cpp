@@ -46,6 +46,7 @@
 #include "ObjectVisitors.hpp"
 #include "Opcodes.h"
 #include "OutdoorPvPMgr.h"
+#include "PhasingHandler.h"
 #include "Player.h"
 #include "PoolMgr.h"
 #include "QuestData.h"
@@ -863,7 +864,7 @@ void Creature::UpdateMovementFlags()
 //        return;
 
     // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)
-    float ground = GetMap()->GetHeight(GetPhases(), GetPositionX(), GetPositionY(), GetPositionZMinusOffset());
+    float ground = GetMap()->GetHeight(GetPhaseShift(), GetPositionX(), GetPositionY(), GetPositionZMinusOffset());
 
     bool isInAir = (G3D::fuzzyGt(GetPositionZMinusOffset(), ground + 0.05f) || G3D::fuzzyLt(GetPositionZMinusOffset(), ground - 0.05f)); // Can be underground too, prevent the falling
 
@@ -1306,12 +1307,11 @@ bool Creature::Create(ObjectGuid::LowType guidlow, Map* map, uint32 entry, int32
     ASSERT(map);
     SetMap(map);
 
-    if (data && data->phaseid)
-        SetInPhase(data->phaseid, false, true);
-
-    if (data && data->phaseGroup)
-        for (auto ph : sDB2Manager.GetPhasesForGroup(data->phaseGroup))
-            SetInPhase(ph, false, true);
+    if (data)
+    {
+        PhasingHandler::InitDbPhaseShift(GetPhaseShift(), data->phaseUseFlags, data->phaseId, data->phaseGroup);
+        PhasingHandler::InitDbVisibleMapId(GetPhaseShift(), data->terrainSwapMap);
+    }
 
     CreatureTemplate const* cinfo = sObjectMgr->GetCreatureTemplate(entry);
     if (!cinfo)
@@ -1418,8 +1418,8 @@ bool Creature::Create(ObjectGuid::LowType guidlow, Map* map, uint32 entry, int32
     if (entry == VISUAL_WAYPOINT)
         SetVisible(false);
 
-    m_areaId = GetMap()->GetAreaId(x, y, z);
-    m_zoneId = GetMap()->GetZoneId(x, y, z);
+    m_areaId = GetMap()->GetAreaId(GetPhaseShift(), x, y, z);
+    m_zoneId = GetMap()->GetZoneId(GetPhaseShift(), x, y, z);
 
     // code block for underwater state update
     if (!m_lastUnderWatterPos.IsInDist(this, World::Relocation_UpdateUnderwateLimit))
@@ -1751,7 +1751,7 @@ void Creature::SaveToDB(uint32 mapid, uint64 spawnMask)
 
     uint32 zoneId = 0;
     uint32 areaId = 0;
-    sMapMgr->GetZoneAndAreaId(zoneId, areaId, mapid, GetPositionX(), GetPositionY(), GetPositionZ());
+    sMapMgr->GetZoneAndAreaId(GetPhaseShift(), zoneId, areaId, mapid, GetPositionX(), GetPositionY(), GetPositionZ());
 
     // data->guid = guid must not be updated at save
     data.id = GetEntry();
@@ -1792,7 +1792,7 @@ void Creature::SaveToDB(uint32 mapid, uint64 spawnMask)
     data.isActive = isActiveObject();
     // data.MaxVisible = cinfo->MaxVisible;
 
-    data.phaseid = GetDBPhase() > 0 ? GetDBPhase() : 0;
+    data.phaseId = GetDBPhase() > 0 ? GetDBPhase() : 0;
     data.phaseGroup = GetDBPhase() < 0 ? abs(GetDBPhase()) : 0;
 
     // update in DB
@@ -1811,7 +1811,7 @@ void Creature::SaveToDB(uint32 mapid, uint64 spawnMask)
     stmt->setUInt32(index++, zoneId);
     stmt->setUInt32(index++, areaId);
     stmt->setUInt64(index++, spawnMask);
-    stmt->setUInt32(index++, data.phaseid);
+    stmt->setUInt32(index++, data.phaseId);
     stmt->setUInt32(index++, data.phaseGroup);
     stmt->setUInt32(index++, displayId);
     stmt->setUInt8(index++, GetCurrentEquipmentId());
@@ -2199,13 +2199,6 @@ bool Creature::CreateFromProto(ObjectGuid::LowType guidlow, uint32 entry, int32 
     if (!UpdateEntry(entry, team, data))
         return false;
 
-    if (data && data->phaseid)
-        SetInPhase(data->phaseid, false, true);
-
-    if (data && data->phaseGroup)
-        for (auto ph : sDB2Manager.GetPhasesForGroup(data->phaseGroup))
-            SetInPhase(ph, false, true);
-
     if (vehId)
         CreateVehicleKit(vehId, entry, 0, true);
 
@@ -2279,7 +2272,7 @@ bool Creature::LoadCreatureFromDB(ObjectGuid::LowType guid, Map* map, bool addTo
         m_deathState = DEAD;
         if (CanFly())
         {
-            float tz = map->GetHeight(GetPhases(), data->posX, data->posY, data->posZ, false);
+            float tz = map->GetHeight(GetPhaseShift(), data->posX, data->posY, data->posZ, false);
             if (data->posZ - tz > 0.1f)
                 Relocate(data->posX, data->posY, tz);
         }

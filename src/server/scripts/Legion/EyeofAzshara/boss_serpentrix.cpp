@@ -343,7 +343,7 @@ struct npc_eye_of_azshara_cove_seagull : public ScriptedAI
             float x = me->GetPositionX();
             float y = me->GetPositionY();
 
-            me->GetMotionMaster()->MovePoint(1, me->GetPositionX(), me->GetPositionY(), me->GetMap()->GetHeight(x, y, me->GetPositionZ()));
+            me->GetMotionMaster()->MovePoint(1, me->GetPositionX(), me->GetPositionY(), me->GetMap()->GetHeight(me->GetPhaseShift(), x, y, me->GetPositionZ()));
         }
     }
 

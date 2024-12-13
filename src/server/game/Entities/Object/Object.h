@@ -25,10 +25,9 @@
 #include "ModelIgnoreFlags.h"
 #include "MovementInfo.h"
 #include "ObjectDefines.h"
+#include "PhaseShift.h"
 #include "UpdateData.h"
 #include "UpdateFields.h"
-
-#define DEFAULT_PHASE 169
 
 enum TempSummonType : uint8
 {
@@ -486,29 +485,19 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         uint32 GetInstanceId() const { return m_InstanceId; }
         bool InInstance() const { return m_currMap && m_currMap->Instanceable(); }
 
-        virtual bool SetInPhase(uint32 id, bool update, bool apply);
-        void CopyPhaseFrom(WorldObject* obj, bool update = false);
-        void UpdateAreaPhase();
-        void ClearPhases(bool update = false);
-        void RebuildTerrainSwaps();
-        void RebuildWorldMapAreaSwaps();
-        bool HasInPhaseList(uint32 phase);
-        bool IsInPhase(uint32 phase) const { return _phases.find(phase) != _phases.end(); }
-        bool IsInPhase(WorldObject const* obj) const;
-        bool IsInTerrainSwap(uint32 terrainSwap) const { return _terrainSwaps.find(terrainSwap) != _terrainSwaps.end(); }
-        std::set<uint32> const& GetPhases() const { return _phases; }
-        std::set<uint32> const& GetTerrainSwaps() const { return _terrainSwaps; }
-        std::set<uint32> const& GetWorldMapAreaSwaps() const { return _worldMapAreaSwaps; }
+        bool IsInPhase(WorldObject const* obj) const
+        {
+            return GetPhaseShift().CanSee(obj->GetPhaseShift());
+        }
+
+        PhaseShift& GetPhaseShift() { return _phaseShift; }
+        PhaseShift const& GetPhaseShift() const { return _phaseShift; }
+        PhaseShift& GetSuppressedPhaseShift() { return _suppressedPhaseShift; }
+        PhaseShift const& GetSuppressedPhaseShift() const { return _suppressedPhaseShift; }
         int32 GetDBPhase() { return _dbPhase; }
 
         // if negative it is used as PhaseGroupId
         void SetDBPhase(int32 p) { _dbPhase = p; }
-
-        // TODO: legacy; should be replaced with PhaseShift check in GameObjectModel
-        bool IsInPhase(std::set<uint32> const& phases) const;
-
-        void setIgnorePhaseIdCheck(bool apply)  { m_ignorePhaseIdCheck = apply; }
-        bool IgnorePhaseId() const { return m_ignorePhaseIdCheck; }
 
         bool m_zoneForce;
         uint32 m_zoneId;
@@ -521,7 +510,6 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         uint32 GetOldAreaID() const { return m_oldAreaId; }
         uint32 GetOldZoneID() const { return m_oldZoneId; }
         uint32 GetZoneId() const;
-        uint32 GetPZoneId() const;
         uint32 GetAreaId() const;
         void GetZoneAndAreaId(uint32& zoneid, uint32& areaid) const;
 
@@ -556,10 +544,6 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         bool IsInRange3d(float x, float y, float z, float minRange, float maxRange) const;
         bool isInFront(WorldObject const* target, float arc = M_PI) const;
         bool isInBack(WorldObject const* target, float arc = M_PI) const;
-
-        float GetWaterOrGroundLevel(float x, float y, float z, float* ground = nullptr, bool swim = false) const;
-        float GetWaterOrGroundLevel(Position pos) const { return GetWaterOrGroundLevel(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ()); }
-        float GetHeight(float x, float y, float z, bool vmap = true, float maxSearchDist = DEFAULT_HEIGHT_SEARCH) const;
 
         bool IsInBetweenShift(const Position* obj1, const Position* obj2, float size, float shift, float angleShift) const;
         bool IsInBetween(const Position* obj1, const Position* obj2, float size = 0) const;
@@ -758,12 +742,10 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
     private:
         C_PTR ptr;
 
-        //uint32 m_mapId;                                     // object at map with map_id
+        //uint32 m_mapId;                                   // object at map with map_id
         uint32 m_InstanceId;                                // in map copy with instance id
-        std::set<uint32> _phases;
-        bool m_ignorePhaseIdCheck;                          // like gm mode.
-        std::set<uint32> _terrainSwaps;
-        std::set<uint32> _worldMapAreaSwaps;
+        PhaseShift _phaseShift;
+        PhaseShift _suppressedPhaseShift;                   // contains phases for current area but not applied due to conditions
         int32 _dbPhase;
 
         GuidUnorderedSet _visibilityPlayerList;

@@ -15,23 +15,23 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "DatabaseEnv.h"
-#include "ObjectMgr.h"
-#include "ObjectDefines.h"
-#include "GridDefines.h"
-#include "GridNotifiers.h"
-#include "SpellMgr.h"
-#include "GridNotifiersImpl.h"
+#include "SmartScriptMgr.h"
 #include "Cell.h"
 #include "CellImpl.h"
-#include "InstanceScript.h"
-#include "ScriptedCreature.h"
-#include "GameEventMgr.h"
 #include "CreatureTextMgr.h"
 #include "DB2Stores.h"
-#include "SmartScriptMgr.h"
+#include "DatabaseEnv.h"
 #include "EventObjectData.h"
+#include "GameEventMgr.h"
+#include "GridDefines.h"
+#include "GridNotifiers.h"
+#include "GridNotifiersImpl.h"
+#include "InstanceScript.h"
+#include "ObjectDefines.h"
+#include "ObjectMgr.h"
 #include "QuestData.h"
+#include "ScriptedCreature.h"
+#include "SpellMgr.h"
 #include "StringConvert.h"
 
 void SmartWaypointMgr::LoadFromDB()
@@ -1113,7 +1113,7 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
                 return false;
             }
 
-            if (!sPhaseXPhaseGroupStore.HasRecord(phaseGroup))
+            if (!sDB2Manager.GetPhasesForGroup(phaseGroup))
             {
                 TC_LOG_ERROR("sql.sql", "SmartScript: SMART_ACTION_SET_INGAME_PHASE_GROUP uses invalid phase group id %u for creature %u, skipped", phaseGroup, e.entryOrGuid);
                 return false;

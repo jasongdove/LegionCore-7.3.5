@@ -179,15 +179,17 @@ enum TrinityStrings
     LANG_YOU_CHANGE_RUNIC_POWER         = 173,
     LANG_YOURS_RUNIC_POWER_CHANGED      = 174,
     LANG_LIQUID_STATUS                  = 175,
-    
-    LANG_PHASING_REPORT_STATUS          = 176,    
-    LANG_PHASING_NO_DEFINITIONS         = 177,              // Phasing
-    LANG_PHASING_SUCCESS                = 178,
-    LANG_PHASING_FAILED                 = 179,    
-    LANG_PHASING_LAST_PHASE             = 180,    
-    LANG_PHASING_LIST                   = 181,    
-    LANG_PHASING_PHASEMASK              = 182,    
-    // Room for more level 1              183-199 not used
+
+    LANG_GRID_POSITION                  = 178,
+
+    LANG_PHASESHIFT_STATUS              = 179,
+    LANG_PHASESHIFT_PHASES              = 180,
+    LANG_PHASESHIFT_VISIBLE_MAP_IDS     = 181,
+    LANG_PHASESHIFT_UI_WORLD_MAP_AREA_SWAPS = 182,
+    LANG_PHASE_FLAG_COSMETIC            = 183,
+    LANG_PHASE_FLAG_PERSONAL            = 184,
+
+    // Room for more level 1              185-199 not used
 
     // level 2 chat
     LANG_NO_SELECTION                   = 200,

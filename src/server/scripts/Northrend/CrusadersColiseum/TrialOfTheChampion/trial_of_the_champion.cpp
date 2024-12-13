@@ -27,9 +27,10 @@ npc_announcer_toc5
 EndContentData */
 
 #include "trial_of_the_champion.h"
-#include "Vehicle.h"
 #include "Containers.h"
 #include "CreatureTextMgr.h"
+#include "PhasingHandler.h"
+#include "Vehicle.h"
 
 #define GOSSIP_START_EVENT1 "I'm ready to start challenge."
 #define GOSSIP_START_EVENT2 "I'm ready for the next challenge."
@@ -1298,9 +1299,9 @@ public:
                     case 2:
                         if (Creature* mount = me->GetCreature(*me, instance->GetGuidData(DATA_BLACK_KNIGHT_GRYPHON)))
                         {
-                            mount->SetInPhase(170, true, false);
+                            PhasingHandler::RemovePhase(mount, 170, true);
                             if (Creature* knight = me->GetCreature(*me, instance->GetGuidData(DATA_BLACK_KNIGHT)))
-                                knight->SetInPhase(170, true, false);
+                                PhasingHandler::RemovePhase(knight, 170, true);
                             Talk(SAY_ANNOUNCER_BK);
                             mount->AI()->SetData(1, 0);
                             me->SetTarget(mount->GetGUID());

@@ -1,4 +1,5 @@
 #include "dragon_soul.h"
+#include "PhasingHandler.h"
 
 enum Adds
 {
@@ -1970,7 +1971,7 @@ class npc_dragon_soul_twilight_assaulter : public CreatureScript
                 switch (events.ExecuteEvent())
                 {
                 case EVENT_ASSAULTER_VISUAL:
-                    if (me->IsInPhase(DEFAULT_PHASE))
+                    if (me->GetPhaseShift().HasPhase(DEFAULT_PHASE))
                         DoCastAOE(SPELL_TWILIGHT_FIREBALL);
                     events.ScheduleEvent(EVENT_ASSAULTER_VISUAL, urand(30000, 60000));
                     break;

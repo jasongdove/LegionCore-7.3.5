@@ -350,7 +350,7 @@ public:
                 {
                     if (player->GetCurrentAreaID() == 8083)
                     {
-                        if (!player->GetMap()->IsOutdoors(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ()))
+                        if (!player->GetMap()->IsOutdoors(player->GetPhaseShift(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ()))
                         {
                             if (!player->HasAura(197134))
                                 player->CastSpell(player, 197134, true);

@@ -17,6 +17,7 @@
  */
 
 #include "MiscPackets.h"
+#include "PhasingHandler.h"
 #include "pursuing_the_black_harvest.h"
 
 class instance_pursuing_the_black_harvest : public InstanceMapScript
@@ -56,13 +57,19 @@ public:
 
         void OnPlayerEnter(Player* player) override
         {
-            std::set<uint32> phaseIds;
-            std::set<uint32> terrainswaps;
-            std::set<uint32> WorldMapAreaIds;
-            WorldMapAreaIds.emplace(992);
-            WorldMapAreaIds.emplace(683);
-            phaseIds.emplace(1982);
-            player->GetSession()->SendSetPhaseShift(phaseIds, terrainswaps, WorldMapAreaIds, {}, 16);
+//            std::set<uint32> phaseIds;
+//            std::set<uint32> terrainswaps;
+//            std::set<uint32> WorldMapAreaIds;
+//            WorldMapAreaIds.emplace(992);
+//            WorldMapAreaIds.emplace(683);
+//            phaseIds.emplace(1982);
+//            player->GetSession()->SendSetPhaseShift(phaseIds, terrainswaps, WorldMapAreaIds, {}, 16);
+
+            PhaseShift phaseShift;
+            phaseShift.AddUiWorldMapAreaIdSwap(992);
+            phaseShift.AddUiWorldMapAreaIdSwap(683);
+            phaseShift.AddPhase(1982, PhaseFlags::Cosmetic, nullptr);
+            PhasingHandler::SendToPlayer(player, phaseShift);
 
             player->CastSpell(player, SPELL_ENTER_THE_BLACK_TEMPLE);
             player->CastSpell(player, SPELL_CSA_AT_DUMMY_TIMED_AURA);

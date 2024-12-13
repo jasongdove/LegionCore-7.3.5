@@ -19,6 +19,7 @@
 #include "EventObjectData.h"
 #include "DatabaseEnv.h"
 #include "ObjectMgr.h"
+#include "PhasingHandler.h"
 
 EventObjectDataStoreMgr::EventObjectDataStoreMgr()
 {
@@ -171,7 +172,8 @@ void EventObjectDataStoreMgr::LoadEventObjects()
             uint32 zoneId = 0;
             uint32 areaId = 0;
 
-            sMapMgr->GetZoneAndAreaId(zoneId, areaId, data.mapid, data.Pos.GetPositionX(), data.Pos.GetPositionY(), data.Pos.GetPositionZ());
+            // TODO: Phasing
+            sMapMgr->GetZoneAndAreaId(PhasingHandler::GetEmptyPhaseShift(), zoneId, areaId, data.mapid, data.Pos.GetPositionX(), data.Pos.GetPositionY(), data.Pos.GetPositionZ());
 
             data.zoneId = zoneId;
             data.areaId = areaId;

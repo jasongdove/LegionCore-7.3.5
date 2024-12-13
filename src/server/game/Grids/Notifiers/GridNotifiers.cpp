@@ -17,14 +17,13 @@
  */
 
 #include "GridNotifiers.h"
+#include "CellImpl.h"
 #include "GridNotifiersImpl.h"
+#include "ObjectAccessor.h"
+#include "Transport.h"
+#include "UpdateData.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
-#include "UpdateData.h"
-#include "Transport.h"
-#include "ObjectAccessor.h"
-#include "CellImpl.h"
-#include "SocialMgr.h"
 
 namespace {
 
