@@ -31,7 +31,6 @@ struct ConversationSpawnData
     std::set<uint32> PhaseID;
     ObjectGuid::LowType guid = 0;
     uint32 id;                                              // entry in creature_template
-    uint32 phaseMask = 1;
     uint64 spawnMask = 1;
     float posX;
     float posY;

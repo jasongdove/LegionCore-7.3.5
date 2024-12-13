@@ -223,7 +223,7 @@ public:
                         if (GameObject* go = unit->FindNearestGameObject(240194, 20.0f))
                         {
                             go->SetGoState(GO_STATE_ACTIVE);
-                            go->SetPhaseMask(2, true);
+                            go->SetInPhase(171, true, true);
                         }
 
                         if (auto cr = unit->GetAnyOwner()->ToCreature())
@@ -700,7 +700,7 @@ public:
                             if (GameObject* go = targ->FindNearestGameObject(240211, 100.0f))
                             {
                                 go->SetGoState(GO_STATE_ACTIVE);
-                                go->SetPhaseMask(2, true);
+                                go->SetInPhase(171, true, true);
                             }
                             targ->DespawnOrUnsummon();
                         }
@@ -715,7 +715,7 @@ public:
                                 if (GameObject* go = targ->FindNearestGameObject(240211, 140.0f))
                                 {
                                     go->SetGoState(GO_STATE_ACTIVE);
-                                    go->SetPhaseMask(2, true);
+                                    go->SetInPhase(171, true, true);
                                 }
                                 targ->DespawnOrUnsummon();
                             }

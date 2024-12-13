@@ -161,7 +161,7 @@ class TC_GAME_API Pet : public Guardian
         std::unique_ptr<DeclinedName> m_declinedname;
 
     private:
-        void SaveToDB(uint32, uint64, uint32) override
+        void SaveToDB(uint32, uint64) override
         // override of Creature::SaveToDB     - must not be called
         {
             ASSERT(false);

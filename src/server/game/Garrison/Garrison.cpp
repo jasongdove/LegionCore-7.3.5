@@ -963,7 +963,7 @@ void Garrison::Update(uint32 diff)
                 {
                     Position const& pos2 = finalizeInfo->FactionInfo[GetFaction()].Pos;
                     GameObject* finalizer = sObjectMgr->IsStaticTransport(finalizeInfo->FactionInfo[GetFaction()].GameObjectId) ? new StaticTransport : new GameObject;
-                    if (finalizer->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), finalizeInfo->FactionInfo[GetFaction()].GameObjectId, map, 1,
+                    if (finalizer->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), finalizeInfo->FactionInfo[GetFaction()].GameObjectId, map,
                         pos2, G3D::Matrix3::fromEulerAnglesZYX(pos2.GetOrientation(), 0.0f, 0.0f), 255, GO_STATE_READY) && finalizer->IsPositionValid() && map->AddToMap(finalizer))
                     {
                         // set some spell id to make the object delete itself after use

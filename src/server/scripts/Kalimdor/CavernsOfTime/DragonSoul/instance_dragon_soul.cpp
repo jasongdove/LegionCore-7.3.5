@@ -383,7 +383,7 @@ class instance_dragon_soul : public InstanceMapScript
                     case GO_LESSER_CACHE_OF_THE_ASPECTS_LFR:
                         if (!isLfr)
                         {
-                            pGo->SetPhaseMask(256, true);
+                            // TODO: Phasing - pGo->SetPhaseMask(256, true);
                             return;
                         }
                         uiLesserCacheofTheAspects[1] = pGo->GetGUID();
@@ -394,7 +394,7 @@ class instance_dragon_soul : public InstanceMapScript
                     case GO_LESSER_CACHE_OF_THE_ASPECTS_25N:
                         if (isLfr)
                         {
-                            pGo->SetPhaseMask(256, true);
+                            // TODO: Phasing - pGo->SetPhaseMask(256, true);
                             return;
                         }
                         uiLesserCacheofTheAspects[1] = pGo->GetGUID();
@@ -441,7 +441,7 @@ class instance_dragon_soul : public InstanceMapScript
                     case GO_GREATER_CACHE_OF_THE_ASPECTS_LFR:
                         if (!isLfr)
                         {
-                            pGo->SetPhaseMask(256, true);
+                            // TODO: Phasing - pGo->SetPhaseMask(256, true);
                             return;
                         }
                         uiGreaterCacheofTheAspects[1] = pGo->GetGUID();
@@ -452,7 +452,7 @@ class instance_dragon_soul : public InstanceMapScript
                     case GO_GREATER_CACHE_OF_THE_ASPECTS_25N:
                         if (isLfr)
                         {
-                            pGo->SetPhaseMask(256, true);
+                            // TODO: Phasing - pGo->SetPhaseMask(256, true);
                             return;
                         }
                         uiGreaterCacheofTheAspects[1] = pGo->GetGUID();
@@ -466,7 +466,7 @@ class instance_dragon_soul : public InstanceMapScript
                     case GO_ELEMENTIUM_FRAGMENT_LFR:
                         if (!isLfr)
                         {
-                            pGo->SetPhaseMask(256, true);
+                            // TODO: Phasing - pGo->SetPhaseMask(256, true);
                             return;
                         }
                         uiElementiumFragment[1] = pGo->GetGUID();
@@ -477,7 +477,7 @@ class instance_dragon_soul : public InstanceMapScript
                     case GO_ELEMENTIUM_FRAGMENT_25N:
                         if (isLfr)
                         {
-                            pGo->SetPhaseMask(256, true);
+                            // TODO: Phasing - pGo->SetPhaseMask(256, true);
                             return;
                         }
                         uiElementiumFragment[1] = pGo->GetGUID();
@@ -589,7 +589,7 @@ class instance_dragon_soul : public InstanceMapScript
                             for (GuidVector::const_iterator itr = assaultersGUIDs.begin(); itr != assaultersGUIDs.end(); ++itr)
                                 if (Creature* assaulter = instance->GetCreature(*itr))
                                 {
-                                    assaulter->SetPhaseMask(1, true);
+                                    // TODO: Phasing - assaulter->SetPhaseMask(1, true);
                                     assaulter->CastSpell(assaulter, SPELL_TWILIGHT_SPAWN);
                                 }
                             break;
@@ -632,7 +632,7 @@ class instance_dragon_soul : public InstanceMapScript
                                 if (Creature* assaulters = instance->GetCreature(*itr))
                                 {
                                     assaulters->AI()->DoAction(ACTION_STOP_ASSAULT);
-                                    assaulters->SetPhaseMask(256, true);
+                                    // TODO: Phasing - assaulters->SetPhaseMask(256, true);
                                     assaulters->CastSpell(assaulters, SPELL_TWILIGHT_ESCAPE);
                                 }
                             SetData(DATA_ULTRAXION_TRASH, DONE);

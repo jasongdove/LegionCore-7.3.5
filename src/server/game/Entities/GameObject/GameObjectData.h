@@ -724,7 +724,6 @@ struct GameObjectData
     ObjectGuid::LowType guid = 0;
     G3D::Quat rotation;
     uint32 id = 0;                                              // entry in gamobject_template
-    uint32 phaseMask = 1;
     uint32 animprogress = 0;
     uint64 spawnMask = 1;
     uint32 AiID = 0;

@@ -486,7 +486,6 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         uint32 GetInstanceId() const { return m_InstanceId; }
         bool InInstance() const { return m_currMap && m_currMap->Instanceable(); }
 
-        virtual void SetPhaseMask(uint32 newPhaseMask, bool update);
         virtual bool SetInPhase(uint32 id, bool update, bool apply);
         void CopyPhaseFrom(WorldObject* obj, bool update = false);
         void UpdateAreaPhase();
@@ -494,7 +493,6 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
         void RebuildTerrainSwaps();
         void RebuildWorldMapAreaSwaps();
         bool HasInPhaseList(uint32 phase);
-        uint32 GetPhaseMask() const { return m_phaseMask; }
         bool IsInPhase(uint32 phase) const { return _phases.find(phase) != _phases.end(); }
         bool IsInPhase(WorldObject const* obj) const;
         bool IsInTerrainSwap(uint32 terrainSwap) const { return _terrainSwaps.find(terrainSwap) != _terrainSwaps.end(); }
@@ -762,7 +760,6 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
 
         //uint32 m_mapId;                                     // object at map with map_id
         uint32 m_InstanceId;                                // in map copy with instance id
-        uint32 m_phaseMask;                                 // in area phase state
         std::set<uint32> _phases;
         bool m_ignorePhaseIdCheck;                          // like gm mode.
         std::set<uint32> _terrainSwaps;

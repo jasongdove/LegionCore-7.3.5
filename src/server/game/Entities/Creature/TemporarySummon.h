@@ -71,7 +71,7 @@ class TC_GAME_API TempSummon : public Creature
         void RemoveFromWorld() override;
         bool InitBaseStat(uint32 creatureId, bool& damageSet);
         void SetTempSummonType(TempSummonType type);
-        void SaveToDB(uint32 /*mapid*/, uint64 /*spawnMask*/, uint32 /*phaseMask*/) override {}
+        void SaveToDB(uint32 /*mapid*/, uint64 /*spawnMask*/) override {}
         Unit* GetSummoner() const;
         ObjectGuid GetSummonerGUID() const { return m_summonerGUID; }
         void SetSummonerGUID(ObjectGuid guid)  { m_summonerGUID = guid; }

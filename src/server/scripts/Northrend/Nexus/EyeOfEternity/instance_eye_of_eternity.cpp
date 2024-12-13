@@ -81,7 +81,7 @@ public:
         void SpawnGameObject(uint32 entry, Position& pos)
         {
             GameObject* go = sObjectMgr->IsStaticTransport(entry) ? new StaticTransport : new GameObject;
-            if (!go->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, instance, PHASEMASK_NORMAL, pos, G3D::Quat(), 120, GO_STATE_READY))
+            if (!go->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, instance, pos, G3D::Quat(), 120, GO_STATE_READY))
             {
                 delete go;
                 return;

@@ -1830,7 +1830,7 @@ bool Battleground::AddObject(uint32 type, uint32 entry, Position const& pos, G3D
         return false;
 
     GameObject* go = sObjectMgr->IsStaticTransport(entry) ? new StaticTransport : new GameObject;
-    if (!go->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, GetBgMap(), PHASEMASK_NORMAL, pos, rotation, 255, goState))
+    if (!go->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, GetBgMap(), pos, rotation, 255, goState))
     {
         TC_LOG_ERROR("bg.battleground", "Battleground::AddObject: cannot create gameobject (entry: %u) for BG (map: %u, instance id: %u)!", entry, m_MapId, m_InstanceID);
         delete go;
@@ -1940,7 +1940,7 @@ Creature* Battleground::AddCreature(uint32 entry, uint32 type, uint32 teamval, P
     }
 
     auto creature = new Creature;
-    if (!creature->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, PHASEMASK_NORMAL, entry, 0, teamval, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation()))
+    if (!creature->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, entry, 0, teamval, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation()))
     {
         TC_LOG_ERROR("bg.battleground", "Battleground::AddCreature: cannot create creature (entry: %u) for BG (map: %u, instance id: %u)!", entry, m_MapId, m_InstanceID);
         delete creature;

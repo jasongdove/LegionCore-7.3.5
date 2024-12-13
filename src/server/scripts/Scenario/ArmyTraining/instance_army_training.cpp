@@ -206,7 +206,7 @@ public:
                     break;
                 case 251954:
                     if (urand(1, 3) == 3)
-                        go->SetPhaseMask(2, true);
+                        go->SetInPhase(171, true, true);
                     break;
             }
         }
@@ -226,7 +226,7 @@ public:
                 for (auto entry : pplayer->armyTrainingInfo.justFindedChest)
                     if (chestsGuids.find(entry) != chestsGuids.end())
                         if (GameObject* go = instance->GetGameObject(chestsGuids[entry]))
-                            go->SetPhaseMask(2, true);
+                            go->SetInPhase(171, true, true);
 
                 if (!pplayer->armyTrainingInfo.justOpenedUnits[ARMY_UNIT_MAGE - 1])
                     for (auto guid : spectralChests)

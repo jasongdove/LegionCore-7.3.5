@@ -95,41 +95,42 @@ class instance_deadmines : public InstanceMapScript
                     case NPC_CAPTAIN_COOKIE:
                         uiCaptainGUID = pCreature->GetGUID();
                         break;
+                    // TODO: replace phasing hack with spawn groups
                     case NPC_KAGTHA:
                         if (TeamInInstance == ALLIANCE)
-                            pCreature->SetPhaseMask(2, true);
+                            pCreature->SetInPhase(170, true, true);
                         break;
                     case NPC_SLINKY_SHARPSHIV:
                         if (TeamInInstance == ALLIANCE)
-                            pCreature->SetPhaseMask(2, true);
+                            pCreature->SetInPhase(170, true, true);
                         break;
                     case NPC_MISS_MAYHEM:
                         if (TeamInInstance == ALLIANCE)
-                            pCreature->SetPhaseMask(2, true);
+                            pCreature->SetInPhase(170, true, true);
                         break;
                     case NPC_MAYHEM_REAPER:
                         if (TeamInInstance == ALLIANCE)
-                            pCreature->SetPhaseMask(2, true);
+                            pCreature->SetInPhase(170, true, true);
                         break;
                     case NPC_HAND_ASSASIN:
                         if (TeamInInstance == ALLIANCE)
-                            pCreature->SetPhaseMask(2, true);
+                            pCreature->SetInPhase(170, true, true);
                         break;
                     case NPC_HORATIO_LAINE:
                         if (TeamInInstance == HORDE)
-                            pCreature->SetPhaseMask(2, true);
+                            pCreature->SetInPhase(170, true, true);
                         break;
                     case NPC_DEFENDER:
                         if (TeamInInstance == HORDE)
-                            pCreature->SetPhaseMask(2, true);
+                            pCreature->SetInPhase(170, true, true);
                         break;
                     case NPC_INVESTIGATOR:
                         if (TeamInInstance == HORDE)
-                            pCreature->SetPhaseMask(2, true);
+                            pCreature->SetInPhase(170, true, true);
                         break;
                     case NPC_CRIME_SCENE_BOT:
                         if (TeamInInstance == HORDE)
-                            pCreature->SetPhaseMask(2, true);
+                            pCreature->SetInPhase(170, true, true);
                         break;
                 }
             }

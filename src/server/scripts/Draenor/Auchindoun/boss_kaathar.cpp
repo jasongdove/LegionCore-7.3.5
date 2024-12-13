@@ -287,8 +287,9 @@ public:
                                     }
                                 }
 
-                                if (Creature* l_Nyami = instance->instance->GetCreature(instance->GetGuidData(DataBossNyami)))
-                                    l_Nyami->SetPhaseMask(1, true);
+                                // TODO: Phasing
+//                                if (Creature* l_Nyami = instance->instance->GetCreature(instance->GetGuidData(DataBossNyami)))
+//                                    l_Nyami->SetPhaseMask(1, true);
 
                                 if (Creature* l_Magus = m_Obj->SummonCreature(CreatureAucheniMagus, g_PositionMageSpawning, TEMPSUMMON_DEAD_DESPAWN))
                                 {
@@ -422,7 +423,8 @@ public:
                                         if (!itr)
                                             continue;
 
-                                        itr->SetPhaseMask(1, true);
+                                        // TODO: Phasing
+                                        //itr->SetPhaseMask(1, true);
                                     }
                                 }
                                 break;

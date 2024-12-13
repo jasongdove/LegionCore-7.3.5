@@ -840,7 +840,7 @@ public:
                     {
                         outro->GetMotionMaster()->MovePoint(0, -8332.05f, 274.51f, 156.83f);
                         if (GameObject* doors = outro->FindNearestGameObject(251106, 60.0f))
-                            doors->SetPhaseMask(2, true); // hide
+                            doors->SetInPhase(171, true, true); // hide
 
                         if (Creature* garona = outro->FindNearestCreature(108222, 70.0f, true))
                         {

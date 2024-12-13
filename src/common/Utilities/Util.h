@@ -230,6 +230,22 @@ uint64 GetThreadID();
 #define PAIR64_LOPART(x)   (uint32)(uint64(x)         & UI64LIT(0x00000000FFFFFFFF))
 #endif
 
+template<class Container>
+std::string StringJoin(Container const& c, std::string delimiter)
+{
+    if (c.empty())
+        return "";
+
+    std::ostringstream os;
+    auto itr = c.begin();
+    os << *itr++;
+
+    for (; itr != c.end(); ++itr)
+        os << delimiter << *itr;
+
+    return os.str();
+}
+
 // simple class for not-modifiable list
 template <typename T>
 class HookList final

@@ -44,13 +44,13 @@ struct boss_commander_ulthok : public BossAI
     {
         if (action == ACTION_COMMANDER_ULTHOK_START_EVENT)
         {
-            me->SetPhaseMask(PHASEMASK_NORMAL, true);
+            // TODO: Phasing - me->SetPhaseMask(PHASEMASK_NORMAL, true);
             DoCast(SPELL_ULTHOK_INTRO);
 
             if (auto corales = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_CORALES)))
             {
                 corales->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
-                corales->SetPhaseMask(2, true);
+                // TODO: Phasing - corales->SetPhaseMask(2, true);
             }
         }
     }

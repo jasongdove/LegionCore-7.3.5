@@ -88,7 +88,6 @@ public:
             for (std::list<GameObject*>::iterator itr = eggs.begin(); itr != eggs.end(); ++itr)
             {
                 (*itr)->SetGoState(GO_STATE_READY);
-                (*itr)->SetPhaseMask(1, true);
                 (*itr)->Respawn();
             }
         }

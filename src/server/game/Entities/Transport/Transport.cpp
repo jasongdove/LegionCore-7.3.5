@@ -478,7 +478,7 @@ TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSu
     else
         phases = GetPhases(); // If there was no summoner, try to use the transport phases
 
-    if (!summon->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, 0, entry, vehId, 0, x, y, z, o))
+    if (!summon->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, entry, vehId, 0, x, y, z, o))
     {
         delete summon;
         return nullptr;
@@ -790,7 +790,7 @@ StaticTransport::~StaticTransport()
     UnloadStaticPassengers();
 }
 
-bool StaticTransport::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, uint32 phaseMask, Position const& pos, G3D::Quat const& rotation, uint32 animprogress, GOState go_state, uint32 artKit, uint32 aid, GameObjectData const* data)
+bool StaticTransport::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, Position const& pos, G3D::Quat const& rotation, uint32 animprogress, GOState go_state, uint32 artKit, uint32 aid, GameObjectData const* data)
 {
     ASSERT(map);
     SetMap(map);
@@ -802,8 +802,6 @@ bool StaticTransport::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* m
         TC_LOG_ERROR("misc", "StaticTransport (GUID: %lu Entry: %u) not created. Suggested coordinates isn't valid (X: %f Y: %f)", guidlow, name_id, pos.GetPositionX(), pos.GetPositionY());
         return false;
     }
-
-    SetPhaseMask(phaseMask, false);
 
     if (data && data->phaseid)
         SetInPhase(data->phaseid, false, true);

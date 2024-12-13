@@ -554,7 +554,7 @@ public:
             {
                 if (Creature* spawnedCreature = go->SummonCreature(NPC_FRIGHTENED_CITIZEN_1, x, y, z, angle, TEMPSUMMON_TIMED_DESPAWN, SUMMON1_TTL))
                 {
-                    spawnedCreature->SetPhaseMask(6, 1);
+                    // TODO: Phasing - spawnedCreature->SetPhaseMask(6, 1);
                     spawnedCreature->Respawn(1);
                 }
             }
@@ -562,7 +562,7 @@ public:
             {
                 if (Creature* spawnedCreature = go->SummonCreature(NPC_FRIGHTENED_CITIZEN_2, x, y, z, angle, TEMPSUMMON_TIMED_DESPAWN, SUMMON1_TTL))
                 {
-                    spawnedCreature->SetPhaseMask(6, 1);
+                    // TODO: Phasing - spawnedCreature->SetPhaseMask(6, 1);
                     spawnedCreature->Respawn(1);
                 }
             }
@@ -586,7 +586,7 @@ public:
                 {
                     if (Creature* spawnedCreature = go->SummonCreature(NPC_RAMPAGING_WORGEN_2, wx, wy, z, angle, TEMPSUMMON_TIMED_DESPAWN, SUMMON1_TTL))
                     {
-                        spawnedCreature->SetPhaseMask(6, 1);
+                        // TODO: Phasing - spawnedCreature->SetPhaseMask(6, 1);
                         spawnedCreature->Respawn(1);
                         spawnedCreature->getThreatManager().resetAllAggro();
                         if(aPlayer)
@@ -1765,9 +1765,9 @@ public:
         {
             creature->AddAura(SPELL_WORGEN_BITE, player);
             player->RemoveAura(SPELL_PHASE_QUEST_2);
-            creature->SetPhaseMask(4, 1);
+            // TODO: Phasing - creature->SetPhaseMask(4, 1);
             creature->CastSpell(creature, SPELL_SUMMON_JOSIAH_AVERY);
-            creature->SetPhaseMask(2, 1);
+            // TODO: Phasing - creature->SetPhaseMask(2, 1);
         }
         return true;
     }

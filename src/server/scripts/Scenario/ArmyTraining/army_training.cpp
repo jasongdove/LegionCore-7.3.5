@@ -374,7 +374,7 @@ struct go_army_training_chests : public GameObjectAI
             despawn = true;
             go->AddDelayedEvent(3000, [&]() -> void
             {
-                go->SetPhaseMask(2, true);
+                go->SetInPhase(171, true, true);
             });
         }
     }

@@ -46,7 +46,6 @@ public:
     virtual uint32 GetDisplayId() const = 0;
     virtual uint8 GetNameSetId() const = 0;
     virtual bool IsDoor() const { return false; }
-    virtual uint32 GetPhaseMask() const { return 0; }
     virtual bool IsInPhase(std::set<uint32> const& phases) const { return false; }
     virtual G3D::Vector3 GetPosition() const = 0;
     virtual float GetOrientation() const = 0;

@@ -230,8 +230,9 @@ public:
             switch (go->GetEntry())
             {
                 case GO_ELEVATOR:
-                    if (GetBossState(DATA_MAIDEN_OF_VIGILANCE) != DONE)
-                        go->SetPhaseMask(2, true);
+                    // TODO: Phasing
+//                    if (GetBossState(DATA_MAIDEN_OF_VIGILANCE) != DONE)
+//                        go->SetPhaseMask(2, true);
                     break;
                 case 267700:
                 case 267701:
@@ -332,8 +333,9 @@ public:
                                     golganeth->SetVisible(true);
                             break;
                         case DATA_MAIDEN_OF_VIGILANCE:
-                            if (auto go = instance->GetGameObject(GetGuidData(GO_ELEVATOR)))
-                                go->SetPhaseMask(1, true);  // invis
+                            // TODO: Phasing
+//                            if (auto go = instance->GetGameObject(GetGuidData(GO_ELEVATOR)))
+//                                go->SetPhaseMask(1, true);  // invis
                             break;
                         default:
                             break;

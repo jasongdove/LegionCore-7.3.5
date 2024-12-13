@@ -211,7 +211,7 @@ public:
                         GetGameObjectListWithEntryInGrid(gob, me, 251349, 12.0f);
                         if (!gob.empty())
                             for (std::list<GameObject*>::iterator itr = gob.begin(); itr != gob.end(); ++itr)
-                                (*itr)->SetPhaseMask(2, true); // hide   
+                                (*itr)->SetInPhase(171, true, true); // hide
                     }
                     break;
                 }
@@ -281,7 +281,7 @@ public:
 
             // 251349
             if (GameObject* go = me->FindNearestGameObject(251349, 30.0f))
-                go->SetPhaseMask(2, true); // hide
+                go->SetInPhase(171, true, true); // hide
         }
     };
 };
@@ -431,7 +431,7 @@ public:
             GetGameObjectListWithEntryInGrid(gob, me, 251349, 5.0f);
             if (!gob.empty())
                 for (std::list<GameObject*>::iterator itr = gob.begin(); itr != gob.end(); ++itr)
-                    (*itr)->SetPhaseMask(2, true); // hide   
+                    (*itr)->SetInPhase(171, true, true); // hide
         }
     };
 };
@@ -605,7 +605,7 @@ public:
             GetGameObjectListWithEntryInGrid(gob, me, 251349, 5.0f);
             if (!gob.empty())
                 for (std::list<GameObject*>::iterator itr = gob.begin(); itr != gob.end(); ++itr)
-                    (*itr)->SetPhaseMask(2, true); // hide   
+                    (*itr)->SetInPhase(171, true, true); // hide
         }
     };
 };

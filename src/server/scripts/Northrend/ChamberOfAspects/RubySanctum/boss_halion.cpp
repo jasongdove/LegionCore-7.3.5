@@ -473,7 +473,7 @@ class boss_twilight_halion : public CreatureScript
                 me->AddAura(SPELL_DUSK_SHROUD, me);
 
                 me->SetHealth(halion->GetHealth());
-                me->SetPhaseMask(0x20, true);
+                me->SetInPhase(174, false, true);
                 me->SetReactState(REACT_AGGRESSIVE);
             }
 
@@ -591,7 +591,7 @@ class npc_halion_controller : public CreatureScript
             npc_halion_controllerAI(Creature* creature) : ScriptedAI(creature),
                 _instance(creature->GetInstanceScript()), _summons(me)
             {
-                me->SetPhaseMask(me->GetPhaseMask() | 0x20, true);
+                me->SetInPhase(174, false, true);
             }
 
             void Reset() override
@@ -1125,21 +1125,22 @@ class npc_combustion_consumption : public CreatureScript
                     case NPC_COMBUSTION:
                         _explosionSpell = SPELL_FIERY_COMBUSTION_EXPLOSION;
                         _damageSpell = SPELL_COMBUSTION_DAMAGE_AURA;
-                        me->SetPhaseMask(0x01, true);
+                        creature->SetInPhase(DEFAULT_PHASE, false, true);
+                        if (IsHeroic())
+                            creature->SetInPhase(174, false, true);
                         break;
                     case NPC_CONSUMPTION:
                         _explosionSpell = SPELL_SOUL_CONSUMPTION_EXPLOSION;
                         _damageSpell = SPELL_CONSUMPTION_DAMAGE_AURA;
-                        me->SetPhaseMask(0x20, true);
+                        creature->SetInPhase(174, false, true);
+                        if (IsHeroic())
+                            creature->SetInPhase(DEFAULT_PHASE, false, true);
                         break;
                     default: // Should never happen
                         _explosionSpell = 0;
                         _damageSpell = 0;
                         break;
                 }
-
-                if (IsHeroic())
-                    me->SetPhaseMask(0x01 | 0x20, true);
             }
 
             void IsSummonedBy(Unit* summoner) override
@@ -1283,12 +1284,12 @@ class go_twilight_portal : public GameObjectScript
                 switch (gameobject->GetEntry())
                 {
                     case GO_HALION_PORTAL_EXIT:
-                        gameobject->SetPhaseMask(0x20, true);
+                        gameobject->SetInPhase(174, false, true);
                         _spellId = gameobject->GetGOInfo()->goober.spell;
                         break;
                     case GO_HALION_PORTAL_1:
                     case GO_HALION_PORTAL_2: // Not used, not seen in sniffs. Just in case.
-                        gameobject->SetPhaseMask(0x1, true);
+                        gameobject->SetInPhase(DEFAULT_PHASE, false, true);
                         /// Because WDB template has non-existent spell ID, not seen in sniffs either, meh
                         _spellId = SPELL_TWILIGHT_REALM;
                         break;

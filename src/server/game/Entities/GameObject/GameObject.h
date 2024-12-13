@@ -110,7 +110,7 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
         void RemoveFromWorld() override;
         void CleanupsBeforeDelete(bool finalCleanup = true) override;
 
-        virtual bool Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, uint32 phaseMask, Position const& pos, G3D::Quat const& rotation, uint32 animprogress, GOState go_state, uint32 artKit = 0, uint32 aid = 0, GameObjectData const* data = nullptr);
+        virtual bool Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, Position const& pos, G3D::Quat const& rotation, uint32 animprogress, GOState go_state, uint32 artKit = 0, uint32 aid = 0, GameObjectData const* data = nullptr);
         static GameObject* CreateGameObject(uint32 entry, Map* map, Position const& pos, G3D::Quat const& rotation, uint32 animProgress, GOState goState, uint32 artKit = 0);
 
         void Update(uint32 p_time) override;
@@ -141,7 +141,7 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
         const char* GetNameForLocaleIdx(LocaleConstant locale_idx) const override;
 
         void SaveToDB();
-        void SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask);
+        void SaveToDB(uint32 mapid, uint64 spawnMask);
         bool LoadFromDB(ObjectGuid::LowType guid, Map* map);
         bool LoadGameObjectFromDB(ObjectGuid::LowType guid, Map* map, bool addToMap = true);
         void DeleteFromDB();

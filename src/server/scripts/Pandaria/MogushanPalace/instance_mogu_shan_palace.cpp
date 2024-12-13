@@ -484,7 +484,7 @@ public:
 
                 if (auto chest = instance->GetGameObject(trialChestGuid))
                 {
-                    chest->SetPhaseMask(1, true);
+                    chest->SetInPhase(176, true, true);
                     chest->SetRespawnTime(604800);
                     instance->SummonCreature(CREATURE_JADE_QUILEN, otherPos[0]);
                 }

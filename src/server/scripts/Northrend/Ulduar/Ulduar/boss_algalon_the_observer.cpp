@@ -280,7 +280,7 @@ class boss_algalon_the_observer : public CreatureScript
         {
             boss_algalon_the_observerAI(Creature* creature) : BossAI(creature, BOSS_ALGALON), phase(PHASE_NULL)
             {
-                me->SetPhaseMask(65519, true);
+                // TODO: Phasing me->SetPhaseMask(65519, true);
                 _fedOnTears = true;
                 instance = creature->GetInstanceScript();
             }
@@ -385,11 +385,12 @@ class boss_algalon_the_observer : public CreatureScript
                     RemoveFactionAura = 2000;
                 }
 
-                for (uint32 n = 0; n < 6; n++)
-                {
-                    if (Creature * matter = me->SummonCreature(33089, darkmatterpos[n], TEMPSUMMON_CORPSE_DESPAWN))
-                           matter->SetPhaseMask(16, true);
-                }
+                // TODO: Phasing
+//                for (uint32 n = 0; n < 6; n++)
+//                {
+//                    if (Creature * matter = me->SummonCreature(33089, darkmatterpos[n], TEMPSUMMON_CORPSE_DESPAWN))
+//                           matter->SetPhaseMask(16, true);
+//                }
                 
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_NPC);
                 me->SetReactState(REACT_DEFENSIVE);
@@ -458,7 +459,7 @@ class boss_algalon_the_observer : public CreatureScript
                     instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_KILL_CREDIT, 0, 0, me); //Observed
 
                 me->setFaction(35);
-                me->SetPhaseMask(65535, true);
+                // TODO: Phasing me->SetPhaseMask(65535, true);
                 me->SummonGameObject(RAID_MODE(194821, 194822), 1632.53f, -295.983f, 417.323f, 1.56774f, 0, 0, 0.706026f, 0.708186f, 604800);
             }
             

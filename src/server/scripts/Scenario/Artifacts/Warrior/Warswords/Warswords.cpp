@@ -32,7 +32,8 @@ public:
                     go->GetGameObjectListWithEntryInGrid(goList, 244751, 45.0f);
                     if (!goList.empty())
                         for (std::list<GameObject*>::const_iterator itr = goList.begin(); itr != goList.end(); ++itr)
-                            (*itr)->SetPhaseMask(4, true);
+                            (*itr)->SetInPhase(173, true, true);
+
                     return true;
                 }
             return false;

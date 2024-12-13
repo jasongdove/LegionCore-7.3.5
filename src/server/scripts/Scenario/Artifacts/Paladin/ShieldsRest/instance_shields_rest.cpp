@@ -148,7 +148,7 @@ public:
                     if (count_kills == 2)
                     {
                         if (GameObject* go = unit->FindNearestGameObject(243541, 70.0f))
-                            go->SetPhaseMask(4, true);
+                            go->SetInPhase(173, true, true);
                         if (Creature* targ = unit->FindNearestCreature(96468, 100.0f, true))
                             targ->AI()->DoAction(1);
                     }
@@ -161,9 +161,9 @@ public:
                         if (Player* pl = unit->FindNearestPlayer(100.0f))
                             pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46358);
                         if (GameObject* go = unit->FindNearestGameObject(243897, 70.0f))
-                            go->SetPhaseMask(4, true);
+                            go->SetInPhase(173, true, true);
                         if (GameObject* go = unit->FindNearestGameObject(248777, 70.0f))
-                            go->SetPhaseMask(4, true);
+                            go->SetInPhase(173, true, true);
                         if (Creature* targ = unit->FindNearestCreature(96468, 150.0f, true))
                             targ->AI()->DoAction(2);
                     }

@@ -64,8 +64,10 @@ class instance_shadowfang_keep : public InstanceMapScript
                             creature->UpdateEntry(NPC_GUARD_ALLY);
                         break;
                     case NPC_CROMUSH:
+                        // TODO: replace phasing hack with spawn group
                         if (teamInInstance == ALLIANCE)
-                            creature->SetPhaseMask(2, true);
+                            creature->SetInPhase(170, true, true);
+                            //creature->SetPhaseMask(2, true);
                         break;
                     case NPC_ASHBURY:
                         uiAshburyGUID = creature->GetGUID();

@@ -37167,14 +37167,13 @@ void Player::SummonBattlePet(ObjectGuid journalID)
         return;
 
     uint32 team = GetTeam();
-    uint32 l_Phase = GetPhaseMask();
 
     WorldLocation l_Position;
     GetClosePoint(l_Position.m_positionX, l_Position.m_positionY, l_Position.m_positionZ, DEFAULT_WORLD_OBJECT_SIZE);
 
     TempSummon* currentPet = new Minion(summonProperties, this, false);
 
-    if (!currentPet->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), GetMap(), l_Phase, speciesInfo->CreatureID, 0, team, l_Position.m_positionX, l_Position.m_positionY, l_Position.m_positionZ, GetOrientation()))
+    if (!currentPet->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), GetMap(), speciesInfo->CreatureID, 0, team, l_Position.m_positionX, l_Position.m_positionY, l_Position.m_positionZ, GetOrientation()))
     {
         delete currentPet;
         currentPet = nullptr;
@@ -37211,6 +37210,8 @@ void Player::SummonBattlePet(ObjectGuid journalID)
     currentPet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_15 | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_NON_ATTACKABLE);
     currentPet->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
     currentPet->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_WILD_BATTLE_PET);
+
+    currentPet->CopyPhaseFrom(this);
 
     GetMap()->AddToMap(currentPet->ToCreature());
 

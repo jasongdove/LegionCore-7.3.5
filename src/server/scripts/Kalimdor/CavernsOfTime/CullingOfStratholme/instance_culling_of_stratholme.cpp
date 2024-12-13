@@ -288,7 +288,7 @@ class instance_culling_of_stratholme : public InstanceMapScript
                                         if (auto arthas = instance->GetCreature(GetGuidData(DATA_ARTHAS)))
                                             if (auto risenZombie = arthas->SummonCreature(NPC_ZOMBIE, citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ(), citizen->GetOrientation())) //, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000))
                                                 _zombiesList.push_back(risenZombie->GetGUID());
-                                        citizen->SetPhaseMask(2, true);
+                                        citizen->SetInPhase(170, true, true);
                                     }
                                 break;
                         }

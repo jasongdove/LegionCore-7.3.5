@@ -72,8 +72,8 @@ void EventObjectDataStoreMgr::LoadEventObjects()
 {
     uint32 oldMSTime = getMSTime();
 
-    //                                                 0    1   2      3      4       5           6           7           8            9            10        11  
-    QueryResult result = WorldDatabase.Query("SELECT guid, id, map, zoneId, areaId, position_x, position_y, position_z, orientation, spawnMask, phaseMask, PhaseId "
+    //                                                 0    1   2      3      4       5           6           7           8            9            10
+    QueryResult result = WorldDatabase.Query("SELECT guid, id, map, zoneId, areaId, position_x, position_y, position_z, orientation, spawnMask, PhaseId "
         "FROM eventobject ORDER BY `map` ASC, `guid` ASC");
 
     if (!result)
@@ -113,43 +113,42 @@ void EventObjectDataStoreMgr::LoadEventObjects()
         auto o = fields[index++].GetFloat();
         data.Pos.Relocate(x, y, z, o);
         data.spawnMask = fields[index++].GetUInt64();
-        data.phaseMask = fields[index++].GetUInt32();
 
         Tokenizer phasesToken(fields[index++].GetString(), ' ', 100);
         for (auto itr : phasesToken)
             if (PhaseEntry const* phase = sPhaseStore.LookupEntry(uint32(strtoull(itr, nullptr, 10))))
                 data.PhaseID.insert(phase->ID);
 
-        // check near npc with same entry.
-        auto lastObject = lastEntry.find(entry);
-        if (lastObject != lastEntry.end())
-        {
-            if (data.mapid == lastObject->second->mapid)
-            {
-                float dx1 = lastObject->second->Pos.GetPositionX() - data.Pos.GetPositionX();
-                float dy1 = lastObject->second->Pos.GetPositionY() - data.Pos.GetPositionY();
-                float dz1 = lastObject->second->Pos.GetPositionZ() - data.Pos.GetPositionZ();
-
-                float distsq1 = dx1*dx1 + dy1*dy1 + dz1*dz1;
-                if (distsq1 < 0.5f)
-                {
-                    // split phaseID
-                    for (auto phaseID : data.PhaseID)
-                        lastObject->second->PhaseID.insert(phaseID);
-
-                    lastObject->second->phaseMask |= data.phaseMask;
-                    lastObject->second->spawnMask |= data.spawnMask;
-                    WorldDatabase.PExecute("UPDATE eventobject SET phaseMask = %u, spawnMask = " UI64FMTD " WHERE guid = %u", lastObject->second->phaseMask, lastObject->second->spawnMask, lastObject->second->guid);
-                    WorldDatabase.PExecute("DELETE FROM eventobject WHERE guid = %u", guid);
-                    TC_LOG_ERROR("sql.sql", "LoadEventObjects >> Table `eventobject` have clone npc %u witch stay too close (dist: %f). original npc guid %lu. npc with guid %lu will be deleted.", entry, distsq1, lastObject->second->guid, guid);
-                    continue;
-                }
-            }
-            else
-                lastEntry[entry] = &data;
-        }
-        else
-            lastEntry[entry] = &data;
+//        // check near npc with same entry.
+//        auto lastObject = lastEntry.find(entry);
+//        if (lastObject != lastEntry.end())
+//        {
+//            if (data.mapid == lastObject->second->mapid)
+//            {
+//                float dx1 = lastObject->second->Pos.GetPositionX() - data.Pos.GetPositionX();
+//                float dy1 = lastObject->second->Pos.GetPositionY() - data.Pos.GetPositionY();
+//                float dz1 = lastObject->second->Pos.GetPositionZ() - data.Pos.GetPositionZ();
+//
+//                float distsq1 = dx1*dx1 + dy1*dy1 + dz1*dz1;
+//                if (distsq1 < 0.5f)
+//                {
+//                    // split phaseID
+//                    for (auto phaseID : data.PhaseID)
+//                        lastObject->second->PhaseID.insert(phaseID);
+//
+//                    lastObject->second->phaseMask |= data.phaseMask;
+//                    lastObject->second->spawnMask |= data.spawnMask;
+//                    WorldDatabase.PExecute("UPDATE eventobject SET phaseMask = %u, spawnMask = " UI64FMTD " WHERE guid = %u", lastObject->second->phaseMask, lastObject->second->spawnMask, lastObject->second->guid);
+//                    WorldDatabase.PExecute("DELETE FROM eventobject WHERE guid = %u", guid);
+//                    TC_LOG_ERROR("sql.sql", "LoadEventObjects >> Table `eventobject` have clone npc %u witch stay too close (dist: %f). original npc guid %lu. npc with guid %lu will be deleted.", entry, distsq1, lastObject->second->guid, guid);
+//                    continue;
+//                }
+//            }
+//            else
+//                lastEntry[entry] = &data;
+//        }
+//        else
+//            lastEntry[entry] = &data;
 
         if (!sMapStore.LookupEntry(data.mapid))
         {
@@ -162,12 +161,6 @@ void EventObjectDataStoreMgr::LoadEventObjects()
             TC_LOG_ERROR("sql.sql", "LoadEventObjects >> Table `eventobject` have eventobject (GUID: " UI64FMTD ") that have wrong spawn mask %lu including not supported difficulty modes for map (Id: %u) spawnMasks[data.mapid]: %lu.", guid, data.spawnMask, data.mapid, spawnMasks[data.mapid]);
             WorldDatabase.PExecute("UPDATE eventobject SET spawnMask = " UI64FMTD " WHERE guid = %u", spawnMasks[data.mapid], guid);
             data.spawnMask = spawnMasks[data.mapid];
-        }
-
-        if (data.phaseMask == 0)
-        {
-            TC_LOG_ERROR("sql.sql", "LoadEventObjects >> Table `eventobject` have eventobject (GUID: " UI64FMTD " Entry: %u) with `phaseMask`=0 (not visible for anyone), set to 1.", guid, data.id);
-            data.phaseMask = 1;
         }
 
         // Add to grid if not managed by the game event or pool system

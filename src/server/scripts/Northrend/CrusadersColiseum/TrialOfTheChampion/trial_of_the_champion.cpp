@@ -1298,9 +1298,9 @@ public:
                     case 2:
                         if (Creature* mount = me->GetCreature(*me, instance->GetGuidData(DATA_BLACK_KNIGHT_GRYPHON)))
                         {
-                            mount->SetPhaseMask(1, true);
+                            mount->SetInPhase(170, true, false);
                             if (Creature* knight = me->GetCreature(*me, instance->GetGuidData(DATA_BLACK_KNIGHT)))
-                                knight->SetPhaseMask(1, true);
+                                knight->SetInPhase(170, true, false);
                             Talk(SAY_ANNOUNCER_BK);
                             mount->AI()->SetData(1, 0);
                             me->SetTarget(mount->GetGUID());

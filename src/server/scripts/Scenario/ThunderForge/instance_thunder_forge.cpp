@@ -152,7 +152,7 @@ public:
                             if (Creature* cre = instance->GetCreature(forgemasterGUID))
                             {
                                 cre->SetReactState(REACT_AGGRESSIVE);
-                                cre->SetPhaseMask(1, true);
+                                cre->SetInPhase(170, true, true);
                                 cre->AI()->DoAction(ACTION_1);
                             }
                             break;

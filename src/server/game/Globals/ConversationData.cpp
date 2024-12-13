@@ -38,8 +38,8 @@ void ConversationDataStoreMgr::LoadConversations()
 {
     uint32 oldMSTime = getMSTime();
 
-    //                                                 0    1   2      3      4       5           6           7           8            9            10        11  
-    QueryResult result = WorldDatabase.Query("SELECT guid, id, map, zoneId, areaId, position_x, position_y, position_z, orientation, spawnMask, phaseMask, PhaseId "
+    //                                                 0    1   2      3      4       5           6           7           8            9         11
+    QueryResult result = WorldDatabase.Query("SELECT guid, id, map, zoneId, areaId, position_x, position_y, position_z, orientation, spawnMask, PhaseId "
         "FROM conversation ORDER BY `map` ASC, `guid` ASC");
     if (!result)
     {
@@ -91,44 +91,43 @@ void ConversationDataStoreMgr::LoadConversations()
         data.posZ = fields[index++].GetFloat();
         data.orientation = fields[index++].GetFloat();
         data.spawnMask = fields[index++].GetUInt64();
-        data.phaseMask = fields[index++].GetUInt32();
 
         Tokenizer phasesToken(fields[index++].GetString(), ' ', 100);
         for (auto itr : phasesToken)
             if (PhaseEntry const* phase = sPhaseStore.LookupEntry(uint32(strtoull(itr, nullptr, 10))))
                 data.PhaseID.insert(phase->ID);
 
-        // check near npc with same entry.
-        auto lastCreature = lastEntryCreature.find(entry);
-        if (lastCreature != lastEntryCreature.end())
-        {
-            if (data.mapid == lastCreature->second->mapid)
-            {
-                float dx1 = lastCreature->second->posX - data.posX;
-                float dy1 = lastCreature->second->posY - data.posY;
-                float dz1 = lastCreature->second->posZ - data.posZ;
-
-                float distsq1 = dx1*dx1 + dy1*dy1 + dz1*dz1;
-                if (distsq1 < 0.5f)
-                {
-                    // split phaseID
-                    for (auto phaseID : data.PhaseID)
-                        lastCreature->second->PhaseID.insert(phaseID);
-
-                    lastCreature->second->phaseMask |= data.phaseMask;
-                    lastCreature->second->spawnMask |= data.spawnMask;
-                    WorldDatabase.PExecute("UPDATE conversation SET phaseMask = %u, spawnMask = " UI64FMTD " WHERE guid = %u", lastCreature->second->phaseMask, lastCreature->second->spawnMask, lastCreature->second->guid);
-                    WorldDatabase.PExecute("DELETE FROM conversation WHERE guid = %u", guid);
-                    TC_LOG_ERROR("sql.sql", "ConversationDataStoreMgr::LoadConversations() >> Table `conversation` have clone npc %u witch stay too close (dist: %f). original npc guid %lu. npc with guid %lu will be deleted.", entry, distsq1, lastCreature->second->guid, guid);
-                    continue;
-                }
-            }
-            else
-                lastEntryCreature[entry] = &data;
-
-        }
-        else
-            lastEntryCreature[entry] = &data;
+//        // check near npc with same entry.
+//        auto lastCreature = lastEntryCreature.find(entry);
+//        if (lastCreature != lastEntryCreature.end())
+//        {
+//            if (data.mapid == lastCreature->second->mapid)
+//            {
+//                float dx1 = lastCreature->second->posX - data.posX;
+//                float dy1 = lastCreature->second->posY - data.posY;
+//                float dz1 = lastCreature->second->posZ - data.posZ;
+//
+//                float distsq1 = dx1*dx1 + dy1*dy1 + dz1*dz1;
+//                if (distsq1 < 0.5f)
+//                {
+//                    // split phaseID
+//                    for (auto phaseID : data.PhaseID)
+//                        lastCreature->second->PhaseID.insert(phaseID);
+//
+//                    lastCreature->second->phaseMask |= data.phaseMask;
+//                    lastCreature->second->spawnMask |= data.spawnMask;
+//                    WorldDatabase.PExecute("UPDATE conversation SET phaseMask = %u, spawnMask = " UI64FMTD " WHERE guid = %u", lastCreature->second->phaseMask, lastCreature->second->spawnMask, lastCreature->second->guid);
+//                    WorldDatabase.PExecute("DELETE FROM conversation WHERE guid = %u", guid);
+//                    TC_LOG_ERROR("sql.sql", "ConversationDataStoreMgr::LoadConversations() >> Table `conversation` have clone npc %u witch stay too close (dist: %f). original npc guid %lu. npc with guid %lu will be deleted.", entry, distsq1, lastCreature->second->guid, guid);
+//                    continue;
+//                }
+//            }
+//            else
+//                lastEntryCreature[entry] = &data;
+//
+//        }
+//        else
+//            lastEntryCreature[entry] = &data;
 
         if (!sMapStore.LookupEntry(data.mapid))
         {
@@ -141,12 +140,6 @@ void ConversationDataStoreMgr::LoadConversations()
             TC_LOG_ERROR("sql.sql", "LoadConversations >> Table `conversation` have conversation (GUID: " UI64FMTD ") that have wrong spawn mask " UI64FMTD " including not supported difficulty modes for map (Id: %u) spawnMasks[data.mapid]: %lu.", guid, data.spawnMask, data.mapid, spawnMasks[data.mapid]);
             WorldDatabase.PExecute("UPDATE conversation SET spawnMask = " UI64FMTD " WHERE guid = %u", spawnMasks[data.mapid], guid);
             data.spawnMask = spawnMasks[data.mapid];
-        }
-
-        if (data.phaseMask == 0)
-        {
-            TC_LOG_ERROR("sql.sql", "LoadConversations >> Table `conversation` have conversation (GUID: " UI64FMTD " Entry: %u) with `phaseMask`=0 (not visible for anyone), set to 1.", guid, data.id);
-            data.phaseMask = 1;
         }
 
         // Add to grid if not managed by the game event or pool system

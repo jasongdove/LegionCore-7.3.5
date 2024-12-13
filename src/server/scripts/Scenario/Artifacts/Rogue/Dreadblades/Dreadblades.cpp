@@ -719,28 +719,29 @@ public:
                 if (Creature* trigger = go->FindNearestCreature(112817, 20.0f))
                     trigger->DespawnOrUnsummon();
 
-                target->ToPlayer()->SetPhaseMask(1, true);
-
-                if (Creature* trigget = go->SummonCreature(102357, -1162.16f, 6124.12f, 53.38f, 2.87f))
-                {
-                    trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
-                    trigget->SetPhaseMask(1, true);
-                }
-                if (Creature* trigget = go->SummonCreature(102356, -1167.68f, 6112.83f, 50.97f, 2.59f))
-                {
-                    trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
-                    trigget->SetPhaseMask(1, true);
-                }
-                if (Creature* trigget = go->SummonCreature(102355, -1169.81f, 6130.16f, 49.72f, 3.01f))
-                {
-                    trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
-                    trigget->SetPhaseMask(1, true);
-                }
-                if (Creature* trigget = go->SummonCreature(102352, -1177.02f, 6124.60f, 44.78f, 2.78f))
-                {
-                    trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
-                    trigget->SetPhaseMask(1, true);
-                }
+                // TODO: Phasing
+//                target->ToPlayer()->SetPhaseMask(1, true);
+//
+//                if (Creature* trigget = go->SummonCreature(102357, -1162.16f, 6124.12f, 53.38f, 2.87f))
+//                {
+//                    trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
+//                    trigget->SetPhaseMask(1, true);
+//                }
+//                if (Creature* trigget = go->SummonCreature(102356, -1167.68f, 6112.83f, 50.97f, 2.59f))
+//                {
+//                    trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
+//                    trigget->SetPhaseMask(1, true);
+//                }
+//                if (Creature* trigget = go->SummonCreature(102355, -1169.81f, 6130.16f, 49.72f, 3.01f))
+//                {
+//                    trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
+//                    trigget->SetPhaseMask(1, true);
+//                }
+//                if (Creature* trigget = go->SummonCreature(102352, -1177.02f, 6124.60f, 44.78f, 2.78f))
+//                {
+//                    trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
+//                    trigget->SetPhaseMask(1, true);
+//                }
                 Conversation* conversation = new Conversation;
                 if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1721, target, NULL, *target))
                     delete conversation;

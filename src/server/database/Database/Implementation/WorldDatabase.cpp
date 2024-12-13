@@ -94,7 +94,7 @@ void WorldDatabaseConnection::DoPrepareStatements()
     PrepareStatement(WORLD_SEL_BLACKMARKET_TEMPLATE, "SELECT marketId, sellerNpc, itemEntry, quantity, minBid, duration, chance, bonusListIDs FROM blackmarket_template", CONNECTION_SYNCH);
 
     PrepareStatement(WORLD_DEL_EVENTOBJECT, "DELETE FROM eventobject WHERE guid = ?", CONNECTION_ASYNC);;
-    PrepareStatement(WORLD_INS_EVENTOBJECT, "INSERT INTO eventobject (guid, id , map, zoneId, areaId, spawnMask, phaseMask, position_x, position_y, position_z, orientation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", CONNECTION_ASYNC);
+    PrepareStatement(WORLD_INS_EVENTOBJECT, "INSERT INTO eventobject (guid, id , map, zoneId, areaId, spawnMask, position_x, position_y, position_z, orientation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", CONNECTION_ASYNC);
     PrepareStatement(WORLD_SEL_EVENTOBJECT_NEAREST,   "SELECT guid, id, position_x, position_y, position_z, map, (POW(position_x - ?, 2) + POW(position_y - ?, 2) + POW(position_z - ?, 2)) AS order_ FROM eventobject WHERE map = ? AND (POW(position_x - ?, 2) + POW(position_y - ?, 2) + POW(position_z - ?, 2)) <= ? ORDER BY order_", CONNECTION_SYNCH);
 
     PrepareStatement(WORLD_SEL_CHARACTER_TEMPLATES, "SELECT ID, Name, Description, level, ilevel, fromID FROM character_template", CONNECTION_SYNCH);

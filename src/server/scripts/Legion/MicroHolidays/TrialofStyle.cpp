@@ -1410,9 +1410,10 @@ public:
                     torell->SetVisible(false);
                 if (auto nellie = instance->GetCreature(nellieGUID))
                     nellie->SetVisible(false);
-                for (auto& guid : GoChairGUID)
-                    if (auto chair = instance->GetGameObject(guid))
-                        chair->SetPhaseMask(0, true);
+                // TODO: Phasing
+//                for (auto& guid : GoChairGUID)
+//                    if (auto chair = instance->GetGameObject(guid))
+//                        chair->SetPhaseMask(0, true);
                 break;
             case 3:
                 if (auto atheris = instance->GetCreature(atherisGUID))

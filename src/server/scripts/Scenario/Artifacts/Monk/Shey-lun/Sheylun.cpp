@@ -34,7 +34,7 @@ public:
             mob->GetMotionMaster()->MovePoint(0, -1019.15f, -2795.95f, 38.91f);
 
         if (GameObject* go = creature->FindNearestGameObject(246464, 100.0f))
-            go->SetPhaseMask(2, true);
+            go->SetInPhase(170, true, true);
         player->CLOSE_GOSSIP_MENU();
         return true;
     }
@@ -173,7 +173,7 @@ public:
                             GetGameObjectListWithEntryInGrid(gob, me, 246321, 35.0f);
                             if (!gob.empty())
                                 for (std::list<GameObject*>::iterator itr = gob.begin(); itr != gob.end(); ++itr)
-                                    (*itr)->SetPhaseMask(2, true); // hide   
+                                    (*itr)->SetInPhase(170, true, true); // hide
                             Talk(4);
                             me->GetMotionMaster()->MovePoint(2, -1017.80f, -3048.89f, 12.82f);
                         });
@@ -188,7 +188,7 @@ public:
                     {
                         Talk(9);
                         if (GameObject* go = me->FindNearestGameObject(246395, 50.0f))
-                            go->SetPhaseMask(2, true); // hide
+                            go->SetInPhase(170, true, true); // hide
                         _functions.AddFunction([this]() -> void
                         {
                             me->GetMotionMaster()->MovePoint(4, -1017.72f, -2933.42f, 19.48f);

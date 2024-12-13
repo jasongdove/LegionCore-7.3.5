@@ -189,7 +189,7 @@ public:
                         if (go->GetEntry() == GO_BOSS_ZERUS_DOOR_1)
                             HandleGameObject(go->GetGUID(), true);
                         if (go->GetEntry() == GO_BOSS_ZERUS_DOOR_2)
-                            go->SetPhaseMask(1, true);
+                            go->SetInPhase(170, true, true);
                     }
                     break;
             }

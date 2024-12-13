@@ -258,11 +258,11 @@ public:
                 if (criteria != 0)
                     player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, criteria);
 
-                go->SetPhaseMask(4, true); // hide
+                go->SetInPhase(173, true, true); // hide
                 if (go->GetEntry() == 249390)
                 {
                     if (GameObject* doors = go->FindNearestGameObject(249391, 10.0f))
-                        doors->SetPhaseMask(4, true);
+                        doors->SetInPhase(173, true, true);
                     player->DestroyItemCount(136802, 1, true); // last go. del quest item ?
 
                     std::list<Creature*> adds;
@@ -346,7 +346,7 @@ public:
                 for (std::list<GameObject*>::iterator itr = doors.begin(); itr != doors.end(); ++itr)
                 {
                     (*itr)->SetGoState(GO_STATE_ACTIVE);
-                    (*itr)->SetPhaseMask(4, true);
+                    (*itr)->SetInPhase(173, true, true);
                 }
         }
 

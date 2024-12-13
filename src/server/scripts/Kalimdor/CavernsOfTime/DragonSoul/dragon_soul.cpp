@@ -1970,7 +1970,7 @@ class npc_dragon_soul_twilight_assaulter : public CreatureScript
                 switch (events.ExecuteEvent())
                 {
                 case EVENT_ASSAULTER_VISUAL:
-                    if (me->GetPhaseMask() == 1)
+                    if (me->IsInPhase(DEFAULT_PHASE))
                         DoCastAOE(SPELL_TWILIGHT_FIREBALL);
                     events.ScheduleEvent(EVENT_ASSAULTER_VISUAL, urand(30000, 60000));
                     break;

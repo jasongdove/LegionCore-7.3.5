@@ -1579,7 +1579,7 @@ void Object::ResetMap()
     m_currMap = nullptr;
 }
 
-WorldObject::WorldObject(bool isWorldObject): LastUsedScriptID(0), m_transport(nullptr), m_name(""), m_isActive(false), m_isWorldObject(isWorldObject), m_zoneScript(nullptr), m_InstanceId(0), m_phaseMask(PHASEMASK_NORMAL), _dbPhase(0), m_ignorePhaseIdCheck(false)
+WorldObject::WorldObject(bool isWorldObject): LastUsedScriptID(0), m_transport(nullptr), m_name(""), m_isActive(false), m_isWorldObject(isWorldObject), m_zoneScript(nullptr), m_InstanceId(0), _dbPhase(0), m_ignorePhaseIdCheck(false)
 {
     m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_ALIVE | GHOST_VISIBILITY_GHOST);
     m_serverSideVisibilityDetect.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_ALIVE);
@@ -2974,7 +2974,7 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
     }
     Map* map = GetMap();
     GameObject* go = sObjectMgr->IsStaticTransport(entry) ? new StaticTransport : new GameObject;
-    if (!go->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, map, GetPhaseMask(), Position(x, y, z, ang), G3D::Quat(rotation0, rotation1, rotation2, rotation3), 100, GO_STATE_READY))
+    if (!go->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, map, Position(x, y, z, ang), G3D::Quat(rotation0, rotation1, rotation2, rotation3), 100, GO_STATE_READY))
     {
         delete go;
         return nullptr;
@@ -3665,14 +3665,6 @@ float WorldObject::GetObjectSize() const
     return m_valuesCount > UNIT_FIELD_COMBAT_REACH ? m_floatValues[UNIT_FIELD_COMBAT_REACH] : DEFAULT_WORLD_OBJECT_SIZE;
 }
 
-void WorldObject::SetPhaseMask(uint32 newPhaseMask, bool update)
-{
-    m_phaseMask = newPhaseMask;
-
-    if (update && IsInWorld())
-        UpdateObjectVisibility();
-}
-
 bool WorldObject::HasInPhaseList(uint32 phase)
 {
     return _phases.find(phase) != _phases.end();
@@ -3724,20 +3716,15 @@ void WorldObject::UpdateAreaPhase()
         for (Unit::AuraEffectList::const_iterator itr = auraPhaseList.begin(); itr != auraPhaseList.end(); ++itr)
         {
             uint32 phase = uint32((*itr)->GetMiscValueB());
-            bool up = SetInPhase(phase, false, true);
-            if (!updateNeeded && up)
-                updateNeeded = true;
+            updateNeeded = SetInPhase(phase, false, true) || updateNeeded;
         }
         Unit::AuraEffectList const& auraPhaseGroupList = unit->GetAuraEffectsByType(SPELL_AURA_PHASE_GROUP);
         for (Unit::AuraEffectList::const_iterator itr = auraPhaseGroupList.begin(); itr != auraPhaseGroupList.end(); ++itr)
         {
-            bool up = false;
             uint32 phaseGroup = uint32((*itr)->GetMiscValueB());
-            std::set<uint32> const& phases = sDB2Manager.GetPhasesForGroup(phaseGroup);
+            std::set<uint32> phases = sDB2Manager.GetPhasesForGroup(phaseGroup);
             for (uint32 phase : phases)
-                up = SetInPhase(phase, false, true);
-            if (!updateNeeded && up)
-                updateNeeded = true;
+                updateNeeded = SetInPhase(phase, false, true) || updateNeeded;
         }
     }
 
@@ -3759,12 +3746,16 @@ bool WorldObject::SetInPhase(uint32 id, bool update, bool apply)
     {
         if (apply)
         {
-            if (HasInPhaseList(id)) // do not run the updates if we are already in this phase
+            // do not run the updates if we are already in this phase
+            if (!_phases.insert(id).second)
                 return false;
-            _phases.insert(id);
         }
         else
         {
+            auto phaseItr = _phases.find(id);
+            if (phaseItr == _phases.end())
+                return false;
+
             for (uint32 phaseId : sObjectMgr->GetPhasesForArea(GetAreaId()))
             {
                 if (id == phaseId)
@@ -3778,9 +3769,8 @@ bool WorldObject::SetInPhase(uint32 id, bool update, bool apply)
                     }
                 }
             }
-            if (!HasInPhaseList(id)) // do not run the updates if we are not in this phase
-                return false;
-            _phases.erase(id);
+
+            _phases.erase(phaseItr);
         }
     }
     RebuildTerrainSwaps();

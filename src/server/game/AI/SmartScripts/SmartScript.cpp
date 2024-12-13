@@ -1403,11 +1403,8 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                         if (e.action.summonCreature.attackInvoker)
                             summon->AI()->AttackStart((*itr)->ToUnit());
                         if (e.action.summonCreature.phaseByTarget)
-                        {
-                            summon->SetPhaseMask((*itr)->GetPhaseMask(), true);
                             for (auto phase : (*itr)->GetPhases())
                                 summon->SetInPhase(phase, false, true);
-                        }
                     }
                 }
 
@@ -2552,11 +2549,8 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                         if (e.action.sumCreaturePV.attackinvoker)
                             summon->AI()->AttackStart((*itr)->ToUnit());
                         if (e.action.sumCreaturePV.getphases)
-                        {
-                            summon->SetPhaseMask(GetBaseObject()->GetPhaseMask(), true);
                             for (auto phase : GetBaseObject()->GetPhases())
                                 summon->SetInPhase(phase, false, true);
-                        }
                     }
                 }
             }

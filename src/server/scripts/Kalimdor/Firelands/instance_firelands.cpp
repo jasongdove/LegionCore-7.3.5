@@ -76,7 +76,7 @@ class instance_firelands : public InstanceMapScript
                         break;
                     case NPC_BALEROC:
                         uiBalerocGUID = pCreature->GetGUID();
-                        pCreature->SetPhaseMask((GetBossState(DATA_SHANNOX)==DONE) && (GetBossState(DATA_RHYOLITH)==DONE) && (GetBossState(DATA_BETHTILAC)==DONE) && (GetBossState(DATA_ALYSRAZOR)==DONE) ? 1 : 2, true);
+                        pCreature->SetInPhase(170, true, (GetBossState(DATA_SHANNOX) != DONE) || (GetBossState(DATA_RHYOLITH) != DONE) || (GetBossState(DATA_BETHTILAC) != DONE) || (GetBossState(DATA_ALYSRAZOR) != DONE));
                         break;
                     case NPC_CIRCLE_OF_THRONES_PORTAL:
                         creaturePortals.push_back(pCreature);
@@ -218,7 +218,7 @@ class instance_firelands : public InstanceMapScript
                         HandleGameObject(uiFirewallBalerockGUID, balerocAvailable);
                     if (balerocAvailable)
                         if (Creature* baleroc = instance->GetCreature(uiBalerocGUID))
-                            baleroc->SetPhaseMask(1, true);
+                            baleroc->SetInPhase(170, true, false);
                     break;
                 }
 

@@ -30,7 +30,6 @@ struct TC_GAME_API EventObjectData
     ObjectGuid::LowType guid = 0;
     Position Pos;
     uint32 id = 0;                                              // entry in eventobject_template
-    uint32 phaseMask = 1;
     uint16 mapid = 0;
     uint16 zoneId = 0;
     uint16 areaId = 0;
@@ -63,14 +62,14 @@ class TC_GAME_API EventObject : public WorldObject, public GridObject<EventObjec
         EventObject();
         ~EventObject();
 
-        bool Create(ObjectGuid::LowType guidlow, Map* map, uint32 phaseMask, uint32 entry, float x, float y, float z, float ang, float radius, uint32 spell, uint32 worldsafe);
+        bool Create(ObjectGuid::LowType guidlow, Map* map, uint32 entry, float x, float y, float z, float ang, float radius, uint32 spell, uint32 worldsafe);
 
         void AddToWorld() override;
         void RemoveFromWorld() override;
 
         bool LoadFromDB(ObjectGuid::LowType guid, Map* map) { return LoadEventObjectFromDB(guid, map); }
         bool LoadEventObjectFromDB(ObjectGuid::LowType guid, Map* map);
-        void SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask);
+        void SaveToDB(uint32 mapid, uint64 spawnMask);
 
         void Update(uint32 p_time) override;
         void Remove();

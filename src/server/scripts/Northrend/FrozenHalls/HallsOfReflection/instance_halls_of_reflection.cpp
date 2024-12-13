@@ -129,7 +129,7 @@ public:
                     _frostwornGeneralGUID = creature->GetGUID();
                     if (GetBossState(DATA_MARWYN_EVENT) == DONE)
                         if (Creature* general = instance->GetCreature(_frostwornGeneralGUID))
-                            general->SetPhaseMask(1, true);
+                            creature->SetInPhase(170, true, GetBossState(DATA_MARWYN_EVENT) != DONE);
                     break;
                 case NPC_JAINA_PART2:
                 case NPC_SYLVANAS_PART2:
@@ -221,7 +221,7 @@ public:
                         HandleGameObject(_frostwornDoorGUID, true);
                         DoUpdateWorldState(WorldStates::WORLD_STATE_HOR_WAVES_ENABLED, 0);
                         if (Creature* general = instance->GetCreature(_frostwornGeneralGUID))
-                            general->SetPhaseMask(1, true);
+                            general->SetInPhase(170, true, false);
                     }
                     break;
                 case DATA_LICHKING_EVENT:

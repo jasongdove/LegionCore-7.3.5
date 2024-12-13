@@ -459,8 +459,9 @@ class boss_theralion : public CreatureScript
                         DoCast(me, SPELL_BERSERK);
                         break;
                     case EVENT_TWILIGHT_SENTRY:
-                        if (Creature* _sentry = me->SummonCreature(NPC_TWILIGHT_SENTRY, twilightsentryPos))
-                            _sentry->SetPhaseMask(16, true);
+                        // TODO: Phasing
+//                        if (Creature* _sentry = me->SummonCreature(NPC_TWILIGHT_SENTRY, twilightsentryPos))
+//                            _sentry->SetPhaseMask(16, true);
                         break;
                     case EVENT_TWILIGHT_SHIFT_STACK:
                         DoCast(me->getVictim(), SPELL_TWILIGHT_SHIFT_STACK);
@@ -714,11 +715,12 @@ class boss_valiona : public CreatureScript
                 
                 if (Creature* pTheralion = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_THERALION)))
                     pTheralion->SetInCombatWithZone();
-                for (uint8 i = 0; i < 10; i++)
-                    if (Creature* pUnstableTwilight = me->SummonCreature(NPC_UNSTABLE_TWILIGHT, unstabletwilightPos[i]))
-                        pUnstableTwilight->SetPhaseMask(16, true);
-                if (Creature* pTwilightPortal = me->SummonCreature(NPC_COLLAPSING_TWILIGHT_PORTAL, collapsingtwilightportalPos))
-                    pTwilightPortal->SetPhaseMask(16, true);
+                // TODO: Phasing
+//                for (uint8 i = 0; i < 10; i++)
+//                    if (Creature* pUnstableTwilight = me->SummonCreature(NPC_UNSTABLE_TWILIGHT, unstabletwilightPos[i]))
+//                        pUnstableTwilight->SetPhaseMask(16, true);
+//                if (Creature* pTwilightPortal = me->SummonCreature(NPC_COLLAPSING_TWILIGHT_PORTAL, collapsingtwilightportalPos))
+//                    pTwilightPortal->SetPhaseMask(16, true);
                 instance->SetData(DATA_HEALTH_VALIONA_THERALION, me->GetMaxHealth());
                 instance->SetBossState(DATA_VALIONA_THERALION, IN_PROGRESS);
                 DoZoneInCombat();
@@ -792,8 +794,9 @@ class boss_valiona : public CreatureScript
                         DoCast(me, SPELL_BERSERK);
                         break;
                     case EVENT_TWILIGHT_SENTRY:
-                        if (Creature* _sentry = me->SummonCreature(NPC_TWILIGHT_SENTRY, twilightsentryPos))
-                            _sentry->SetPhaseMask(16, true);
+                        // TODO: Phasing
+//                        if (Creature* _sentry = me->SummonCreature(NPC_TWILIGHT_SENTRY, twilightsentryPos))
+//                            _sentry->SetPhaseMask(16, true);
                         break;
                     case EVENT_TWILIGHT_SHIFT_STACK:
                         DoCast(me->getVictim(), SPELL_TWILIGHT_SHIFT_STACK);
@@ -1023,8 +1026,9 @@ class npc_twilight_sentry : public CreatureScript
             void JustSummoned(Creature* summon)
             {
                 summons.Summon(summon);
-                if (summon->GetEntry() == NPC_TWILIGHT_RIFT)
-                    summon->SetPhaseMask(1, true);
+                // TODO: Phasing
+//                if (summon->GetEntry() == NPC_TWILIGHT_RIFT)
+//                    summon->SetPhaseMask(1, true);
             }
 
             void IsSummonedBy(Unit* owner)

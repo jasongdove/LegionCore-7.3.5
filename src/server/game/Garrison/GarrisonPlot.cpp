@@ -114,7 +114,7 @@ GameObject* Plot::CreateGameObject(Map* map, GarrisonFactionIndex faction, Garri
 
     Position const& pos = PacketInfo.PlotPos;
     GameObject* building = sObjectMgr->IsStaticTransport(entry) ? new StaticTransport : new GameObject;
-    if (!building->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, map, 1, pos, G3D::Quat(RotationX, RotationY, RotationZ, RotationW), 255, GO_STATE_READY))
+    if (!building->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, map, pos, G3D::Quat(RotationX, RotationY, RotationZ, RotationW), 255, GO_STATE_READY))
     {
         delete building;
         return nullptr;
@@ -138,7 +138,7 @@ GameObject* Plot::CreateGameObject(Map* map, GarrisonFactionIndex faction, Garri
                     getRandSpecialEntry(buildingEtry->BuildingType, buildingEtry->UpgradeLevel, entry);
 
                 GameObject* linkGO = sObjectMgr->IsStaticTransport(entry) ? new StaticTransport : new GameObject;
-                if (!linkGO->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, map, 1, Position(data.posX, data.posY, data.posZ, data.orientation), data.rotation, 255, GO_STATE_READY) || !linkGO->IsPositionValid() || !map->AddToMap(linkGO))
+                if (!linkGO->Create(sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate(), entry, map, Position(data.posX, data.posY, data.posZ, data.orientation), data.rotation, 255, GO_STATE_READY) || !linkGO->IsPositionValid() || !map->AddToMap(linkGO))
                 {
                     delete linkGO;
                     continue;
@@ -180,7 +180,7 @@ GameObject* Plot::CreateGameObject(Map* map, GarrisonFactionIndex faction, Garri
                     getRandTrader(entry);
 
                 auto linkNPC = new Creature();
-                if (!linkNPC->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, 1, entry, 0, 0, data.posX, data.posY, data.posZ, data.orientation) || !linkNPC->IsPositionValid() || !map->AddToMap(linkNPC))
+                if (!linkNPC->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, entry, 0, 0, data.posX, data.posY, data.posZ, data.orientation) || !linkNPC->IsPositionValid() || !map->AddToMap(linkNPC))
                 {
                     delete linkNPC;
                     continue;

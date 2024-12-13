@@ -237,7 +237,7 @@ struct npc_ashtar : ScriptedAI
         GetGameObjectListWithEntryInGrid(GoList, me, 269949, 100.0f);
 
         for (auto& go : GoList)
-            go->SetPhaseMask(0, true);
+            go->SetInPhase(170, true, false);
 
         for (auto& player : playerList)
         {
@@ -278,7 +278,7 @@ struct npc_ashtar : ScriptedAI
             std::list<GameObject*> GoList;
             GetGameObjectListWithEntryInGrid(GoList, me, 269949, 100.0f);
             for (auto& go : GoList)
-                go->SetPhaseMask(1, true);
+                go->SetInPhase(170, true, true);
 
             std::list<Player*> playerList;
             GetPlayerListInGrid(playerList, me, 100.0f);
@@ -502,7 +502,7 @@ struct npc_marla : ScriptedAI
         GetGameObjectListWithEntryInGrid(GoList, me, 270011, 100.0f);
 
         for (auto& go : GoList)
-            go->SetPhaseMask(0, true);
+            go->SetInPhase(170, true, false);
 
         for (auto& player : playerList)
         {
@@ -532,7 +532,7 @@ struct npc_marla : ScriptedAI
             std::list<GameObject*> GoList;
             GetGameObjectListWithEntryInGrid(GoList, me, 270011, 100.0f);
             for (auto& go : GoList)
-                go->SetPhaseMask(1, true);
+                go->SetInPhase(170, true, true);
 
             std::list<Player*> playerList;
             GetPlayerListInGrid(playerList, me, 100.0f);

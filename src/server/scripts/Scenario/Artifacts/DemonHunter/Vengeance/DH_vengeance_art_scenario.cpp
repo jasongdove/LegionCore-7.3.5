@@ -606,15 +606,15 @@ public:
                 target->ToPlayer()->CompleteQuest(41863);
                 if (Creature* trigget = target->SummonCreature(99229, -2726.35f, -307.24f, 30.97f, 3.11f))
                 {
-                    target->ToPlayer()->SetPhaseMask(1, true);
+                    target->ToPlayer()->SetInPhase(170, true, true);
                     trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
-                    trigget->SetPhaseMask(1, true);
+                    trigget->SetInPhase(170, true, true);
                 }
                 if (Creature* trigget = target->SummonCreature(99227, -2734.72f, -304.77f, 30.97f, 3.19f))
                 {
-                    target->ToPlayer()->SetPhaseMask(1, true);
+                    target->ToPlayer()->SetInPhase(170, true, true);
                     trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
-                    trigget->SetPhaseMask(1, true);
+                    trigget->SetInPhase(170, true, true);
                 }
                 
             }

@@ -145,7 +145,7 @@ public:
                     break;
                 case VEHICLE_BLACK_KNIGHT:
                     uiBlackKnightGryphonGUID = creature->GetGUID();
-                    creature->SetPhaseMask(2, true);
+                    creature->SetInPhase(170, true, true);
                     break;
             }
         }

@@ -330,7 +330,6 @@ public:
                     case EVENT_RESPAWN_NEFARIUS:
                         if (Creature* nefarius = instance->GetCreature(LordVictorNefariusGUID))
                         {
-                            nefarius->SetPhaseMask(1, true);
                             nefarius->setActive(true);
                             nefarius->Respawn();
                             nefarius->GetMotionMaster()->MoveTargetedHome();

@@ -255,8 +255,9 @@ public:
                 mobsForElevator.erase(unit->GetGUID());
                 if (mobsForElevator.empty())
                 {
-                    if (auto go = instance->GetGameObject(GetGuidData(GO_ELEVATOR)))
-                        go->SetPhaseMask(1, true);
+                    // TODO: Phasing
+//                    if (auto go = instance->GetGameObject(GetGuidData(GO_ELEVATOR)))
+//                        go->SetPhaseMask(1, true);
                 }
             }
             switch (unit->GetEntry())
@@ -323,8 +324,9 @@ public:
                     {
                         AddDelayedEvent(5000, [this, go] () -> void
                         {
-                            if (!mobsForElevator.empty())
-                                go->SetPhaseMask(2, true);
+                            // TODO: Phasing
+//                            if (!mobsForElevator.empty())
+//                                go->SetPhaseMask(2, true);
                         });
                     }
                     break;

@@ -228,12 +228,8 @@ bool AreaTrigger::CreateAreaTrigger(ObjectGuid::LowType guidlow, uint32 triggerE
 
     Object::_Create(ObjectGuid::Create<HighGuid::AreaTrigger>(GetMapId(), atInfo.customEntry, guidlow));
     if (caster)
-    {
-        SetPhaseMask(caster->GetPhaseMask(), false);
-
         for (auto phase : caster->GetPhases())
             SetInPhase(phase, false, true);
-    }
 
     if (spell && !spell->CanDestoyCastItem())
         m_CastItem = spell->m_CastItem;

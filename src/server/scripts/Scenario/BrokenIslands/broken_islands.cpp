@@ -2774,7 +2774,7 @@ public:
             {
                 player->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 53064);
                 go->SetGoState(GO_STATE_ACTIVE);
-                go->SetPhaseMask(2, true);
+                go->SetInPhase(171, true, true);
                 go->SetVisible(false);
             }
         }

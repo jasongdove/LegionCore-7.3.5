@@ -158,7 +158,6 @@ bool EventObject::LoadEventObjectFromDB(ObjectGuid::LowType guid, Map* map)
     eventTemplate = sEventObjectDataStore->GetEventObjectTemplate(data->id);
 
     Object::_Create(ObjectGuid::Create<HighGuid::EventObject>(GetMapId(), data->id, guid));
-    SetPhaseMask(data->phaseMask, false);
 
     for (auto phase : data->PhaseID)
         SetInPhase(phase, false, true);
@@ -169,11 +168,10 @@ bool EventObject::LoadEventObjectFromDB(ObjectGuid::LowType guid, Map* map)
     return true;
 }
 
-bool EventObject::Create(ObjectGuid::LowType guidlow, Map* map, uint32 phaseMask, uint32 entry, float x, float y, float z, float ang, float radius, uint32 spell, uint32 worldsafe)
+bool EventObject::Create(ObjectGuid::LowType guidlow, Map* map, uint32 entry, float x, float y, float z, float ang, float radius, uint32 spell, uint32 worldsafe)
 {
     ASSERT(map);
     SetMap(map);
-    SetPhaseMask(phaseMask, false);
 
     eventTemplate = sEventObjectDataStore->GetEventObjectTemplate(entry);
     if (!eventTemplate)
@@ -194,7 +192,7 @@ bool EventObject::Create(ObjectGuid::LowType guidlow, Map* map, uint32 phaseMask
     return true;
 }
 
-void EventObject::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
+void EventObject::SaveToDB(uint32 mapid, uint64 spawnMask)
 {
     // update in loaded data
     if (!m_DBTableGuid)
@@ -210,7 +208,6 @@ void EventObject::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
     data.mapid = mapid;
     data.zoneId = zoneId;
     data.areaId = areaId;
-    data.phaseMask = phaseMask;
     data.spawnMask = spawnMask;
     data.Pos = GetPosition();
 
@@ -230,7 +227,6 @@ void EventObject::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
     stmt->setUInt32(index++, zoneId);
     stmt->setUInt32(index++, areaId);
     stmt->setUInt64(index++, spawnMask);
-    stmt->setUInt16(index++, uint16(GetPhaseMask()));
     stmt->setFloat(index++,  GetPositionX());
     stmt->setFloat(index++,  GetPositionY());
     stmt->setFloat(index++,  GetPositionZ());

@@ -222,7 +222,7 @@ void GameObject::RemoveFromWorld()
     }
 }
 
-bool GameObject::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, uint32 phaseMask, Position const& pos, G3D::Quat const& rotation, uint32 animprogress, GOState go_state, uint32 artKit, uint32 aid, GameObjectData const* data)
+bool GameObject::Create(ObjectGuid::LowType guidlow, uint32 name_id, Map* map, Position const& pos, G3D::Quat const& rotation, uint32 animprogress, GOState go_state, uint32 artKit, uint32 aid, GameObjectData const* data)
 {
     ASSERT(map);
     SetMap(map);
@@ -391,7 +391,7 @@ GameObject* GameObject::CreateGameObject(uint32 entry, Map* map, Position const&
 
     auto lowGuid = sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate();
     auto go = sObjectMgr->IsStaticTransport(entry) ? new StaticTransport : new GameObject;
-    if (!go->Create(lowGuid, entry, map, PHASEMASK_NORMAL, pos, rotation, animProgress, goState, artKit))
+    if (!go->Create(lowGuid, entry, map, pos, rotation, animProgress, goState, artKit))
     {
         delete go;
         return nullptr;
@@ -898,10 +898,10 @@ void GameObject::SaveToDB()
         return;
     }
 
-    SaveToDB(GetMapId(), data->spawnMask, data->phaseMask);
+    SaveToDB(GetMapId(), data->spawnMask);
 }
 
-void GameObject::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
+void GameObject::SaveToDB(uint32 mapid, uint64 spawnMask)
 {
     auto goI = GetGOInfo();
     if (!goI)
@@ -921,7 +921,6 @@ void GameObject::SaveToDB(uint32 mapid, uint64 spawnMask, uint32 phaseMask)
     data.mapid = mapid;
     data.zoneId = zoneId;
     data.areaId = areaId;
-    data.phaseMask = phaseMask;
     data.posX = GetPositionX();
     data.posY = GetPositionY();
     data.posZ = GetPositionZ();
@@ -988,7 +987,7 @@ bool GameObject::LoadGameObjectFromDB(ObjectGuid::LowType guid, Map* map, bool a
     if (map->GetInstanceId() != 0)
         guid = sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate();
 
-    if (!Create(guid, entry, map, data->phaseMask, Position(data->posX, data->posY, data->posZ, data->orientation), data->rotation, data->animprogress, static_cast<GOState>(data->go_state), data->artKit, data->AiID, data))
+    if (!Create(guid, entry, map, Position(data->posX, data->posY, data->posZ, data->orientation), data->rotation, data->animprogress, static_cast<GOState>(data->go_state), data->artKit, data->AiID, data))
         return false;
 
     if (data && data->phaseid)
@@ -2400,9 +2399,7 @@ SpellCastResult GameObject::CastSpell(Unit* target, uint32 spellId)
     }
     else
     {
-        if (target)
-            trigger->SetPhaseMask(target->GetPhaseMask(), true);
-        trigger->setFaction(14);
+        trigger->setFaction(spellInfo->IsPositive() ? 35 : 14);
         // Set owner guid for target if no owner available - needed by trigger auras
         // - trigger gets despawned and there's no caster avalible (see AuraEffect::TriggerSpell())
         return trigger->CastSpell(target ? target : trigger, spellInfo, true, nullptr, nullptr, target ? target->GetGUID() : ObjectGuid::Empty);
@@ -3215,7 +3212,6 @@ public:
     bool IsSpawned() const override { return _owner->isSpawned(); }
     uint32 GetDisplayId() const override { return _owner->GetDisplayId(); }
     uint8 GetNameSetId() const override { return _owner->GetNameSetId(); }
-    uint32 GetPhaseMask() const override { return _owner->GetPhaseMask(); }
     bool IsInPhase(std::set<uint32> const& phases) const override { return _owner->IsInPhase(phases); }
     G3D::Vector3 GetPosition() const override { return G3D::Vector3(_owner->GetPositionX(), _owner->GetPositionY(), _owner->GetPositionZ()); }
     float GetOrientation() const override { return _owner->GetOrientation(); }

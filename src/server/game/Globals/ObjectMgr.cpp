@@ -2179,8 +2179,6 @@ void ObjectMgr::LoadCreatures()
             }
         }
 
-        data.phaseMask = 1;
-
         if (data.phaseGroup && data.phaseid)
         {
             TC_LOG_ERROR("sql.sql", "Table `creature` have creature (GUID: %u Entry: %u) with both `phaseid` and `phasegroup` set, `phasegroup` set to 0", guid, data.id);
@@ -2425,7 +2423,6 @@ ObjectGuid::LowType ObjectMgr::AddGOData(uint32 entry, uint32 mapId, float x, fl
     data.animprogress   = 100;
     data.spawnMask      = 1;
     data.go_state       = GO_STATE_READY;
-    data.phaseMask      = PHASEMASK_NORMAL;
     data.artKit         = goinfo->type == GAMEOBJECT_TYPE_CONTROL_ZONE ? 21 : 0;
     data.dbData = false;
     data.MaxVisible = goinfo->MaxVisible;
@@ -2512,7 +2509,6 @@ ObjectGuid::LowType ObjectMgr::AddCreData(uint32 entry, uint32 /*team*/, uint32 
     data.curmana = stats->GenerateMana(cInfo);
     data.movementType = cInfo->MovementType;
     data.spawnMask = 1;
-    data.phaseMask = PHASEMASK_NORMAL;
     data.dbData = false;
     data.npcflag = cInfo->npcflag;
     data.npcflag2 = cInfo->npcflag2;
@@ -2708,8 +2704,6 @@ void ObjectMgr::LoadGameobjects()
         data.phaseid = fields[21].GetUInt32();
         data.phaseGroup = fields[22].GetUInt32();
 
-        data.phaseMask = 1;
-
         if (data.phaseGroup && data.phaseid)
         {
             TC_LOG_ERROR("sql.sql", "Table `gameobject` have gameobject (GUID: %u Entry: %u) with both `phaseid` and `phasegroup` set, `phasegroup` set to 0", guid, data.id);
@@ -2738,37 +2732,35 @@ void ObjectMgr::LoadGameobjects()
             }
         }
 
-        // check near go with same entry.
-        auto lastGo = lastEntryGo.find(entry);
-        if (lastGo != lastEntryGo.end())
-        {
-            if (data.mapid == lastGo->second->mapid)
-            {
-                float dx1 = lastGo->second->posX - data.posX;
-                float dy1 = lastGo->second->posY - data.posY;
-                float dz1 = lastGo->second->posZ - data.posZ;
-
-                float distsq1 = dx1*dx1 + dy1*dy1 + dz1*dz1;
-                if (distsq1 < 0.5f)
-                {
-                    // split phaseID
-                    for (auto phaseID : data.PhaseID)
-                        lastGo->second->PhaseID.insert(phaseID);
-
-                    lastGo->second->phaseMask |= data.phaseMask;
-                    lastGo->second->spawnMask |= data.spawnMask;
-                    WorldDatabase.PExecute("UPDATE gameobject SET phaseMask = %u, spawnMask = " UI64FMTD " WHERE guid = %u", lastGo->second->phaseMask, lastGo->second->spawnMask, lastGo->second->guid);
-                    WorldDatabase.PExecute("DELETE FROM gameobject WHERE guid = %u", guid);
-                    TC_LOG_ERROR("sql.sql", "Table `gameobject` have clone go %u witch stay too close (dist: %f). original go guid %lu. go with guid %lu will be deleted.", entry, distsq1, lastGo->second->guid, guid);
-                    continue;
-                }
-            }
-            else
-                lastEntryGo[entry] = &data;
-
-        }
-        else
-            lastEntryGo[entry] = &data;
+//        // check near go with same entry.
+//        auto lastGo = lastEntryGo.find(entry);
+//        if (lastGo != lastEntryGo.end())
+//        {
+//            if (data.mapid == lastGo->second->mapid)
+//            {
+//                float dx1 = lastGo->second->posX - data.posX;
+//                float dy1 = lastGo->second->posY - data.posY;
+//                float dz1 = lastGo->second->posZ - data.posZ;
+//
+//                float distsq1 = dx1*dx1 + dy1*dy1 + dz1*dz1;
+//                if (distsq1 < 0.5f)
+//                {
+//                    // split phaseID
+//                    for (auto phaseID : data.PhaseID)
+//                        lastGo->second->PhaseID.insert(phaseID);
+//
+//                    lastGo->second->spawnMask |= data.spawnMask;
+//                    WorldDatabase.PExecute("UPDATE gameobject SET phaseMask = %u, spawnMask = " UI64FMTD " WHERE guid = %u", lastGo->second->phaseMask, lastGo->second->spawnMask, lastGo->second->guid);
+//                    WorldDatabase.PExecute("DELETE FROM gameobject WHERE guid = %u", guid);
+//                    TC_LOG_ERROR("sql.sql", "Table `gameobject` have clone go %u witch stay too close (dist: %f). original go guid %lu. go with guid %lu will be deleted.", entry, distsq1, lastGo->second->guid, guid);
+//                    continue;
+//                }
+//            }
+//            else
+//                lastEntryGo[entry] = &data;
+//        }
+//        else
+//            lastEntryGo[entry] = &data;
 
         if (gameEvent == 0 && PoolId == 0)                      // if not this is to be managed by GameEvent System or Pool system
             AddGameobjectToGrid(guid, &data);

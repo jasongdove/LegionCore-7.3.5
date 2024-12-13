@@ -406,7 +406,7 @@ public:
             object->GetMapId(), (mapEntry ? mapEntry->MapName->Str[sObjectMgr->GetDBCLocaleIndex()] : "<unknown>"),
             zoneId, (zoneEntry ? zoneEntry->AreaName->Str[sObjectMgr->GetDBCLocaleIndex()] : "<unknown>"),
             areaId, AreaName,
-            object->GetPhaseMask(),
+            StringJoin(object->GetPhases(), ", ").c_str(),
             object->GetPositionX(), object->GetPositionY(), object->GetPositionZ(), object->GetOrientation(),
             cell.GridX(), cell.GridY(), cell.CellX(), cell.CellY(), object->GetInstanceId(),
             zoneX, zoneY, groundZ, floorZ, haveMap, haveVMap);
@@ -1863,6 +1863,8 @@ public:
     // show info of player
     static bool HandlePInfoCommand(ChatHandler* handler, char const* args)
     {
+        // TODO: Phasing - upgrade this command
+
         Player* target;
         ObjectGuid targetGuid;
         std::string targetName;
@@ -1909,7 +1911,6 @@ public:
             muteTime          = target->GetSession()->m_muteTime;
             mapId             = target->GetMapId();
             areaId            = target->GetAreaId();
-            phase             = target->GetPhaseMask();
             totalAccountTime  = target->GetTotalAccountTime();
             lastLogin = "Online";
         }

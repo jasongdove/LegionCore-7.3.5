@@ -1604,7 +1604,7 @@ public:
             creature->SetCorpseDelay(30);
             creature->SetRespawnDelay(15);
             if(GameObject* gob = me->FindNearestGameObject(GO, 100.0f))
-                gob->SetPhaseMask(1, true);  // invis
+                gob->SetInPhase(170, true, true); // invis
         }
 
         enum data
@@ -1618,14 +1618,14 @@ public:
         {
             events.Reset();
             if(GameObject* gob = me->FindNearestGameObject(GO, 100.0f))
-                gob->SetPhaseMask(1, true);  // invis
+                gob->SetInPhase(170, true, true); // invis
         }
 
         void EnterCombat(Unit* victim) override
         {
             sCreatureTextMgr->SendChat(me, TEXT_GENERIC_0, victim->GetGUID());
             if(GameObject* gob = me->FindNearestGameObject(GO, 100.0f))
-                gob->SetPhaseMask(2, true);  // invis
+                gob->SetInPhase(170, true, true); // invis
             events.RescheduleEvent(EVENT_1, 13000);
             events.RescheduleEvent(EVENT_2, 5000); // 20
         }
