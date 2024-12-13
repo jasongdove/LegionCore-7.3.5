@@ -1231,8 +1231,6 @@ public:
         if (visibleMapIdText)
             visibleMapId = uint32(strtoul(visibleMapIdText, nullptr, 10));
 
-        uint32 phase = (uint32)atoi((char*)args);
-
         if (phaseId && !sPhaseStore.LookupEntry(phaseId))
         {
             // TODO: Phasing
@@ -1267,6 +1265,8 @@ public:
             else
                 PhasingHandler::RemovePhase(target, phaseId, true);
         }
+        else
+            target->GetPhaseShift().ClearPhases();
 
         return true;
     }

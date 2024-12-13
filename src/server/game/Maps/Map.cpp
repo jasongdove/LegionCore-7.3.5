@@ -4246,12 +4246,12 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         return nullptr;
     }
 
-    // Set the summon to the summoner's phase
-    PhasingHandler::InheritPhaseShift(summon, summoner);
-
     summon->SetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL, spellId);
     if (summoner)
     {
+        // Set the summon to the summoner's phase
+        PhasingHandler::InheritPhaseShift(summon, summoner);
+
         summon->SetTratsport(summoner->GetTransport());
         summon->SetGuidValue(UNIT_FIELD_DEMON_CREATOR, summoner->GetGUID());
         if (properties && (properties->Flags & SUMMON_PROP_FLAG_PERSONAL_SPAWN) != 0)

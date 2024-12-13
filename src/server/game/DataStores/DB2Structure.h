@@ -4109,7 +4109,7 @@ struct ManifestMP3Entry
 // FileOptions: Index, None
 struct MapEntry
 {
-    int32       ID;
+    uint32      ID;
     LocalizedString* Directory;
     LocalizedString* MapName;
     LocalizedString* MapDescription0;
