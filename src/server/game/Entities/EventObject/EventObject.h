@@ -26,7 +26,6 @@ struct TC_GAME_API EventObjectData
 {
     explicit EventObjectData() { }
 
-    std::set<uint32> PhaseID;
     ObjectGuid::LowType guid = 0;
     Position Pos;
     uint32 id = 0;                                              // entry in eventobject_template
@@ -34,6 +33,11 @@ struct TC_GAME_API EventObjectData
     uint16 zoneId = 0;
     uint16 areaId = 0;
     uint64 spawnMask = 1;
+    std::set<uint32> legacyPhaseIds = {};
+    uint8 phaseUseFlags = 0;
+    uint32 phaseId = 0;
+    uint32 phaseGroup = 0;
+    int32 terrainSwapMap = -1;
     bool dbData = true;
 };
 

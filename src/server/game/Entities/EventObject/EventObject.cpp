@@ -16,12 +16,13 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "EventObject.h"
 #include "Common.h"
 #include "DatabaseEnv.h"
-#include "EventObject.h"
 #include "EventObjectData.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
+#include "PhasingHandler.h"
 #include "ScriptMgr.h"
 #include "World.h"
 
@@ -159,9 +160,8 @@ bool EventObject::LoadEventObjectFromDB(ObjectGuid::LowType guid, Map* map)
 
     Object::_Create(ObjectGuid::Create<HighGuid::EventObject>(GetMapId(), data->id, guid));
 
-    // TODO: Phasing
-//    for (auto phase : data->PhaseID)
-//        SetInPhase(phase, false, true);
+    PhasingHandler::InitDbPhaseShift(GetPhaseShift(), data->phaseUseFlags, data->phaseId, data->phaseGroup, data->legacyPhaseIds);
+    PhasingHandler::InitDbVisibleMapId(GetPhaseShift(), data->terrainSwapMap);
 
     SetEntry(data->id);
     SetObjectScale(1.0f);
