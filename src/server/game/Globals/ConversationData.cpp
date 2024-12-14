@@ -39,8 +39,10 @@ void ConversationDataStoreMgr::LoadConversations()
 {
     uint32 oldMSTime = getMSTime();
 
-    //                                                 0    1   2      3      4       5           6           7           8            9         11
-    QueryResult result = WorldDatabase.Query("SELECT guid, id, map, zoneId, areaId, position_x, position_y, position_z, orientation, spawnMask, PhaseId "
+    //                                                 0    1   2      3      4       5           6           7           8            9
+    QueryResult result = WorldDatabase.Query("SELECT guid, id, map, zoneId, areaId, position_x, position_y, position_z, orientation, spawnMask, "
+        // 10           11       12          13              14
+        "phaseUseFlags, PhaseId, PhaseGroup, terrainSwapMap, LegacyPhaseId "
         "FROM conversation ORDER BY `map` ASC, `guid` ASC");
     if (!result)
     {
@@ -54,7 +56,9 @@ void ConversationDataStoreMgr::LoadConversations()
         for (auto& difficultyPair : mapDifficultyPair.second)
             spawnMasks[mapDifficultyPair.first] |= (UI64LIT(1) << difficultyPair.first);
 
-    _conversationDataStore.rehash(result->GetRowCount());
+    PhaseShift phaseShift;
+
+    _conversationDataStore.reserve(result->GetRowCount());
     std::map<uint32, ConversationSpawnData*> lastEntryCreature;
 
     uint32 count = 0;
@@ -92,11 +96,67 @@ void ConversationDataStoreMgr::LoadConversations()
         data.posZ = fields[index++].GetFloat();
         data.orientation = fields[index++].GetFloat();
         data.spawnMask = fields[index++].GetUInt64();
+        data.phaseUseFlags = fields[index++].GetUInt8();
+        data.phaseId = fields[index++].GetUInt32();
+        data.phaseGroup = fields[index++].GetUInt32();
+
+        if (data.phaseUseFlags & ~PHASE_USE_FLAGS_ALL)
+        {
+            TC_LOG_ERROR("sql.sql", "Table `conversation` have conversation (GUID: " UI64FMTD " Entry: %u) has unknown `phaseUseFlags` set, removed unknown value.", guid, data.id);
+            data.phaseUseFlags &= PHASE_USE_FLAGS_ALL;
+        }
+
+        if (data.phaseUseFlags & PHASE_USE_FLAGS_ALWAYS_VISIBLE && data.phaseUseFlags & PHASE_USE_FLAGS_INVERSE)
+        {
+            TC_LOG_ERROR("sql.sql", "Table `conversation` have conversation (GUID: " UI64FMTD " Entry: %u) has both `phaseUseFlags` PHASE_USE_FLAGS_ALWAYS_VISIBLE and PHASE_USE_FLAGS_INVERSE,"
+                " removing PHASE_USE_FLAGS_INVERSE.", guid, data.id);
+            data.phaseUseFlags &= ~PHASE_USE_FLAGS_INVERSE;
+        }
+
+        if (data.phaseGroup && data.phaseId)
+        {
+            TC_LOG_ERROR("sql.sql", "Table `conversation` have conversation (GUID: %u Entry: %u) with both `phaseid` and `phasegroup` set, `phasegroup` set to 0", guid, data.id);
+            data.phaseGroup = 0;
+        }
+
+        if (data.phaseId)
+        {
+            if (!sPhaseStore.LookupEntry(data.phaseId))
+            {
+                TC_LOG_ERROR("sql.sql", "Table `conversation` have conversation (GUID: " UI64FMTD " Entry: %u) with `phaseid` %u does not exist, set to 0", guid, data.id, data.phaseId);
+                data.phaseId = 0;
+            }
+        }
+
+        if (data.phaseGroup)
+        {
+            if (!sDB2Manager.GetPhasesForGroup(data.phaseGroup))
+            {
+                TC_LOG_ERROR("sql.sql", "Table `conversation` have conversation (GUID: " UI64FMTD " Entry: %u) with `phaseGroup` %u does not exist, set to 0", guid, data.id, data.phaseGroup);
+                data.phaseGroup = 0;
+            }
+        }
+
+        data.terrainSwapMap = fields[index++].GetInt32();
+        if (data.terrainSwapMap != -1)
+        {
+            MapEntry const* terrainSwapEntry = sMapStore.LookupEntry(data.terrainSwapMap);
+            if (!terrainSwapEntry)
+            {
+                TC_LOG_ERROR("sql.sql", "Table `conversation` have conversation (GUID: " UI64FMTD " Entry: %u) with `terrainSwapMap` %u does not exist, set to -1", guid, data.id, data.terrainSwapMap);
+                data.terrainSwapMap = -1;
+            }
+            else if (terrainSwapEntry->ParentMapID != data.mapid)
+            {
+                TC_LOG_ERROR("sql.sql", "Table `conversation` have conversation (GUID: " UI64FMTD " Entry: %u) with `terrainSwapMap` %u which cannot be used on spawn map, set to -1", guid, data.id, data.terrainSwapMap);
+                data.terrainSwapMap = -1;
+            }
+        }
 
         Tokenizer phasesToken(fields[index++].GetString(), ' ', 100);
         for (auto itr : phasesToken)
             if (PhaseEntry const* phase = sPhaseStore.LookupEntry(uint32(strtoull(itr, nullptr, 10))))
-                data.PhaseID.insert(phase->ID);
+                data.legacyPhaseIds.insert(phase->ID);
 
 //        // check near npc with same entry.
 //        auto lastCreature = lastEntryCreature.find(entry);
@@ -151,8 +211,8 @@ void ConversationDataStoreMgr::LoadConversations()
             uint32 zoneId = 0;
             uint32 areaId = 0;
 
-            // TODO: Phasing
-            sMapMgr->GetZoneAndAreaId(PhasingHandler::GetEmptyPhaseShift(), zoneId, areaId, data.mapid, data.posX, data.posY, data.posZ);
+            PhasingHandler::InitDbVisibleMapId(phaseShift, data.terrainSwapMap);
+            sMapMgr->GetZoneAndAreaId(phaseShift, zoneId, areaId, data.mapid, data.posX, data.posY, data.posZ);
 
             data.zoneId = zoneId;
             data.areaId = areaId;

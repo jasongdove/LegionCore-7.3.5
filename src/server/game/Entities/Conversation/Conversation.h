@@ -28,10 +28,14 @@ struct ConversationSpawnData
 {
     explicit ConversationSpawnData();
 
-    std::set<uint32> PhaseID;
     ObjectGuid::LowType guid = 0;
     uint32 id;                                              // entry in creature_template
     uint64 spawnMask = 1;
+    std::set<uint32> legacyPhaseIds = {};
+    uint8 phaseUseFlags = 0;
+    uint32 phaseId = 0;
+    uint32 phaseGroup = 0;
+    int32 terrainSwapMap = -1;
     float posX;
     float posY;
     float posZ;

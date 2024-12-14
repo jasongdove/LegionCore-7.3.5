@@ -304,9 +304,8 @@ bool Conversation::LoadConversationFromDB(ObjectGuid::LowType guid, Map* map, bo
 
     Object::_Create(ObjectGuid::Create<HighGuid::Conversation>(GetMapId(), data->id, guid));
 
-    // TODO: Phasing
-//    for (auto phase : data->PhaseID)
-//        SetInPhase(phase, false, true);
+    PhasingHandler::InitDbPhaseShift(GetPhaseShift(), data->phaseUseFlags, data->phaseId, data->phaseGroup, data->legacyPhaseIds);
+    PhasingHandler::InitDbVisibleMapId(GetPhaseShift(), data->terrainSwapMap);
 
     SetEntry(data->id);
     SetObjectScale(1.0f);
