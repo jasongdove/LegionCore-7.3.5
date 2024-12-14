@@ -7347,8 +7347,8 @@ void ObjectMgr::LoadAreaPhases()
 {
     uint32 oldMSTime = getMSTime();
 
-    //                                               0       1
-    QueryResult result = WorldDatabase.Query("SELECT AreaId, PhaseId FROM `phase_area`");
+    //                                               0       1        2
+    QueryResult result = WorldDatabase.Query("SELECT AreaId, PhaseId, Comment FROM `phase_area`");
 
     if (!result)
     {
@@ -7370,6 +7370,7 @@ void ObjectMgr::LoadAreaPhases()
 
         uint32 area = fields[0].GetUInt32();
         uint32 phaseId = fields[1].GetUInt32();
+        std::string comment = fields[2].GetString();
 
         if (!sAreaTableStore.LookupEntry(area))
         {
@@ -7377,7 +7378,7 @@ void ObjectMgr::LoadAreaPhases()
             continue;
         }
 
-        if (!sPhaseStore.LookupEntry(phaseId))
+        if (!sPhaseStore.LookupEntry(phaseId) && comment != "LEGACY_LC")
         {
             TC_LOG_ERROR("sql.sql", "Phase %u defined in `phase_area` does not exist, skipped.", phaseId);
             continue;

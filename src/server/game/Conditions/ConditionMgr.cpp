@@ -1027,7 +1027,8 @@ bool ConditionMgr::CanHaveSourceGroupSet(ConditionSourceType sourceType) const
             sourceType == CONDITION_SOURCE_TYPE_PLAYER_CHOICE ||
             sourceType == CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS ||
             sourceType == CONDITION_SOURCE_TYPE_WORLD_STATE ||
-            sourceType == CONDITION_SOURCE_TYPE_LOOT_ITEM);
+            sourceType == CONDITION_SOURCE_TYPE_LOOT_ITEM ||
+            sourceType == CONDITION_SOURCE_TYPE_PHASE);
 }
 
 bool ConditionMgr::CanHaveSourceIdSet(ConditionSourceType sourceType) const
@@ -1419,6 +1420,9 @@ void ConditionMgr::LoadConditions(bool isReload)
                     ++count;
                     continue;
                 }
+                case CONDITION_SOURCE_TYPE_PHASE:
+                    valid = addToPhases(cond);
+                    break;
                 default:
                     break;
             }
@@ -1585,6 +1589,48 @@ bool ConditionMgr::addToSpellImplicitTargetConditions(Condition* cond) const
         }
     }
     return true;
+}
+
+bool ConditionMgr::addToPhases(Condition* cond) const
+{
+    if (!cond->SourceEntry)
+    {
+        if (PhaseInfoStruct const* phaseInfo = sObjectMgr->GetPhaseInfo(cond->SourceGroup))
+        {
+            bool found = false;
+            for (uint32 areaId : phaseInfo->Areas)
+            {
+                if (std::vector<PhaseAreaInfo>* phases = const_cast<std::vector<PhaseAreaInfo>*>(sObjectMgr->GetPhasesForArea(areaId)))
+                {
+                    for (PhaseAreaInfo& phase : *phases)
+                    {
+                        if (phase.PhaseInfo->Id == cond->SourceGroup)
+                        {
+                            phase.Conditions.push_back(cond);
+                            found = true;
+                        }
+                    }
+                }
+            }
+
+            if (found)
+                return true;
+        }
+    }
+    else if (std::vector<PhaseAreaInfo>* phases = const_cast<std::vector<PhaseAreaInfo>*>(sObjectMgr->GetPhasesForArea(cond->SourceEntry)))
+    {
+        for (PhaseAreaInfo& phase : *phases)
+        {
+            if (phase.PhaseInfo->Id == cond->SourceGroup)
+            {
+                phase.Conditions.push_back(cond);
+                return true;
+            }
+        }
+    }
+
+    TC_LOG_ERROR("sql.sql", "Condition: Area %u does not have phase %u.", cond->SourceGroup, cond->SourceEntry);
+    return false;
 }
 
 bool ConditionMgr::isSourceTypeValid(Condition* cond) const
@@ -2005,6 +2051,24 @@ bool ConditionMgr::isSourceTypeValid(Condition* cond) const
             return false;
             break;
         }
+        case CONDITION_SOURCE_TYPE_TERRAIN_SWAP:
+        {
+            if (!sMapStore.LookupEntry(cond->SourceEntry))
+            {
+                TC_LOG_ERROR("sql.sql", "SourceEntry in `condition` table, does not exist in Map.dbc, ignoring.");
+                return false;
+            }
+            break;
+        }
+        case CONDITION_SOURCE_TYPE_PHASE:
+        {
+            if (cond->SourceEntry && !sAreaTableStore.LookupEntry(cond->SourceEntry))
+            {
+                TC_LOG_ERROR("sql.sql", "SourceEntry in `condition` table, does not exist in AreaTable.dbc, ignoring.");
+                return false;
+            }
+            break;
+        }
         case CONDITION_SOURCE_TYPE_GOSSIP_MENU:
         case CONDITION_SOURCE_TYPE_GOSSIP_MENU_OPTION:
         case CONDITION_SOURCE_TYPE_SMART_EVENT:
@@ -2012,8 +2076,6 @@ bool ConditionMgr::isSourceTypeValid(Condition* cond) const
         case CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS:
         case CONDITION_SOURCE_TYPE_WORLD_STATE:
         case CONDITION_SOURCE_TYPE_NONE:
-        case CONDITION_SOURCE_TYPE_TERRAIN_SWAP:
-        case CONDITION_SOURCE_TYPE_PHASE:
         default:
             break;
     }
@@ -3117,27 +3179,9 @@ bool ConditionMgr::IsPlayerMeetingCondition(Unit* unit, PlayerConditionEntry con
         && ((condition->MinExpansionLevel == CURRENT_EXPANSION) && condition->MinExpansionTier > 0) || condition->MinExpansionLevel > CURRENT_EXPANSION)
         return false;
 
-    if (condition->PhaseID && !unit->GetPhaseShift().HasPhase(condition->PhaseID))
-        return false;
-
-    // TODO: Phasing - does this work anymore?
-    if (player && condition->PhaseGroupID)
-    {
-        if (std::vector<uint32> const* phaseIds = sDB2Manager.GetPhasesForGroup(condition->PhaseGroupID))
-        {
-            bool inGroup = false;
-
-            for (uint32 phaseId : *phaseIds)
-                if (player->GetPhaseShift().HasPhase(phaseId))
-                {
-                    inGroup = true;
-                    break;
-                }
-
-            if (!inGroup)
-                return false;
-        }
-    }
+    if (condition->PhaseID || condition->PhaseGroupID || condition->PhaseUseFlags)
+        if (!PhasingHandler::InDbPhaseShift(player, condition->PhaseUseFlags, condition->PhaseID, condition->PhaseGroupID))
+            return false;
 
     if (player && condition->QuestKillID)
     {
