@@ -775,7 +775,7 @@ class spell_repentance_pull_player : public SpellScript
             return;
 
         caster->GetNearPoint2D(x, y, frand(5.0f, 9.0f), caster->GetAngle(_x, _y));
-        float z = caster->GetBaseMap()->GetHeight(caster->GetPhaseShift(), x, y, MAX_HEIGHT);
+        float z = caster->GetMap()->GetHeight(caster->GetPhaseShift(), x, y, MAX_HEIGHT);
         float speedZ = (float)(GetSpellInfo()->Effects[effIndex]->CalcValue() / 10);
         float speedXY = (float)(GetSpellInfo()->Effects[effIndex]->MiscValue / 10);
         target->GetMotionMaster()->MoveJump(x, y, z, speedXY, speedZ);

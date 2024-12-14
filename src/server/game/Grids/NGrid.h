@@ -25,6 +25,8 @@
 #include "Grid.h"
 #include "GridDefines.h"
 #include "GridInfo.h"
+#include "GridReference.h"
+#include "GridRefManager.h"
 
 #define DEFAULT_VISIBILITY_NOTIFY_PERIOD 1000
 
@@ -49,6 +51,11 @@ public:
 
     int32 getX() const;
     int32 getY() const;
+
+    void link(GridRefManager<NGrid>* pTo)
+    {
+        i_Reference.link(pTo, this);
+    }
 
     bool isGridObjectDataLoaded() const;
     void setGridObjectDataLoaded(bool pLoaded);
@@ -91,6 +98,7 @@ public:
 
 private:
     GridInfo i_GridInfo;
+    GridReference<NGrid> i_Reference;
     int32 i_x;
     int32 i_y;
     GridState i_cellstate;

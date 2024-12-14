@@ -392,40 +392,30 @@ void Map::LoadVMap(int gx, int gy)
     }
 }
 
-void Map::LoadMap(int gx, int gy, bool reload)
+void Map::LoadMap(int gx, int gy)
 {
-    LoadMapImpl(this, gx, gy, reload);
+    LoadMapImpl(this, gx, gy);
     for (Map* childBaseMap : *m_childTerrainMaps)
-        childBaseMap->LoadMap(gx, gy, reload);
+        childBaseMap->LoadMap(gx, gy);
 }
 
-void Map::LoadMapImpl(Map* map, int gx, int gy, bool reload)
+void Map::LoadMapImpl(Map* map, int gx, int gy)
 {
-    if (map->i_InstanceId != 0)
-    {
-        if (map->GridMaps[gx][gy])
-            return;
-
-        // load grid map for base map
-        if (!map->m_parentMap->GridMaps[gx][gy])
-            map->m_parentMap->EnsureGridCreated_i(GridCoord((MAX_NUMBER_OF_GRIDS - 1) - gx, (MAX_NUMBER_OF_GRIDS - 1) - gy));
-
-        map->m_parentMap->ToMapInstanced()->AddGridMapReference(GridCoord(gx, gy));
-        map->GridMaps[gx][gy] = map->m_parentMap->GridMaps[gx][gy];
-        return;
-    }
-
-    if (map->GridMaps[gx][gy] && !reload)
-        return;
-
-    //map already load, delete it before reloading (Is it necessary? Do we really need the ability the reload maps during runtime?)
     if (map->GridMaps[gx][gy])
-    {
-        TC_LOG_DEBUG("maps", "Unloading previously loaded map %u before reloading.", map->GetId());
-        sScriptMgr->OnUnloadGridMap(map, map->GridMaps[gx][gy], gx, gy);
+        return;
 
-        delete (map->GridMaps[gx][gy]);
-        map->GridMaps[gx][gy]= nullptr;
+    Map* parent = map->m_parentMap;
+    ++parent->GridMapReference[gx][gy];
+
+    // load grid map for base map
+    if (parent != map)
+    {
+        GridCoord ngridCoord = GridCoord((MAX_NUMBER_OF_GRIDS - 1) - gx, (MAX_NUMBER_OF_GRIDS - 1) - gy);
+        if (!parent->GridMaps[gx][gy])
+            parent->EnsureGridCreated(ngridCoord);
+
+        map->GridMaps[gx][gy] = parent->GridMaps[gx][gy];
+        return;
     }
 
     // map file name
@@ -451,16 +441,16 @@ void Map::UnloadMap(int gx, int gy)
 
 void Map::UnloadMapImpl(Map* map, int gx, int gy)
 {
-    if (map->i_InstanceId == 0)
+    if (map->GridMaps[gx][gy])
     {
-        if (map->GridMaps[gx][gy])
+        Map* parent = map->m_parentMap;
+        if (!--parent->GridMapReference[gx][gy])
         {
-            map->GridMaps[gx][gy]->unloadData();
-            delete map->GridMaps[gx][gy];
+            parent->GridMaps[gx][gy]->unloadData();
+            delete parent->GridMaps[gx][gy];
+            parent->GridMaps[gx][gy] = nullptr;
         }
     }
-    else
-        static_cast<MapInstanced*>(map->m_parentMap)->RemoveGridMapReference(GridCoord(gx, gy));
 
     map->GridMaps[gx][gy] = nullptr;
 }
@@ -532,11 +522,8 @@ void Map::UpdateOutdoorPvPScript()
 void Map::LoadMapAndVMap(int gx, int gy)
 {
     LoadMap(gx, gy);
-    if (i_InstanceId == 0)
-    {
-        LoadVMap(gx, gy);                                   // Only load the data for the base map
-        LoadMMap(gx, gy);
-    }
+    LoadVMap(gx, gy);
+    LoadMMap(gx, gy);
 }
 
 Map::Map(uint32 id, time_t expiry, uint32 InstanceId, Difficulty difficulty, Map* _parent) :
@@ -588,11 +575,13 @@ m_activeNonPlayersIter(m_activeNonPlayers.end()), i_grids(), GridMaps(), _transp
     if (_parent)
     {
         m_parentMap = _parent;
+        m_parentTerrainMap = m_parentMap->m_parentTerrainMap;
         m_childTerrainMaps = m_parentMap->m_childTerrainMaps;
     }
     else
     {
         m_parentMap = this;
+        m_parentTerrainMap = this;
         m_childTerrainMaps = new std::vector<Map*>();
     }
 
@@ -602,6 +591,7 @@ m_activeNonPlayersIter(m_activeNonPlayers.end()), i_grids(), GridMaps(), _transp
         {
             // z code
             GridMaps[x][y] = nullptr;
+            GridMapReference[x][y] = 0;
             setNGrid(nullptr, x, y);
         }
     }
@@ -822,34 +812,25 @@ void Map::EnsureGridCreated(const GridCoord &p)
 //But object data is not loaded here
 void Map::EnsureGridCreated_i(const GridCoord &p)
 {
-    if (getNGrid(p.x_coord, p.y_coord))
-        return;
+    if (!getNGrid(p.x_coord, p.y_coord))
+    {
+        TC_LOG_DEBUG("maps", "Creating grid[%u, %u] for map %u instance %u", p.x_coord, p.y_coord, GetId(), i_InstanceId);
 
-    // Such way allows to retrieve hint position for insert, so it
-    // will have amortized constant complexity instead of logarithmic
-    size_t const key = p.x_coord * MAX_NUMBER_OF_GRIDS + p.y_coord;
-    auto lb = i_loadedGrids.lower_bound(key);
-    if (lb != i_loadedGrids.end() && !i_loadedGrids.key_comp()(key, lb->first))
-        return;
+        NGrid* ngrid = new NGrid(p.x_coord, p.y_coord, i_gridExpiry, sWorld->getBoolConfig(CONFIG_GRID_UNLOAD));
+        setNGrid(ngrid, p.x_coord, p.y_coord);
 
-    TC_LOG_DEBUG("maps", "Creating grid[%u, %u] for map %u instance %u", p.x_coord, p.y_coord, GetId(), i_InstanceId);
+        // build a linkage between this map and NGridType
+        buildNGridLinkage(ngrid);
 
-    auto const itr = i_loadedGrids.emplace_hint(lb,
-        std::piecewise_construct,
-        std::forward_as_tuple(key),
-        std::forward_as_tuple(p.x_coord, p.y_coord, i_gridExpiry, CanUnloadMap()));
+        ngrid->SetGridState(GRID_STATE_IDLE);
 
-    auto &ngrid = itr->second;
+        //z coord
+        int gx = (MAX_NUMBER_OF_GRIDS - 1) - p.x_coord;
+        int gy = (MAX_NUMBER_OF_GRIDS - 1) - p.y_coord;
 
-    ngrid.SetGridState(GRID_STATE_IDLE);
-    setNGrid(&ngrid, p.x_coord, p.y_coord);
-
-    //z coord
-    int gx = (MAX_NUMBER_OF_GRIDS - 1) - p.x_coord;
-    int gy = (MAX_NUMBER_OF_GRIDS - 1) - p.y_coord;
-
-    if (!GridMaps[gx][gy])
-        LoadMapAndVMap(gx, gy);
+        if (!GridMaps[gx][gy])
+            m_parentTerrainMap->LoadMapAndVMap(gx, gy);
+    }
 }
 
 //Load NGrid and make it active
@@ -2285,20 +2266,14 @@ bool Map::UnloadGrid(GridContainerType::iterator itr, bool unloadAll)
     int gy = (MAX_NUMBER_OF_GRIDS - 1) - y;
 
     // delete grid map, but don't delete if it is from parent map (and thus only reference)
-    //+++if (GridMaps[gx][gy]) don't check for GridMaps[gx][gy], we might have to unload vmaps
+    if (GridMaps[gx][gy])
     {
-        UnloadMap(gx, gy);
-
-        if (i_InstanceId == 0)
-        {
-            // x and y are swapped
-            VMAP::VMapFactory::createOrGetVMapManager()->unloadMap(GetId(), gx, gy);
-            MMAP::MMapFactory::createOrGetMMapManager()->unloadMap(GetId(), gx, gy);
-        }
+        m_parentTerrainMap->UnloadMap(gx, gy);
+        VMAP::VMapFactory::createOrGetVMapManager()->unloadMap(m_parentTerrainMap->GetId(), gx, gy);
+        MMAP::MMapFactory::createOrGetMMapManager()->unloadMap(m_parentTerrainMap->GetId(), gx, gy);
     }
-    #ifdef TRINITY_DEBUG
+
     TC_LOG_DEBUG("maps", "Unloading grid[%u, %u] for map %u finished", x, y, GetId());
-    #endif
     return true;
 }
 
@@ -2376,10 +2351,6 @@ inline GridMap* Map::GetGrid(float x, float y)
     int gx = static_cast<int>(CENTER_GRID_ID - x / SIZE_OF_GRIDS);                       //grid x
     int gy = static_cast<int>(CENTER_GRID_ID - y / SIZE_OF_GRIDS);                       //grid y
 
-    //Crash fix
-    if (gx >= MAX_NUMBER_OF_GRIDS || gy >= MAX_NUMBER_OF_GRIDS || gx < 0 || gy < 0)
-        return nullptr;
-
     // ensure GridMap is loaded
     EnsureGridCreated(GridCoord((MAX_NUMBER_OF_GRIDS - 1) - gx, (MAX_NUMBER_OF_GRIDS - 1) - gy));
 
@@ -2451,12 +2422,14 @@ float Map::GetStaticHeight(PhaseShift const& phaseShift, float x, float y, float
 {
     // find raw .map surface under Z coordinates
     float mapHeight = VMAP_INVALID_HEIGHT_VALUE;
-    float gridHeight = GetGridHeight(phaseShift, x, y);
-    // look from a bit higher pos to find the floor, ignore under surface case
-    if (z + 2.0f > gridHeight)
-        mapHeight = gridHeight;
-
     uint32 terrainMapId = PhasingHandler::GetTerrainMapId(phaseShift, this, x, y);
+    if (GridMap* gmap = m_parentTerrainMap->GetGrid(terrainMapId, x, y))
+    {
+        float gridHeight = gmap->getHeight(x, y);
+        // look from a bit higher pos to find the floor, ignore under surface case
+        if (z + 2.0f > gridHeight)
+            mapHeight = gridHeight;
+    }
 
     float vmapHeight = VMAP_INVALID_HEIGHT_VALUE;
     if (checkVMap)
@@ -2577,7 +2550,7 @@ bool Map::GetAreaInfo(PhaseShift const& phaseShift, float x, float y, float z, u
     if (hasVmapAreaInfo || hasDynamicAreaInfo)
     {
         // check if there's terrain between player height and object height
-        if (GridMap* gmap = const_cast<Map*>(this)->GetGrid(terrainMapId, x, y))
+        if (GridMap* gmap = m_parentTerrainMap->GetGrid(terrainMapId, x, y))
         {
             float mapHeight = gmap->getHeight(x, y);
             // z + 2.0f condition taken from GetHeight(), not sure if it's such a great choice...
@@ -2611,7 +2584,7 @@ uint32 Map::GetAreaId(PhaseShift const& phaseShift, float x, float y, float z, b
 
     if (!areaId)
     {
-        if (GridMap* gmap = const_cast<Map*>(this)->GetGrid(PhasingHandler::GetTerrainMapId(phaseShift, this, x, y), x, y))
+        if (GridMap* gmap = m_parentTerrainMap->GetGrid(PhasingHandler::GetTerrainMapId(phaseShift, this, x, y), x, y))
             areaId = gmap->getArea(x, y);
 
         // this used while not all *.map files generated (instances)
@@ -2654,7 +2627,7 @@ uint32 Map::GetAreaId(PhaseShift const& phaseShift, float x, float y, float z) c
 
 uint8 Map::GetTerrainType(PhaseShift const& phaseShift, float x, float y) const
 {
-    if (GridMap* gmap = const_cast<Map*>(this)->GetGrid(PhasingHandler::GetTerrainMapId(phaseShift, this, x, y), x, y))
+    if (GridMap* gmap = m_parentTerrainMap->GetGrid(PhasingHandler::GetTerrainMapId(phaseShift, this, x, y), x, y))
         return gmap->getTerrainType(x, y);
     return 0;
 }
@@ -2726,7 +2699,7 @@ ZLiquidStatus Map::getLiquidStatus(PhaseShift const& phaseShift, float x, float 
         }
     }
 
-    if (GridMap* gmap = const_cast<Map*>(this)->GetGrid(terrainMapId, x, y))
+    if (GridMap* gmap = m_parentTerrainMap->GetGrid(terrainMapId, x, y))
     {
         LiquidData map_data;
         ZLiquidStatus map_result = gmap->getLiquidStatus(x, y, z, ReqLiquidType, &map_data);
@@ -2749,7 +2722,7 @@ ZLiquidStatus Map::getLiquidStatus(PhaseShift const& phaseShift, float x, float 
 
 float Map::GetWaterLevel(PhaseShift const& phaseShift, float x, float y) const
 {
-    if (GridMap* gmap = const_cast<Map*>(this)->GetGrid(PhasingHandler::GetTerrainMapId(phaseShift, this, x, y), x, y))
+    if (GridMap* gmap = m_parentTerrainMap->GetGrid(PhasingHandler::GetTerrainMapId(phaseShift, this, x, y), x, y))
         return gmap->getLiquidLevel(x, y);
     return 0;
 }
@@ -4611,15 +4584,6 @@ bool Map::IsGridLoaded(float x, float y) const
 void Map::LoadGrid(Position & pos)
 {
     LoadGrid(pos.GetPositionX(), pos.GetPositionY());
-}
-
-uint32 Map::GetGridCount()
-{
-    uint32 count = 0;
-    for (auto itr: i_loadedGrids)
-        count++;
-
-    return count;
 }
 
 WorldObject* Map::GetActiveObjectWithEntry(uint32 entry)

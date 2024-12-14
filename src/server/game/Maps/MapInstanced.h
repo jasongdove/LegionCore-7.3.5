@@ -54,9 +54,6 @@ class MapInstanced : public Map
         bool DestroyInstance(InstancedMaps::iterator &itr);
         bool DestroyGarrison(InstancedMaps::iterator &itr);
 
-        void AddGridMapReference(const GridCoord& p);
-        void RemoveGridMapReference(GridCoord const& p);
-
         InstancedMaps &GetInstancedMaps() { return m_InstancedMaps; }
         void InitVisibilityDistance() override;
 
@@ -73,7 +70,5 @@ class MapInstanced : public Map
         ZoneMap* CreateZoneMap(uint32 zoneId, Player* player);
 
         std::recursive_mutex m_lock;
-
-        uint16 GridMapReference[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
 };
 #endif

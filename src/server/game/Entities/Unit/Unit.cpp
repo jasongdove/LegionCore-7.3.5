@@ -4352,12 +4352,12 @@ bool Unit::isInAccessiblePlaceFor(Creature const* c) const
 
 bool Unit::IsInWater() const
 {
-    return GetBaseMap()->IsInWater(GetPhaseShift(), GetPositionX(), GetPositionY(), GetPositionZ());
+    return GetMap()->IsInWater(GetPhaseShift(), GetPositionX(), GetPositionY(), GetPositionZ());
 }
 
 bool Unit::IsUnderWater() const
 {
-    return GetBaseMap()->IsUnderWater(GetPhaseShift(), GetPositionX(), GetPositionY(), GetPositionZ());
+    return GetMap()->IsUnderWater(GetPhaseShift(), GetPositionX(), GetPositionY(), GetPositionZ());
 }
 
 void Unit::UpdateUnderwaterState(Map* m, float x, float y, float z)
@@ -24316,8 +24316,8 @@ void Unit::_ExitVehicle(Position const* exitPosition)
             ToTempSummon()->UnSummon(2000); // Approximation
     }
 
-    if (player)
-        player->ZoneTeleport(m_zoneId);
+//    if (player)
+//        player->ZoneTeleport(m_zoneId);
 }
 
 void Unit::NearTeleportTo(Position const& pos, bool casting /*= false*/, bool stopMove /*= true*/)

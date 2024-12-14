@@ -38,8 +38,6 @@ MapInstanced::MapInstanced(uint32 id, time_t expiry) : Map(id, expiry, 0, DIFFIC
     m_GarrisonedMaps.clear();
 
     _zoneThreads.clear();
-    // fill with zero
-    memset(&GridMapReference, 0, MAX_NUMBER_OF_GRIDS*MAX_NUMBER_OF_GRIDS*sizeof(uint16));
 }
 
 void MapInstanced::InitVisibilityDistance()
@@ -582,19 +580,6 @@ bool MapInstanced::DestroyGarrison(InstancedMaps::iterator &itr)
     m_GarrisonedMaps.erase(itr++);
 
     return true;
-}
-
-void MapInstanced::AddGridMapReference(const GridCoord& p)
-{
-    ++GridMapReference[p.x_coord][p.y_coord];
-    SetUnloadReferenceLock(GridCoord(63 - p.x_coord, 63 - p.y_coord), true);
-}
-
-void MapInstanced::RemoveGridMapReference(GridCoord const& p)
-{
-    --GridMapReference[p.x_coord][p.y_coord];
-    if (!GridMapReference[p.x_coord][p.y_coord])
-        SetUnloadReferenceLock(GridCoord(63 - p.x_coord, 63 - p.y_coord), false);
 }
 
 bool MapInstanced::CanEnter(Player* /*player*/)

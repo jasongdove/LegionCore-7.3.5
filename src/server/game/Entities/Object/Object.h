@@ -609,8 +609,6 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
 
         void SetMap(Map* map) override;
         void ResetMap() override;
-        //this function should be removed in nearest time...
-        Map const* GetBaseMap() const;
 
         void SetZoneScript();
         ZoneScript* GetZoneScript() const { return m_zoneScript; }

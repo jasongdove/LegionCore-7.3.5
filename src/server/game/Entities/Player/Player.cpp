@@ -1874,7 +1874,7 @@ void Player::OnDisconnected()
 
     if (IsInWorld() && FindMap() && CanFreeMove())
     {
-        float height = GetBaseMap()->GetHeight(GetPhaseShift(), GetPositionX(), GetPositionY(), GetPositionZ());
+        float height = GetMap()->GetHeight(GetPhaseShift(), GetPositionX(), GetPositionY(), GetPositionZ());
         if ((GetPositionZ() < height + 0.1f) && !IsInWater())
             SetStandState(UNIT_STAND_STATE_SIT);
         // Apres avoir ajoute le bot on actualise la position du joueur
@@ -2767,7 +2767,7 @@ void Player::ProcessDelayedOperations()
             if (teamID == PETBATTLE_TEAM_2)
                 std::swap(request.TeamPosition[PETBATTLE_TEAM_1], request.TeamPosition[PETBATTLE_TEAM_2]);
 
-            matchMakingRequest.PetBattleCenterPosition.m_positionZ = GetBaseMap()->GetHeight(GetPhaseShift(), matchMakingRequest.PetBattleCenterPosition.GetPositionX(), matchMakingRequest.PetBattleCenterPosition.GetPositionZ(), MAX_HEIGHT);
+            matchMakingRequest.PetBattleCenterPosition.m_positionZ = GetMap()->GetHeight(GetPhaseShift(), matchMakingRequest.PetBattleCenterPosition.GetPositionX(), matchMakingRequest.PetBattleCenterPosition.GetPositionZ(), MAX_HEIGHT);
 
             GetSession()->SendPetBattleFinalizeLocation(&request);
 
@@ -3270,7 +3270,7 @@ GameObject* Player::GetGameObjectIfCanInteractWith(ObjectGuid guid, GameobjectTy
 
 bool Player::IsUnderWater() const
 {
-    return IsInWater() && GetPositionZ() < (GetBaseMap()->GetWaterLevel(GetPhaseShift(), GetPositionX(), GetPositionY()) - 2);
+    return IsInWater() && GetPositionZ() < (GetMap()->GetWaterLevel(GetPhaseShift(), GetPositionX(), GetPositionY()) - 2);
 }
 
 void Player::SetInWater(bool apply)
@@ -8611,7 +8611,7 @@ void Player::CheckAreaExploreAndOutdoor()
         return;
 
     bool isOutdoor = false;
-    uint32 areaId = GetBaseMap()->GetAreaId(GetPhaseShift(), GetPositionX(), GetPositionY(), GetPositionZ(), &isOutdoor);
+    uint32 areaId = GetMap()->GetAreaId(GetPhaseShift(), GetPositionX(), GetPositionY(), GetPositionZ(), &isOutdoor);
 
     // Explore hack. Razorfen Kraul
     if (GetMapId() == 1 && areaId == 491)
@@ -10191,7 +10191,7 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
 
     UpdateZoneDependentAuras(newZone);
 
-    ZoneTeleport(newZone);
+    //ZoneTeleport(newZone);
 }
 
 bool Player::IsOutdoorPvPActive()

@@ -212,7 +212,7 @@ typedef std::unordered_map<uint32 /*zoneId*/, ZoneDynamicInfo> ZoneDynamicInfoMa
 
 typedef std::unordered_map<ObjectGuid, std::shared_ptr<WorldObject>> SharedObjectPtr;
 
-class TC_GAME_API Map
+class TC_GAME_API Map : GridRefManager<NGrid>
 {
     friend class MapReference;
     public:
@@ -282,8 +282,7 @@ class TC_GAME_API Map
         static bool ExistMap(uint32 mapid, int gx, int gy);
         static bool ExistVMap(uint32 mapid, int gx, int gy);
 
-        Map const* GetParent() const { return m_parentMap; }
-        void AddChildTerrainMap(Map* map) { m_childTerrainMaps->push_back(map); }
+        void AddChildTerrainMap(Map* map) { m_childTerrainMaps->push_back(map); map->m_parentTerrainMap = this; }
         void UnlinkAllChildTerrainMaps() { m_childTerrainMaps->clear(); }
 
         // some calls like isInWater should not use vmaps due to processor power
@@ -395,8 +394,6 @@ class TC_GAME_API Map
         void AddWorldObject(WorldObject* obj);
         void RemoveWorldObject(WorldObject* obj);
         uint32 GetWorldObjectCount() const { return i_objects.size(); }
-
-        uint32 GetGridCount();
 
         void SendToPlayers(WorldPacket const* data) const;
 
@@ -587,8 +584,8 @@ class TC_GAME_API Map
     private:
         void LoadMapAndVMap(int gx, int gy);
         void LoadVMap(int gx, int gy);
-        void LoadMap(int gx, int gy, bool reload = false);
-        static void LoadMapImpl(Map* map, int gx, int gy, bool reload);
+        void LoadMap(int gx, int gy);
+        static void LoadMapImpl(Map* map, int gx, int gy);
         void UnloadMap(int gx, int gy);
         static void UnloadMapImpl(Map* map, int gx, int gy);
         void LoadMMap(int gx, int gy);
@@ -631,6 +628,8 @@ class TC_GAME_API Map
         virtual bool onEnsureGridLoaded(NGrid* grid, Cell const& cell) { return true; }
         void EnsureGridLoadedForActiveObject(Cell const&, WorldObject* object);
 
+        void buildNGridLinkage(NGrid* pNGridType) { pNGridType->link(this); }
+
         NGrid * getNGrid(uint32 x, uint32 y) const
         {
             return i_grids[x][y];
@@ -644,8 +643,6 @@ class TC_GAME_API Map
         std::map<uint16, std::map<uint32, WildBattlePetPool>> m_wildBattlePetPool;
 
     protected:
-        void SetUnloadReferenceLock(const GridCoord &p, bool on) { getNGrid(p.x_coord, p.y_coord)->setUnloadReferenceLock(on); }
-
         // Objects that must update even in inactive grids without activating them
         typedef std::set<Transport*> TransportsContainer;
         TransportsContainer _transports;
@@ -698,6 +695,7 @@ class TC_GAME_API Map
 
         NGrid* i_grids[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
         GridMap* GridMaps[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
+        uint16 GridMapReference[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
         std::bitset<TOTAL_NUMBER_OF_CELLS_PER_MAP*TOTAL_NUMBER_OF_CELLS_PER_MAP> marked_cells;
 
         std::atomic<bool> i_scriptLock;

@@ -1690,7 +1690,7 @@ float WorldObject::GetDistanceToZOnfall()
     auto zNow = pos.m_positionX;
     if (auto lastUpdateTime = m_movementInfo.fall.lastTimeUpdate)
         zNow = pos.m_positionZ - Movement::computeFallElevation(Movement::MSToSec(GameTime::GetGameTimeMS() - lastUpdateTime), false) - 5.0f;
-    return zNow - GetBaseMap()->GetHeight(GetPhaseShift(), pos.m_positionX, pos.m_positionY, MAX_HEIGHT, true);
+    return zNow - GetMap()->GetHeight(GetPhaseShift(), pos.m_positionX, pos.m_positionY, MAX_HEIGHT, true);
 }
 
 bool WorldObject::IsWorldObject() const
@@ -2811,15 +2811,6 @@ void WorldObject::ResetMap()
     if (IsWorldObject())
         m_currMap->RemoveWorldObject(this);
     m_currMap = nullptr;
-}
-
-Map const* WorldObject::GetBaseMap() const
-{
-    if (!m_currMap)
-        return nullptr;
-
-    ASSERT(m_currMap);
-    return m_currMap->GetParent();
 }
 
 void WorldObject::AddObjectToRemoveList()

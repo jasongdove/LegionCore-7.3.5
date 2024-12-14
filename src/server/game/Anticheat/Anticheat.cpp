@@ -813,7 +813,7 @@ void PlayerCheatData::Unreachable(Unit* attacker)
     if (me->GetTransport())
         return;
 
-    float waterLevel = (me->GetBaseMap()->GetWaterLevel(me->GetPhaseShift(), me->GetPositionX(), me->GetPositionY()) + 5.0f);
+    float waterLevel = (me->GetMap()->GetWaterLevel(me->GetPhaseShift(), me->GetPositionX(), me->GetPositionY()) + 5.0f);
     if (me->GetPositionZ() < waterLevel)
         return;
     if (attacker->GetPositionZ() < waterLevel)
@@ -1058,7 +1058,7 @@ bool PlayerCheatData::HandleCustomAnticheatTests(uint32 opcode, MovementInfo& mo
             uint32 destZoneId = 0;
             uint32 destAreaId = 0;
 
-            mover->GetBaseMap()->GetZoneAndAreaId(me->GetPhaseShift(), destZoneId, destAreaId, movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ);
+            mover->GetMap()->GetZoneAndAreaId(me->GetPhaseShift(), destZoneId, destAreaId, movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ);
 
             // get zone and area info
             MapEntry const* mapEntry = sMapStore.LookupEntry(mover->GetMapId());
@@ -1228,7 +1228,7 @@ bool PlayerCheatData::AllowUpdatePosition(MovementInfo const& movementInfo, floa
     uint32 destZoneId = 0;
     uint32 destAreaId = 0;
 
-    me->GetBaseMap()->GetZoneAndAreaId(me->GetPhaseShift(), destZoneId, destAreaId, movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ);
+    me->GetMap()->GetZoneAndAreaId(me->GetPhaseShift(), destZoneId, destAreaId, movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ);
 
     // checks far teleports
     if (destZoneId == me->GetZoneId() && destAreaId == me->GetAreaId())
@@ -1271,7 +1271,7 @@ bool PlayerCheatData::CheckFarDistance(MovementInfo const& movementInfo, float d
     uint32 destZone;
     uint32 destArea;
     // some exclude zones - lifts and other, but..
-    me->GetBaseMap()->GetZoneAndAreaId(me->GetPhaseShift(), destZone, destArea, movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ);
+    me->GetMap()->GetZoneAndAreaId(me->GetPhaseShift(), destZone, destArea, movementInfo.Pos.m_positionX, movementInfo.Pos.m_positionY, movementInfo.Pos.m_positionZ);
     destZoneId = destZone;
     destAreaId = destArea;
 
