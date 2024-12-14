@@ -155,6 +155,12 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
                 condMeets = player->HasSkill(ConditionValue1) && player->GetBaseSkillValue(ConditionValue1) >= ConditionValue2;
             break;
         }
+        case CONDITION_QUESTSTATE:
+        {
+            if (Player* player = object->ToPlayer())
+                condMeets = ConditionValue2 & (1 << player->GetQuestStatus(ConditionValue1));
+            break;
+        }
         case CONDITION_QUESTREWARDED:
         {
             if (Player* player = object->ToPlayer())
@@ -850,6 +856,9 @@ uint32 Condition::GetSearcherTypeMaskForCondition() const
         case CONDITION_ACOUNT_QUEST:
             mask |= GRID_MAP_TYPE_MASK_PLAYER;
             break;
+        case CONDITION_QUESTSTATE:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
         default:
             ASSERT(false && "Condition::GetSearcherTypeMaskForCondition - missing condition handling!");
             break;
@@ -1240,18 +1249,18 @@ void ConditionMgr::LoadConditions(bool isReload)
 
         Condition* cond = new Condition();
         int32 iSourceTypeOrReferenceId   = fields[0].GetInt32();
-        cond->SourceGroup               = fields[1].GetUInt32();
-        cond->SourceEntry               = fields[2].GetUInt32();
-        cond->SourceId                  = fields[3].GetInt32();
-        cond->ElseGroup                 = fields[4].GetUInt32();
+        cond->SourceGroup                = fields[1].GetUInt32();
+        cond->SourceEntry                = fields[2].GetInt32();
+        cond->SourceId                   = fields[3].GetInt32();
+        cond->ElseGroup                  = fields[4].GetUInt32();
         int32 iConditionTypeOrReference  = fields[5].GetInt32();
-        cond->ConditionTarget           = fields[6].GetUInt8();
-        cond->ConditionValue1           = fields[7].GetUInt32();
-        cond->ConditionValue2           = fields[8].GetUInt32();
-        cond->ConditionValue3           = fields[9].GetUInt32();
-        cond->NegativeCondition         = fields[10].GetUInt8() != 0;
-        cond->ErrorTextId                 = fields[11].GetUInt32();
-        cond->ScriptId                  = sObjectMgr->GetScriptId(fields[12].GetCString());
+        cond->ConditionTarget            = fields[6].GetUInt8();
+        cond->ConditionValue1            = fields[7].GetUInt32();
+        cond->ConditionValue2            = fields[8].GetUInt32();
+        cond->ConditionValue3            = fields[9].GetUInt32();
+        cond->NegativeCondition          = fields[10].GetUInt8() != 0;
+        cond->ErrorTextId                = fields[11].GetUInt32();
+        cond->ScriptId                   = sObjectMgr->GetScriptId(fields[12].GetCString());
 
         if (iConditionTypeOrReference >= 0)
             cond->ConditionType = ConditionTypes(iConditionTypeOrReference);
@@ -2212,6 +2221,19 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond) const
                 TC_LOG_ERROR("sql.sql", "Skill condition has useless data in value3 (%u)!", cond->ConditionValue3);
             break;
         }
+        case CONDITION_QUESTSTATE:
+            if (cond->ConditionValue2 >= (1 << MAX_QUEST_STATUS))
+            {
+                TC_LOG_ERROR("sql.sql", "QuestState condition has invalid state mask (%u), skipped.", cond->ConditionValue2);
+                return false;
+            }
+
+            if (!sQuestDataStore->GetQuestTemplate(cond->ConditionValue1))
+            {
+                TC_LOG_ERROR("sql.sql", "QuestState condition points to non-existing quest (%u), skipped.", cond->ConditionValue1);
+                return false;
+            }
+            break;
         case CONDITION_QUESTREWARDED:
         case CONDITION_QUESTTAKEN:
         case CONDITION_QUEST_NONE:
@@ -2620,7 +2642,6 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond) const
         case CONDITION_CHARMED:
         case CONDITION_PET_TYPE:
         case CONDITION_TAXI:
-        case CONDITION_QUESTSTATE:
         case CONDITION_QUEST_OBJECTIVE_COMPLETE:
         case CONDITION_DIFFICULTY_ID:
         case CONDITION_OBJECT_ENTRY_GUID:
