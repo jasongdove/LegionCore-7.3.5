@@ -241,11 +241,7 @@ void PhasingHandler::OnAreaChange(WorldObject* object)
         uint32 zoneId = player->GetZoneId();
         if (auto const* phaseDefinitions = sObjectMgr->GetLegacyPhaseDefinitionsForZone(zoneId))
             for (auto const& phaseDefinition : *phaseDefinitions)
-            {
                 player->GetSuppressedPhaseShift().LegacyPhaseDefinitions.insert(phaseDefinition);
-                if (phaseDefinition.IsLastDefinition())
-                    break;
-            }
     }
 
     uint32 areaId = object->GetAreaId();
