@@ -10002,7 +10002,6 @@ void Player::UpdateArea(uint32 newArea)
 
     CheckSeamlessTeleport(newArea, true);
 
-
     uint32 newAreaForUpdate = m_areaId;
     AddDelayedEvent(100, [=, this]() -> void
     {
@@ -10136,6 +10135,9 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
 
     // zone changed, so area changed as well, update it
     UpdateArea(newArea);
+
+    // this is needed to support legacy phase definitions
+    PhasingHandler::OnConditionChange(this);
 
     AreaTableEntry const* zone = sAreaTableStore.LookupEntry(newZone);
     if (!zone)

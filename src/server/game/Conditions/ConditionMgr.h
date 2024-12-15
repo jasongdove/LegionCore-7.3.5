@@ -197,7 +197,7 @@ enum ConditionSourceType
     CONDITION_SOURCE_TYPE_WORLD_STATE                    = 41,
     CONDITION_SOURCE_TYPE_QUEST_ACCEPT                   = 42,
     CONDITION_SOURCE_TYPE_QUEST_SHOW_MARK                = 43,
-    CONDITION_SOURCE_TYPE_PHASE_DEFINITION_DEPRECATED    = 44,
+    CONDITION_SOURCE_TYPE_PHASE_DEFINITION_LEGACY        = 44,
     CONDITION_SOURCE_TYPE_AREATRIGGER_ACTION             = 45,
 
     CONDITION_SOURCE_TYPE_MAX                            = 46  //MAX
@@ -275,6 +275,7 @@ typedef std::unordered_map<uint32 /*SourceEntry*/, ConditionContainer> Condition
 typedef std::unordered_map<ConditionSourceType /*SourceType*/, ConditionsByEntryMap> ConditionEntriesByTypeMap;
 typedef std::unordered_map<uint32, ConditionsByEntryMap> ConditionEntriesByCreatureIdMap;
 typedef std::unordered_map<std::pair<int32, uint32 /*SAI source_type*/>, ConditionsByEntryMap> SmartEventConditionContainer;
+typedef std::unordered_map<uint32 /*phase definition id*/, ConditionsByEntryMap> LegacyPhaseDefinitionConditionContainer;
 typedef std::unordered_map<uint32 /*areatrigger id*/, ConditionsByEntryMap> AreaTriggerConditionContainer;
 typedef std::unordered_map<uint32 /*itemId*/, ConditionsByEntryMap> ItemLootConditionContainer;
 
@@ -308,6 +309,7 @@ class TC_GAME_API ConditionMgr
         bool IsObjectMeetingVendorItemConditions(uint32 creatureId, uint32 itemId, Player* player, Creature* vendor) const;
         bool IsObjectMeetingAreaTriggerConditions(uint32 areaTriggerId, uint32 actionId, Unit* caster, Unit* unit) const;
         bool IsObjectMeetingItemLootConditions(uint32 creatureId, uint32 itemId, Player* player) const;
+        bool IsObjectMeetingLegacyPhaseDefinitionConditions(uint32 zoneId, uint32 entry, Player* player) const;
 
         static bool IsPlayerMeetingCondition(Unit* unit, int32 conditionID, bool send = false);
         static bool IsPlayerMeetingCondition(Unit* unit, PlayerConditionEntry const* condition);
@@ -330,6 +332,7 @@ class TC_GAME_API ConditionMgr
         ConditionEntriesByCreatureIdMap   SpellClickEventConditionStore;
         ConditionEntriesByCreatureIdMap   NpcVendorConditionContainerStore;
         SmartEventConditionContainer      SmartEventConditionStore;
+        LegacyPhaseDefinitionConditionContainer LegacyPhaseDefinitionConditionStore;
         AreaTriggerConditionContainer     AreaTriggerConditionStore;
         ItemLootConditionContainer        ItemLootConditionStore;
 };

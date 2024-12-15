@@ -378,7 +378,6 @@ ObjectMgr::ObjectMgr(): _mailId(0), DBCLocaleIndex(), _playerInfo{}
     _itemTextId = 1;
     _hiPetNumber = 1;
     _voidItemId = 1;
-    _skipUpdateCount = 1;
     _reportComplaintID = 1;
 }
 
@@ -7255,6 +7254,67 @@ void ObjectMgr::UnloadPhaseConditions()
     for (auto itr = _phaseInfoByArea.begin(); itr != _phaseInfoByArea.end(); ++itr)
         for (PhaseAreaInfo& phase : itr->second)
             phase.Conditions.clear();
+}
+
+void ObjectMgr::LoadLegacyPhaseDefinitions()
+{
+    _LegacyPhaseDefinitionStore.clear();
+
+    uint32 oldMSTime = getMSTime();
+
+    //                                                 0       1       2         3            4           5          6             7
+    QueryResult result = WorldDatabase.Query("SELECT zoneId, entry, phasemask, phaseId, PreloadMapID, VisibleMapID, flags, UiWorldMapAreaID FROM `lc_phase_definitions` ORDER BY `entry` ASC");
+
+    if (!result)
+    {
+        TC_LOG_INFO("server.loading", ">> Loaded 0 phasing definitions. DB table `lc_phase_definitions` is empty.");
+        return;
+    }
+
+    uint32 count = 0;
+
+    do
+    {
+        Field *fields = result->Fetch();
+
+        LegacyPhaseDefinition pd;
+
+        pd.zoneId                = fields[0].GetUInt32();
+        pd.entry                 = fields[1].GetUInt16();
+        pd.phasemask             = fields[2].GetUInt64();
+        pd.terrainswapmap        = fields[4].GetUInt16();
+        pd.wmAreaId              = fields[5].GetUInt16();
+        pd.flags                 = fields[6].GetUInt8();
+        pd.uiWmAreaId            = fields[7].GetUInt16();
+
+        Tokenizer phasesToken(fields[3].GetString(), ' ', 100);
+        for (auto itr : phasesToken)
+            if (PhaseEntry const* phase = sPhaseStore.LookupEntry(uint32(strtoull(itr, nullptr, 10))))
+                pd.phaseId.push_back(phase->ID);
+
+        // Checks
+        if ((pd.flags & PHASE_FLAG_OVERWRITE_EXISTING) && (pd.flags & PHASE_FLAG_NEGATE_PHASE))
+        {
+            TC_LOG_ERROR("sql.sql", "Flags defined in lc_phase_definitions in zoneId %d and entry %u does contain PHASE_FLAG_OVERWRITE_EXISTING and PHASE_FLAG_NEGATE_PHASE. Setting flags to PHASE_FLAG_OVERWRITE_EXISTING", pd.zoneId, pd.entry);
+            pd.flags &= ~PHASE_FLAG_NEGATE_PHASE;
+        }
+
+        if (pd.terrainswapmap > 0)
+        {
+            if (!sMapStore.LookupEntry(pd.terrainswapmap))
+            {
+                TC_LOG_ERROR("sql.sql", "DB table `lc_phase_definitions` has not existing terrainswapmap %u", pd.terrainswapmap);
+                continue;
+            }
+        }
+
+        _LegacyPhaseDefinitionStore[pd.zoneId].push_back(pd);
+
+        ++count;
+    }
+    while (result->NextRow());
+
+    TC_LOG_INFO("server.loading", ">> Loaded %u phasing definitions in %u ms.", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void ObjectMgr::LoadTerrainSwapDefaults()

@@ -1037,6 +1037,7 @@ bool ConditionMgr::CanHaveSourceGroupSet(ConditionSourceType sourceType) const
             sourceType == CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS ||
             sourceType == CONDITION_SOURCE_TYPE_WORLD_STATE ||
             sourceType == CONDITION_SOURCE_TYPE_LOOT_ITEM ||
+            sourceType == CONDITION_SOURCE_TYPE_PHASE_DEFINITION_LEGACY ||
             sourceType == CONDITION_SOURCE_TYPE_PHASE);
 }
 
@@ -1192,7 +1193,25 @@ bool ConditionMgr::IsObjectMeetingItemLootConditions(uint32 creatureId, uint32 i
         }
     }
 
-    TC_LOG_DEBUG("condition", "GetConditionsForItemLoot: conditions for creatureId %u itemId %u", creatureId, itemId);
+    TC_LOG_DEBUG("condition", "GetConditionsForItemLoot: no conditions for creatureId %u itemId %u", creatureId, itemId);
+
+    return true;
+}
+
+bool ConditionMgr::IsObjectMeetingLegacyPhaseDefinitionConditions(uint32 zoneId, uint32 entry, Player* player) const
+{
+    auto itr = LegacyPhaseDefinitionConditionStore.find(zoneId);
+    if (itr != LegacyPhaseDefinitionConditionStore.end())
+    {
+        ConditionsByEntryMap::const_iterator i = itr->second.find(entry);
+        if (i != itr->second.end())
+        {
+            TC_LOG_DEBUG("condition", "GetConditionsForLegacyPhaseDefinition: found conditions for zoneId %u entry %u", zoneId, entry);
+            return IsObjectMeetToConditions(player, i->second);
+        }
+    }
+
+    TC_LOG_DEBUG("condition", "GetConditionsForLegacyPhaseDefinition: no conditions for zoneId %u entry %u", zoneId, entry);
 
     return true;
 }
@@ -1415,6 +1434,13 @@ void ConditionMgr::LoadConditions(bool isReload)
                     ++count;
                     continue;
                 }
+                case CONDITION_SOURCE_TYPE_PHASE_DEFINITION_LEGACY:
+                {
+                    LegacyPhaseDefinitionConditionStore[cond->SourceGroup][cond->SourceEntry].push_back(cond);
+                    valid = true;
+                    ++count;
+                    continue;
+                };
                 case CONDITION_SOURCE_TYPE_AREATRIGGER_ACTION:
                 {
                     AreaTriggerConditionStore[cond->SourceGroup][cond->SourceEntry].push_back(cond);
@@ -2054,10 +2080,13 @@ bool ConditionMgr::isSourceTypeValid(Condition* cond) const
             }
             break;
         }
-        case CONDITION_SOURCE_TYPE_PHASE_DEFINITION_DEPRECATED:
+        case CONDITION_SOURCE_TYPE_PHASE_DEFINITION_LEGACY:
         {
-            TC_LOG_ERROR("sql.sql", "SourceType %u in `condition` table uses deprecated PHASE_DEFINITION, ignoring.", cond->SourceType);
-            return false;
+            if (!LegacyPhaseMgr::IsConditionTypeSupported(cond->ConditionType))
+            {
+                TC_LOG_ERROR("sql.sql", "Condition source type `CONDITION_SOURCE_TYPE_PHASE_DEFINITION_LEGACY` does not support condition type %u, ignoring.", cond->ConditionType);
+                return false;
+            }
             break;
         }
         case CONDITION_SOURCE_TYPE_TERRAIN_SWAP:

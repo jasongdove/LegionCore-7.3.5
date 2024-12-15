@@ -27,6 +27,7 @@
 class PhasingHandler;
 struct Condition;
 struct TerrainSwapInfo;
+struct LegacyPhaseDefinition;
 
 #define DEFAULT_PHASE 169
 
@@ -108,6 +109,7 @@ protected:
     EnumClassFlag<PhaseShiftFlags> Flags = PhaseShiftFlags::Unphased;
     ObjectGuid PersonalGuid;
     PhaseContainer Phases;
+    std::set<LegacyPhaseDefinition> LegacyPhaseDefinitions;
     VisibleMapIdContainer VisibleMapIds;
     UiWorldMapAreaIdSwapContainer UiWorldMapAreaIdSwaps;
 

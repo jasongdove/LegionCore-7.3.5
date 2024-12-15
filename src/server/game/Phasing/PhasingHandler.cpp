@@ -232,6 +232,22 @@ void PhasingHandler::OnAreaChange(WorldObject* object)
     object->GetPhaseShift().ClearPhases();
     object->GetSuppressedPhaseShift().ClearPhases();
 
+    // reset legacy phase definitions
+    if (Player* player = object->ToPlayer())
+    {
+        player->GetPhaseShift().LegacyPhaseDefinitions.clear();
+        player->GetSuppressedPhaseShift().LegacyPhaseDefinitions.clear();
+
+        uint32 zoneId = player->GetZoneId();
+        if (auto const* phaseDefinitions = sObjectMgr->GetLegacyPhaseDefinitionsForZone(zoneId))
+            for (auto const& phaseDefinition : *phaseDefinitions)
+            {
+                player->GetSuppressedPhaseShift().LegacyPhaseDefinitions.insert(phaseDefinition);
+                if (phaseDefinition.IsLastDefinition())
+                    break;
+            }
+    }
+
     uint32 areaId = object->GetAreaId();
     AreaTableEntry const* areaEntry = sAreaTableStore.LookupEntry(areaId);
     while (areaEntry)
@@ -311,6 +327,37 @@ void PhasingHandler::OnConditionChange(WorldObject* object)
         }
         else
             ++itr;
+    }
+
+    // handle legacy phases based on zone id
+    // TODO: terrainswapmap?
+    if (Player* player = object->ToPlayer())
+    {
+        for (auto itr = phaseShift.LegacyPhaseDefinitions.begin(); itr != phaseShift.LegacyPhaseDefinitions.end();)
+        {
+            if (!sConditionMgr->IsObjectMeetingLegacyPhaseDefinitionConditions(itr->zoneId, itr->entry, player))
+            {
+                for (auto phaseId : itr->phaseId)
+                    newSuppressions.AddPhase(phaseId, GetPhaseFlags(phaseId), nullptr);
+                newSuppressions.LegacyPhaseDefinitions.insert(*itr);
+                itr = phaseShift.LegacyPhaseDefinitions.erase(itr);
+            }
+            else
+                ++itr;
+        }
+
+        for (auto itr = suppressedPhaseShift.LegacyPhaseDefinitions.begin(); itr != suppressedPhaseShift.LegacyPhaseDefinitions.end();)
+        {
+            if (sConditionMgr->IsObjectMeetingLegacyPhaseDefinitionConditions(itr->zoneId, itr->entry, player))
+            {
+                for (auto phaseId : itr->phaseId)
+                    changed = phaseShift.AddPhase(phaseId, GetPhaseFlags(phaseId), nullptr) || changed;
+                phaseShift.LegacyPhaseDefinitions.insert(*itr);
+                itr = suppressedPhaseShift.LegacyPhaseDefinitions.erase(itr);
+            }
+            else
+                ++itr;
+        }
     }
 
     for (auto itr = phaseShift.VisibleMapIds.begin(); itr != phaseShift.VisibleMapIds.end();)

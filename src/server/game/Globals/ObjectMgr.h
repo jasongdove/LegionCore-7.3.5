@@ -19,23 +19,24 @@
 #ifndef _OBJECTMGR_H
 #define _OBJECTMGR_H
 
+#include "ConditionMgr.h"
 #include "Conversation.h"
-#include "Log.h"
-#include "Object.h"
-#include "Creature.h"
-#include "Player.h"
-#include "GameObject.h"
 #include "Corpse.h"
+#include "Creature.h"
+#include "GameObject.h"
 #include "ItemTemplate.h"
-#include "NPCHandler.h"
+#include "LegacyPhaseMgr.h"
+#include "Log.h"
 #include "Mail.h"
 #include "Map.h"
+#include "NPCHandler.h"
+#include "Object.h"
 #include "ObjectAccessor.h"
 #include "ObjectDefines.h"
+#include "Player.h"
 #include "VehicleDefines.h"
 #include <limits>
 #include <utility>
-#include "ConditionMgr.h"
 
 class Item;
 
@@ -707,6 +708,7 @@ class TC_GAME_API ObjectMgr
 
         void LoadPhases();
         void UnloadPhaseConditions();
+        void LoadLegacyPhaseDefinitions();
 
         void LoadTerrainSwapDefaults();
         void LoadTerrainWorldMaps();
@@ -719,6 +721,11 @@ class TC_GAME_API ObjectMgr
         void LoadScenarioSpellData();
         
         void LoadCreatureOutfits();
+
+        LegacyPhaseDefinitionContainer const* GetLegacyPhaseDefinitionsForZone(uint32 zoneId)
+        {
+            return Trinity::Containers::MapGetValuePtr(_LegacyPhaseDefinitionStore, zoneId);
+        }
         
         std::string GeneratePetName(uint32 entry);
         uint32 GetBaseXP(uint8 level);
@@ -1005,7 +1012,8 @@ class TC_GAME_API ObjectMgr
         std::unordered_map<uint32, std::vector<PhaseAreaInfo>> _phaseInfoByArea;
         std::unordered_map<uint32, std::vector<TerrainSwapInfo*>> _terrainSwapInfoByMap;
 
-        uint32 _skipUpdateCount;
+        LegacyPhaseDefinitionStore _LegacyPhaseDefinitionStore;
+
         void PlayerCreateInfoAddItemHelper(uint32 race_, uint32 class_, uint32 itemId, int32 count, std::vector<uint32> bonusListIDs);
         void PlayerCreateInfoAddQuestHelper(uint32 race_, uint32 class_, uint32 questId);
         void PlayerCreateInfoAddSpellHelper(uint32 race_, uint32 class_, uint32 spellId);
