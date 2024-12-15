@@ -325,8 +325,7 @@ void PhasingHandler::OnConditionChange(WorldObject* object)
             ++itr;
     }
 
-    // handle legacy phases based on zone id
-    // TODO: terrainswapmap?
+    // handle legacy phases, terrain swaps based on zone id
     if (Player* player = object->ToPlayer())
     {
         for (auto itr = phaseShift.LegacyPhaseDefinitions.begin(); itr != phaseShift.LegacyPhaseDefinitions.end();)
@@ -348,6 +347,11 @@ void PhasingHandler::OnConditionChange(WorldObject* object)
             {
                 for (auto phaseId : itr->phaseId)
                     changed = phaseShift.AddPhase(phaseId, GetPhaseFlags(phaseId), nullptr) || changed;
+
+                if (itr->terrainswapmap)
+                    if (auto terrainSwapInfo = sObjectMgr->GetTerrainSwapInfo(itr->terrainswapmap))
+                        phaseShift.AddVisibleMapId(itr->terrainswapmap, terrainSwapInfo);
+
                 phaseShift.LegacyPhaseDefinitions.insert(*itr);
                 itr = suppressedPhaseShift.LegacyPhaseDefinitions.erase(itr);
             }

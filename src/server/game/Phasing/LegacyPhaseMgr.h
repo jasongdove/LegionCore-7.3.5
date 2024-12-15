@@ -21,7 +21,6 @@ struct LegacyPhaseDefinition
     uint32 phasemask;
     uint16 terrainswapmap;
     uint16 wmAreaId;
-    uint16 uiWmAreaId;
     uint8 flags;
 
     bool IsOverwritingExistingPhases() const { return flags & PHASE_FLAG_OVERWRITE_EXISTING; }

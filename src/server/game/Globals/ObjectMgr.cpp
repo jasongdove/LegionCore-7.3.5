@@ -7262,8 +7262,8 @@ void ObjectMgr::LoadLegacyPhaseDefinitions()
 
     uint32 oldMSTime = getMSTime();
 
-    //                                                 0       1       2         3            4           5          6             7
-    QueryResult result = WorldDatabase.Query("SELECT zoneId, entry, phasemask, phaseId, PreloadMapID, VisibleMapID, flags, UiWorldMapAreaID FROM `lc_phase_definitions` ORDER BY `entry` ASC");
+    //                                                 0       1       2         3            4           5          6
+    QueryResult result = WorldDatabase.Query("SELECT zoneId, entry, phasemask, phaseId, TerrainSwapMap, VisibleMapID, flags FROM `lc_phase_definitions` ORDER BY `entry` ASC");
 
     if (!result)
     {
@@ -7285,7 +7285,6 @@ void ObjectMgr::LoadLegacyPhaseDefinitions()
         pd.terrainswapmap        = fields[4].GetUInt16();
         pd.wmAreaId              = fields[5].GetUInt16();
         pd.flags                 = fields[6].GetUInt8();
-        pd.uiWmAreaId            = fields[7].GetUInt16();
 
         Tokenizer phasesToken(fields[3].GetString(), ' ', 100);
         for (auto itr : phasesToken)
